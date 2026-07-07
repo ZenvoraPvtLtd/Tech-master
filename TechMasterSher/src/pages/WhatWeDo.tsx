@@ -23,7 +23,7 @@ export const WhatWeDo: React.FC = () => {
       icon: <Presentation className="w-6 h-6 text-royal-purple" />,
       title: "Motivational Keynotes",
       subtitle: "TEDx & Global Tech Talks",
-      description: "Faisal travels worldwide delivering opening remarks on 'Democratizing Code' and soft skill strategies to help students bypass generic hiring cycles.",
+      description: "Kanha travels worldwide delivering opening remarks on 'Democratizing Code' and soft skill strategies to help students bypass generic hiring cycles.",
       accent: "#aa3bff",
     },
     {
@@ -140,7 +140,7 @@ export const WhatWeDo: React.FC = () => {
             "Education is not the learning of facts, but the training of the mind to think."
           </h2>
           <span className="text-gold uppercase tracking-[3px] text-xs font-bold font-mono">
-            &mdash; Faisal (Tech Master)
+            &mdash; Kanha (Tech Master)
           </span>
         </motion.div>
       </div>

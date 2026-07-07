@@ -114,7 +114,7 @@ export const ProductLaunches: React.FC = () => {
               MasterClass v2 Platform Launch Walkthrough
             </h3>
             <p className="text-gray-400 text-xs md:text-sm leading-relaxed font-light mb-6">
-              Watch Faisal demonstrate the sandboxed docker containers, web terminals, and the multiplayer live coding rooms that make learning code feel like a cooperative MMO game.
+              Watch Kanha demonstrate the sandboxed docker containers, web terminals, and the multiplayer live coding rooms that make learning code feel like a cooperative MMO game.
             </p>
             <div className="flex gap-4">
               <button className="px-6 py-3 bg-white text-black font-bold uppercase text-[10px] tracking-[2px] rounded-full hover:bg-gold transition-all duration-300">

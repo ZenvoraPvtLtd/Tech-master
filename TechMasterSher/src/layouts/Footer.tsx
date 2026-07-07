@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { ArrowUpRight, Mail, Phone, MapPin } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -219,6 +219,8 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
   const footerRef = useRef<HTMLElement>(null);
   const [mouseGlow, setMouseGlow] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!footerRef.current) return;
@@ -230,7 +232,13 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
   };
 
   const handleNavClick = (pageId: string) => {
-    onChangePage(pageId);
+    if (pageId === "privacy") {
+      setIsPrivacyOpen(true);
+    } else if (pageId === "terms") {
+      setIsTermsOpen(true);
+    } else {
+      onChangePage(pageId);
+    }
   };
 
   const handleSubscribe = (e: React.FormEvent) => {
@@ -278,15 +286,15 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
       <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20 items-stretch">
         
-        {/* Left columns (LGB 5): Newsletter & Slogan */}
-        <div className="lg:col-span-5 flex flex-col justify-between">
+        {/* Left columns (LGB 4): Newsletter & Slogan */}
+        <div className="lg:col-span-4 flex flex-col justify-between">
           <div>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">
               Let's create the <br />
               <span className="text-gold italic font-bold">future of code</span>.
             </h2>
             <p className="text-gray-400 text-sm md:text-base font-light max-w-md leading-relaxed mb-8">
-              Subscribe to Faisal's newsletter. Receive exclusive design mockups, platform beta keys, systems tips, and speaking logs.
+              Subscribe to Kanha's newsletter. Receive exclusive design mockups, platform beta keys, systems tips, and speaking logs.
             </p>
           </div>
 
@@ -308,19 +316,17 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           </form>
         </div>
 
-        {/* Middle columns (LGB 4): sitemap columns */}
-        <div className="lg:col-span-4 grid grid-cols-2 gap-8">
+        {/* Middle columns (LGB 5): sitemap columns */}
+        <div className="lg:col-span-5 grid grid-cols-3 gap-6">
           {/* Column 1: Identity */}
           <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6">IDENTITY</p>
+            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">IDENTITY</p>
             <ul className="flex flex-col gap-3">
               {[
                 { name: "About Founder", id: "about" },
                 { name: "Founder's Journey", id: "journey" },
                 { name: "Mission & Vision", id: "mission" },
                 { name: "What We Do", id: "what-we-do" },
-                { name: "Core Services", id: "services" },
-                { name: "Brand Collabs", id: "collaborations" },
               ].map((link) => (
                 <li key={link.id}>
                   <button
@@ -334,17 +340,41 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             </ul>
           </div>
 
-          {/* Column 2: Portals */}
+          {/* Column 2: Engagement */}
           <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6">ENGAGEMENT</p>
+            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">ENGAGEMENT</p>
             <ul className="flex flex-col gap-3">
               {[
+                { name: "Brand Collabs", id: "collaborations" },
                 { name: "Campaigns", id: "campaigns" },
                 { name: "Product Launches", id: "product-launches" },
                 { name: "Events & Talks", id: "events" },
                 { name: "Student Work", id: "portfolio" },
                 { name: "Media Gallery", id: "gallery" },
+              ].map((link) => (
+                <li key={link.id}>
+                  <button
+                    onClick={() => handleNavClick(link.id)}
+                    className="text-xs uppercase tracking-[1.5px] text-gray-400 hover:text-gold transition-colors duration-300 text-left font-light block"
+                  >
+                    {link.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Quick Links */}
+          <div>
+            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">QUICK LINKS</p>
+            <ul className="flex flex-col gap-3">
+              {[
+                { name: "Core Services", id: "services" },
                 { name: "Testimonials", id: "testimonials" },
+                { name: "FAQ Portal", id: "faq" },
+                { name: "Contact Page", id: "contact" },
+                { name: "Privacy Policy", id: "privacy" },
+                { name: "Terms of Service", id: "terms" },
               ].map((link) => (
                 <li key={link.id}>
                   <button
@@ -420,41 +450,67 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
         <div className="flex gap-4">
           {[
             { 
+              // YouTube
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                 </svg>
               ), 
-              href: "#" 
+              href: "https://youtube.com/c/techmasterf" 
             },
             { 
+              // LinkedIn
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                 </svg>
               ), 
-              href: "#" 
+              href: "https://linkedin.com/in/techmasterf" 
             },
             { 
+              // Instagram
+              icon: (
+                <svg className="w-4 h-4 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              ), 
+              href: "https://instagram.com/techmasterf" 
+            },
+            { 
+              // Facebook
+              icon: (
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+                </svg>
+              ), 
+              href: "https://facebook.com/techmasterf" 
+            },
+            { 
+              // GitHub
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                 </svg>
               ), 
-              href: "#" 
+              href: "https://github.com/techmasterf" 
             },
             { 
+              // Twitter/X
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               ), 
-              href: "#" 
+              href: "https://twitter.com/techmasterf" 
             },
           ].map((soc, idx) => (
             <Magnetic key={idx} strength={0.3}>
               <motion.a
                 href={soc.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-8 h-8 rounded-full border border-white/10 hover:border-gold/50 flex items-center justify-center text-gray-400 hover:text-gold bg-white/5 transition-all duration-300"
                 animate={{ y: [0, -4, 0] }}
                 transition={{
@@ -470,6 +526,64 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           ))}
         </div>
       </div>
+
+      {/* Privacy Policy Modal */}
+      <AnimatePresence>
+        {isPrivacyOpen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-6 text-left">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="glass-panel max-w-2xl w-full p-8 rounded-3xl relative max-h-[80vh] overflow-y-auto"
+            >
+              <button 
+                onClick={() => setIsPrivacyOpen(false)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-gold transition-colors duration-300 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-black/40 font-bold"
+              >
+                ✕
+              </button>
+              <h3 className="font-serif text-2xl text-gold font-bold mb-6">Privacy Policy</h3>
+              <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
+                <p><strong>Effective Date: July 7, 2026</strong></p>
+                <p>Kanha & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter.</p>
+                <p><strong>Data Collection & Use:</strong> We collect email addresses solely for sending newsletter digests, cohort details, and technical blogs. Your information is never sold, traded, or shared with third-party advertising companies.</p>
+                <p><strong>Cookies:</strong> This platform utilizes basic localized storage and caching systems to maintain animations, 3D settings, and user navigation states smoothly.</p>
+                <p><strong>Security:</strong> All direct inquiries and newsletter transmissions are protected with industry-standard cryptographic handshakes.</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Terms of Service Modal */}
+      <AnimatePresence>
+        {isTermsOpen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-6 text-left">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="glass-panel max-w-2xl w-full p-8 rounded-3xl relative max-h-[80vh] overflow-y-auto"
+            >
+              <button 
+                onClick={() => setIsTermsOpen(false)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-gold transition-colors duration-300 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-black/40 font-bold"
+              >
+                ✕
+              </button>
+              <h3 className="font-serif text-2xl text-gold font-bold mb-6">Terms of Service</h3>
+              <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
+                <p><strong>Effective Date: July 7, 2026</strong></p>
+                <p>By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service.</p>
+                <p><strong>Intellectual Property:</strong> All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Kanha and Tech Master Labs unless stated otherwise.</p>
+                <p><strong>User License:</strong> You are granted a limited license to explore our portfolio and code projects for educational research. Scraping, cloning, or distributing source codes commercially without express written consent is strictly prohibited.</p>
+                <p><strong>Sandbox Declarations:</strong> All forms, databases, and estimates operate in safe sandbox demonstration pipelines.</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </footer>
   );
 };

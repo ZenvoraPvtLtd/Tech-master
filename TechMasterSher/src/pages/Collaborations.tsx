@@ -41,7 +41,7 @@ export const Collaborations: React.FC = () => {
           {[1, 2].map((i) => (
             <div key={i} className="flex gap-20 items-center">
               {["GOOGLE CLOUD", "AWS", "GITHUB", "VERCEL", "STRIPE", "NVIDIA", "MICROSOFT", "SHOPIFY"].map((brand, j) => (
-                <span key={j} className="font-serif text-2xl sm:text-3xl font-black text-white/30 tracking-[6px] hover:text-gold transition-colors duration-300 cursor-default">
+                <span key={j} className="font-serif text-2xl sm:text-3xl font-black text-gold tracking-[6px] hover:text-white transition-colors duration-300 cursor-default select-none">
                   {brand}
                 </span>
               ))}

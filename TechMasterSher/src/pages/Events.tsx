@@ -59,7 +59,7 @@ export const Events: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-400 text-sm sm:text-base font-light max-w-xl mx-auto leading-relaxed"
         >
-          Faisal shares developer insights, soft-skills blueprints, and live systems architecture demonstrations on global stages.
+          Kanha shares developer insights, soft-skills blueprints, and live systems architecture demonstrations on global stages.
         </motion.p>
       </div>
 
@@ -175,11 +175,11 @@ export const Events: React.FC = () => {
           <div className="md:w-1/2">
             <span className="text-[10px] uppercase font-bold tracking-[3px] text-gold block mb-2">SPEAKER BOOKINGS</span>
             <h2 className="font-serif text-3xl font-light text-white mb-6 leading-tight">
-              Bring Faisal to <br />
+              Bring Kanha to <br />
               <span className="text-gold italic font-bold">Your Event</span>
             </h2>
             <p className="text-gray-400 text-xs md:text-sm leading-relaxed font-light mb-6">
-              Faisal keynote schedules fill up rapidly. Bookings are open for university developer panels, virtual technical summits, DevFests, or corporate software consulting cycles.
+              Kanha keynote schedules fill up rapidly. Bookings are open for university developer panels, virtual technical summits, DevFests, or corporate software consulting cycles.
             </p>
             <div className="flex items-center gap-4 text-xs font-mono tracking-[1px] text-gray-400">
               <Award className="w-4 h-4 text-gold shrink-0" />

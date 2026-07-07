@@ -67,6 +67,7 @@ export const FAQ: React.FC = () => {
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.35, ease: "easeInOut" }}
+                    className="overflow-hidden"
                   >
                     <div className="px-6 md:px-8 pb-8 pt-2 border-t border-white/5 text-xs md:text-sm text-gray-400 font-light leading-relaxed">
                       {faq.answer}

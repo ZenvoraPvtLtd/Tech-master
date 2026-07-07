@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
 
 export const CustomCursor: React.FC = () => {
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -7,18 +6,16 @@ export const CustomCursor: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    const cursor = cursorRef.current;
-    if (!cursor) return;
+    const cursorEl = cursorRef.current;
+    if (!cursorEl) return;
 
-    // Center the cursor initially
-    gsap.set(cursor, { xPercent: -50, yPercent: -50, x: window.innerWidth / 2, y: window.innerHeight / 2 });
-
-    const xTo = gsap.quickTo(cursor, "x", { duration: 0.05, ease: "power2.out" });
-    const yTo = gsap.quickTo(cursor, "y", { duration: 0.05, ease: "power2.out" });
+    // Track positions
+    const mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const cursor = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
     const onMouseMove = (e: MouseEvent) => {
-      xTo(e.clientX);
-      yTo(e.clientY);
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
     };
 
     const onMouseOver = (e: MouseEvent) => {
@@ -36,8 +33,29 @@ export const CustomCursor: React.FC = () => {
       // Default hover on interactive elements
       const isInteractive = target.closest("a, button, input, select, textarea, [role='button']");
       if (isInteractive) {
-        const text = isInteractive.textContent?.trim() || "";
-        setHoverText(text.length > 15 ? text.substring(0, 15) + "..." : text);
+        const rawText = isInteractive.textContent?.trim() || "";
+        let text = "VIEW";
+        
+        const textLower = rawText.toLowerCase();
+        if (textLower.includes("talk") || textLower.includes("contact")) {
+          text = "TALK";
+        } else if (textLower.includes("read") || textLower.includes("article") || textLower.includes("blog")) {
+          text = "READ";
+        } else if (textLower.includes("subscribe")) {
+          text = "JOIN";
+        } else if (textLower.includes("faq")) {
+          text = "FAQ";
+        } else if (textLower.includes("career")) {
+          text = "WORK";
+        } else if (textLower.includes("work") || textLower.includes("portfolio")) {
+          text = "WORK";
+        } else if (textLower.includes("close") || textLower.includes("✕") || textLower.includes("x")) {
+          text = "CLOSE";
+        } else if (rawText.length > 0 && rawText.length <= 8) {
+          text = rawText;
+        }
+        
+        setHoverText(text);
         setIsHovered(true);
       } else {
         setIsHovered(false);
@@ -52,10 +70,28 @@ export const CustomCursor: React.FC = () => {
     window.addEventListener("mouseover", onMouseOver);
     window.addEventListener("mouseout", onMouseOut);
 
+    // High performance animation loop
+    let rafId: number;
+    const animateCursor = () => {
+      const lerpFactor = 0.12; // Snappy but smooth LERP
+      cursor.x += (mouse.x - cursor.x) * lerpFactor;
+      cursor.y += (mouse.y - cursor.y) * lerpFactor;
+
+      if (cursorRef.current) {
+        // Use translate3d to force hardware acceleration (GPU rendering)
+        cursorRef.current.style.transform = `translate3d(${cursor.x}px, ${cursor.y}px, 0) translate(-50%, -50%)`;
+      }
+
+      rafId = requestAnimationFrame(animateCursor);
+    };
+
+    animateCursor();
+
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseover", onMouseOver);
       window.removeEventListener("mouseout", onMouseOut);
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
@@ -75,6 +111,9 @@ export const CustomCursor: React.FC = () => {
       className={`custom-cursor ${isHovered ? "hovered" : ""}`}
       style={{
         zIndex: 9999,
+        position: "fixed",
+        top: 0,
+        left: 0,
         background: isHovered ? "rgba(10, 10, 10, 0.95)" : "white",
         border: isHovered ? "2px solid #D4AF37" : "none",
         display: "flex",
@@ -91,7 +130,13 @@ export const CustomCursor: React.FC = () => {
           fontWeight: 700,
           letterSpacing: "1.5px",
           textTransform: "uppercase",
-          userSelect: "none"
+          userSelect: "none",
+          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100%"
         }}>
           {hoverText}
         </span>

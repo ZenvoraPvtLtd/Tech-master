@@ -62,7 +62,7 @@ export const Mission: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-400 text-sm sm:text-base font-light max-w-xl mx-auto leading-relaxed"
         >
-          We believe high-quality engineering curricula shouldn't be locked behind expensive student debts. Faisal is building the tools to make code accessible to every curious mind on earth.
+          We believe high-quality engineering curricula shouldn't be locked behind expensive student debts. Kanha is building the tools to make code accessible to every curious mind on earth.
         </motion.p>
       </div>
 
