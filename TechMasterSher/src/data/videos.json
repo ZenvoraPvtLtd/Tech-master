@@ -1,35 +1,38 @@
 [
   {
     "id": "vid_01",
-    "title": "Build a React 19 Framework from Scratch",
-    "category": "YouTube Tutorial",
-    "views": "1.2 Million Views",
-    "duration": "2h 45m",
-    "thumbnail": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80",
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
-    "description": "An exhaustive programming guide diving into rendering hooks, fiber architectures, and reconcilers in React 19.",
-    "aiPrompt": "Cinematic visual showing a neon glass circuit board with golden energy nodes flowing into a central floating React icon, high-tech abstract 3D simulation, 8k, photorealistic"
+    "title": "Cinematic Coding: The Neon Developer Vibe",
+    "type": "reel",
+    "url": "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-holding-camera-34282-large.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80",
+    "aspectRatio": "9/16",
+    "category": "Reels & Shorts"
   },
   {
     "id": "vid_02",
-    "title": "Why Junior Dev Resumes are Dying (And What to Do)",
-    "category": "Career Advice",
-    "views": "850,000 Views",
-    "duration": "18m 10s",
-    "thumbnail": "https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=800&q=80",
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-abstract-dark-waves-fluid-loop-43093-large.mp4",
-    "description": "Ditch the traditional CV. This video details how to build proof-of-work repositories and construct interactive visual portfolios that attract technical recruiters.",
-    "aiPrompt": "Slow motion zoom into a digital resume turning into golden dust and reorganizing into a luminous 3D holographic workspace, dark aesthetic, high contrast, surrealism"
+    "title": "Full Stack System Architecture MasterClass",
+    "type": "long_video",
+    "url": "https://assets.mixkit.co/videos/preview/mixkit-woman-working-on-a-laptop-at-home-42289-large.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80",
+    "aspectRatio": "16/9",
+    "category": "Long Videos"
   },
   {
     "id": "vid_03",
-    "title": "Systems Engineering: How Discord Scales to 10M Users",
-    "category": "System Design",
-    "views": "2.1 Million Views",
-    "duration": "42m 15s",
-    "thumbnail": "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=800&q=80",
-    "videoUrl": "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
-    "description": "An architectural breakdown of Discord's audio/video streaming pipeline, caching strategies, and load balancing databases.",
-    "aiPrompt": "A network map of glowing lines connecting geometric structures floating in dark space, lines lighting up rapidly as packets flow, cyberpunk style, neon cyan and violet highlights"
+    "title": "Keyboard Haptics & ASMR Coding Session",
+    "type": "short",
+    "url": "https://assets.mixkit.co/videos/preview/mixkit-hands-typing-on-a-laptop-44368-large.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1618401471353-b98aedd07871?auto=format&fit=crop&w=600&q=80",
+    "aspectRatio": "9/16",
+    "category": "Reels & Shorts"
+  },
+  {
+    "id": "vid_04",
+    "title": "Building Distributed Systems Live Demo",
+    "type": "long_video",
+    "url": "https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-his-computer-43033-large.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=600&q=80",
+    "aspectRatio": "16/9",
+    "category": "Long Videos"
   }
 ]

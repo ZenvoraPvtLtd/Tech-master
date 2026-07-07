@@ -36,10 +36,10 @@ export const Collaborations: React.FC = () => {
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
           transition={{ ease: "linear", duration: 25, repeat: Infinity }}
-          className="flex gap-20 w-max"
+          className="flex gap-24 w-max"
         >
           {[1, 2].map((i) => (
-            <div key={i} className="flex gap-20 items-center">
+            <div key={i} className="flex gap-24 items-center">
               {["GOOGLE CLOUD", "AWS", "GITHUB", "VERCEL", "STRIPE", "NVIDIA", "MICROSOFT", "SHOPIFY"].map((brand, j) => (
                 <span key={j} className="font-serif text-2xl sm:text-3xl font-black text-gold tracking-[6px] hover:text-white transition-colors duration-300 cursor-default select-none">
                   {brand}

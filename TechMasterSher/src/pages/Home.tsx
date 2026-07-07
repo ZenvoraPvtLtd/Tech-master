@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { ArrowDown, ArrowUpRight, CheckCircle, Terminal } from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
+import { ArrowDown, ArrowUpRight, CheckCircle, Terminal, Play, X } from "lucide-react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,6 +11,7 @@ import portfolioData from "../data/portfolio.json";
 import campaignsData from "../data/campaigns.json";
 import eventsData from "../data/events.json";
 import testimonialsData from "../data/testimonials.json";
+import videosData from "../data/videos.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +19,150 @@ interface HomeProps {
   onChangePage: (page: string) => void;
 }
 
+const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setIsPlaying(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    if (containerRef.current) {
+      containerRef.current.style.setProperty("--rx", "0deg");
+      containerRef.current.style.setProperty("--ry", "0deg");
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const el = containerRef.current;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Set spotlight coordinates
+    el.style.setProperty("--mx", `${x}px`);
+    el.style.setProperty("--my", `${y}px`);
+
+    // 3D Tilt calculation
+    const xc = rect.width / 2;
+    const yc = rect.height / 2;
+    const angleX = (yc - y) / 15; // rotate X based on vertical distance
+    const angleY = (x - xc) / 15; // rotate Y based on horizontal distance
+    el.style.setProperty("--rx", `${angleX}deg`);
+    el.style.setProperty("--ry", `${angleY}deg`);
+  };
+
+  const handlePlaying = () => {
+    setIsPlaying(true);
+  };
+
+  const isVertical = video.aspectRatio === "9/16";
+
+  return (
+    <div
+      ref={containerRef}
+      className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-[#070707] transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_15px_50px_rgba(212,175,55,0.15)] cursor-pointer select-none ${
+        isVertical ? "col-span-1 aspect-[9/16]" : "col-span-1 md:col-span-2 aspect-[16/9]"
+      }`}
+      style={{
+        transform: "perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale3d(1.01, 1.01, 1.01)",
+        transformStyle: "preserve-3d"
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
+      onClick={onClick}
+      data-cursor="play"
+    >
+      {/* Dynamic Cursor Spotlight Background Glow */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
+        style={{
+          background: "radial-gradient(circle 220px at var(--mx, 0px) var(--my, 0px), rgba(212,175,55,0.06), transparent 80%)"
+        }}
+      />
+
+      {/* Dynamic Spotlight Border Mask */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl z-10 border-2 border-transparent"
+        style={{
+          mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          maskComposite: "exclude",
+          WebkitMaskComposite: "xor",
+          background: "radial-gradient(circle 120px at var(--mx, 0px) var(--my, 0px), rgba(212,175,55,0.4), transparent 80%)"
+        }}
+      />
+
+      {/* Video Poster Image (Fades out when playing) */}
+      <img
+        src={video.thumbnail}
+        alt={video.title}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 z-0 ${
+          isPlaying ? "opacity-0" : "opacity-100"
+        }`}
+      />
+
+      {/* Video Element */}
+      <video
+        ref={videoRef}
+        src={video.url}
+        loop
+        muted
+        playsInline
+        onPlaying={handlePlaying}
+        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03] z-0 ${
+          isPlaying ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
+      />
+
+      {/* Glassmorphic Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent opacity-85 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none z-10" />
+
+      {/* Content Container (using transform-style to give depth) */}
+      <div 
+        className="absolute inset-0 flex flex-col justify-between p-6 md:p-8 pointer-events-none z-20"
+        style={{ transform: "translateZ(30px)" }}
+      >
+        <div className="flex justify-between items-start">
+          <span className="px-3.5 py-1 rounded-full border border-gold/30 bg-black/75 text-[9px] uppercase tracking-[2px] font-mono text-gold backdrop-blur-md">
+            {video.type === "reel" || video.type === "short" ? "Reels & Shorts" : "Long Videos"}
+          </span>
+          <span className="w-8 h-8 rounded-full border border-white/20 bg-black/60 flex items-center justify-center backdrop-blur-md group-hover:bg-gold group-hover:border-gold group-hover:scale-110 transition-all duration-300">
+            <Play className="w-3.5 h-3.5 text-white group-hover:text-black fill-current translate-x-[1px] transition-colors" />
+          </span>
+        </div>
+
+        <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+          <h3 className="font-serif text-xl md:text-2xl text-white font-medium mb-2 group-hover:text-gold transition-colors duration-300">
+            {video.title}
+          </h3>
+          <p className="text-xs text-gray-400 font-mono tracking-[1px] uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            Hover to Play • Tap to Watch Fullscreen
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
+
   useEffect(() => {
     // GSAP ScrollTrigger animations
     const sections = document.querySelectorAll(".scroll-section");
@@ -41,17 +185,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       );
     });
 
-    // Horizontal brand logo scroll
-    gsap.fromTo(
-      ".brand-ticker-inner",
-      { xPercent: 0 },
-      {
-        xPercent: -50,
-        duration: 20,
-        repeat: -1,
-        ease: "none",
-      }
-    );
+
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
@@ -62,12 +196,23 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     onChangePage(pageId);
   };
 
+  const filteredVideos = videosData.filter((v) => {
+    if (activeFilter === "all") return true;
+    if (activeFilter === "reels_shorts") return v.type === "reel" || v.type === "short";
+    if (activeFilter === "long") return v.type === "long_video";
+    return true;
+  });
+
   return (
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-32 text-center">
-        {/* Glow Spheres */}
+      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-40 text-center">
+        <div className="flex justify-center mb-6 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            HERO LANDING
+          </span>
+        </div>
 
 
 
@@ -146,6 +291,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* Personal Introduction */}
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
+        <div className="flex justify-center mb-8 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            FOUNDER BIOGRAPHY
+          </span>
+        </div>
         <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6 fade-up">
           Hello, I'm <span className="font-bold italic text-gold">Kanha</span>.
         </h2>
@@ -155,10 +305,19 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 2. Brand Partner Logos Ticker */}
-      <section className="py-12 bg-black/40 border-y border-white/5 relative z-10 overflow-hidden">
-        <div className="brand-ticker-inner flex whitespace-nowrap gap-16 w-[200%]">
+      <section className="py-12 bg-black/40 border-y border-white/5 relative z-10 overflow-hidden text-center">
+        <div className="flex justify-center mb-6 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            TRUSTED PARTNERS TICKER
+          </span>
+        </div>
+        <motion.div 
+          animate={{ x: ["0%", "-50%"] }} 
+          transition={{ ease: "linear", duration: 20, repeat: Infinity }}
+          className="flex gap-24 w-max"
+        >
           {[1, 2].map((groupIndex) => (
-            <div key={groupIndex} className="flex justify-around items-center min-w-full gap-16">
+            <div key={groupIndex} className="flex items-center gap-24">
               {["NVIDIA", "GITHUB", "GOOGLE CLOUD", "APPLE DEVELOPER", "VERCEL", "MICROSOFT"].map((brand) => (
                 <span
                   key={brand}
@@ -169,11 +328,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               ))}
             </div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* 3. Core Values Grid Section */}
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-left">
+        <div className="flex justify-center mb-12 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            CORE VALUES
+          </span>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {homeData.values.map((val, idx) => (
             <div key={idx} className="glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300 fade-up">
@@ -187,6 +351,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* 4. Core Services Section */}
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="flex justify-center mb-12 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            CORE SERVICES & TRAINING
+          </span>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-20 items-end">
           <div className="lg:col-span-2 text-left">
             <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">EDUCATIONAL PILLARS</p>
@@ -249,6 +418,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* 5. Statistics Callout */}
       <section className="scroll-section py-24 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-center">
+        <div className="flex justify-center mb-10 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            GLOBAL REACH & STATISTICS
+          </span>
+        </div>
         <div className="max-w-7xl mx-auto">
           <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-12">INFLUENCE & REACH</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -262,80 +436,71 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
       </section>
 
-      {/* 6. Selected Case Studies / Portfolios */}
+      {/* 6. Video Showcase Section */}
       <section className="scroll-section py-32 px-6 max-w-7xl mx-auto relative z-10 text-left">
+        <div className="flex justify-center mb-12 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            FEATURED VIDEO SHOWCASE
+          </span>
+        </div>
+        
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
           <div>
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">STUDENT SHOWCASE</p>
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">VIDEO PORTFOLIO</p>
             <h2 className="font-serif text-4xl sm:text-6xl font-light text-white leading-tight">
-              Honored <span className="text-gold italic font-bold">Initiatives</span>
+              Cinematic <span className="text-gold italic font-bold">Video Streams</span>
             </h2>
           </div>
-          <button
-            onClick={() => handleNavClick("portfolio")}
-            className="text-xs uppercase tracking-[2px] text-gold hover:text-white transition-colors duration-300 font-bold flex items-center gap-1.5"
-          >
-            Review Full Portfolio <ArrowUpRight className="w-4 h-4" />
-          </button>
+
+          {/* Filter tabs */}
+          <div className="flex gap-4 border-b border-white/10 pb-2 relative">
+            {[
+              { id: "all", label: "All Clips" },
+              { id: "reels_shorts", label: "Reels & Shorts" },
+              { id: "long", label: "Long Videos" }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveFilter(tab.id)}
+                className={`relative text-xs uppercase tracking-[2px] pb-2 px-3 transition-all duration-300 font-bold z-10 ${
+                  activeFilter === tab.id
+                    ? "text-gold font-semibold"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                {tab.label}
+                {activeFilter === tab.id && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-gold"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Portfolio Showcase Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {portfolioData.slice(0, 2).map((project) => (
-            <div
-              key={project.id}
-              className="group cursor-pointer fade-up"
-              onClick={() => handleNavClick("portfolio")}
-            >
-              {/* Animated image wrapper */}
-              <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/5 mb-6 relative">
-                <img
-                  src={project.coverImage}
-                  alt={project.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  data-cursor="view"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                  <span className="text-xs uppercase font-bold tracking-[3px] text-gold border border-gold/40 px-4 py-2 rounded-full bg-black/80">
-                    VIEW STUDY
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs text-gray-400 uppercase tracking-[1px]">{project.category}</span>
-                <span className="font-mono text-xs text-gold">{project.year}</span>
-              </div>
-              <h3 className="font-serif text-2xl text-white font-medium group-hover:text-gold transition-colors duration-300">
-                {project.title}
-              </h3>
-            </div>
+        {/* Video Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {filteredVideos.map((video) => (
+            <VideoCard
+              key={video.id}
+              video={video}
+              onClick={() => setSelectedVideo(video)}
+            />
           ))}
         </div>
       </section>
 
-      {/* 7. Quick Timeline Callout */}
-      <section className="scroll-section py-24 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-left">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-          <div>
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-2">OUR CHRONOLOGY</p>
-            <h3 className="font-serif text-3xl sm:text-4xl font-light text-white leading-tight">
-              Follow Kanha's journey from <br />
-              <span className="text-gold italic font-bold">day one</span> to present.
-            </h3>
-          </div>
-          <button
-            onClick={() => handleNavClick("journey")}
-            className="light-sweep px-6 py-3 bg-white text-black font-bold uppercase text-xs tracking-[1.5px] rounded-full hover:bg-gold hover:text-black transition-colors duration-300"
-          >
-            Explore Founder Journey
-          </button>
-        </div>
-      </section>
 
       {/* 8. Quick YouTube Promo Callout */}
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-left">
+        <div className="flex justify-center mb-10 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            YOUTUBE INITIATIVE
+          </span>
+        </div>
         <div className="glass-panel p-8 md:p-12 rounded-3xl flex flex-col md:flex-row gap-8 items-center border border-white/5">
           <div className="md:w-2/3">
             <span className="text-[10px] uppercase font-bold tracking-[3px] text-gold block mb-2">YOUTUBE INITIATIVE</span>
@@ -360,6 +525,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* Featured Campaigns */}
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="flex justify-center mb-12 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            FEATURED EDUCATION CAMPAIGNS
+          </span>
+        </div>
         <div className="mb-16 text-center">
           <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR IMPACT</p>
           <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
@@ -379,6 +549,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* Event Highlights */}
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="flex justify-center mb-12 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            EVENT HIGHLIGHTS
+          </span>
+        </div>
         <div className="mb-16 text-center">
           <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">COMMUNITY</p>
           <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
@@ -396,32 +571,15 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 bg-black/40 border-y border-white/5 text-center mt-12">
-        <div className="mb-16">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">WALL OF LOVE</p>
-          <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
-            What <span className="text-gold italic font-bold">People Say</span>
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-          {testimonialsData.slice(0, 3).map((test: any, idx: number) => (
-            <div key={idx} className="glass-panel p-8 rounded-2xl fade-up flex flex-col justify-between">
-              <p className="text-gray-400 text-sm font-light italic mb-6">"{test.quote}"</p>
-              <div className="flex items-center gap-4">
-                <img src={test.avatar} alt={test.author} className="w-10 h-10 rounded-full border border-gold/40" />
-                <div>
-                  <h4 className="text-white text-sm font-bold">{test.author}</h4>
-                  <span className="text-gold text-xs">{test.role}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* Newsletter */}
       <section className="scroll-section py-24 px-6 max-w-4xl mx-auto relative z-10 text-center">
+        <div className="flex justify-center mb-10 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            NEWSLETTER SUBSCRIPTION
+          </span>
+        </div>
         <div className="glass-panel p-12 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(212,175,55,0.05)] fade-up">
           <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">Stay in the Loop</h2>
           <p className="text-gray-400 text-sm mb-8 font-light">Join my newsletter to get the latest tech insights, coding tips, and event updates delivered directly to your inbox.</p>
@@ -434,6 +592,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* Contact Preview */}
       <section className="scroll-section pb-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
+        <div className="flex justify-center mb-10 relative z-20">
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            COLLABORATION INQUIRY
+          </span>
+        </div>
         <h2 className="font-serif text-4xl sm:text-6xl font-light text-white leading-tight mb-8 fade-up">
           Ready to <span className="text-gold italic font-bold">Collaborate?</span>
         </h2>
@@ -444,6 +607,54 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           Get In Touch
         </button>
       </section>
+
+      {/* Lightbox Modal */}
+      {selectedVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4">
+          <div className="absolute inset-0 cursor-pointer" onClick={() => setSelectedVideo(null)} />
+          
+          <div className="relative w-full max-w-4xl max-h-[85vh] bg-[#070707] rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col md:flex-row z-50">
+            {/* Close Button */}
+            <button 
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center hover:bg-gold hover:text-black transition-colors"
+              onClick={() => setSelectedVideo(null)}
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+
+            {/* Video Player */}
+            <div className={`flex-1 bg-black flex items-center justify-center ${selectedVideo.aspectRatio === "9/16" ? "md:max-w-md mx-auto" : "w-full"}`}>
+              <video 
+                src={selectedVideo.url} 
+                controls 
+                autoPlay 
+                playsInline
+                className="w-full h-full max-h-[70vh] object-contain"
+              />
+            </div>
+
+            {/* Details Side-panel */}
+            <div className="p-8 md:w-80 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/10 bg-[#090909]">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-[2px] text-gold block mb-2">
+                  {selectedVideo.category}
+                </span>
+                <h3 className="font-serif text-2xl text-white font-semibold leading-tight mb-4">
+                  {selectedVideo.title}
+                </h3>
+                <p className="text-sm text-gray-400 leading-relaxed font-light mb-6">
+                  This showcase demonstrates our high-production-value video assets, structured to engage audiences across modern content distributions.
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-white/5">
+                <span className="text-[9px] font-mono uppercase text-gray-500 block mb-1">Source Stream</span>
+                <span className="text-xs text-gold font-mono tracking-wider font-semibold">SECURE CDN DIRECT LINK</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

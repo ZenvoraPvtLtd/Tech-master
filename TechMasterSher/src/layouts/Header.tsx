@@ -85,24 +85,20 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           data-cursor="home"
         >
           <img
-  src={logo1}
-  alt="Tech Master Logo"
-  className="h-16 w-auto object-contain"
-  style={{
-    imageRendering: "-webkit-optimize-contrast",
-    filter: `
-      drop-shadow(0 0 8px rgba(212, 175, 55, 0.8))
-      drop-shadow(0 0 18px rgba(212, 175, 55, 0.6))
-      drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
-      drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
-      drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
-    `,
-  }}
-/>
-         
-          <span className="font-serif font-bold text-lg tracking-[2px] text-gold transition-colors duration-300 group-hover:text-black uppercase">
-            TECH MASTER
-          </span>
+            src={logo1}
+            alt="Tech Master Logo"
+            className="h-28 w-auto object-contain"
+            style={{
+              imageRendering: "-webkit-optimize-contrast",
+              filter: `
+                drop-shadow(0 0 8px rgba(212, 175, 55, 0.8))
+                drop-shadow(0 0 18px rgba(212, 175, 55, 0.6))
+                drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
+                drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
+                drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
+              `,
+            }}
+          />
         </div>
 
         {/* Desktop Navigation Link Cluster */}

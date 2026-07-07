@@ -93,14 +93,27 @@ export const GlassSphere: React.FC<GlassSphereProps> = ({ scrollProgress, mouse 
     const isTablet = typeof window !== "undefined" && window.innerWidth < 1024;
     const responsiveFactor = isMobile ? 0.6 : (isTablet ? 0.8 : 1.0);
 
-    let targetScale = (1 - Math.min(smoothScroll * 0.3, 0.5)) * responsiveFactor;
-    if (smoothScroll > 0.65) {
-      const fadeFactor = Math.max(0, 1 - (smoothScroll - 0.65) / 0.25);
-      targetScale *= fadeFactor;
-    }
-
+    // Keep scale stable (only scale down slightly, never shrink to 0)
+    const targetScale = (1 - Math.min(smoothScroll * 0.2, 0.3)) * responsiveFactor;
     currentScaleRef.current = THREE.MathUtils.lerp(currentScaleRef.current, targetScale, 0.1);
     meshRef.current.scale.setScalar(currentScaleRef.current);
+
+    // Smoothly fade out opacity on scroll instead of shrinking scale to 0
+    let targetOpacity = 0.35;
+    if (smoothScroll > 0.55) {
+      const fadeFactor = Math.max(0, 1 - (smoothScroll - 0.55) / 0.35);
+      targetOpacity = 0.35 * fadeFactor;
+    }
+    // @ts-ignore
+    if (meshRef.current.material && meshRef.current.material.uniforms) {
+      // @ts-ignore
+      meshRef.current.material.uniforms.uOpacity.value = THREE.MathUtils.lerp(
+        // @ts-ignore
+        meshRef.current.material.uniforms.uOpacity.value,
+        targetOpacity,
+        0.1
+      );
+    }
 
     // Very gentle floating bounce
     const bounce = Math.sin(time * 0.3) * 0.04;
