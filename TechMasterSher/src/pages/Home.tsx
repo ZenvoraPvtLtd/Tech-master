@@ -7,10 +7,8 @@ import { Magnetic } from "../components/Magnetic";
 import { LuxuryCard } from "../components/LuxuryCard";
 import homeData from "../data/home.json";
 import servicesData from "../data/services.json";
-import portfolioData from "../data/portfolio.json";
 import campaignsData from "../data/campaigns.json";
 import eventsData from "../data/events.json";
-import testimonialsData from "../data/testimonials.json";
 import videosData from "../data/videos.json";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -22,18 +20,15 @@ interface HomeProps {
 const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handleMouseEnter = () => {
-    setIsHovered(true);
     if (videoRef.current) {
       videoRef.current.play().catch(() => {});
     }
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
     setIsPlaying(false);
     if (videoRef.current) {
       videoRef.current.pause();
