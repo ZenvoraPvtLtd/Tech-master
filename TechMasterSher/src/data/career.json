@@ -37,5 +37,31 @@
       "Excellent communication and event-planning skills",
       "Empathetic mindset focused on assisting beginners and career switchers"
     ]
+  },
+  {
+    "id": "job_04",
+    "role": "Frontend Engineering Intern",
+    "team": "Engineering (Internship)",
+    "location": "Remote",
+    "salary": "Paid Internship",
+    "description": "A 3-month paid internship to work on our core learning platform UI. You will learn advanced React, animations, and performance tuning.",
+    "requirements": [
+      "Familiarity with React and Tailwind CSS",
+      "Eagerness to learn modern web development patterns",
+      "Currently pursuing or recently graduated with a CS or related degree"
+    ]
+  },
+  {
+    "id": "job_05",
+    "role": "Technical Writer",
+    "team": "Content (Freelance)",
+    "location": "Remote",
+    "salary": "Per Article/Project",
+    "description": "Freelance opportunity to write high-quality, in-depth tutorials and blog posts on modern web development and system design.",
+    "requirements": [
+      "Proven ability to explain complex technical concepts clearly",
+      "Experience with Markdown and creating code examples",
+      "Strong portfolio of published technical articles"
+    ]
   }
 ]

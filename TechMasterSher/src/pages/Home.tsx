@@ -8,6 +8,9 @@ import { LuxuryCard } from "../components/LuxuryCard";
 import homeData from "../data/home.json";
 import servicesData from "../data/services.json";
 import portfolioData from "../data/portfolio.json";
+import campaignsData from "../data/campaigns.json";
+import eventsData from "../data/events.json";
+import testimonialsData from "../data/testimonials.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -139,6 +142,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             </Magnetic>
           </motion.div>
         </div>
+      </section>
+
+      {/* Personal Introduction */}
+      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
+        <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6 fade-up">
+          Hello, I'm <span className="font-bold italic text-gold">Faisal</span>.
+        </h2>
+        <p className="text-gray-400 text-sm md:text-lg font-light leading-relaxed max-w-3xl mx-auto fade-up">
+          I am a software engineer, educator, and content creator dedicated to democratizing tech education. My mission is to bridge the gap between academic theory and industry expectations, helping aspiring developers master modern web architectures.
+        </p>
       </section>
 
       {/* 2. Brand Partner Logos Ticker */}
@@ -343,6 +356,93 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Featured Campaigns */}
+      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="mb-16 text-center">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR IMPACT</p>
+          <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
+            Featured <span className="text-gold italic font-bold">Campaigns</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {campaignsData.slice(0, 3).map((camp: any) => (
+            <div key={camp.id} className="glass-panel p-6 rounded-2xl border border-white/5 fade-up flex flex-col">
+              <img src={camp.coverImage} alt={camp.title} className="w-full h-40 object-cover rounded-xl mb-4" />
+              <h3 className="font-serif text-xl text-white mb-2">{camp.title}</h3>
+              <p className="text-gray-400 text-xs font-light flex-grow">{camp.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Event Highlights */}
+      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="mb-16 text-center">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">COMMUNITY</p>
+          <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
+            Event <span className="text-gold italic font-bold">Highlights</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {eventsData.slice(0, 2).map((evt: any) => (
+            <div key={evt.id} className="glass-panel p-8 rounded-2xl border-l-2 hover:border-l-gold transition-all duration-300 fade-up">
+              <span className="text-gold text-xs font-mono mb-3 block">{evt.date}</span>
+              <h3 className="font-serif text-2xl text-white mb-3">{evt.title}</h3>
+              <p className="text-gray-400 text-sm font-light">{evt.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 bg-black/40 border-y border-white/5 text-center mt-12">
+        <div className="mb-16">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">WALL OF LOVE</p>
+          <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
+            What <span className="text-gold italic font-bold">People Say</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+          {testimonialsData.slice(0, 3).map((test: any, idx: number) => (
+            <div key={idx} className="glass-panel p-8 rounded-2xl fade-up flex flex-col justify-between">
+              <p className="text-gray-400 text-sm font-light italic mb-6">"{test.quote}"</p>
+              <div className="flex items-center gap-4">
+                <img src={test.avatar} alt={test.author} className="w-10 h-10 rounded-full border border-gold/40" />
+                <div>
+                  <h4 className="text-white text-sm font-bold">{test.author}</h4>
+                  <span className="text-gold text-xs">{test.role}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Newsletter */}
+      <section className="scroll-section py-24 px-6 max-w-4xl mx-auto relative z-10 text-center">
+        <div className="glass-panel p-12 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(212,175,55,0.05)] fade-up">
+          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">Stay in the Loop</h2>
+          <p className="text-gray-400 text-sm mb-8 font-light">Join my newsletter to get the latest tech insights, coding tips, and event updates delivered directly to your inbox.</p>
+          <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
+            <input type="email" placeholder="Enter your email" className="flex-1 bg-black/50 border border-white/10 rounded-full px-6 py-3 text-white focus:outline-none focus:border-gold/50 transition-colors" />
+            <button type="submit" className="bg-gold text-black px-8 py-3 rounded-full font-bold uppercase text-xs tracking-[1px] hover:bg-white transition-colors">Subscribe</button>
+          </form>
+        </div>
+      </section>
+
+      {/* Contact Preview */}
+      <section className="scroll-section pb-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
+        <h2 className="font-serif text-4xl sm:text-6xl font-light text-white leading-tight mb-8 fade-up">
+          Ready to <span className="text-gold italic font-bold">Collaborate?</span>
+        </h2>
+        <button
+          onClick={() => handleNavClick("contact")}
+          className="light-sweep px-8 py-4 bg-white text-black font-bold uppercase text-xs tracking-[2px] rounded-full hover:bg-gold hover:text-black transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)] fade-up"
+        >
+          Get In Touch
+        </button>
       </section>
 
     </div>

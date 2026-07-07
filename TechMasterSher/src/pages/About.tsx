@@ -95,6 +95,106 @@ export const About: React.FC = () => {
         ))}
       </section>
 
+      {/* Story & Passion */}
+      <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">THE JOURNEY</p>
+            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+              Our <span className="text-gold italic font-bold">Story & Passion</span>
+            </h2>
+            <p className="text-gray-400 font-light text-base leading-relaxed mb-6">
+              It all started with a simple belief: education should not be confined to boring lectures. We set out to create an ecosystem where code meets creativity. 
+              Our passion is fueled by the desire to ignite the same spark in others, turning complex algorithms into compelling visual narratives.
+            </p>
+            <p className="text-gray-400 font-light text-base leading-relaxed">
+              We live and breathe technology. Every late-night coding session, every bug fixed, and every project shipped is a testament to our unwavering dedication to the craft. 
+              Our story is just beginning, and our passion is what keeps us moving forward.
+            </p>
+          </div>
+          <div className="glass-panel p-8 rounded-3xl relative">
+             <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80" alt="Passion for coding" className="w-full h-auto rounded-xl object-cover" />
+          </div>
+        </div>
+      </section>
+
+      {/* Professional Background & Experience */}
+      <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+        <div className="text-center mb-16">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">EXPERTISE</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+            Professional <span className="text-gold italic font-bold">Background & Experience</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="glass-panel p-8 rounded-3xl border-l-4 border-gold/50">
+            <h3 className="font-serif text-2xl text-white mb-2">Senior Architect at TechGiants</h3>
+            <span className="text-gold text-xs font-mono mb-4 block">2018 - 2022</span>
+            <p className="text-gray-400 text-sm font-light leading-relaxed">
+              Spearheaded the development of scalable microservices architectures. Led a team of 20+ engineers to deliver robust enterprise solutions, reducing server response times by 40%.
+            </p>
+          </div>
+          <div className="glass-panel p-8 rounded-3xl border-l-4 border-gold/50">
+            <h3 className="font-serif text-2xl text-white mb-2">Lead Developer at StartupX</h3>
+            <span className="text-gold text-xs font-mono mb-4 block">2015 - 2018</span>
+            <p className="text-gray-400 text-sm font-light leading-relaxed">
+              Architected the core product from the ground up, implementing cutting-edge frontend frameworks and real-time backend systems. Instrumental in securing Series A funding.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Achievements & Awards */}
+      <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+        <div className="glass-panel p-12 rounded-3xl border border-white/5">
+          <div className="mb-12 text-center md:text-left">
+             <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">RECOGNITION</p>
+             <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+               Achievements <span className="text-gold italic font-bold">& Awards</span>
+             </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-4">
+                 <span className="text-gold font-bold text-2xl">🏆</span>
+              </div>
+              <h4 className="text-white font-bold mb-2">Developer of the Year</h4>
+              <p className="text-gray-400 text-xs font-light">Global Tech Summit 2021</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-4">
+                 <span className="text-gold font-bold text-2xl">🥇</span>
+              </div>
+              <h4 className="text-white font-bold mb-2">Best Educational Platform</h4>
+              <p className="text-gray-400 text-xs font-light">EdTech Innovation Awards 2023</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-4">
+                 <span className="text-gold font-bold text-2xl">🌟</span>
+              </div>
+              <h4 className="text-white font-bold mb-2">Top 100 Tech Influencers</h4>
+              <p className="text-gray-400 text-xs font-light">TechMedia Global 2022</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Future Goals */}
+      <section className="max-w-7xl mx-auto mb-32 text-center relative z-10">
+        <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">LOOKING AHEAD</p>
+        <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-8">
+          Future <span className="text-gold italic font-bold">Goals</span>
+        </h2>
+        <div className="glass-panel p-10 rounded-3xl max-w-4xl mx-auto border-t-2 border-gold/50">
+          <p className="text-gray-300 font-light text-lg leading-relaxed mb-6">
+            Our vision extends beyond today's boundaries. We aim to establish a decentralized global tech academy, where every aspiring developer has free access to enterprise-grade education.
+          </p>
+          <p className="text-gray-400 font-light text-sm leading-relaxed">
+            By 2030, we plan to partner with over 500 universities worldwide, integrating our cinematic syllabus into traditional computer science degrees and launching the careers of a million new developers.
+          </p>
+        </div>
+      </section>
+
       {/* Team Section */}
       <section className="max-w-7xl mx-auto text-left relative z-10">
         <div className="mb-16">

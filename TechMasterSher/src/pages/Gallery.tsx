@@ -1,8 +1,32 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import galleryData from "../data/gallery.json";
 
 export const Gallery: React.FC = () => {
+  const [activeFilter, setActiveFilter] = useState("All");
+
+  const filters = [
+    "All",
+    "Photos",
+    "Videos",
+    "Behind the Scenes",
+    "Campaign Images",
+    "Events",
+    "Celebrity Moments",
+    "Awards",
+    "Travel",
+    "Lifestyle",
+    "Interviews",
+    "Press Releases",
+    "Podcasts",
+    "TV Features",
+    "Magazine Features"
+  ];
+
+  const filteredItems = activeFilter === "All"
+    ? galleryData
+    : galleryData.filter(item => item.type === activeFilter);
+
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
       {/* Background Orbs */}
@@ -21,15 +45,33 @@ export const Gallery: React.FC = () => {
         </motion.div>
         
         <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight">
-          Visual Highlights & <br />
-          <span className="text-gold italic font-bold">Behind The Scenes</span>.
+          Media Coverage & <br />
+          <span className="text-gold italic font-bold">Gallery</span>.
         </h1>
+      </section>
+
+      {/* Filter Tabs */}
+      <section className="max-w-7xl mx-auto mb-16 flex flex-wrap gap-3 text-left relative z-10">
+        {filters.map((filter) => (
+          <button
+            key={filter}
+            onClick={() => setActiveFilter(filter)}
+            className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-[1.5px] border transition-all duration-300 ${
+              activeFilter === filter
+                ? "bg-gold border-gold text-black shadow-[0_0_20px_rgba(212,175,55,0.2)]"
+                : "bg-[#0d0d0d] border-white/10 text-gray-400 hover:border-white/40 hover:text-white"
+            }`}
+          >
+            {filter === "All" ? "All Media" : filter}
+          </button>
+        ))}
       </section>
 
       {/* Gallery Grid - Masonry */}
       <section className="max-w-7xl mx-auto text-left relative z-10">
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
-          {galleryData.map((item, index) => (
+        <motion.div layout className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
+          <AnimatePresence mode="popLayout">
+            {filteredItems.map((item, index) => (
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -60,8 +102,9 @@ export const Gallery: React.FC = () => {
                 </p>
               </div>
             </motion.div>
-          ))}
-        </div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </section>
     </div>
   );

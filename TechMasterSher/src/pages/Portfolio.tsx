@@ -9,10 +9,13 @@ export const Portfolio: React.FC = () => {
 
   const filters = [
     "All",
-    "Educational Tech / App Launch",
-    "Open Source Initiative",
-    "Student Success Case Study",
-    "Collaborative Student Project"
+    "Videos",
+    "Photos",
+    "Projects",
+    "Campaigns",
+    "Reels",
+    "Commercial Shoots",
+    "Client Work"
   ];
 
   const filteredProjects = activeFilter === "All"
@@ -54,9 +57,7 @@ export const Portfolio: React.FC = () => {
                 : "bg-[#0d0d0d] border-white/10 text-gray-400 hover:border-white/40 hover:text-white"
             }`}
           >
-            {filter === "All" 
-              ? "All Work" 
-              : filter.replace(" / App Launch", "").replace(" Initiative", "").replace(" Case Study", "").replace(" Student Project", "")}
+            {filter === "All" ? "All Work" : filter}
           </button>
         ))}
       </section>

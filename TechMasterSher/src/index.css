@@ -176,6 +176,19 @@ html.lenis, html.lenis body {
   background: #D4AF37;
 }
 
+/* Sidebar Specific Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #111;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+
 /* Hide default cursor on desktops */
 @media (pointer: fine) {
   body {

@@ -137,6 +137,50 @@ export const ProductLaunches: React.FC = () => {
             </div>
           </div>
         </motion.div>
+
+        {/* Product Launch Highlights */}
+        <section className="max-w-7xl mx-auto mt-32 text-left relative z-10 px-6">
+          <div className="text-center mb-16">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">PORTFOLIO</p>
+            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+              Launch <span className="text-gold italic font-bold">Initiatives</span>
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
+            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Launch Events</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                Hosting high-energy digital and physical events to unveil new platforms, creating massive day-one adoption and community buzz.
+              </p>
+            </div>
+            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Product Promotions</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                Strategic marketing pushes that position developer tools directly in front of their ideal user base through trusted channels.
+              </p>
+            </div>
+            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Brand Launches</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                End-to-end support for introducing new technology brands to the market, establishing authority and developer trust instantly.
+              </p>
+            </div>
+            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Campaign Videos</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                Cinematic, deep-dive promotional videos that explain complex software architectures in a visually stunning and digestible format.
+              </p>
+            </div>
+            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 lg:col-span-2">
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Results</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                We measure our success by tangible impact: tens of thousands of active accounts created, millions of impressions, and sustained engagement long after the initial launch phase ends.
+              </p>
+            </div>
+          </div>
+        </section>
+
       </div>
     </div>
   );

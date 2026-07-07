@@ -126,6 +126,16 @@ export const Career: React.FC = () => {
                 />
               </div>
 
+              <div>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2">UPLOAD RESUME (PDF/DOC)</label>
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  required
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[9px] file:uppercase file:tracking-[1px] file:font-bold file:bg-gold file:text-black hover:file:bg-gold/80 transition-colors duration-300 cursor-pointer"
+                />
+              </div>
+
               <button
                 type="submit"
                 className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-colors duration-300"
@@ -138,6 +148,64 @@ export const Career: React.FC = () => {
           )}
         </div>
       </section>
+
+      {/* Culture & Benefits */}
+      <section className="max-w-7xl mx-auto mt-16 mb-24 relative z-10 text-left">
+        <div className="text-center mb-16">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR DNA</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+            Culture & <span className="text-gold italic font-bold">Benefits</span>
+          </h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
+            <h4 className="font-serif text-xl font-bold text-white mb-3">Remote First</h4>
+            <p className="text-gray-400 text-sm font-light">Work from anywhere in the world. We believe in output, not office hours.</p>
+          </div>
+          <div className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
+            <h4 className="font-serif text-xl font-bold text-white mb-3">Learning Budget</h4>
+            <p className="text-gray-400 text-sm font-light">$2,000 annual stipend for courses, books, and conference tickets.</p>
+          </div>
+          <div className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
+            <h4 className="font-serif text-xl font-bold text-white mb-3">Health & Wellness</h4>
+            <p className="text-gray-400 text-sm font-light">Premium global health coverage and mental wellness stipends.</p>
+          </div>
+          <div className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
+            <h4 className="font-serif text-xl font-bold text-white mb-3">Creator Autonomy</h4>
+            <p className="text-gray-400 text-sm font-light">Own your projects. We cultivate leaders who can drive their own vision.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Hiring Process */}
+      <section className="max-w-5xl mx-auto mb-32 relative z-10">
+        <div className="text-center mb-16">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">HOW WE HIRE</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+            The <span className="text-gold italic font-bold">Process</span>
+          </h2>
+        </div>
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative before:absolute before:top-8 before:left-8 md:before:left-0 md:before:top-12 before:w-0.5 md:before:w-full before:h-full md:before:h-0.5 before:bg-white/10">
+          {[
+            { step: "01", title: "Application Review", desc: "We review your portfolio, GitHub, and application answers." },
+            { step: "02", title: "Intro Call", desc: "A 30-minute culture and vibe check with our ops team." },
+            { step: "03", title: "Technical Task", desc: "A paid, asynchronous take-home project relevant to your role." },
+            { step: "04", title: "Final Interview", desc: "A conversation with Faisal and the leads. No live whiteboarding." }
+          ].map((item, idx) => (
+            <div key={idx} className="relative z-10 flex md:flex-col items-start md:items-center gap-6 md:gap-4 text-left md:text-center">
+              <div className="w-16 h-16 rounded-full bg-[#0d0d0d] border border-gold flex items-center justify-center font-serif text-xl text-gold font-bold shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                {item.step}
+              </div>
+              <div>
+                <h4 className="font-bold text-white mb-2">{item.title}</h4>
+                <p className="text-gray-400 text-xs font-light max-w-[200px]">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
     </div>
   );
 };

@@ -215,6 +215,35 @@ export const Journey: React.FC = () => {
           })}
         </div>
       </div>
+
+      {/* Thematic Journey Highlights */}
+      <div className="max-w-7xl mx-auto px-6 relative z-10 pb-32">
+        <div className="mb-16 text-center">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">DEEP DIVE</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+            Journey <span className="text-gold italic font-bold">Highlights</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { title: "Childhood", desc: "Early fascination with computers, dismantling old radios and writing basic HTML on a Windows 95 machine.", icon: "👶" },
+            { title: "Career Beginning", desc: "Started as a junior developer in a local agency, learning the ropes of production-level code and client management.", icon: "🚀" },
+            { title: "First Brand Collab", desc: "Partnering with a major tech hardware brand to produce a series of educational videos, marking the first sponsorship.", icon: "🤝" },
+            { title: "Social Media Journey", desc: "From 0 to 2.5 Million subscribers, navigating algorithm changes, burnout, and discovering a unique educational voice.", icon: "📱" },
+            { title: "Major Milestones", desc: "Reaching 100K subscribers, speaking at TEDx, and launching the first independent tech bootcamp.", icon: "🏆" },
+            { title: "Biggest Challenges", desc: "Balancing a demanding senior architect role while growing a YouTube channel, and overcoming imposter syndrome.", icon: "🧗" },
+            { title: "Success Stories", desc: "Helping thousands of students land roles at Fortune 500 companies through free content and accessible courses.", icon: "🌟" },
+            { title: "Future Vision", desc: "Building a decentralized, globally accessible university-grade tech education platform for the next generation.", icon: "🔭" }
+          ].map((item, idx) => (
+            <div key={idx} className="glass-panel p-6 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+              <div className="text-3xl mb-4">{item.icon}</div>
+              <h3 className="font-serif text-lg font-bold text-white mb-2">{item.title}</h3>
+              <p className="text-gray-400 text-xs font-light leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 };

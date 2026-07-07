@@ -98,6 +98,35 @@ export const WhatWeDo: React.FC = () => {
           ))}
         </div>
 
+        {/* Comprehensive Services List */}
+        <div className="mt-24 mb-12">
+          <div className="text-center mb-12">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR EXPERTISE</p>
+            <h2 className="font-serif text-3xl md:text-4xl text-white font-light">
+              Comprehensive <span className="text-gold italic font-bold">Services</span>
+            </h2>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4">
+            {[
+              "Content Creation", "Influencer Marketing", "Brand Promotions", "Brand Campaigns", 
+              "Product Launches", "Event Hosting", "Event Management", "Corporate Collaborations", 
+              "Digital Marketing", "Personal Branding", "Creative Consulting", "Social Media Strategy", 
+              "Creative Direction", "Public Speaking", "Workshop Sessions"
+            ].map((service, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                className="px-6 py-3 rounded-full border border-white/10 bg-white/5 text-gray-300 text-sm hover:border-gold hover:text-gold transition-colors duration-300 cursor-default"
+              >
+                {service}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
         {/* Dynamic quote banner */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}

@@ -107,6 +107,63 @@ export const Events: React.FC = () => {
           ))}
         </div>
 
+        {/* Engagement Types */}
+        <section className="mb-24 pt-12 border-t border-white/5 relative z-10 text-center">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">CAPABILITIES</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-10">
+            Engagement <span className="text-gold italic font-bold">Types</span>
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+            {[
+              "Event Hosting", "Guest Appearance", "Corporate Events", "Fashion Shows", 
+              "Product Events", "Meetups", "Workshops", "Conferences"
+            ].map((type, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                className="px-6 py-3 rounded-full border border-white/10 bg-white/5 text-gray-300 text-sm hover:border-gold hover:text-gold transition-colors duration-300 cursor-default"
+              >
+                {type}
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Media & Highlights */}
+        <section className="mb-24 relative z-10">
+          <div className="text-center mb-12">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">MEDIA ARCHIVE</p>
+            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+              Gallery, Videos & <span className="text-gold italic font-bold">Highlights</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Gallery Images */}
+            <div className="md:col-span-2 grid grid-cols-2 gap-6">
+              <div className="aspect-square rounded-2xl overflow-hidden border border-white/5 group">
+                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80" alt="Event Gallery 1" loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              </div>
+              <div className="aspect-square rounded-2xl overflow-hidden border border-white/5 group">
+                <img src="https://images.unsplash.com/photo-1515169067868-5387ec356754?auto=format&fit=crop&w=600&q=80" alt="Event Gallery 2" loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              </div>
+            </div>
+            {/* Video Highlight */}
+            <div className="md:col-span-1 rounded-2xl overflow-hidden border border-white/5 relative group flex items-center justify-center bg-black min-h-[300px]">
+              <img src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80" alt="Video Thumbnail" loading="lazy" className="w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity duration-700 absolute inset-0" />
+              <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center backdrop-blur-sm border border-gold/50 z-10 cursor-pointer group-hover:scale-110 transition-transform duration-300">
+                <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-gold border-b-[8px] border-b-transparent ml-1" />
+              </div>
+              <div className="absolute bottom-6 left-6 z-10">
+                <span className="text-[10px] uppercase font-bold tracking-[2px] text-gold block mb-1">RECAP</span>
+                <span className="font-serif text-xl text-white">Mainstage 2023</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Booking Form CTA card */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}

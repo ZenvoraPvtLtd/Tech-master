@@ -31,6 +31,25 @@ export const Collaborations: React.FC = () => {
         </p>
       </section>
 
+      {/* Interactive Logo Carousel */}
+      <section className="mb-24 py-12 border-y border-white/5 bg-black/40 overflow-hidden relative z-10">
+        <motion.div 
+          animate={{ x: ["0%", "-50%"] }} 
+          transition={{ ease: "linear", duration: 25, repeat: Infinity }}
+          className="flex gap-20 w-max"
+        >
+          {[1, 2].map((i) => (
+            <div key={i} className="flex gap-20 items-center">
+              {["GOOGLE CLOUD", "AWS", "GITHUB", "VERCEL", "STRIPE", "NVIDIA", "MICROSOFT", "SHOPIFY"].map((brand, j) => (
+                <span key={j} className="font-serif text-2xl sm:text-3xl font-black text-white/30 tracking-[6px] hover:text-gold transition-colors duration-300 cursor-default">
+                  {brand}
+                </span>
+              ))}
+            </div>
+          ))}
+        </motion.div>
+      </section>
+
       {/* Partners Grid */}
       <section className="max-w-7xl mx-auto text-left grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 relative z-10">
         {brandsData.map((item, idx) => (
@@ -62,6 +81,113 @@ export const Collaborations: React.FC = () => {
           </LuxuryCard>
         ))}
       </section>
+
+      {/* Success Metrics */}
+      <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10 text-center">
+        <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">IMPACT</p>
+        <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-12">
+          Success <span className="text-gold italic font-bold">Metrics</span>
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {[
+            { value: "50+", label: "Brand Partners" },
+            { value: "$2M+", label: "Sponsored Cloud Credits" },
+            { value: "20+", label: "Global Hackathons" },
+            { value: "5M+", label: "Campaign Impressions" }
+          ].map((stat, idx) => (
+            <div key={idx} className="glass-panel p-6 rounded-2xl border border-white/5 hover:border-gold/30 transition-all duration-300">
+              <span className="font-serif text-4xl font-black text-gold block mb-2">{stat.value}</span>
+              <span className="text-gray-400 text-xs tracking-[1px] uppercase font-mono">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Case Studies & Campaign Highlights */}
+      <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10">
+        <div className="text-center mb-12">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">SHOWCASE</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+            Case Studies & <span className="text-gold italic font-bold">Campaigns</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="glass-panel p-8 rounded-3xl border-l-2 border-l-gold hover:bg-white/5 transition-all cursor-pointer">
+            <h3 className="font-serif text-2xl text-white mb-2">Vercel: Build in Public</h3>
+            <p className="text-gray-400 text-sm font-light mb-4">A 30-day challenge where 10,000 developers built and deployed Next.js applications on Vercel.</p>
+            <span className="text-gold text-xs uppercase tracking-[2px] font-bold">View Highlight</span>
+          </div>
+          <div className="glass-panel p-8 rounded-3xl border-l-2 border-l-[#00E5FF] hover:bg-white/5 transition-all cursor-pointer">
+            <h3 className="font-serif text-2xl text-white mb-2">GitHub Education Tour</h3>
+            <p className="text-gray-400 text-sm font-light mb-4">Sponsored university tour reaching 50 campuses to promote open-source contributions.</p>
+            <span className="text-[#00E5FF] text-xs uppercase tracking-[2px] font-bold">View Highlight</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Collaboration History & Process */}
+      <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div>
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">TIMELINE</p>
+            <h2 className="font-serif text-3xl sm:text-4xl font-light text-white mb-6">
+              Collaboration <span className="text-gold italic font-bold">History</span>
+            </h2>
+            <p className="text-gray-400 text-sm font-light leading-relaxed mb-6">
+              Since our first brand deal in 2018, we have maintained long-term relationships with the world's most innovative companies. Our history is built on delivering genuine value to both the developer community and our partners.
+            </p>
+            <div className="glass-panel p-6 rounded-2xl border-l-4 border-l-gold">
+              <h4 className="text-white font-bold mb-2">From Startups to Enterprises</h4>
+              <p className="text-gray-400 text-xs font-light">Whether it's an early-stage AI tool or an established cloud provider, we tailor our integration to fit the product's unique value proposition.</p>
+            </div>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">HOW IT WORKS</p>
+            <h2 className="font-serif text-3xl sm:text-4xl font-light text-white mb-6">
+              Partnership <span className="text-gold italic font-bold">Process</span>
+            </h2>
+            <div className="flex flex-col gap-4">
+              {["Discovery & Alignment", "Creative Strategy & Scripting", "Production & Integration", "Launch & Analytics"].map((step, idx) => (
+                <div key={idx} className="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                  <span className="text-gold font-mono font-bold">0{idx + 1}</span>
+                  <span className="text-white text-sm">{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10 text-center">
+        <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">ENDORSEMENTS</p>
+        <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-12">
+          Partner <span className="text-gold italic font-bold">Testimonials</span>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          <div className="glass-panel p-8 rounded-3xl border border-white/5">
+            <p className="text-gray-400 font-light italic mb-6">"Working with Tech Master has been transformative. Their ability to explain complex APIs to junior developers drove massive adoption for our new features."</p>
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/50" />
+              <div>
+                <h4 className="text-white font-bold text-sm">Sarah Jenkins</h4>
+                <p className="text-gold text-xs">Developer Advocate, Vercel</p>
+              </div>
+            </div>
+          </div>
+          <div className="glass-panel p-8 rounded-3xl border border-white/5">
+            <p className="text-gray-400 font-light italic mb-6">"The engagement on the sponsored hackathon was unprecedented. We reached exactly the demographic we were aiming for."</p>
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-[#00E5FF]/20 border border-[#00E5FF]/50" />
+              <div>
+                <h4 className="text-white font-bold text-sm">David Chen</h4>
+                <p className="text-[#00E5FF] text-xs">Marketing Director, Google Cloud</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };

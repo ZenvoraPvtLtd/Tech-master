@@ -80,6 +80,40 @@ export const Testimonials: React.FC = () => {
           ))}
         </div>
 
+        {/* Video Testimonials */}
+        <div className="text-center mb-12 mt-16">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">WATCH EXPERIENCES</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+            Video <span className="text-gold italic font-bold">Testimonials</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+          <div className="glass-panel p-4 rounded-3xl group relative overflow-hidden border-t border-white/5 hover:border-gold/30 transition-all duration-500">
+            <div className="aspect-video w-full rounded-2xl overflow-hidden relative flex items-center justify-center bg-black">
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80" alt="Video thumbnail" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500 absolute inset-0" />
+              <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center backdrop-blur-md border border-gold/50 z-10 cursor-pointer group-hover:scale-110 transition-transform duration-300">
+                <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-gold border-b-[8px] border-b-transparent ml-1" />
+              </div>
+              <div className="absolute bottom-4 left-4 z-10 text-left">
+                <span className="font-serif text-lg text-white">Sarah Jenkins</span>
+                <span className="text-[9px] uppercase font-mono tracking-[1px] text-gold block mt-1">VP of Engineering, Acme Corp</span>
+              </div>
+            </div>
+          </div>
+          <div className="glass-panel p-4 rounded-3xl group relative overflow-hidden border-t border-white/5 hover:border-gold/30 transition-all duration-500">
+            <div className="aspect-video w-full rounded-2xl overflow-hidden relative flex items-center justify-center bg-black">
+              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80" alt="Video thumbnail" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500 absolute inset-0" />
+              <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center backdrop-blur-md border border-gold/50 z-10 cursor-pointer group-hover:scale-110 transition-transform duration-300">
+                <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-gold border-b-[8px] border-b-transparent ml-1" />
+              </div>
+              <div className="absolute bottom-4 left-4 z-10 text-left">
+                <span className="font-serif text-lg text-white">David Chen</span>
+                <span className="text-[9px] uppercase font-mono tracking-[1px] text-gold block mt-1">Founder, StartupX</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Global Statistics Callout */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}

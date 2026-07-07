@@ -79,6 +79,76 @@ export const Campaigns: React.FC = () => {
           </LuxuryCard>
         ))}
       </section>
+
+      {/* Campaign Lifecycle & Success */}
+      <section className="max-w-7xl mx-auto mt-32 text-left relative z-10">
+        <div className="text-center mb-16">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR PROCESS</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+            End-to-End <span className="text-gold italic font-bold">Campaign Lifecycle</span>
+          </h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
+          <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+            <h3 className="font-serif text-xl font-bold text-white mb-3">1. Campaign Planning</h3>
+            <p className="text-gray-400 text-sm font-light leading-relaxed">
+              We meticulously outline timelines, allocate resources, and define key performance indicators to ensure every initiative starts with a rock-solid foundation.
+            </p>
+          </div>
+          <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+            <h3 className="font-serif text-xl font-bold text-white mb-3">2. Campaign Strategy</h3>
+            <p className="text-gray-400 text-sm font-light leading-relaxed">
+              Crafting narrative arcs and selecting the right digital channels to guarantee maximum reach and resonance with the targeted developer demographic.
+            </p>
+          </div>
+          <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+            <h3 className="font-serif text-xl font-bold text-white mb-3">3. Campaign Execution</h3>
+            <p className="text-gray-400 text-sm font-light leading-relaxed">
+              From high-end video production to live hackathon moderation, our team handles the ground-level execution to bring the strategic vision to life flawlessly.
+            </p>
+          </div>
+          <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
+            <h3 className="font-serif text-xl font-bold text-white mb-3">4. Analytics</h3>
+            <p className="text-gray-400 text-sm font-light leading-relaxed">
+              Real-time monitoring of engagement metrics, audience retention, and click-through rates allows us to pivot and optimize the campaign mid-flight.
+            </p>
+          </div>
+          <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 lg:col-span-2">
+            <h3 className="font-serif text-xl font-bold text-white mb-3">5. Results</h3>
+            <p className="text-gray-400 text-sm font-light leading-relaxed">
+              Delivering comprehensive post-campaign reports detailing ROI, brand lift, and total community impact against our initial benchmarks. We believe in absolute transparency and quantifiable outcomes.
+            </p>
+          </div>
+        </div>
+
+        {/* Client Success Stories */}
+        <div className="text-center mb-12">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">PROVEN RESULTS</p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+            Client <span className="text-gold italic font-bold">Success Stories</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="glass-panel p-8 md:p-12 rounded-3xl border border-white/10 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-bl-full pointer-events-none group-hover:bg-gold/20 transition-colors duration-500" />
+            <h3 className="font-serif text-2xl font-bold text-white mb-4">AWS Educate Drive</h3>
+            <p className="text-gray-400 text-sm font-light leading-relaxed mb-6">
+              By gamifying the learning process, we helped AWS register over 25,000 new student accounts in a single month. The campaign significantly lowered their standard customer acquisition cost while providing immense value to learners.
+            </p>
+            <span className="text-gold text-xs font-bold uppercase tracking-[2px] cursor-pointer hover:text-white transition-colors">Read Full Story &rarr;</span>
+          </div>
+          <div className="glass-panel p-8 md:p-12 rounded-3xl border border-white/10 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#00E5FF]/10 rounded-bl-full pointer-events-none group-hover:bg-[#00E5FF]/20 transition-colors duration-500" />
+            <h3 className="font-serif text-2xl font-bold text-white mb-4">MongoDB Hackathon</h3>
+            <p className="text-gray-400 text-sm font-light leading-relaxed mb-6">
+              A weekend-long virtual event that produced 500+ open-source database implementations. The campaign established MongoDB as the default backend choice for a new generation of full-stack bootcamps.
+            </p>
+            <span className="text-[#00E5FF] text-xs font-bold uppercase tracking-[2px] cursor-pointer hover:text-white transition-colors">Read Full Story &rarr;</span>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };

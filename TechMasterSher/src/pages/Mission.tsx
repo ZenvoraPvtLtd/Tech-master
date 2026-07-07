@@ -126,6 +126,67 @@ export const Mission: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* Core Pillars */}
+        <div className="mb-24">
+          <div className="mb-12 text-center">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR PILLARS</p>
+            <h2 className="font-serif text-3xl md:text-4xl text-white font-light mb-8">
+              The <span className="text-gold italic font-bold">Foundation</span> of Our Work
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="glass-panel p-8 rounded-2xl border-l-2 hover:border-l-gold transition-all duration-300"
+            >
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Brand Philosophy</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                We believe that education is not just about transferring information, but about creating an engaging, premium experience. Our philosophy is rooted in cinematic storytelling, making complex engineering concepts feel accessible, beautiful, and deeply impactful.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="glass-panel p-8 rounded-2xl border-l-2 border-white/5 hover:border-l-[#00E5FF] transition-all duration-300"
+            >
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Community Vision</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                A thriving ecosystem where learners support each other. We envision a global network of open-source contributors, mentors, and innovators collaborating in real-time to solve the industry's most pressing challenges.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="glass-panel p-8 rounded-2xl border-l-2 border-white/5 hover:border-l-[#aa3bff] transition-all duration-300"
+            >
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Creator Mission</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                To empower the next generation of technical creators. By providing the tools, templates, and guidance needed, we are helping developers build their own personal brands and share their knowledge with the world.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="glass-panel p-8 rounded-2xl border-l-2 border-white/5 hover:border-l-[#FF007F] transition-all duration-300"
+            >
+              <h3 className="font-serif text-xl font-bold text-white mb-3">Future Roadmap</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                Looking ahead to 2030, our roadmap includes launching a decentralized tech academy, expanding our interactive coding environments to mobile platforms, and partnering with fortune 500 companies to guarantee placement for our top-tier graduates.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
