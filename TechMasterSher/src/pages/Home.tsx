@@ -66,7 +66,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 text-center">
+      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-32 text-center">
         {/* Glow Spheres */}
 
 
