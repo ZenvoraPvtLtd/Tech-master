@@ -9,13 +9,10 @@ export const CustomCursor: React.FC = () => {
     const cursorEl = cursorRef.current;
     if (!cursorEl) return;
 
-    // Track positions
-    const mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    const cursor = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-
     const onMouseMove = (e: MouseEvent) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
+      if (cursorEl) {
+        cursorEl.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+      }
     };
 
     const onMouseOver = (e: MouseEvent) => {
@@ -70,28 +67,10 @@ export const CustomCursor: React.FC = () => {
     window.addEventListener("mouseover", onMouseOver);
     window.addEventListener("mouseout", onMouseOut);
 
-    // High performance animation loop
-    let rafId: number;
-    const animateCursor = () => {
-      const lerpFactor = 0.12; // Snappy but smooth LERP
-      cursor.x += (mouse.x - cursor.x) * lerpFactor;
-      cursor.y += (mouse.y - cursor.y) * lerpFactor;
-
-      if (cursorRef.current) {
-        // Use translate3d to force hardware acceleration (GPU rendering)
-        cursorRef.current.style.transform = `translate3d(${cursor.x}px, ${cursor.y}px, 0) translate(-50%, -50%)`;
-      }
-
-      rafId = requestAnimationFrame(animateCursor);
-    };
-
-    animateCursor();
-
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseover", onMouseOver);
       window.removeEventListener("mouseout", onMouseOut);
-      cancelAnimationFrame(rafId);
     };
   }, []);
 
