@@ -294,7 +294,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
               <span className="text-gold italic font-bold">future of code</span>.
             </h2>
             <p className="text-gray-400 text-sm md:text-base font-light max-w-md leading-relaxed mb-8">
-              Subscribe to Kanha's newsletter. Receive exclusive design mockups, platform beta keys, systems tips, and speaking logs.
+              Subscribe to Aman's newsletter. Receive exclusive design mockups, platform beta keys, systems tips, and speaking logs.
             </p>
           </div>
 
@@ -546,7 +546,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
               <h3 className="font-serif text-2xl text-gold font-bold mb-6">Privacy Policy</h3>
               <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
                 <p><strong>Effective Date: July 7, 2026</strong></p>
-                <p>Kanha & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter.</p>
+                <p>Aman & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter.</p>
                 <p><strong>Data Collection & Use:</strong> We collect email addresses solely for sending newsletter digests, cohort details, and technical blogs. Your information is never sold, traded, or shared with third-party advertising companies.</p>
                 <p><strong>Cookies:</strong> This platform utilizes basic localized storage and caching systems to maintain animations, 3D settings, and user navigation states smoothly.</p>
                 <p><strong>Security:</strong> All direct inquiries and newsletter transmissions are protected with industry-standard cryptographic handshakes.</p>
@@ -576,7 +576,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
               <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
                 <p><strong>Effective Date: July 7, 2026</strong></p>
                 <p>By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service.</p>
-                <p><strong>Intellectual Property:</strong> All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Kanha and Tech Master Labs unless stated otherwise.</p>
+                <p><strong>Intellectual Property:</strong> All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Aman and Tech Master Labs unless stated otherwise.</p>
                 <p><strong>User License:</strong> You are granted a limited license to explore our portfolio and code projects for educational research. Scraping, cloning, or distributing source codes commercially without express written consent is strictly prohibited.</p>
                 <p><strong>Sandbox Declarations:</strong> All forms, databases, and estimates operate in safe sandbox demonstration pipelines.</p>
               </div>

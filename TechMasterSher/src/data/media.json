@@ -1,7 +1,7 @@
 {
   "showreel": {
     "title": "Democratizing Code: Speak, Create, Educate",
-    "description": "A 3-minute cinematic summary tracing Kanha's YouTube lectures, live auditorium talks, and the impact of the MasterClass platform on 150k+ students.",
+    "description": "A 3-minute cinematic summary tracing Aman's YouTube lectures, live auditorium talks, and the impact of the MasterClass platform on 150k+ students.",
     "thumbnail": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80"
   },
   "downloads": [
@@ -10,8 +10,8 @@
     { "name": "Tech Master Brand Guidelines", "size": "12.1 MB", "format": "ZIP Vector / Styles", "type": "download" }
   ],
   "editorialMentions": [
-    { "source": "TECHCRUNCH", "title": "How YouTuber Kanha is transforming systems engineering education", "date": "May 2026" },
-    { "source": "FORBES 30 UNDER 30", "title": "Kanha nominated in tech education for scaling MasterClass suite", "date": "March 2026" },
-    { "source": "WIRED", "title": "The rise of cinematic tutorials: Inside Kanha's coding studio", "date": "November 2025" }
+    { "source": "TECHCRUNCH", "title": "How YouTuber Aman is transforming systems engineering education", "date": "May 2026" },
+    { "source": "FORBES 30 UNDER 30", "title": "Aman nominated in tech education for scaling MasterClass suite", "date": "March 2026" },
+    { "source": "WIRED", "title": "The rise of cinematic tutorials: Inside Aman's coding studio", "date": "November 2025" }
   ]
 }

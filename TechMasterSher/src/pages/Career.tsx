@@ -29,7 +29,7 @@ export const Career: React.FC = () => {
         </motion.div>
         
         <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8">
-          Join Kanha's <br />
+          Join Aman's <br />
           <span className="text-gold italic font-bold">Creator & Education Lab</span>.
         </h1>
 
@@ -191,7 +191,7 @@ export const Career: React.FC = () => {
             { step: "01", title: "Application Review", desc: "We review your portfolio, GitHub, and application answers." },
             { step: "02", title: "Intro Call", desc: "A 30-minute culture and vibe check with our ops team." },
             { step: "03", title: "Technical Task", desc: "A paid, asynchronous take-home project relevant to your role." },
-            { step: "04", title: "Final Interview", desc: "A conversation with Kanha and the leads. No live whiteboarding." }
+            { step: "04", title: "Final Interview", desc: "A conversation with Aman and the leads. No live whiteboarding." }
           ].map((item, idx) => (
             <div key={idx} className="relative z-10 flex md:flex-col items-start md:items-center gap-6 md:gap-4 text-left md:text-center">
               <div className="w-16 h-16 rounded-full bg-[#0d0d0d] border border-gold flex items-center justify-center font-serif text-xl text-gold font-bold shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.3)]">

@@ -335,7 +335,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </span>
         </div>
         <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6 fade-up">
-          Hello, I'm <span className="font-bold italic text-gold">Kanha</span>.
+          Hello, I'm <span className="font-bold italic text-gold">Aman</span>.
         </h2>
         <p className="text-gray-400 text-sm md:text-lg font-light leading-relaxed max-w-3xl mx-auto fade-up">
           I am a software engineer, educator, and content creator dedicated to democratizing tech education. My mission is to bridge the gap between academic theory and industry expectations, helping aspiring developers master modern web architectures.
@@ -586,7 +586,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               Building Web Apps Live for 2.5 Million Learners
             </h3>
             <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed mb-6">
-              Join Kanha as he takes raw coding problems and transforms them into interactive systems. Subscribing gains you access to Github action alerts, workspace repositories, and community-guided streams.
+              Join Aman as he takes raw coding problems and transforms them into interactive systems. Subscribing gains you access to Github action alerts, workspace repositories, and community-guided streams.
             </p>
             <a href="https://youtube.com/c/techmasterf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs uppercase tracking-[2px] text-gold hover:text-white transition-colors duration-300 font-bold">
               Explore YouTube Channel <ArrowUpRight className="w-4 h-4" />

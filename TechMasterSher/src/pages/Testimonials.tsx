@@ -36,7 +36,7 @@ export const Testimonials: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-400 text-sm sm:text-base font-light max-w-xl mx-auto leading-relaxed"
         >
-          Discover reviews from Kanha's mentored students, university professors, and tech partners who have integrated our curricula.
+          Discover reviews from Aman's mentored students, university professors, and tech partners who have integrated our curricula.
         </motion.p>
       </div>
 

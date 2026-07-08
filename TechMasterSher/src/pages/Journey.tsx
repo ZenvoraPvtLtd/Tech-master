@@ -122,7 +122,7 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-300 text-sm sm:text-base font-light max-w-2xl mx-auto leading-relaxed p-6 rounded-2xl border border-gold bg-black/40 backdrop-blur-md shadow-[0_0_15px_rgba(212,175,55,0.15)] mt-4"
         >
-          Tracing the evolution of Kanha's personal brand from writing basic pointers on a whiteboard in 2015 to building global tech learning ecosystems.
+          Tracing the evolution of Aman's personal brand from writing basic pointers on a whiteboard in 2015 to building global tech learning ecosystems.
         </motion.div>
 
         {/* Scroll Indicator */}

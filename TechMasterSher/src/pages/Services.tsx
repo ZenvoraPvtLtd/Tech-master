@@ -82,7 +82,7 @@ export const Services: React.FC = () => {
         </h1>
 
         <p className="text-gray-400 font-light text-base md:text-lg max-w-2xl leading-relaxed mt-6">
-          Explore Kanha's developer training tracks, speaking keynote requests, collaborative student hackathons, and brand sponsorships.
+          Explore Aman's developer training tracks, speaking keynote requests, collaborative student hackathons, and brand sponsorships.
         </p>
       </section>
 

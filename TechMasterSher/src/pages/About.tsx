@@ -72,12 +72,12 @@ export const About: React.FC = () => {
           {
             icon: <Compass className="w-6 h-6 text-gold" />,
             title: "Democratizing Tech",
-            desc: "Kanha started with coding guidelines in 2015, seeking to make raw systems design and deployment concepts accessible to everyone."
+            desc: "Aman started with coding guidelines in 2015, seeking to make raw systems design and deployment concepts accessible to everyone."
           },
           {
             icon: <Eye className="w-6 h-6 text-gold" />,
             title: "Cinematic Syllabus",
-            desc: "Pioneering the border of virtual reality and education. Kanha believes engineering courses should feel visual, beautiful, and interactive."
+            desc: "Pioneering the border of virtual reality and education. Aman believes engineering courses should feel visual, beautiful, and interactive."
           },
           {
             icon: <ShieldCheck className="w-6 h-6 text-gold" />,
