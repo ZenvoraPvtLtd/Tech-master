@@ -80,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   return (
     <>
       <header
-  className="glass-nav fixed top-0 left-0 w-full z-[999] py-4 px-6 md:px-12 flex justify-between items-center transition-all duration-300"
+  className="glass-nav fixed top-0 left-0 w-full z-[999] py-2 md:py-4 px-4 md:px-12 flex justify-between items-center transition-all duration-300"
   style={{
     filter: `
       drop-shadow(0 0 8px rgba(212, 175, 55, 0.8))
@@ -99,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <img
             src={logo1}
             alt="Tech Master Logo"
-            className="h-28 w-auto object-contain"
+            className="h-16 sm:h-20 lg:h-28 w-auto object-contain"
             style={{
               imageRendering: "-webkit-optimize-contrast",
               filter: `
@@ -177,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] aurora-glow-purple -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-blue translate-x-1/2 translate-y-1/2 opacity-10 pointer-events-none" />
 
-        <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 md:grid-cols-3 gap-12 z-10 py-12 lg:py-24">
+        <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 z-10 py-8 md:py-24">
           
           {/* Column 1: Identity */}
           <div className="flex flex-col gap-4 text-center items-center">

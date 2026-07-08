@@ -317,7 +317,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
         </div>
 
         {/* Middle columns (LGB 5): sitemap columns */}
-        <div className="lg:col-span-5 grid grid-cols-3 gap-6">
+        <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6">
           {/* Column 1: Identity */}
           <div>
             <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">IDENTITY</p>

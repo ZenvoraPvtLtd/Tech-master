@@ -56,16 +56,13 @@ export const IntroLoader: React.FC<IntroLoaderProps> = ({ onComplete }) => {
       {/* Background radial glow */}
       <div className="absolute inset-0 bg-radial-[circle_at_center,rgba(170,59,255,0.08)_0%,rgba(3,3,3,0)_70%] pointer-events-none" />
 
-      {/* Header section of loader */}
-      <div className="flex justify-between items-center z-10">
-        <div className="font-serif text-sm tracking-[4px] text-gold/80 font-bold">TECH MASTER</div>
-        <div className="text-xs uppercase tracking-[2px] opacity-40 font-mono">CREATIVE BRAND DIRECTORY</div>
-      </div>
+      {/* Invisible top spacer to balance logo positioning */}
+      <div className="h-10 opacity-0 pointer-events-none" />
 
       {/* Center elements - Logo */}
       <div className="flex flex-col items-center justify-center flex-grow z-10">
         <div className="loader-logo relative flex flex-col items-center">
-          <div className="w-24 h-24 rounded-full border border-gold/20 flex items-center justify-center relative overflow-hidden bg-white shadow-[0_0_50px_rgba(212,175,55,0.15)]">
+          <div className="w-28 h-28 rounded-full border border-gold/20 flex items-center justify-center relative overflow-hidden bg-white shadow-[0_0_50px_rgba(212,175,55,0.15)]">
             {/* Golden sweep orb */}
             <div className="absolute w-full h-full bg-gradient-to-tr from-gold to-royal-purple opacity-30 animate-spin" style={{ animationDuration: "6s" }} />
             <img 
@@ -75,17 +72,11 @@ export const IntroLoader: React.FC<IntroLoaderProps> = ({ onComplete }) => {
               style={{ imageRendering: "-webkit-optimize-contrast" }}
             />
           </div>
-          <div className="mt-6 text-xs uppercase tracking-[8px] text-gray-400">INNOVATION ARCHITECTURE</div>
         </div>
       </div>
 
       {/* Footer section of loader - Progress Counter */}
-      <div className="flex justify-between items-end z-10">
-        <div className="max-w-xs text-left">
-          <p className="text-xs uppercase tracking-[2px] text-gold font-bold mb-1">Status</p>
-          <p className="text-xs opacity-50 uppercase tracking-[1px] leading-relaxed">Scaffolding digital environment. Aligning spatial coordinate matrices...</p>
-        </div>
-        
+      <div className="flex justify-end items-end z-10">
         <div className="loader-counter text-right">
           <div className="font-serif text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-700 tracking-tighter leading-none select-none">
             {progress.toString().padStart(3, "0")}

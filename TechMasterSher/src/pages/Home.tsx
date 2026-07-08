@@ -253,7 +253,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-40 text-center">
+      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-32 lg:pt-40 text-center">
         <div className="flex justify-center mb-6 relative z-20">
           <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             HERO LANDING
@@ -291,7 +291,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.6 }}
-            className="text-gray-400 text-sm md:text-lg font-light max-w-2xl leading-relaxed mb-12 p-6 md:p-8 rounded-2xl border border-gold bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
+            className="text-gray-400 text-sm md:text-lg font-light max-w-2xl leading-relaxed mb-6 md:mb-12 p-4 md:p-8 rounded-2xl border border-gold bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
           >
             {homeData.hero.paragraph}
           </motion.div>
@@ -360,10 +360,10 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
           transition={{ ease: "linear", duration: 20, repeat: Infinity }}
-          className="flex gap-24 w-max"
+          className="flex gap-12 md:gap-24 w-max"
         >
           {[1, 2].map((groupIndex) => (
-            <div key={groupIndex} className="flex items-center gap-24">
+            <div key={groupIndex} className="flex items-center gap-12 md:gap-24">
               {["NVIDIA", "GITHUB", "GOOGLE CLOUD", "APPLE DEVELOPER", "VERCEL", "MICROSOFT"].map((brand) => (
                 <span
                   key={brand}
@@ -387,7 +387,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {homeData.values.map((val, idx) => (
             <div key={idx} className="glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300 fade-up">
-              <span className="text-gold font-mono text-xs block mb-4">Value 0{idx + 1}</span>
               <h3 className="font-serif text-xl font-medium text-white mb-2">{val.title}</h3>
               <p className="text-gray-400 text-xs sm:text-sm font-light leading-relaxed">{val.description}</p>
             </div>
@@ -432,8 +431,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               className="fade-up"
               index={idx}
             >
-              <div className="flex justify-between items-start mb-8">
-                <span className="font-mono text-xs opacity-30">0{idx + 1}</span>
+              <div className="flex justify-center items-start mb-8">
                 <span 
                   className="px-3 py-1 rounded-full border text-[9px] uppercase tracking-[1px] font-mono"
                   style={{ color: srv.accentColor, borderColor: srv.accentColor + "40" }}
@@ -677,7 +675,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             NEWSLETTER SUBSCRIPTION
           </span>
         </div>
-        <div className="glass-panel p-12 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(212,175,55,0.05)] fade-up">
+        <div className="glass-panel p-6 sm:p-12 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(212,175,55,0.05)] fade-up">
           <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">Stay in the Loop</h2>
           <p className="text-gray-400 text-sm mb-8 font-light">Join my newsletter to get the latest tech insights, coding tips, and event updates delivered directly to your inbox.</p>
           <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
@@ -710,7 +708,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4">
           <div className="absolute inset-0 cursor-pointer" onClick={() => setSelectedVideo(null)} />
           
-          <div className="relative w-full max-w-4xl max-h-[85vh] bg-[#070707] rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col md:flex-row z-50">
+          <div className="relative w-full max-w-4xl max-h-[90vh] md:max-h-[85vh] bg-[#070707] rounded-3xl border border-white/10 overflow-y-auto md:overflow-hidden shadow-2xl flex flex-col md:flex-row z-50">
             {/* Close Button */}
             <button 
               className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center hover:bg-gold hover:text-black transition-colors"
@@ -731,7 +729,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             </div>
 
             {/* Details Side-panel */}
-            <div className="p-8 md:w-80 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/10 bg-[#090909]">
+            <div className="p-6 md:p-8 md:w-80 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/10 bg-[#090909]">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-[2px] text-gold block mb-2">
                   {selectedVideo.category}
