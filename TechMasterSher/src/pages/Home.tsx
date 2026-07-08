@@ -76,9 +76,7 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
   return (
     <div
       ref={containerRef}
-      className={`video-fade-in group relative overflow-hidden rounded-3xl border-2 border-gold/80 bg-[#070707] transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_15px_50px_rgba(212,175,55,0.15)] cursor-pointer select-none ${
-        isVertical ? "col-span-1 aspect-[9/16]" : "col-span-1 md:col-span-2 aspect-[16/9]"
-      }`}
+      className="group relative w-full h-full overflow-hidden rounded-3xl border-2 border-gold/80 bg-[#070707] transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_15px_50px_rgba(212,175,55,0.15)] cursor-pointer select-none"
       style={{
         transform: "perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale3d(1.01, 1.01, 1.01)",
         transformStyle: "preserve-3d"
@@ -200,20 +198,29 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       const cards = Array.from(document.querySelectorAll(".video-fade-in"));
       if (cards.length === 0) return;
 
-      // Reset state for scroll reveal
+      // Set premium 3D motion initial state
       gsap.killTweensOf(cards);
-      gsap.set(cards, { y: 60, opacity: 0 });
+      gsap.set(cards, { 
+        y: 100, 
+        scale: 0.9, 
+        opacity: 0, 
+        rotationX: 15, 
+        transformPerspective: 1000,
+        transformOrigin: "center top"
+      });
 
       // Animate each card individually when it enters the viewport
       cards.forEach((card) => {
         gsap.to(card, {
           y: 0,
+          scale: 1,
           opacity: 1,
-          duration: 0.85,
-          ease: "power2.out",
+          rotationX: 0,
+          duration: 1.1,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: card,
-            start: "top 88%", // Triggers when the top of the card reaches 88% of viewport height
+            start: "top 92%", // Triggers when the card enters the lower viewport threshold
             toggleActions: "play none none none",
           },
         });
@@ -522,11 +529,12 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               {filteredVideos
                 .filter((v) => v.type === "reel" || v.type === "short")
                 .map((video) => (
-                  <VideoCard
-                    key={video.id}
-                    video={video}
-                    onClick={() => setSelectedVideo(video)}
-                  />
+                  <div key={video.id} className="video-fade-in w-full aspect-[9/16]">
+                    <VideoCard
+                      video={video}
+                      onClick={() => setSelectedVideo(video)}
+                    />
+                  </div>
                 ))}
             </div>
             {/* Right Column for Long Videos (Horizontal) */}
@@ -534,23 +542,33 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               {filteredVideos
                 .filter((v) => v.type === "long_video")
                 .map((video) => (
-                  <VideoCard
-                    key={video.id}
-                    video={video}
-                    onClick={() => setSelectedVideo(video)}
-                  />
+                  <div key={video.id} className="video-fade-in w-full aspect-[16/9]">
+                    <VideoCard
+                      video={video}
+                      onClick={() => setSelectedVideo(video)}
+                    />
+                  </div>
                 ))}
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 video-showcase-grid-container">
-            {filteredVideos.map((video) => (
-              <VideoCard
-                key={video.id}
-                video={video}
-                onClick={() => setSelectedVideo(video)}
-              />
-            ))}
+            {filteredVideos.map((video) => {
+              const isVertical = video.aspectRatio === "9/16";
+              return (
+                <div
+                  key={video.id}
+                  className={`video-fade-in ${
+                    isVertical ? "col-span-1 aspect-[9/16]" : "col-span-1 md:col-span-2 aspect-[16/9]"
+                  }`}
+                >
+                  <VideoCard
+                    video={video}
+                    onClick={() => setSelectedVideo(video)}
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
