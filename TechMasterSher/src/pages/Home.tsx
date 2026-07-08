@@ -71,8 +71,6 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
     setIsPlaying(true);
   };
 
-  const isVertical = video.aspectRatio === "9/16";
-
   return (
     <div
       ref={containerRef}
