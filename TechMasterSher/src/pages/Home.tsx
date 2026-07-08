@@ -22,18 +22,25 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  useEffect(() => {
+    setIsPlaying(false);
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {});
+    }
+  }, [video.url]);
+
   const handleMouseEnter = () => {
     if (videoRef.current) {
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {});
     }
   };
 
   const handleMouseLeave = () => {
-    setIsPlaying(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
     if (containerRef.current) {
       containerRef.current.style.setProperty("--rx", "0deg");
       containerRef.current.style.setProperty("--ry", "0deg");
@@ -69,7 +76,7 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
   return (
     <div
       ref={containerRef}
-      className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-[#070707] transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_15px_50px_rgba(212,175,55,0.15)] cursor-pointer select-none ${
+      className={`video-fade-in group relative overflow-hidden rounded-3xl border-2 border-gold/80 bg-[#070707] transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_15px_50px_rgba(212,175,55,0.15)] cursor-pointer select-none ${
         isVertical ? "col-span-1 aspect-[9/16]" : "col-span-1 md:col-span-2 aspect-[16/9]"
       }`}
       style={{
@@ -115,6 +122,7 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
       <video
         ref={videoRef}
         src={video.url}
+        autoPlay
         loop
         muted
         playsInline
@@ -186,6 +194,36 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const cards = Array.from(document.querySelectorAll(".video-fade-in"));
+      if (cards.length === 0) return;
+
+      // Reset state for scroll reveal
+      gsap.killTweensOf(cards);
+      gsap.set(cards, { y: 60, opacity: 0 });
+
+      // Animate each card individually when it enters the viewport
+      cards.forEach((card) => {
+        gsap.to(card, {
+          y: 0,
+          opacity: 1,
+          duration: 0.85,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 88%", // Triggers when the top of the card reaches 88% of viewport height
+            toggleActions: "play none none none",
+          },
+        });
+      });
+    });
+
+    return () => {
+      ctx.revert();
+    };
+  }, [activeFilter]);
 
   const handleNavClick = (pageId: string) => {
     onChangePage(pageId);
@@ -477,15 +515,44 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
 
         {/* Video Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {filteredVideos.map((video) => (
-            <VideoCard
-              key={video.id}
-              video={video}
-              onClick={() => setSelectedVideo(video)}
-            />
-          ))}
-        </div>
+        {activeFilter === "all" ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 video-showcase-grid-container">
+            {/* Left Column for Reels & Shorts (Vertical) */}
+            <div className="flex flex-col gap-8 col-span-1">
+              {filteredVideos
+                .filter((v) => v.type === "reel" || v.type === "short")
+                .map((video) => (
+                  <VideoCard
+                    key={video.id}
+                    video={video}
+                    onClick={() => setSelectedVideo(video)}
+                  />
+                ))}
+            </div>
+            {/* Right Column for Long Videos (Horizontal) */}
+            <div className="flex flex-col gap-8 col-span-1 md:col-span-2">
+              {filteredVideos
+                .filter((v) => v.type === "long_video")
+                .map((video) => (
+                  <VideoCard
+                    key={video.id}
+                    video={video}
+                    onClick={() => setSelectedVideo(video)}
+                  />
+                ))}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 video-showcase-grid-container">
+            {filteredVideos.map((video) => (
+              <VideoCard
+                key={video.id}
+                video={video}
+                onClick={() => setSelectedVideo(video)}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
 

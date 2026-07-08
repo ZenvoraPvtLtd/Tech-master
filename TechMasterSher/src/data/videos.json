@@ -22,7 +22,7 @@
     "title": "Keyboard Haptics & ASMR Coding Session",
     "type": "short",
     "url": "https://assets.mixkit.co/videos/preview/mixkit-hands-typing-on-a-laptop-44368-large.mp4",
-    "thumbnail": "https://images.unsplash.com/photo-1618401471353-b98aedd07871?auto=format&fit=crop&w=600&q=80",
+    "thumbnail": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80",
     "aspectRatio": "9/16",
     "category": "Reels & Shorts"
   },
@@ -32,6 +32,15 @@
     "type": "long_video",
     "url": "https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-his-computer-43033-large.mp4",
     "thumbnail": "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=600&q=80",
+    "aspectRatio": "16/9",
+    "category": "Long Videos"
+  },
+  {
+    "id": "vid_05",
+    "title": "Next-Gen Cloud Infrastructure & Deployment",
+    "type": "long_video",
+    "url": "https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-technology-particles-background-42998-large.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80",
     "aspectRatio": "16/9",
     "category": "Long Videos"
   }
