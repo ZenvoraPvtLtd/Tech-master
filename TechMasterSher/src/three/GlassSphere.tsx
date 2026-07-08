@@ -93,17 +93,13 @@ export const GlassSphere: React.FC<GlassSphereProps> = ({ scrollProgress, mouse 
     const isTablet = typeof window !== "undefined" && window.innerWidth < 1024;
     const responsiveFactor = isMobile ? 0.6 : (isTablet ? 0.8 : 1.0);
 
-    // Keep scale stable (only scale down slightly, never shrink to 0)
-    const targetScale = (1 - Math.min(smoothScroll * 0.2, 0.3)) * responsiveFactor;
+    // Scale down to 0 at the bottom, scale up to full on scroll up
+    const targetScale = Math.max(0, 1.0 - smoothScroll) * responsiveFactor;
     currentScaleRef.current = THREE.MathUtils.lerp(currentScaleRef.current, targetScale, 0.1);
     meshRef.current.scale.setScalar(currentScaleRef.current);
 
-    // Smoothly fade out opacity on scroll instead of shrinking scale to 0
-    let targetOpacity = 0.35;
-    if (smoothScroll > 0.55) {
-      const fadeFactor = Math.max(0, 1 - (smoothScroll - 0.55) / 0.35);
-      targetOpacity = 0.35 * fadeFactor;
-    }
+    // Opacity fades to 0 at the bottom in sync with scale
+    const targetOpacity = Math.max(0, 0.35 * (1.0 - smoothScroll));
     // @ts-ignore
     if (meshRef.current.material && meshRef.current.material.uniforms) {
       // @ts-ignore

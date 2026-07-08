@@ -3,6 +3,7 @@ import { Menu, X, ArrowUpRight } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
 import gsap from "gsap";
 import logo1 from "../assets/logo_transparent-removebg-preview.png";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 interface HeaderProps {
@@ -12,35 +13,46 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
-  // Complete list of all 18 pages requested
-  const coreBrandItems = [
+  const identityItems = [
     { name: "Home", id: "home" },
     { name: "About Founder", id: "about" },
-    { name: "Journey of Founder", id: "journey" },
+    { name: "Founder's Journey", id: "journey" },
     { name: "Mission & Vision", id: "mission" },
     { name: "What We Do", id: "what-we-do" },
-    { name: "Services", id: "services" },
   ];
 
   const engagementItems = [
     { name: "Brand Collabs", id: "collaborations" },
     { name: "Campaigns", id: "campaigns" },
     { name: "Product Launches", id: "product-launches" },
-    { name: "Event Management", id: "events" },
-    { name: "Portfolio", id: "portfolio" },
-    { name: "Media Coverage & Gallery", id: "gallery" },
-    { name: "Testimonials", id: "testimonials" },
+    { name: "Events & Talks", id: "events" },
+    { name: "Student Work", id: "portfolio" },
+    { name: "Media Gallery", id: "gallery" },
     { name: "Careers", id: "career" },
     { name: "Insights / Blog", id: "blog" },
-    { name: "FAQ Portal", id: "faq" },
-    { name: "Direct Contact", id: "contact" },
   ];
 
+  const quickLinksItems = [
+    { name: "Core Services", id: "services" },
+    { name: "Testimonials", id: "testimonials" },
+    { name: "FAQ Portal", id: "faq" },
+    { name: "Contact Page", id: "contact" },
+    { name: "Privacy Policy", id: "privacy" },
+    { name: "Terms of Service", id: "terms" },
+  ];
 
   const handleNavClick = (pageId: string) => {
-    setIsMenuOpen(false);
-    onChangePage(pageId);
+    if (pageId === "privacy") {
+      setIsPrivacyOpen(true);
+    } else if (pageId === "terms") {
+      setIsTermsOpen(true);
+    } else {
+      setIsMenuOpen(false);
+      onChangePage(pageId);
+    }
   };
 
   useEffect(() => {
@@ -156,7 +168,6 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           </Magnetic>
         </div>
       </header>
-
       {/* Fullscreen Overlay Menu */}
       <div 
         className="menu-overlay fixed inset-0 bg-[#060606]/98 backdrop-blur-2xl z-[998] overflow-y-auto flex flex-col justify-start py-20 px-6 md:px-16"
@@ -166,23 +177,23 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] aurora-glow-purple -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-blue translate-x-1/2 translate-y-1/2 opacity-10 pointer-events-none" />
 
-        <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-3 gap-12 z-10 py-12 lg:py-24">
+        <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 md:grid-cols-3 gap-12 z-10 py-12 lg:py-24">
           
-          {/* Column 1: Founder & Core Identity */}
-          <div className="flex flex-col gap-4 text-left">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2">FOUNDER & BRAND</p>
-            <div className="flex flex-col gap-2">
-              {coreBrandItems.map((item) => (
+          {/* Column 1: Identity */}
+          <div className="flex flex-col gap-4 text-center items-center">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">IDENTITY</p>
+            <div className="flex flex-col gap-2 w-full">
+              {identityItems.map((item) => (
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link block text-2xl md:text-3xl font-serif text-white hover:text-gold transition-colors duration-300 py-1 text-left relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-1.5 relative group font-light"
                   >
-                    <span className="inline-block transition-transform duration-300 group-hover:translate-x-3">
+                    <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
                     </span>
                     {activePage === item.id && (
-                      <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] font-sans text-gold border border-gold/40 px-2 py-0.5 rounded-full tracking-[1px] uppercase bg-gold/5">
+                      <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
                         Active
                       </span>
                     )}
@@ -192,21 +203,21 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             </div>
           </div>
 
-          {/* Column 2: Engagement & Dynamic Showcases */}
-          <div className="flex flex-col gap-4 text-left">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2">MEDIA & COMMUNITY</p>
-            <div className="flex flex-col gap-2">
+          {/* Column 2: Engagement */}
+          <div className="flex flex-col gap-4 text-center items-center">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">ENGAGEMENT</p>
+            <div className="flex flex-col gap-2 w-full">
               {engagementItems.map((item) => (
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link block text-2xl md:text-3xl font-serif text-white hover:text-gold transition-colors duration-300 py-1 text-left relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-1.5 relative group font-light"
                   >
-                    <span className="inline-block transition-transform duration-300 group-hover:translate-x-3">
+                    <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
                     </span>
                     {activePage === item.id && (
-                      <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[9px] font-sans text-gold border border-gold/40 px-2 py-0.5 rounded-full tracking-[1px] uppercase bg-gold/5">
+                      <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
                         Active
                       </span>
                     )}
@@ -216,47 +227,90 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             </div>
           </div>
 
-          {/* Column 3: Premium Contact details */}
-          <div className="flex flex-col justify-between py-4 border-t lg:border-t-0 lg:border-l border-white/5 lg:pl-16 text-left">
-            <div>
-              <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-4 font-bold border-b border-white/5 pb-2">HQ CREATOR LAB</p>
-              <h3 className="font-serif text-2xl text-white font-medium mb-1">Metropolis Spaces</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
-                402 Creator District, Horizon Boulevard<br />
-                Silicon Valley Heights, 94025
-              </p>
-            </div>
-
-            <div className="my-8 lg:my-0">
-              <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold">MANAGEMENT INQUIRIES</p>
-              <a href="mailto:bookings@techmasterf.com" className="text-lg text-white hover:text-gold transition-colors duration-300 font-light">
-                bookings@techmasterf.com
-              </a>
-              <p className="text-gray-400 text-xs mt-1">+1 (800) 555-CODE</p>
-            </div>
-
-            <div>
-              <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold">SOCIAL NETWORKS</p>
-              <div className="flex flex-wrap gap-x-4 gap-y-2">
-                {[
-                  { name: "YouTube", url: "#" },
-                  { name: "LinkedIn", url: "#" },
-                  { name: "GitHub", url: "#" },
-                  { name: "Twitter", url: "#" }
-                ].map((net) => (
-                  <a
-                    key={net.name}
-                    href={net.url}
-                    className="text-xs uppercase tracking-[1.5px] text-gray-400 hover:text-white transition-colors duration-300"
+          {/* Column 3: Quick Links */}
+          <div className="flex flex-col gap-4 text-center items-center">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">QUICK LINKS</p>
+            <div className="flex flex-col gap-2 w-full">
+              {quickLinksItems.map((item) => (
+                <div key={item.id} className="overflow-hidden">
+                  <button
+                    onClick={() => handleNavClick(item.id)}
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-1.5 relative group font-light"
                   >
-                    {net.name}
-                  </a>
-                ))}
-              </div>
+                    <span className="inline-block transition-transform duration-300 group-hover:scale-105">
+                      {item.name}
+                    </span>
+                    {activePage === item.id && (
+                      <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
+                        Active
+                      </span>
+                    )}
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
+
         </div>
       </div>
+
+      {/* Privacy Policy Modal */}
+      <AnimatePresence>
+        {isPrivacyOpen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-6 text-left">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="glass-panel max-w-2xl w-full p-8 rounded-3xl relative max-h-[80vh] overflow-y-auto"
+            >
+              <button 
+                onClick={() => setIsPrivacyOpen(false)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-gold transition-colors duration-300 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-black/40 font-bold"
+              >
+                ✕
+              </button>
+              <h3 className="font-serif text-2xl text-gold font-bold mb-6">Privacy Policy</h3>
+              <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
+                <p><strong>Effective Date: July 7, 2026</strong></p>
+                <p>Aman & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter.</p>
+                <p><strong>Data Collection & Use:</strong> We collect email addresses solely for sending newsletter digests, cohort details, and technical blogs. Your information is never sold, traded, or shared with third-party advertising companies.</p>
+                <p><strong>Cookies:</strong> This platform utilizes basic localized storage and caching systems to maintain animations, 3D settings, and user navigation states smoothly.</p>
+                <p><strong>Security:</strong> All direct inquiries and newsletter transmissions are protected with industry-standard cryptographic handshakes.</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Terms of Service Modal */}
+      <AnimatePresence>
+        {isTermsOpen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-6 text-left">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="glass-panel max-w-2xl w-full p-8 rounded-3xl relative max-h-[80vh] overflow-y-auto"
+            >
+              <button 
+                onClick={() => setIsTermsOpen(false)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-gold transition-colors duration-300 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-black/40 font-bold"
+              >
+                ✕
+              </button>
+              <h3 className="font-serif text-2xl text-gold font-bold mb-6">Terms of Service</h3>
+              <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
+                <p><strong>Effective Date: July 7, 2026</strong></p>
+                <p>By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service.</p>
+                <p><strong>Intellectual Property:</strong> All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Aman and Tech Master Labs unless stated otherwise.</p>
+                <p><strong>User License:</strong> You are granted a limited license to explore our portfolio and code projects for educational research. Scraping, cloning, or distributing source codes commercially without express written consent is strictly prohibited.</p>
+                <p><strong>Sandbox Declarations:</strong> All forms, databases, and estimates operate in safe sandbox demonstration pipelines.</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

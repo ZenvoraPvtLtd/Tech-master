@@ -38,10 +38,14 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
         .then(() => setIsPlaying(true))
         .catch(() => {});
     }
+    if (containerRef.current) {
+      containerRef.current.style.transition = "none";
+    }
   };
 
   const handleMouseLeave = () => {
     if (containerRef.current) {
+      containerRef.current.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), shadow 0.5s ease, border-color 0.5s ease";
       containerRef.current.style.setProperty("--rx", "0deg");
       containerRef.current.style.setProperty("--ry", "0deg");
     }
@@ -61,8 +65,8 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
     // 3D Tilt calculation
     const xc = rect.width / 2;
     const yc = rect.height / 2;
-    const angleX = (yc - y) / 15; // rotate X based on vertical distance
-    const angleY = (x - xc) / 15; // rotate Y based on horizontal distance
+    const angleX = (yc - y) / 10; // rotate X based on vertical distance
+    const angleY = (x - xc) / 10; // rotate Y based on horizontal distance
     el.style.setProperty("--rx", `${angleX}deg`);
     el.style.setProperty("--ry", `${angleY}deg`);
   };
@@ -74,7 +78,7 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
   return (
     <div
       ref={containerRef}
-      className="group relative w-full h-full overflow-hidden rounded-3xl border-2 border-gold/80 bg-[#070707] transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_15px_50px_rgba(212,175,55,0.15)] cursor-pointer select-none"
+      className="group relative w-full h-full overflow-hidden rounded-3xl border-2 border-gold/80 bg-[#070707] transition-all duration-500 shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_15px_50px_rgba(212,175,55,0.25)] cursor-pointer select-none"
       style={{
         transform: "perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale3d(1.01, 1.01, 1.01)",
         transformStyle: "preserve-3d"
@@ -85,6 +89,9 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
       onClick={onClick}
       data-cursor="play"
     >
+      {/* Premium Shimmer Light Beam Sweep */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none z-10" />
+
       {/* Dynamic Cursor Spotlight Background Glow */}
       <div 
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
@@ -137,11 +144,12 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
         style={{ transform: "translateZ(30px)" }}
       >
         <div className="flex justify-between items-start">
-          <span className="px-3.5 py-1 rounded-full border border-gold/30 bg-black/75 text-[9px] uppercase tracking-[2px] font-mono text-gold backdrop-blur-md">
+          <span className="px-3.5 py-1 rounded-full border border-gold/30 bg-black/75 text-[9px] uppercase tracking-[2px] font-mono text-gold backdrop-blur-md group-hover:border-gold group-hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all duration-300">
             {video.type === "reel" || video.type === "short" ? "Reels & Shorts" : "Long Videos"}
           </span>
-          <span className="w-8 h-8 rounded-full border border-white/20 bg-black/60 flex items-center justify-center backdrop-blur-md group-hover:bg-gold group-hover:border-gold group-hover:scale-110 transition-all duration-300">
-            <Play className="w-3.5 h-3.5 text-white group-hover:text-black fill-current translate-x-[1px] transition-colors" />
+          <span className="relative w-8 h-8 rounded-full border border-white/20 bg-black/60 flex items-center justify-center backdrop-blur-md group-hover:bg-gold group-hover:border-gold group-hover:scale-110 transition-all duration-300">
+            <span className="absolute inset-0 rounded-full bg-gold/30 scale-100 group-hover:scale-[1.6] opacity-0 group-hover:opacity-100 transition-all duration-1000 ease-out animate-ping" />
+            <Play className="w-3.5 h-3.5 text-white group-hover:text-black fill-current translate-x-[1px] transition-colors relative z-10" />
           </span>
         </div>
 
@@ -219,7 +227,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           scrollTrigger: {
             trigger: card,
             start: "top 92%", // Triggers when the card enters the lower viewport threshold
-            toggleActions: "play none none none",
+            toggleActions: "restart none restart none",
           },
         });
       });
@@ -549,15 +557,15 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 ))}
             </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 video-showcase-grid-container">
-            {filteredVideos.map((video) => {
-              const isVertical = video.aspectRatio === "9/16";
+        ) : activeFilter === "long" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 video-showcase-grid-container">
+            {filteredVideos.map((video, idx) => {
+              const isLastAndOdd = idx === filteredVideos.length - 1 && filteredVideos.length % 2 !== 0;
               return (
                 <div
                   key={video.id}
-                  className={`video-fade-in ${
-                    isVertical ? "col-span-1 aspect-[9/16]" : "col-span-1 md:col-span-2 aspect-[16/9]"
+                  className={`video-fade-in aspect-[16/9] ${
+                    isLastAndOdd ? "col-span-1 md:col-span-2 max-w-3xl mx-auto w-full" : "col-span-1"
                   }`}
                 >
                   <VideoCard
@@ -567,6 +575,17 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 </div>
               );
             })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto video-showcase-grid-container">
+            {filteredVideos.map((video) => (
+              <div key={video.id} className="video-fade-in w-full aspect-[9/16]">
+                <VideoCard
+                  video={video}
+                  onClick={() => setSelectedVideo(video)}
+                />
+              </div>
+            ))}
           </div>
         )}
       </section>
