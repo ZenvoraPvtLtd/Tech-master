@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, ArrowUpRight, Award } from "lucide-react";
+import { Award, ArrowUpRight } from "lucide-react";
 import eventsData from "../data/events.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 import gsap from "gsap";

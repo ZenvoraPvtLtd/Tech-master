@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Cpu, Layers, Box, Sparkles, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Cpu, Layers, Box, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import servicesData from "../data/services.json";
 

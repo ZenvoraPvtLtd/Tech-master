@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import journeyData from "../data/journey.json";
 import { LuxuryCard } from "../components/LuxuryCard";
-import { Calendar, ArrowDown } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Briefcase, MapPin, DollarSign, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 import careerData from "../data/career.json";
 
