@@ -43,9 +43,6 @@ export const About: React.FC = () => {
             {aboutData.bio}
           </p>
           <div className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300 flex flex-col justify-center">
-            <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-              <Film className="w-6 h-6 text-gold" />
-            </div>
             <h3 className="font-serif text-xl font-bold text-white mb-3">
               {aboutData.philosophy.title}
             </h3>
@@ -86,9 +83,6 @@ export const About: React.FC = () => {
           }
         ].map((item, idx) => (
           <div key={idx} className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300">
-            <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-              {item.icon}
-            </div>
             <h3 className="font-serif text-xl font-bold text-white mb-3">{item.title}</h3>
             <p className="text-gray-400 text-xs leading-relaxed font-light">{item.desc}</p>
           </div>
@@ -155,23 +149,14 @@ export const About: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-4">
-                 <span className="text-gold font-bold text-2xl">🏆</span>
-              </div>
               <h4 className="text-white font-bold mb-2">Developer of the Year</h4>
               <p className="text-gray-400 text-xs font-light">Global Tech Summit 2021</p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-4">
-                 <span className="text-gold font-bold text-2xl">🥇</span>
-              </div>
               <h4 className="text-white font-bold mb-2">Best Educational Platform</h4>
               <p className="text-gray-400 text-xs font-light">EdTech Innovation Awards 2023</p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-4">
-                 <span className="text-gold font-bold text-2xl">🌟</span>
-              </div>
               <h4 className="text-white font-bold mb-2">Top 100 Tech Influencers</h4>
               <p className="text-gray-400 text-xs font-light">TechMedia Global 2022</p>
             </div>

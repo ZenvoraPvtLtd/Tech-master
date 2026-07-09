@@ -86,6 +86,26 @@ export const Journey: React.FC = () => {
       });
     });
 
+    // 3. Roadmap container fade-in on scroll
+    const roadmapContainer = document.querySelector(".roadmap-container");
+    if (roadmapContainer) {
+      gsap.fromTo(
+        roadmapContainer,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.0,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: roadmapContainer,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    }
+
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
@@ -197,7 +217,6 @@ export const Journey: React.FC = () => {
                     index={index}
                   >
                     <div className="flex items-center gap-2 mb-4 text-gold">
-                      <Calendar className="w-4 h-4" />
                       <span className="font-mono text-xs uppercase tracking-[2px]">
                         Epoch {item.year}
                       </span>
@@ -216,31 +235,90 @@ export const Journey: React.FC = () => {
         </div>
       </div>
 
-      {/* Thematic Journey Highlights */}
-      <div className="max-w-7xl mx-auto px-6 relative z-10 pb-32">
+      {/* Thematic Growth Roadmap */}
+      <div className="roadmap-container max-w-7xl mx-auto px-6 relative z-10 pb-32">
+        <style>{`
+          @keyframes roadmapScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .animate-roadmap {
+            display: flex;
+            width: max-content;
+            animation: roadmapScroll 45s linear infinite;
+          }
+          .animate-roadmap:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+
         <div className="mb-16 text-center">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">DEEP DIVE</p>
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">ROADMAP</p>
           <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
-            Journey <span className="text-gold italic font-bold">Highlights</span>
+            Founder's <span className="text-gold italic font-bold">Growth Roadmap</span>
           </h2>
+          <p className="text-xs text-gray-500 font-mono tracking-[1px] uppercase mt-2">Hover to Pause Timeline</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { title: "Childhood", desc: "Early fascination with computers, dismantling old radios and writing basic HTML on a Windows 95 machine.", icon: "👶" },
-            { title: "Career Beginning", desc: "Started as a junior developer in a local agency, learning the ropes of production-level code and client management.", icon: "🚀" },
-            { title: "First Brand Collab", desc: "Partnering with a major tech hardware brand to produce a series of educational videos, marking the first sponsorship.", icon: "🤝" },
-            { title: "Social Media Journey", desc: "From 0 to 2.5 Million subscribers, navigating algorithm changes, burnout, and discovering a unique educational voice.", icon: "📱" },
-            { title: "Major Milestones", desc: "Reaching 100K subscribers, speaking at TEDx, and launching the first independent tech bootcamp.", icon: "🏆" },
-            { title: "Biggest Challenges", desc: "Balancing a demanding senior architect role while growing a YouTube channel, and overcoming imposter syndrome.", icon: "🧗" },
-            { title: "Success Stories", desc: "Helping thousands of students land roles at Fortune 500 companies through free content and accessible courses.", icon: "🌟" },
-            { title: "Future Vision", desc: "Building a decentralized, globally accessible university-grade tech education platform for the next generation.", icon: "🔭" }
-          ].map((item, idx) => (
-            <div key={idx} className="glass-panel p-6 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
-              <div className="text-3xl mb-4">{item.icon}</div>
-              <h3 className="font-serif text-lg font-bold text-white mb-2">{item.title}</h3>
-              <p className="text-gray-400 text-xs font-light leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
+
+        <div className="relative overflow-hidden pb-12 pt-6">
+          <div className="animate-roadmap flex gap-8 relative z-10 h-[440px]">
+            
+            {/* Connection line inside the scrolling container */}
+            <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-gold/40 via-royal-purple/40 to-gold/40 -translate-y-1/2 z-0 pointer-events-none" />
+
+            {/* Loop 1 and Loop 2 for infinite ticker */}
+            {[1, 2].map((loopGroup) => (
+              <div key={loopGroup} className="flex gap-8">
+                {[
+                  { title: "Childhood", desc: "Early fascination with computers, dismantling old radios and writing basic HTML on a Windows 95 machine." },
+                  { title: "Career Beginning", desc: "Started as a junior developer in a local agency, learning the ropes of production-level code and client management." },
+                  { title: "First Brand Collab", desc: "Partnering with a major tech hardware brand to produce a series of educational videos, marking the first sponsorship." },
+                  { title: "Social Media Journey", desc: "From 0 to 2.5 Million subscribers, navigating algorithm changes, burnout, and discovering a unique educational voice." },
+                  { title: "Major Milestones", desc: "Reaching 100K subscribers, speaking at TEDx, and launching the first independent tech bootcamp." },
+                  { title: "Biggest Challenges", desc: "Balancing a demanding senior architect role while growing a YouTube channel, and overcoming imposter syndrome." },
+                  { title: "Success Stories", desc: "Helping thousands of students land roles at Fortune 500 companies through free content and accessible courses." },
+                  { title: "Future Vision", desc: "Building a decentralized, globally accessible university-grade tech education platform for the next generation." }
+                ].map((item, idx) => {
+                  const isCardOnTop = idx % 2 === 0;
+                  return (
+                    <div key={idx} className="flex flex-col items-center justify-center w-[300px] h-[440px] relative select-none">
+                      
+                      {/* Central Node Dot */}
+                      <div className="w-10 h-10 rounded-full bg-black border-2 border-gold flex items-center justify-center font-mono text-xs text-gold font-bold z-20 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                        0{idx + 1}
+                      </div>
+
+                      {isCardOnTop ? (
+                        <>
+                          {/* Card on Top */}
+                          <div className="absolute top-0 left-0 right-0 glass-panel p-6 rounded-2xl border border-white/5 hover:border-gold/30 transition-all duration-300">
+                            <h3 className="font-serif text-lg font-bold text-white mb-2">{item.title}</h3>
+                            <p className="text-gray-400 text-xs font-light leading-relaxed">{item.desc}</p>
+                          </div>
+                          
+                          {/* Connector line */}
+                          <div className="absolute top-[150px] bottom-[240px] w-[1px] bg-gradient-to-b from-white/10 to-gold/50" />
+                        </>
+                      ) : (
+                        <>
+                          {/* Card on Bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 glass-panel p-6 rounded-2xl border border-white/5 hover:border-gold/30 transition-all duration-300">
+                            <h3 className="font-serif text-lg font-bold text-white mb-2">{item.title}</h3>
+                            <p className="text-gray-400 text-xs font-light leading-relaxed">{item.desc}</p>
+                          </div>
+
+                          {/* Connector line */}
+                          <div className="absolute top-[240px] bottom-[150px] w-[1px] bg-gradient-to-b from-gold/50 to-white/10" />
+                        </>
+                      )}
+
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+
+          </div>
         </div>
       </div>
 

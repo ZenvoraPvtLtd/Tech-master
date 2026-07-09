@@ -54,16 +54,13 @@ export const Career: React.FC = () => {
                   {role.description}
                 </p>
                 <div className="flex flex-wrap gap-4 text-xs text-gray-400 font-light pt-4 border-t border-white/5">
-                  <span className="flex items-center gap-1.5">
-                    <Briefcase className="w-3.5 h-3.5 text-gold" />
+                  <span className="flex items-center">
                     Full Time
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-gold" />
+                  <span className="flex items-center">
                     {role.location}
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <DollarSign className="w-3.5 h-3.5 text-gold" />
+                  <span className="flex items-center">
                     {role.salary}
                   </span>
                 </div>

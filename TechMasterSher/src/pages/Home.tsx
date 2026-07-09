@@ -17,6 +17,14 @@ interface HomeProps {
   onChangePage: (page: string) => void;
 }
 
+const splitText = (text: string) => {
+  return text.split("").map((char, idx) => (
+    <span key={idx} className="char inline-block opacity-0">
+      {char === " " ? "\u00A0" : char}
+    </span>
+  ));
+};
+
 const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -192,7 +200,97 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       );
     });
 
+    // Custom timeline for Core Values Grid (Sequential Reveal & Typing Heading)
+    const coreValuesGrid = document.querySelector(".core-values-grid");
+    if (coreValuesGrid) {
+      const cards = coreValuesGrid.querySelectorAll(".value-card");
+      
+      // Initialize GSAP states to prevent flash
+      gsap.set(cards, { opacity: 0, y: 50 });
+      cards.forEach((card) => {
+        const headingChars = card.querySelectorAll(".char");
+        if (headingChars.length > 0) {
+          gsap.set(headingChars, { opacity: 0 });
+        }
+        gsap.set(card.querySelector(".value-card-content"), { opacity: 0, y: 20 });
+      });
 
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: coreValuesGrid,
+          start: "top 85%",
+          toggleActions: "play none none none",
+        }
+      });
+
+      cards.forEach((card) => {
+        const headingChars = card.querySelectorAll(".char");
+        const content = card.querySelector(".value-card-content");
+
+        tl.to(card, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out"
+        });
+
+        if (headingChars.length > 0) {
+          tl.to(headingChars, {
+            opacity: 1,
+            duration: 0.03,
+            stagger: 0.05,
+            ease: "none"
+          }, "-=0.35");
+        }
+
+        tl.to(content, {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power2.out"
+        }, "-=0.15");
+      });
+    }
+
+    // Custom trigger for each Services Card (Swoops in individually on scroll)
+    const servicesGrid = document.querySelector(".services-grid");
+    if (servicesGrid) {
+      const cards = servicesGrid.querySelectorAll(".services-card");
+      
+      // Initialize GSAP states to prevent flash
+      gsap.set(cards, { 
+        opacity: 0, 
+        x: 250, 
+        y: 200, 
+        rotation: 15, 
+        transformOrigin: "right bottom" 
+      });
+
+      cards.forEach((card, idx) => {
+        gsap.fromTo(card,
+          { 
+            opacity: 0, 
+            x: 250, 
+            y: 200, 
+            rotation: 15, 
+            transformOrigin: "right bottom" 
+          },
+          {
+            opacity: 1,
+            x: 0,
+            y: 0,
+            rotation: 0,
+            duration: 1.3,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card, 
+              start: idx === 0 ? "top 85%" : "top 55%", // Card 2 requires more scroll to trigger
+              toggleActions: "play none none none",
+            }
+          }
+        );
+      });
+    }
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
@@ -384,11 +482,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             CORE VALUES
           </span>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-8">
           {homeData.values.map((val, idx) => (
-            <div key={idx} className="glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300 fade-up">
-              <h3 className="font-serif text-xl font-medium text-white mb-2">{val.title}</h3>
-              <p className="text-gray-400 text-xs sm:text-sm font-light leading-relaxed">{val.description}</p>
+            <div key={idx} className="value-card glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300 opacity-0">
+              <h3 className="value-card-heading font-serif text-xl font-medium text-white mb-2">{splitText(val.title)}</h3>
+              <p className="value-card-content text-gray-400 text-xs sm:text-sm font-light leading-relaxed opacity-0">{val.description}</p>
             </div>
           ))}
         </div>
@@ -422,13 +520,12 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </div>
         </div>
 
-        {/* Services Grid using LuxuryCard */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="services-grid grid grid-cols-1 md:grid-cols-2 gap-8">
           {servicesData.map((srv, idx) => (
             <LuxuryCard
               key={srv.id}
               accentColor={srv.accentColor}
-              className="fade-up"
+              className="services-card opacity-0"
               index={idx}
             >
               <div className="flex justify-center items-start mb-8">
@@ -450,7 +547,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 border-t border-white/5">
                 {srv.features.map((feat, fidx) => (
                   <li key={fidx} className="flex items-center gap-2 text-xs text-gray-400">
-                    <CheckCircle className="w-3.5 h-3.5 text-gold shrink-0" />
                     <span>{feat}</span>
                   </li>
                 ))}

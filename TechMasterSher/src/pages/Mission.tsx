@@ -113,9 +113,6 @@ export const Mission: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
             {values.map((val, idx) => (
               <LuxuryCard key={idx} accentColor={val.accent} index={idx}>
-                <div className="mb-6 w-12 h-12 rounded-full border border-white/5 flex items-center justify-center bg-white/5 group-hover:border-gold/30 transition-colors duration-300">
-                  {val.icon}
-                </div>
                 <h3 className="font-serif text-lg text-white font-medium mb-3 group-hover:text-gold transition-colors duration-300">
                   {val.title}
                 </h3>

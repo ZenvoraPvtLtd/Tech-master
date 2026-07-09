@@ -83,11 +83,9 @@ export const Events: React.FC = () => {
 
               <div className="flex flex-col gap-2 mb-4">
                 <div className="flex items-center gap-1.5 text-gray-400 text-[10px] uppercase font-mono tracking-[1px]">
-                  <Calendar className="w-3.5 h-3.5 text-gold" />
                   <span>{evt.date}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-gray-400 text-[10px] uppercase font-mono tracking-[1px]">
-                  <MapPin className="w-3.5 h-3.5 text-gold" />
                   <span>{evt.location}</span>
                 </div>
               </div>
@@ -100,7 +98,6 @@ export const Events: React.FC = () => {
               </p>
 
               <div className="flex items-center gap-1.5 text-[10px] text-gold font-mono uppercase tracking-[1.5px] mt-auto pt-4 border-t border-white/5">
-                <Users className="w-4 h-4 shrink-0" />
                 <span>Attendance: {evt.attendance}</span>
               </div>
             </LuxuryCard>

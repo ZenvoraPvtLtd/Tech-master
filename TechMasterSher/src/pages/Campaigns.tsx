@@ -70,7 +70,6 @@ export const Campaigns: React.FC = () => {
               <ul className="flex flex-col gap-2 pt-4 border-t border-white/5 mt-auto">
                 {item.highlights.map((high, hidx) => (
                   <li key={hidx} className="flex items-start gap-2 text-[10px] text-gray-400">
-                    <CheckCircle className="w-3.5 h-3.5 text-gold shrink-0 mt-0.5" />
                     <span>{high}</span>
                   </li>
                 ))}
