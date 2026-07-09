@@ -1,14 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ArrowDown, ArrowUpRight, CheckCircle, Terminal, Play, X } from "lucide-react";
+import { Play, X } from "lucide-react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Magnetic } from "../components/Magnetic";
 import { LuxuryCard } from "../components/LuxuryCard";
 import homeData from "../data/home.json";
 import servicesData from "../data/services.json";
-import campaignsData from "../data/campaigns.json";
-import eventsData from "../data/events.json";
 import videosData from "../data/videos.json";
 
 gsap.registerPlugin(ScrollTrigger);

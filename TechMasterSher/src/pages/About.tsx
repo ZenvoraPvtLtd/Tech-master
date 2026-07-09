@@ -1,9 +1,6 @@
 import React from "react";
-import { Compass, Eye, ShieldCheck, Film } from "lucide-react";
 import { motion } from "framer-motion";
 import aboutData from "../data/about.json";
-import teamData from "../data/team.json";
-import { LuxuryCard } from "../components/LuxuryCard";
 
 export const About: React.FC = () => {
   return (
