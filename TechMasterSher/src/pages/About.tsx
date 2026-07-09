@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import aboutData from "../data/about.json";
+import teamData from "../data/team.json";
+import { LuxuryCard } from "../components/LuxuryCard";
 
 export const About: React.FC = () => {
   return (
@@ -64,17 +66,14 @@ export const About: React.FC = () => {
       <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 text-left relative z-10">
         {[
           {
-            icon: <Compass className="w-6 h-6 text-gold" />,
             title: "Democratizing Tech",
             desc: "Aman started with coding guidelines in 2015, seeking to make raw systems design and deployment concepts accessible to everyone."
           },
           {
-            icon: <Eye className="w-6 h-6 text-gold" />,
             title: "Cinematic Syllabus",
             desc: "Pioneering the border of virtual reality and education. Aman believes engineering courses should feel visual, beautiful, and interactive."
           },
           {
-            icon: <ShieldCheck className="w-6 h-6 text-gold" />,
             title: "Quality Benchmarks",
             desc: "We commit to strict developer standards, real-world sandboxed container instances, and active recruiter links."
           }
