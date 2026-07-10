@@ -25,6 +25,7 @@ const authMiddleware = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.admin = decoded;
+    req.user = decoded; // Support both req.admin and req.user key references
 
     next();
   } catch (error) {

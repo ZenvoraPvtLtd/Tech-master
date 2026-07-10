@@ -67,11 +67,7 @@ class AdminService {
     newPassword,
     confirmPassword
   ) {
-    console.log("Email:", email);
-
     const admin = await adminRepository.findById(adminId);
-
-    console.log("Admin:", admin);
 
     if (!admin) {
       throw new Error("Admin not found");
@@ -79,7 +75,6 @@ class AdminService {
 
     const isMatched = await admin.comparePassword(oldPassword);
 
-console.log("Password Matched:", isPasswordMatched);
     if (!isMatched) {
       throw new Error("Old password is incorrect");
     }

@@ -46,45 +46,67 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
     }
   };
 
-  const simulateUpload = () => {
+  const handleUpload = async () => {
     if(!selectedFile) return;
     setIsUploading(true);
-    setUploadProgress(0);
+    setUploadProgress(20);
     setUploadSuccess(false);
 
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 20;
-      if (progress >= 100) {
-        clearInterval(interval);
-        
-        // Mock URL assignment
-        const mockUrl = uploadForm.type === 'Image' 
-          ? "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800"
-          : "https://assets.mixkit.co/videos/preview/mixkit-glitter-particles-swirling-in-water-43289-large.mp4";
-          
-        const newMedia = {
-          ...uploadForm,
-          id: `media-${Date.now()}`,
-          url: mockUrl,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        const updatedLibrary = [newMedia, ...library];
-        updateSection('mediaLibrary', updatedLibrary);
-        
-        setIsUploading(false);
-        setUploadSuccess(true);
-        setTimeout(() => {
-           setActiveTab('library');
-           setUploadSuccess(false);
-           setSelectedFile(null);
-        }, 1500);
-      } else {
-        setUploadProgress(progress);
+    try {
+      const savedAuth = localStorage.getItem('zenvora_auth');
+      let token = "";
+      if (savedAuth) {
+        try {
+          const parsed = JSON.parse(savedAuth);
+          token = parsed.token || "";
+        } catch (e) {}
       }
-    }, 300);
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      setUploadProgress(50);
+
+      const response = await fetch("http://localhost:5000/api/v1/cms/upload", {
+        method: "POST",
+        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        body: formData
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Upload failed");
+      }
+
+      setUploadProgress(90);
+
+      const newMedia = {
+        ...uploadForm,
+        id: `media-${Date.now()}`,
+        url: data.url,
+        publicId: data.publicId,
+        size: (data.size / (1024 * 1024)).toFixed(2) + " MB",
+        extension: data.format ? data.format.toUpperCase() : uploadForm.extension,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      const updatedLibrary = [newMedia, ...library];
+      updateSection('mediaLibrary', updatedLibrary);
+
+      setUploadProgress(100);
+      setIsUploading(false);
+      setUploadSuccess(true);
+      setTimeout(() => {
+         setActiveTab('library');
+         setUploadSuccess(false);
+         setSelectedFile(null);
+      }, 1500);
+    } catch (err) {
+      console.error("Cloudinary upload failed:", err);
+      alert(err.message || "Failed to upload file to Cloudinary.");
+      setIsUploading(false);
+    }
   };
 
   const handleDelete = (id, e) => {
@@ -244,7 +266,7 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
                 </div>
 
                 <div className="mt-4 flex justify-end">
-                  <Button onClick={simulateUpload} disabled={!selectedFile || isUploading} className="w-full bg-gradient-to-r from-luxury-gold to-luxury-darkgold text-black font-bold">
+                  <Button onClick={handleUpload} disabled={!selectedFile || isUploading} className="w-full bg-gradient-to-r from-luxury-gold to-luxury-darkgold text-black font-bold">
                     {isUploading ? `Uploading ${uploadProgress}%` : 'Upload & Save to Library'}
                   </Button>
                 </div>
