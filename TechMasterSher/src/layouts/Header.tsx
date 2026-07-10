@@ -80,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   return (
     <>
       <header
-  className="glass-nav fixed top-0 left-0 w-full z-[999] py-2 md:py-4 px-4 md:px-12 flex justify-between items-center transition-all duration-300"
+  className="glass-nav fixed top-0 left-0 w-full z-[999] py-1 md:py-2 px-4 md:px-12 flex justify-between items-center transition-all duration-300"
   style={{
     filter: `
       drop-shadow(0 0 8px rgba(212, 175, 55, 0.8))
@@ -99,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <img
             src={logo1}
             alt="Tech Master Logo"
-            className="h-16 sm:h-20 lg:h-28 w-auto object-contain"
+            className="h-16 sm:h-20 lg:h-28 w-auto object-contain -my-4 sm:-my-6 lg:-my-8"
             style={{
               imageRendering: "-webkit-optimize-contrast",
               filter: `
@@ -114,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         </div>
 
         {/* Desktop Navigation Link Cluster */}
-        <nav className="hidden lg:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-5">
           {[
             { name: "Home", id: "home" },
             { name: "About", id: "about" },
