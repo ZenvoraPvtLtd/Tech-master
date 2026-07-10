@@ -198,7 +198,7 @@ export const WebsiteSettings = ({ setCurrentView }) => {
   };
 
   // Credentials Password submit
-  const handleChangePasswordSubmit = (e) => {
+  const handleChangePasswordSubmit = async (e) => {
     e.preventDefault();
     setSuccessMsg('');
     setErrorMsg('');
@@ -213,8 +213,8 @@ export const WebsiteSettings = ({ setCurrentView }) => {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      const res = changePassword(oldPassword, newPassword);
+    try {
+      const res = await changePassword(oldPassword, newPassword);
       setLoading(false);
       if (res.success) {
         setSuccessMsg(res.message);
@@ -224,7 +224,10 @@ export const WebsiteSettings = ({ setCurrentView }) => {
       } else {
         setErrorMsg(res.message);
       }
-    }, 800);
+    } catch (err) {
+      setLoading(false);
+      setErrorMsg(err.message || "Failed to change password.");
+    }
   };
 
   // Tabs structure metadata

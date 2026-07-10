@@ -23,7 +23,7 @@ export const AuthContainer = ({ onAuthSuccess }) => {
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     if (e && e.preventDefault) {
       e.preventDefault();
     }
@@ -31,7 +31,7 @@ export const AuthContainer = ({ onAuthSuccess }) => {
     setLoading(true);
 
     try {
-      const res = login(email, password);
+      const res = await login(email, password);
       setLoading(false);
 
       if (!res.success) {
@@ -66,7 +66,7 @@ export const AuthContainer = ({ onAuthSuccess }) => {
     }, 800);
   };
 
-  const handleChangePasswordSubmit = (e) => {
+  const handleChangePasswordSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
@@ -81,8 +81,8 @@ export const AuthContainer = ({ onAuthSuccess }) => {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      const res = changePassword(oldPassword, newPassword);
+    try {
+      const res = await changePassword(oldPassword, newPassword);
       setLoading(false);
       if (res.success) {
         setSuccessMsg(res.message);
@@ -93,7 +93,10 @@ export const AuthContainer = ({ onAuthSuccess }) => {
       } else {
         setError(res.message);
       }
-    }, 800);
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Failed to change password");
+    }
   };
 
   return (
