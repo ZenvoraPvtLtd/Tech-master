@@ -1,0 +1,74 @@
+/*login api*/
+
+  async login(email, password) {
+    const admin = await adminRepository.findByEmail(email);
+
+    if (!admin) {
+      throw new Error("Invalid email or password");
+    }
+
+    const isPasswordMatched = await admin.comparePassword(password);
+
+    if (!isPasswordMatched) {
+      throw new Error("Invalid email or password");
+    }
+
+    if (!admin.isActive) {
+      throw new Error("Admin account is inactive");
+    }
+
+    admin.lastLogin = new Date();
+
+    await adminRepository.save(admin);
+
+    // const token = generateToken(admin._id);
+    const token = generateToken({
+  id: admin._id,
+  role: admin.role,
+});
+
+    return {
+      token,
+      admin: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
+      },
+    };
+  }
+
+/*forgot password*/
+
+  async forgotPassword(email) {
+    const admin = await adminRepository.findByEmail(email);
+
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    admin.resetPasswordToken = resetToken;
+
+    admin.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+    await adminRepository.save(admin);
+
+    return {
+      resetToken,
+    };
+  }
+
+/*logout*/
+
+
+  async logout() {
+    return {
+      message: "Logout successful",
+    };
+  }
+}
+
+
+
