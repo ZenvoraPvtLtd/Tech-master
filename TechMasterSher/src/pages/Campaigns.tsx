@@ -1,10 +1,11 @@
 import React from "react";
 import { Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import campaignsData from "../data/campaigns.json";
+import { useData } from "../context/DataContext";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Campaigns: React.FC = () => {
+  const { campaignsData } = useData();
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
       {/* Background Glow */}
@@ -68,7 +69,7 @@ export const Campaigns: React.FC = () => {
               </p>
 
               <ul className="flex flex-col gap-2 pt-4 border-t border-white/5 mt-auto">
-                {item.highlights.map((high, hidx) => (
+                {item.highlights.map((high: any, hidx: number) => (
                   <li key={hidx} className="flex items-start gap-2 text-[10px] text-gray-400">
                     <span>{high}</span>
                   </li>

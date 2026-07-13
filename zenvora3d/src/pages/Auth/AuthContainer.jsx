@@ -10,8 +10,8 @@ export const AuthContainer = ({ onAuthSuccess }) => {
   const { login, requestPasswordReset, changePassword } = useDatabase();
   const [mode, setMode] = useState('login'); // login, forgot, change
   
-  const [email, setEmail] = useState('admin@techmaster.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('admin@gmail.com');
+  const [password, setPassword] = useState('Admin@123');
   
   const [forgotEmail, setForgotEmail] = useState('');
   

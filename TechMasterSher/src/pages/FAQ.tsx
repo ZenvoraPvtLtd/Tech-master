@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import faqData from "../data/faq.json";
+import { useData } from "../context/DataContext";
 
 export const FAQ: React.FC = () => {
+  const { faqData, dbData } = useData();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const faqSettings = dbData?.faqSettings || {
+    badge: "INFORMATION ARCHIVE",
+    heading: "Answers &",
+    highlightHeading: "Frequently Asked Questions"
+  };
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
@@ -20,12 +27,12 @@ export const FAQ: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
         >
-          INFORMATION ARCHIVE
+          {faqSettings.badge}
         </motion.div>
         
         <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8">
-          Answers & <br />
-          <span className="text-gold italic font-bold">Frequently Asked Questions</span>.
+          {faqSettings.heading} <br />
+          <span className="text-gold italic font-bold">{faqSettings.highlightHeading}</span>.
         </h1>
       </section>
 

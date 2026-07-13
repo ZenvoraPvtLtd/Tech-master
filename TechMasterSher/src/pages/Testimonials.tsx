@@ -1,10 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Quote, Star } from "lucide-react";
-import testimonialsData from "../data/testimonials.json";
+import { useData } from "../context/DataContext";
+import testimonialsFallback from "../data/testimonials.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Testimonials: React.FC = () => {
+  const { testimonialsData } = useData();
+  const testimonialsList = testimonialsData && testimonialsData.length > 0 ? testimonialsData : testimonialsFallback;
+
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
       {/* Background radial glows */}
@@ -43,8 +47,8 @@ export const Testimonials: React.FC = () => {
       {/* Testimonials Grids */}
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          {testimonialsData.map((test, idx) => (
-            <LuxuryCard key={test.id} accentColor="#D4AF37" index={idx}>
+          {testimonialsList.map((test: any, idx: number) => (
+            <LuxuryCard key={test.id || test._id} accentColor="#D4AF37" index={idx}>
               <div className="flex justify-between items-start mb-6">
                 <Quote className="w-8 h-8 text-gold/20" />
                 <div className="flex gap-0.5">

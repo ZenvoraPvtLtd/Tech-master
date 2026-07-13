@@ -2,34 +2,61 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Compass, Eye, ShieldCheck, HeartHandshake } from "lucide-react";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { useData } from "../context/DataContext";
+
+const defaultValues = [
+  {
+    title: "Vision 2030: Democratizing Code",
+    description: "Our core goal is to reach 10 million students globally, offering verified technical education pathways at zero subscription costs.",
+    accent: "#D4AF37",
+  },
+  {
+    title: "Proof of Work Focus",
+    description: "Moving tech candidates away from standard multiple-choice resumes and towards visible, deployed open-source contributions.",
+    accent: "#00E5FF",
+  },
+  {
+    title: "Academic Collaboration",
+    description: "Bridging the gap between theory and industry needs by integrating real-world project curricula inside university syllabus tracks.",
+    accent: "#aa3bff",
+  },
+  {
+    title: "Inclusive Coding Spaces",
+    description: "Supporting underrepresented groups in software engineering through free hardware grants, cloud sponsorship, and active mentorship panels.",
+    accent: "#FF007F",
+  },
+];
+
+const accentIcons = [
+  <Compass className="w-6 h-6 text-gold" />,
+  <Eye className="w-6 h-6 text-electric-blue" />,
+  <ShieldCheck className="w-6 h-6 text-royal-purple" />,
+  <HeartHandshake className="w-6 h-6 text-pink-500" />,
+];
+
+const accentColors = ["#D4AF37", "#00E5FF", "#aa3bff", "#FF007F"];
 
 export const Mission: React.FC = () => {
-  const values = [
-    {
-      icon: <Compass className="w-6 h-6 text-gold" />,
-      title: "Vision 2030: Democratizing Code",
-      description: "Our core goal is to reach 10 million students globally, offering verified technical education pathways at zero subscription costs.",
-      accent: "#D4AF37",
-    },
-    {
-      icon: <Eye className="w-6 h-6 text-electric-blue" />,
-      title: "Proof of Work Focus",
-      description: "Moving tech candidates away from standard multiple-choice resumes and towards visible, deployed open-source contributions.",
-      accent: "#00E5FF",
-    },
-    {
-      icon: <ShieldCheck className="w-6 h-6 text-royal-purple" />,
-      title: "Academic Collaboration",
-      description: "Bridging the gap between theory and industry needs by integrating real-world project curricula inside university syllabus tracks.",
-      accent: "#aa3bff",
-    },
-    {
-      icon: <HeartHandshake className="w-6 h-6 text-pink-500" />,
-      title: "Inclusive Coding Spaces",
-      description: "Supporting underrepresented groups in software engineering through free hardware grants, cloud sponsorship, and active mentorship panels.",
-      accent: "#FF007F",
-    },
-  ];
+  const { missionVisionData } = useData();
+  const mv = missionVisionData || {};
+
+  const heroData = mv.hero || {};
+  const missionData = mv.mission || {};
+  const visionData = mv.vision || {};
+
+  const coreValues = Array.isArray(mv.coreValues) && mv.coreValues.length > 0
+    ? mv.coreValues
+        .filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
+        .map((v: any, idx: number) => ({
+          title: v.title || v.valueName,
+          description: v.description,
+          accent: v.accentColor || accentColors[idx % accentColors.length],
+        }))
+    : defaultValues;
+
+  const brandPillars = Array.isArray(mv.brandPillars) && mv.brandPillars.length > 0
+    ? mv.brandPillars.filter((p: any) => p.status === "Active" || p.status === true || p.status === undefined)
+    : null;
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
@@ -45,7 +72,7 @@ export const Mission: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
         >
-          OUR NORTH STAR
+          {heroData.badge || "OUR NORTH STAR"}
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 35 }}
@@ -53,8 +80,8 @@ export const Mission: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
         >
-          Democratizing <br />
-          <span className="text-gold italic font-bold">Tech Literacy</span> Globally
+          {heroData.headingLine1 || "Democratizing"} <br />
+          <span className="text-gold italic font-bold">{heroData.highlightText || "Tech Literacy"}</span> {heroData.headingLine2 || "Globally"}
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -62,7 +89,7 @@ export const Mission: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-400 text-sm sm:text-base font-light max-w-xl mx-auto leading-relaxed"
         >
-          We believe high-quality engineering curricula shouldn't be locked behind expensive student debts. Aman is building the tools to make code accessible to every curious mind on earth.
+          {heroData.description || "We believe high-quality engineering curricula shouldn't be locked behind expensive student debts. Aman is building the tools to make code accessible to every curious mind on earth."}
         </motion.p>
       </div>
 
@@ -77,12 +104,12 @@ export const Mission: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="glass-panel p-8 md:p-12 rounded-3xl text-left flex flex-col justify-center border-l-4 border-l-gold"
           >
-            <span className="text-xs uppercase font-bold tracking-[3px] text-gold mb-4">THE MISSION STATEMENT</span>
+            <span className="text-xs uppercase font-bold tracking-[3px] text-gold mb-4">{missionData.label || "THE MISSION STATEMENT"}</span>
             <h2 className="font-serif text-2xl md:text-3xl font-light text-white mb-6 leading-snug">
-              To inspire, educate, and place the next million full-stack developers.
+              {missionData.title || "To inspire, educate, and place the next million full-stack developers."}
             </h2>
             <p className="text-gray-400 text-sm font-light leading-relaxed">
-              Our target is to break down complex system design systems, database architectures, and compiler dynamics into engaging, cinematic formats. We enable students to transition seamlessly from beginners to self-sufficient contributors.
+              {missionData.description || "Our target is to break down complex system design systems, database architectures, and compiler dynamics into engaging, cinematic formats. We enable students to transition seamlessly from beginners to self-sufficient contributors."}
             </p>
           </motion.div>
 
@@ -93,12 +120,12 @@ export const Mission: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="glass-panel p-8 md:p-12 rounded-3xl text-left flex flex-col justify-center border-l-4 border-l-electric-blue"
           >
-            <span className="text-xs uppercase font-bold tracking-[3px] text-electric-blue mb-4">THE FUTURE VISION</span>
+            <span className="text-xs uppercase font-bold tracking-[3px] text-electric-blue mb-4">{visionData.label || "THE FUTURE VISION"}</span>
             <h2 className="font-serif text-2xl md:text-3xl font-light text-white mb-6 leading-snug">
-              Vision 2030: Bridging the global developer deficit.
+              {visionData.title || "Vision 2030: Bridging the global developer deficit."}
             </h2>
             <p className="text-gray-400 text-sm font-light leading-relaxed">
-              Technology evolves at a rapid pace, yet university syllabi remain outdated. We are constructing an open, adaptive, cloud-native learning playground that responds directly to modern tech requirements.
+              {visionData.description || "Technology evolves at a rapid pace, yet university syllabi remain outdated. We are constructing an open, adaptive, cloud-native learning playground that responds directly to modern tech requirements."}
             </p>
           </motion.div>
         </div>
@@ -111,7 +138,7 @@ export const Mission: React.FC = () => {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-            {values.map((val, idx) => (
+            {coreValues.map((val: any, idx: number) => (
               <LuxuryCard key={idx} accentColor={val.accent} index={idx}>
                 <h3 className="font-serif text-lg text-white font-medium mb-3 group-hover:text-gold transition-colors duration-300">
                   {val.title}

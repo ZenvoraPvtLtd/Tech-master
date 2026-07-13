@@ -1,14 +1,63 @@
 import React, { useState } from "react";
 import { Send } from "lucide-react";
 import { motion } from "framer-motion";
-import careerData from "../data/career.json";
+import { useData } from "../context/DataContext";
+import careerFallback from "../data/career.json";
 
 export const Career: React.FC = () => {
-  const [submitted, setSubmitted] = useState(false);
+  const { careerData } = useData();
+  const careerList = careerData && careerData.length > 0 ? careerData : careerFallback;
 
-  const handleApplySubmit = (e: React.FormEvent) => {
+  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    jobTitle: "",
+    portfolioLink: "",
+    coverLetter: "",
+    resumeFile: null as File | null
+  });
+
+  const handleApplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setErrorMsg("");
+
+    if (!formData.resumeFile) {
+      setErrorMsg("Please upload a resume file.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const dataPayload = new FormData();
+      dataPayload.append("name", formData.name);
+      dataPayload.append("email", formData.email);
+      dataPayload.append("jobTitle", formData.jobTitle || "General Application");
+      dataPayload.append("experience", formData.portfolioLink); // Map portfolio link to experience field
+      dataPayload.append("message", formData.coverLetter); // Map cover letter to message
+      dataPayload.append("resume", formData.resumeFile); // Single file upload field name in backend is 'resume'
+
+      const response = await fetch("http://localhost:5000/api/v1/cms/public/resume", {
+        method: "POST",
+        body: dataPayload
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to submit application.");
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -44,25 +93,27 @@ export const Career: React.FC = () => {
         <div>
           <h3 className="font-serif text-2xl text-white font-bold mb-6">Open Positions</h3>
           <div className="flex flex-col gap-6">
-            {careerData.map((role) => (
-              <div key={role.id} className="glass-panel p-6 rounded-3xl border border-white/5 hover:border-gold/25 transition-all duration-300">
+            {careerList.map((role: any) => (
+              <div key={role.id || role._id} className="glass-panel p-6 rounded-3xl border border-white/5 hover:border-gold/25 transition-all duration-300">
                 <span className="text-gold font-mono text-[9px] uppercase tracking-[1.5px] block mb-1">
-                  Team: {role.team}
+                  Team: {role.team || role.department}
                 </span>
-                <h4 className="font-serif text-xl font-bold text-white mb-4">{role.role}</h4>
+                <h4 className="font-serif text-xl font-bold text-white mb-4">{role.role || role.title}</h4>
                 <p className="text-gray-400 text-xs font-light leading-relaxed mb-6">
                   {role.description}
                 </p>
                 <div className="flex flex-wrap gap-4 text-xs text-gray-400 font-light pt-4 border-t border-white/5">
                   <span className="flex items-center">
-                    Full Time
+                    Employment: {role.type || "Full Time"}
                   </span>
                   <span className="flex items-center">
-                    {role.location}
+                    Location: {role.location}
                   </span>
-                  <span className="flex items-center">
-                    {role.salary}
-                  </span>
+                  {role.salary && (
+                    <span className="flex items-center">
+                      Budget: {role.salary || role.pricing}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -83,62 +134,98 @@ export const Career: React.FC = () => {
             </div>
           ) : (
             <form onSubmit={handleApplySubmit} className="flex flex-col gap-5">
+              {errorMsg && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-xs font-light">
+                  {errorMsg}
+                </div>
+              )}
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2">FULL NAME</label>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">FULL NAME</label>
                 <input
                   type="text"
                   required
                   placeholder="Arya Patel"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2">EMAIL ADDRESS</label>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">EMAIL ADDRESS</label>
                 <input
                   type="email"
                   required
                   placeholder="arya@code.net"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2">PORTFOLIO / GITHUB LINK</label>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">POSITION APPLYING FOR</label>
+                <select
+                  value={formData.jobTitle}
+                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-gray-400 focus:outline-none focus:border-gold transition-colors duration-300"
+                >
+                  <option value="" className="bg-[#121212] text-white">Select a Position (Optional)</option>
+                  {careerList.map((role: any) => (
+                    <option key={role.id || role._id} value={role.title || role.role} className="bg-[#121212] text-white">
+                      {role.title || role.role}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">PORTFOLIO / GITHUB LINK</label>
                 <input
                   type="url"
                   required
                   placeholder="https://github.com/arya"
+                  value={formData.portfolioLink}
+                  onChange={(e) => setFormData({ ...formData, portfolioLink: e.target.value })}
                   className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2">WHY JOIN TECH MASTER?</label>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">WHY JOIN TECH MASTER?</label>
                 <textarea
                   rows={3}
                   required
                   placeholder="Briefly tell us how you want to contribute to the education space."
+                  value={formData.coverLetter}
+                  onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
                   className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2">UPLOAD RESUME (PDF/DOC)</label>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">UPLOAD RESUME (PDF/DOC)</label>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
                   required
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                      setFormData({ ...formData, resumeFile: files[0] });
+                    }
+                  }}
                   className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[9px] file:uppercase file:tracking-[1px] file:font-bold file:bg-gold file:text-black hover:file:bg-gold/80 transition-colors duration-300 cursor-pointer"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-colors duration-300"
+                disabled={isSubmitting}
+                className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 data-cursor="submit"
               >
-                Send Application
+                {isSubmitting ? "Submitting Application..." : "Send Application"}
                 <Send className="w-4 h-4" />
               </button>
             </form>

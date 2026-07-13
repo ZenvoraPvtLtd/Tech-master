@@ -1,18 +1,60 @@
 import React, { useState } from "react";
 import { Mail, Phone, MapPin, Send, MessageCircle, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
-import contactData from "../data/contact.json";
+import { useData } from "../context/DataContext";
+import contactFallback from "../data/contact.json";
 
 export const Contact: React.FC = () => {
+  const { dbData } = useData();
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const emailVal = dbData?.contactInfoSetup?.email || contactFallback.email;
+  const phoneVal = dbData?.contactInfoSetup?.phone || contactFallback.phone;
+  const addressVal = dbData?.contactInfoSetup?.address || dbData?.contactInfoSetup?.locationTitle || contactFallback.location;
+  const whatsappNumber = dbData?.contactWhatsAppSetup?.number || phoneVal.replace(/[^0-9+]/g, "");
+
+  const socialsList = dbData?.contactSocialLinksSetup && dbData.contactSocialLinksSetup.length > 0
+    ? dbData.contactSocialLinksSetup.filter((s: any) => s.status !== false)
+    : contactFallback.socials.map((s: any) => ({ platform: s.name, url: s.url, handle: s.handle }));
+
+  const inquiryTypes = dbData?.contactCategoriesSetup && dbData.contactCategoriesSetup.length > 0
+    ? dbData.contactCategoriesSetup.filter((c: any) => c.status !== false).map((c: any) => ({ value: c.value, label: c.name }))
+    : contactFallback.inquiryTypes;
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    category: inquiryTypes[0]?.value || "general",
+    company: "",
+    message: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setErrorMsg("");
+    try {
+      const response = await fetch("http://localhost:5000/api/v1/cms/public/enquiry", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to submit inquiry.");
+      }
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
-  // Format phone number to clean digits for WhatsApp link (e.g. +18005552633)
-  const whatsappNumber = contactData.phone.replace(/[^0-9+]/g, "");
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
@@ -39,7 +81,7 @@ export const Contact: React.FC = () => {
 
       {/* Contact Layout */}
       <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 text-left relative z-10">
-        {/* Info & Map Column (LGB 5) */}
+        {/* Info & Map Column */}
         <div className="lg:col-span-5 flex flex-col justify-between gap-10">
           <div>
             <h3 className="font-serif text-2xl text-white font-bold mb-6">Direct Channels</h3>
@@ -52,8 +94,8 @@ export const Contact: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] uppercase tracking-[1px] opacity-40 block font-mono">BUSINESS EMAIL</span>
-                  <a href={`mailto:${contactData.email}`} className="text-sm font-bold text-white hover:text-gold transition-colors duration-300">
-                    {contactData.email}
+                  <a href={`mailto:${emailVal}`} className="text-sm font-bold text-white hover:text-gold transition-colors duration-300">
+                    {emailVal}
                   </a>
                 </div>
               </div>
@@ -65,8 +107,8 @@ export const Contact: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] uppercase tracking-[1px] opacity-40 block font-mono">COMMUNICATION TELEPHONE</span>
-                  <a href={`tel:${contactData.phone}`} className="text-sm font-bold text-white hover:text-gold transition-colors duration-300">
-                    {contactData.phone}
+                  <a href={`tel:${phoneVal}`} className="text-sm font-bold text-white hover:text-gold transition-colors duration-300">
+                    {phoneVal}
                   </a>
                 </div>
               </div>
@@ -100,7 +142,7 @@ export const Contact: React.FC = () => {
                 <div>
                   <span className="text-[10px] uppercase tracking-[1px] opacity-40 block font-mono">CREATOR HQ</span>
                   <span className="text-sm font-bold text-white">
-                    {contactData.location}
+                    {addressVal}
                   </span>
                 </div>
               </div>
@@ -112,20 +154,20 @@ export const Contact: React.FC = () => {
             <h4 className="font-serif text-sm font-bold text-white mb-4 uppercase tracking-[2px]">Location Map</h4>
             <div className="relative rounded-2xl overflow-hidden border border-white/5 bg-white/[0.01] p-2">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808580700d987b51%3A0xcb13e9a7e02e60f0!2sSilicon%20Valley!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus"
+                src={dbData?.contactMapSetupData?.url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808580700d987b51%3A0xcb13e9a7e02e60f0!2sSilicon%20Valley!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus"}
                 width="100%" 
                 height="220" 
                 style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) grayscale(100%) contrast(90%)" }} 
                 allowFullScreen={false} 
                 loading="lazy"
-                title="Silicon Valley Headquarters Map"
+                title="Office HQ Map"
                 className="rounded-xl opacity-80 hover:opacity-100 transition-opacity duration-500"
               />
             </div>
           </div>
         </div>
 
-        {/* Form Column (LGB 7) */}
+        {/* Form Column */}
         <div className="lg:col-span-7 flex flex-col justify-between gap-8">
           {/* Business Inquiry Form */}
           <div className="glass-panel p-8 md:p-10 rounded-3xl border border-white/5 relative">
@@ -141,6 +183,11 @@ export const Contact: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                {errorMsg && (
+                  <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-xs font-light">
+                    {errorMsg}
+                  </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">YOUR NAME</label>
@@ -148,6 +195,8 @@ export const Contact: React.FC = () => {
                       type="text"
                       required
                       placeholder="ARIAN DEVI"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
                     />
                   </div>
@@ -157,6 +206,8 @@ export const Contact: React.FC = () => {
                       type="email"
                       required
                       placeholder="ARIAN@DEVI.COM"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
                     />
                   </div>
@@ -165,8 +216,12 @@ export const Contact: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">INQUIRY CATEGORY</label>
-                    <select className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-gray-400 focus:outline-none focus:border-gold transition-colors duration-300">
-                      {contactData.inquiryTypes.map((type) => (
+                    <select 
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-gray-400 focus:outline-none focus:border-gold transition-colors duration-300"
+                    >
+                      {inquiryTypes.map((type: any) => (
                         <option key={type.value} value={type.value} className="bg-[#121212] text-white">
                           {type.label}
                         </option>
@@ -178,6 +233,8 @@ export const Contact: React.FC = () => {
                     <input
                       type="text"
                       placeholder="GOOGLE INC."
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                       className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
                     />
                   </div>
@@ -189,16 +246,19 @@ export const Contact: React.FC = () => {
                     rows={4}
                     required
                     placeholder="Provide outline dates, audience sizes, sponsorship briefs, or general requests."
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-gold/10"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-gold/10 disabled:opacity-50 disabled:cursor-not-allowed"
                   data-cursor="submit"
                 >
-                  Log Inquiry Details
+                  {isSubmitting ? "Logging Outline..." : "Log Inquiry Details"}
                   <Send className="w-4 h-4" />
                 </button>
               </form>
@@ -209,15 +269,15 @@ export const Contact: React.FC = () => {
           <div>
             <h4 className="font-serif text-sm font-bold text-white mb-4 uppercase tracking-[2px]">Connect Internationally</h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {contactData.socials.map((social) => (
+              {socialsList.map((social: any) => (
                 <a 
-                  key={social.name} 
+                  key={social.platform || social.name} 
                   href={social.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="border border-white/5 bg-white/[0.01] p-4 rounded-2xl flex flex-col justify-between hover:border-gold/30 hover:bg-gold/[0.02] transition-all duration-300"
                 >
-                  <span className="text-[10px] text-gold uppercase tracking-[1px] font-bold font-mono">{social.name}</span>
+                  <span className="text-[10px] text-gold uppercase tracking-[1px] font-bold font-mono">{social.platform || social.name}</span>
                   <div className="flex items-center justify-between mt-3">
                     <span className="text-xs text-white truncate max-w-[80%] font-light">{social.handle}</span>
                     <ExternalLink className="w-3.5 h-3.5 text-gray-500" />

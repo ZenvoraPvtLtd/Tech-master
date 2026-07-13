@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Cpu, Layers, Box, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import servicesData from "../data/services.json";
+import { useData } from "../context/DataContext";
 
 export const Services: React.FC = () => {
+  const { servicesData } = useData();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeAdvancedTab, setActiveAdvancedTab] = useState<number>(0);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -146,7 +147,7 @@ export const Services: React.FC = () => {
                       </p>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {srv.features.map((feat, fidx) => (
+                        {srv.features.map((feat: any, fidx: number) => (
                           <div key={fidx} className="flex items-center gap-2">
                             <span className="text-xs text-gray-400">{feat}</span>
                           </div>

@@ -1,35 +1,25 @@
 {
-  "name": "3d_api",
+  "name": "techmaster-cms-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Simplified dynamic key-value CMS backend for TechMaster",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon -r dotenv/config server.js",
-    "seed": "node src/seed/admin.seed.js"
+    "dev": "nodemon server.js",
+    "seed": "node src/seed/seed.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
-    "compression": "^1.8.1",
-    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "helmet": "^8.2.0",
-    "joi": "^18.2.3",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.7.3",
-    "morgan": "^1.11.0",
-    "multer": "^2.2.0",
-    "nodemailer": "^9.0.3",
-    "streamifier": "^0.1.1"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.0",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.9"
   }
 }

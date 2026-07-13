@@ -1,10 +1,45 @@
 import React from "react";
 import { motion } from "framer-motion";
-import aboutData from "../data/about.json";
-import teamData from "../data/team.json";
+import { useData } from "../context/DataContext";
+import teamFallback from "../data/team.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const About: React.FC = () => {
+  const { aboutData } = useData();
+  const aboutDataAny = aboutData as any;
+
+  const teamList = aboutDataAny?.team || teamFallback;
+
+  const experiencesList = aboutDataAny?.experience && aboutDataAny.experience.length > 0 ? aboutDataAny.experience : [
+    {
+      id: "exp-1",
+      companyName: "TechGiants",
+      designation: "Senior Architect",
+      startDate: "2018",
+      endDate: "2022",
+      description: "Spearheaded the development of scalable microservices architectures. Led a team of 20+ engineers to deliver robust enterprise solutions, reducing server response times by 40%."
+    },
+    {
+      id: "exp-2",
+      companyName: "StartupX",
+      designation: "Lead Developer",
+      startDate: "2015",
+      endDate: "2018",
+      description: "Architected the core product from the ground up, implementing cutting-edge frontend frameworks and real-time backend systems. Instrumental in securing Series A funding."
+    }
+  ];
+
+  const getYear = (dateStr: string) => {
+    if (!dateStr) return "";
+    if (dateStr.length >= 4) return dateStr.substring(0, 4);
+    return dateStr;
+  };
+
+  const achievementsList = aboutDataAny?.achievements && aboutDataAny.achievements.length > 0 ? aboutDataAny.achievements : [
+    { id: "ach-1", title: "Developer of the Year", description: "Global Tech Summit 2021", year: "" },
+    { id: "ach-2", title: "Best Educational Platform", description: "EdTech Innovation Awards 2023", year: "" },
+    { id: "ach-3", title: "Top 100 Tech Influencers", description: "TechMedia Global 2022", year: "" }
+  ];
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
       {/* Background Orbs */}
@@ -117,20 +152,17 @@ export const About: React.FC = () => {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="glass-panel p-8 rounded-3xl border-l-4 border-gold/50">
-            <h3 className="font-serif text-2xl text-white mb-2">Senior Architect at TechGiants</h3>
-            <span className="text-gold text-xs font-mono mb-4 block">2018 - 2022</span>
-            <p className="text-gray-400 text-sm font-light leading-relaxed">
-              Spearheaded the development of scalable microservices architectures. Led a team of 20+ engineers to deliver robust enterprise solutions, reducing server response times by 40%.
-            </p>
-          </div>
-          <div className="glass-panel p-8 rounded-3xl border-l-4 border-gold/50">
-            <h3 className="font-serif text-2xl text-white mb-2">Lead Developer at StartupX</h3>
-            <span className="text-gold text-xs font-mono mb-4 block">2015 - 2018</span>
-            <p className="text-gray-400 text-sm font-light leading-relaxed">
-              Architected the core product from the ground up, implementing cutting-edge frontend frameworks and real-time backend systems. Instrumental in securing Series A funding.
-            </p>
-          </div>
+          {experiencesList.map((exp: any) => (
+            <div key={exp.id || exp._id} className="glass-panel p-8 rounded-3xl border-l-4 border-gold/50">
+              <h3 className="font-serif text-2xl text-white mb-2">{exp.designation} at {exp.companyName}</h3>
+              <span className="text-gold text-xs font-mono mb-4 block">
+                {getYear(exp.startDate)} - {getYear(exp.endDate)}
+              </span>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                {exp.description}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -144,18 +176,14 @@ export const About: React.FC = () => {
              </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <h4 className="text-white font-bold mb-2">Developer of the Year</h4>
-              <p className="text-gray-400 text-xs font-light">Global Tech Summit 2021</p>
-            </div>
-            <div className="text-center">
-              <h4 className="text-white font-bold mb-2">Best Educational Platform</h4>
-              <p className="text-gray-400 text-xs font-light">EdTech Innovation Awards 2023</p>
-            </div>
-            <div className="text-center">
-              <h4 className="text-white font-bold mb-2">Top 100 Tech Influencers</h4>
-              <p className="text-gray-400 text-xs font-light">TechMedia Global 2022</p>
-            </div>
+            {achievementsList.map((ach: any) => (
+              <div key={ach.id || ach._id} className="text-center">
+                <h4 className="text-white font-bold mb-2">{ach.title}</h4>
+                <p className="text-gray-400 text-xs font-light">
+                  {ach.description || ach.organization} {ach.year ? ach.year : ""}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -186,7 +214,7 @@ export const About: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {teamData.map((member, idx) => (
+          {teamList.map((member: any, idx: number) => (
             <LuxuryCard key={member.id} accentColor="#D4AF37" index={idx}>
               <div className="aspect-square w-full overflow-hidden relative border-b border-white/5 mb-6 rounded-2xl">
                 <img

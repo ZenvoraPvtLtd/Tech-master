@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => {
-  const { db, updateSection } = useDatabase();
+  const { db, updateSection, logout } = useDatabase();
   const library = db?.mediaLibrary || [];
 
   const [activeTab, setActiveTab] = useState('library'); // 'library' or 'upload'
@@ -72,6 +72,11 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
         headers: token ? { "Authorization": `Bearer ${token}` } : {},
         body: formData
       });
+
+      if (response.status === 401) {
+        logout();
+        throw new Error("Session expired. Please log in again.");
+      }
 
       const data = await response.json();
       if (!response.ok) {

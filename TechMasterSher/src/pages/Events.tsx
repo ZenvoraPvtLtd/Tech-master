@@ -1,14 +1,17 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Award, ArrowUpRight } from "lucide-react";
-import eventsData from "../data/events.json";
+import eventsStaticData from "../data/events.json";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { useData } from "../context/DataContext";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const Events: React.FC = () => {
+  const { eventsData: cmsEvents } = useData();
+  const eventsData = cmsEvents && cmsEvents.length > 0 ? cmsEvents : eventsStaticData;
   useEffect(() => {
     // Reveal section
     gsap.fromTo(

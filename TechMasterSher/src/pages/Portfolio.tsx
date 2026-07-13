@@ -1,26 +1,37 @@
 import React, { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import portfolioData from "../data/portfolio.json";
+import { useData } from "../context/DataContext";
+import portfolioFallback from "../data/portfolio.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Portfolio: React.FC = () => {
+  const { dbData } = useData();
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const filters = [
-    "All",
-    "Videos",
-    "Photos",
-    "Projects",
-    "Campaigns",
-    "Reels",
-    "Commercial Shoots",
-    "Client Work"
-  ];
+  const portfolioList = dbData?.portfolio && dbData.portfolio.length > 0 ? dbData.portfolio : portfolioFallback;
+  const portfolioHero = dbData?.portfolioHero || {
+    smallHeading: "CURATED SHOWCASES",
+    mainHeadingLine1: "Product Engineering &",
+    highlightText: "Student Collaborations"
+  };
+
+  const filters = dbData?.portfolioFilters && dbData.portfolioFilters.length > 0
+    ? ["All", ...dbData.portfolioFilters.map((f: any) => f.name || f)]
+    : [
+        "All",
+        "Videos",
+        "Photos",
+        "Projects",
+        "Campaigns",
+        "Reels",
+        "Commercial Shoots",
+        "Client Work"
+      ];
 
   const filteredProjects = activeFilter === "All"
-    ? portfolioData
-    : portfolioData.filter((proj) => proj.category === activeFilter);
+    ? portfolioList
+    : portfolioList.filter((proj: any) => proj.category === activeFilter || (proj.categories && proj.categories.includes(activeFilter)));
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
@@ -36,12 +47,12 @@ export const Portfolio: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
         >
-          CURATED SHOWCASES
+          {portfolioHero.smallHeading}
         </motion.div>
         
         <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight">
-          Product Engineering & <br />
-          <span className="text-gold italic font-bold">Student Collaborations</span>.
+          {portfolioHero.mainHeadingLine1} <br />
+          <span className="text-gold italic font-bold">{portfolioHero.highlightText}</span>.
         </h1>
       </section>
 
@@ -69,7 +80,7 @@ export const Portfolio: React.FC = () => {
           className="grid grid-cols-1 md:grid-cols-2 gap-12"
         >
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, idx) => (
+            {filteredProjects.map((project: any, idx: number) => (
               <motion.div
                 layout
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -111,7 +122,7 @@ export const Portfolio: React.FC = () => {
 
                     <div className="flex flex-wrap gap-2 pt-6 border-t border-white/5 items-center justify-between mt-auto">
                       <div className="flex flex-wrap gap-1.5">
-                        {project.tags.map((tag) => (
+                        {project.tags.map((tag: any) => (
                           <span key={tag} className="px-2.5 py-0.5 rounded-md bg-white/5 text-[9px] font-mono text-gray-400">
                             {tag}
                           </span>

@@ -2,34 +2,79 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Laptop, Terminal, Layers, ArrowUpRight, Cpu } from "lucide-react";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { useData } from "../context/DataContext";
+
+const iconMap: Record<string, React.ReactNode> = {
+  Laptop: <Laptop className="w-6 h-6 text-gold" />,
+  Terminal: <Terminal className="w-6 h-6 text-electric-blue" />,
+  Layers: <Layers className="w-6 h-6 text-royal-purple" />,
+  Cpu: <Cpu className="w-6 h-6 text-gold" />,
+};
 
 export const ProductLaunches: React.FC = () => {
-  const products = [
-    {
-      icon: <Laptop className="w-6 h-6 text-gold" />,
-      title: "MasterClass App v2",
-      tagline: "Gamified Interactive Code Learning",
-      description: "Our core dashboard offering browser-based shell access, sandboxed docker execution, and step-by-step challenges covering system architectures.",
-      status: "Active Launch",
-      accent: "#D4AF37",
-    },
-    {
-      icon: <Terminal className="w-6 h-6 text-electric-blue" />,
-      title: "DevEnv CLI utility",
-      tagline: "Speed Up Local Node Configuration",
-      description: "A fast terminal CLI utility that builds customized, performant TS, Vite, and tailwind stacks in seconds, downloaded 80k+ times.",
-      status: "Open Source",
-      accent: "#00E5FF",
-    },
-    {
-      icon: <Layers className="w-6 h-6 text-royal-purple" />,
-      title: "System Sandbox Hub",
-      tagline: "Interactive AWS & Docker diagrams",
-      description: "A digital workspace where students can construct multi-tier architectures visually, export them, and trigger test loads.",
-      status: "Beta Testing",
-      accent: "#aa3bff",
-    },
-  ];
+  const { launchesData } = useData();
+
+  const hero = launchesData?.hero || {
+    smallBadge: "SOFTWARE RELEASES",
+    headline: "Product Launches &",
+    highlightWord: "Tech Innovations",
+    description: "We construct platforms, terminal tools, and architectural sandbox spaces to help learners visual and configure engineering problems."
+  };
+
+  const products = launchesData?.products && launchesData.products.length > 0
+    ? launchesData.products.map((prod: any) => ({
+        icon: iconMap[prod.icon] || <Laptop className="w-6 h-6 text-gold" />,
+        title: prod.title,
+        tagline: prod.tagline,
+        description: prod.description,
+        status: prod.status || "Active Launch",
+        accent: prod.accent || prod.accentColor || "#D4AF37",
+      }))
+    : [
+        {
+          icon: <Laptop className="w-6 h-6 text-gold" />,
+          title: "MasterClass App v2",
+          tagline: "Gamified Interactive Code Learning",
+          description: "Our core dashboard offering browser-based shell access, sandboxed docker execution, and step-by-step challenges covering system architectures.",
+          status: "Active Launch",
+          accent: "#D4AF37",
+        },
+        {
+          icon: <Terminal className="w-6 h-6 text-electric-blue" />,
+          title: "DevEnv CLI utility",
+          tagline: "Speed Up Local Node Configuration",
+          description: "A fast terminal CLI utility that builds customized, performant TS, Vite, and tailwind stacks in seconds, downloaded 80k+ times.",
+          status: "Open Source",
+          accent: "#00E5FF",
+        },
+        {
+          icon: <Layers className="w-6 h-6 text-royal-purple" />,
+          title: "System Sandbox Hub",
+          tagline: "Interactive AWS & Docker diagrams",
+          description: "A digital workspace where students can construct multi-tier architectures visually, export them, and trigger test loads.",
+          status: "Beta Testing",
+          accent: "#aa3bff",
+        },
+      ];
+
+  const featureVideo = launchesData?.featureVideo || {
+    smallBadge: "LATEST LAUNCH VIDEO",
+    headline: "MasterClass v2 Platform Launch Walkthrough",
+    description: "Watch Aman demonstrate the sandboxed docker containers, web terminals, and the multiplayer live coding rooms that make learning code feel like a cooperative MMO game.",
+    trailerBtnText: "Play Trailer",
+    notesBtnText: "View Launch Notes",
+    thumbnailUrl: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=400&q=80"
+  };
+
+  const initiatives = launchesData?.initiatives && launchesData.initiatives.length > 0
+    ? launchesData.initiatives
+    : [
+        { title: "Launch Events", description: "Hosting high-energy digital and physical events to unveil new platforms, creating massive day-one adoption and community buzz." },
+        { title: "Product Promotions", description: "Strategic marketing pushes that position developer tools directly in front of their ideal user base through trusted channels." },
+        { title: "Brand Launches", description: "End-to-end support for introducing new technology brands to the market, establishing authority and developer trust instantly." },
+        { title: "Campaign Videos", description: "Cinematic, deep-dive promotional videos that explain complex software architectures in a visually stunning and digestible format." },
+        { title: "Results", description: "We measure our success by tangible impact: tens of thousands of active accounts created, millions of impressions, and sustained engagement long after the initial launch phase ends." }
+      ];
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
@@ -45,7 +90,7 @@ export const ProductLaunches: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
         >
-          SOFTWARE RELEASES
+          {hero.smallBadge || "SOFTWARE RELEASES"}
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 35 }}
@@ -53,8 +98,8 @@ export const ProductLaunches: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
         >
-          Product Launches & <br />
-          <span className="text-gold italic font-bold">Tech Innovations</span>
+          {hero.headline || "Product Launches &"} <br />
+          <span className="text-gold italic font-bold">{hero.highlightWord || "Tech Innovations"}</span> {hero.titleLine2 || ""}
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -62,7 +107,7 @@ export const ProductLaunches: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-400 text-sm sm:text-base font-light max-w-xl mx-auto leading-relaxed"
         >
-          We construct platforms, terminal tools, and architectural sandbox spaces to help learners visual and configure engineering problems.
+          {hero.description}
         </motion.p>
       </div>
 
@@ -109,26 +154,26 @@ export const ProductLaunches: React.FC = () => {
           className="glass-panel p-8 md:p-12 rounded-3xl mt-24 text-left max-w-5xl mx-auto flex flex-col md:flex-row gap-8 items-center"
         >
           <div className="md:w-2/3">
-            <span className="text-[10px] uppercase font-bold tracking-[3px] text-gold block mb-2">LATEST LAUNCH VIDEO</span>
+            <span className="text-[10px] uppercase font-bold tracking-[3px] text-gold block mb-2">{featureVideo.smallBadge || "LATEST LAUNCH VIDEO"}</span>
             <h3 className="font-serif text-3xl font-light text-white mb-4 leading-tight">
-              MasterClass v2 Platform Launch Walkthrough
+              {featureVideo.headline || "MasterClass v2 Platform Launch Walkthrough"}
             </h3>
             <p className="text-gray-400 text-xs md:text-sm leading-relaxed font-light mb-6">
-              Watch Aman demonstrate the sandboxed docker containers, web terminals, and the multiplayer live coding rooms that make learning code feel like a cooperative MMO game.
+              {featureVideo.description}
             </p>
             <div className="flex gap-4">
               <button className="px-6 py-3 bg-white text-black font-bold uppercase text-[10px] tracking-[2px] rounded-full hover:bg-gold transition-all duration-300">
-                Play Trailer
+                {featureVideo.trailerBtnText || "Play Trailer"}
               </button>
               <button className="px-6 py-3 border border-white/20 text-white font-bold uppercase text-[10px] tracking-[2px] rounded-full hover:border-white transition-all duration-300">
-                View Launch Notes
+                {featureVideo.notesBtnText || "View Launch Notes"}
               </button>
             </div>
           </div>
 
           <div className="md:w-1/3 w-full aspect-video rounded-2xl overflow-hidden border border-white/5 relative">
             <img
-              src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=400&q=80"
+              src={featureVideo.thumbnailUrl || "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=400&q=80"}
               alt="Launch Thumbnail"
               className="w-full h-full object-cover"
             />
@@ -148,36 +193,14 @@ export const ProductLaunches: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
-              <h3 className="font-serif text-xl font-bold text-white mb-3">Launch Events</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
-                Hosting high-energy digital and physical events to unveil new platforms, creating massive day-one adoption and community buzz.
-              </p>
-            </div>
-            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
-              <h3 className="font-serif text-xl font-bold text-white mb-3">Product Promotions</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
-                Strategic marketing pushes that position developer tools directly in front of their ideal user base through trusted channels.
-              </p>
-            </div>
-            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
-              <h3 className="font-serif text-xl font-bold text-white mb-3">Brand Launches</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
-                End-to-end support for introducing new technology brands to the market, establishing authority and developer trust instantly.
-              </p>
-            </div>
-            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
-              <h3 className="font-serif text-xl font-bold text-white mb-3">Campaign Videos</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
-                Cinematic, deep-dive promotional videos that explain complex software architectures in a visually stunning and digestible format.
-              </p>
-            </div>
-            <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 lg:col-span-2">
-              <h3 className="font-serif text-xl font-bold text-white mb-3">Results</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
-                We measure our success by tangible impact: tens of thousands of active accounts created, millions of impressions, and sustained engagement long after the initial launch phase ends.
-              </p>
-            </div>
+            {initiatives.map((init: any, idx: number) => (
+              <div key={idx} className={`glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 ${idx === initiatives.length - 1 && initiatives.length % 3 === 2 ? 'lg:col-span-2' : ''}`}>
+                <h3 className="font-serif text-xl font-bold text-white mb-3">{init.title}</h3>
+                <p className="text-gray-400 text-sm font-light leading-relaxed">
+                  {init.description}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 

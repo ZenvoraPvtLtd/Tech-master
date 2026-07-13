@@ -31,6 +31,13 @@ export const DatabaseProvider = ({ children }) => {
     { id: "not-3", text: "System Auto-Backup completed successfully", type: "system", unread: false, time: "Yesterday" }
   ]);
 
+  const persistAuth = (nextAuth) => {
+    setAuth(nextAuth);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('zenvora_auth', JSON.stringify(nextAuth));
+    }
+  };
+
   // Unified API caller helper
   const apiFetch = async (path, options = {}) => {
     const savedAuth = localStorage.getItem('zenvora_auth');
@@ -55,6 +62,12 @@ export const DatabaseProvider = ({ children }) => {
       ...options,
       headers
     });
+
+    if (response.status === 401) {
+      persistAuth({ user: null, token: "", isLoggedIn: false });
+      localStorage.removeItem('zenvora_auth');
+      throw new Error("Session expired. Please log in again.");
+    }
 
     const data = await response.json();
     if (!response.ok) {
@@ -85,13 +98,6 @@ export const DatabaseProvider = ({ children }) => {
     };
     fetchCMSData();
   }, [auth.isLoggedIn]);
-
-  const persistAuth = (nextAuth) => {
-    setAuth(nextAuth);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('zenvora_auth', JSON.stringify(nextAuth));
-    }
-  };
 
   // Login handler
   const login = async (email = 'admin@gmail.com', password = 'Admin@123') => {

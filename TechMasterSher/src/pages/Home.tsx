@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Magnetic } from "../components/Magnetic";
+import { useData } from "../context/DataContext";
 import { LuxuryCard } from "../components/LuxuryCard";
-import homeData from "../data/home.json";
-import servicesData from "../data/services.json";
-import campaignsData from "../data/campaigns.json";
-import eventsData from "../data/events.json";
-import videosData from "../data/videos.json";
+import servicesFallback from "../data/services.json";
+import campaignsFallback from "../data/campaigns.json";
+import eventsFallback from "../data/events.json";
+import videosFallback from "../data/videos.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -175,6 +175,42 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
 };
 
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
+  const { homeData, servicesData, campaignsData, eventsData, dbData } = useData();
+  const servicesList = servicesData && servicesData.length > 0 ? servicesData : servicesFallback;
+  const campaignsList = campaignsData && campaignsData.length > 0 ? campaignsData : campaignsFallback;
+  const eventsList = eventsData && eventsData.length > 0 ? eventsData : eventsFallback;
+
+  const dynamicVideos = [
+    ...(dbData?.homepage?.reels || []).map((v: any) => ({
+      id: v.id,
+      title: v.title,
+      type: "reel",
+      url: v.videoUrl || v.url,
+      thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
+      aspectRatio: "9/16",
+      category: "Reels & Shorts"
+    })),
+    ...(dbData?.homepage?.shorts || []).map((v: any) => ({
+      id: v.id,
+      title: v.title,
+      type: "short",
+      url: v.videoUrl || v.url,
+      thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
+      aspectRatio: "9/16",
+      category: "Reels & Shorts"
+    })),
+    ...(dbData?.homepage?.longVideos || []).map((v: any) => ({
+      id: v.id,
+      title: v.title,
+      type: "long_video",
+      url: v.videoUrl || v.url,
+      thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
+      aspectRatio: "16/9",
+      category: "Long Videos"
+    }))
+  ];
+  const activeVideos = dynamicVideos.length > 0 ? dynamicVideos : videosFallback;
+
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
@@ -340,7 +376,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     onChangePage(pageId);
   };
 
-  const filteredVideos = videosData.filter((v) => {
+  const filteredVideos = activeVideos.filter((v: any) => {
     if (activeFilter === "all") return true;
     if (activeFilter === "reels_shorts") return v.type === "reel" || v.type === "short";
     if (activeFilter === "long") return v.type === "long_video";
@@ -521,7 +557,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
 
         <div className="services-grid grid grid-cols-1 md:grid-cols-2 gap-8">
-          {servicesData.map((srv, idx) => (
+          {servicesList.map((srv, idx) => (
             <LuxuryCard
               key={srv.id}
               accentColor={srv.accentColor}
@@ -545,7 +581,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               </p>
 
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 border-t border-white/5">
-                {srv.features.map((feat, fidx) => (
+                {srv.features.map((feat: any, fidx: number) => (
                   <li key={fidx} className="flex items-center gap-2 text-xs text-gray-400">
                     <span>{feat}</span>
                   </li>
@@ -728,7 +764,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {campaignsData.slice(0, 3).map((camp: any) => (
+          {campaignsList.slice(0, 3).map((camp: any) => (
             <div key={camp.id} className="glass-panel p-6 rounded-2xl border border-white/5 fade-up flex flex-col">
               <img src={camp.coverImage} alt={camp.title} className="w-full h-40 object-cover rounded-xl mb-4" />
               <h3 className="font-serif text-xl text-white mb-2">{camp.title}</h3>
@@ -752,7 +788,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {eventsData.slice(0, 2).map((evt: any) => (
+          {eventsList.slice(0, 2).map((evt: any) => (
             <div key={evt.id} className="glass-panel p-8 rounded-2xl border-l-2 hover:border-l-gold transition-all duration-300 fade-up">
               <span className="text-gold text-xs font-mono mb-3 block">{evt.date}</span>
               <h3 className="font-serif text-2xl text-white mb-3">{evt.title}</h3>

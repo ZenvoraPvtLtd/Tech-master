@@ -1,31 +1,39 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import galleryData from "../data/gallery.json";
+import { useData } from "../context/DataContext";
+import galleryFallback from "../data/gallery.json";
 
 export const Gallery: React.FC = () => {
+  const { dbData } = useData();
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const filters = [
-    "All",
-    "Photos",
-    "Videos",
-    "Behind the Scenes",
-    "Campaign Images",
-    "Events",
-    "Celebrity Moments",
-    "Awards",
-    "Travel",
-    "Lifestyle",
-    "Interviews",
-    "Press Releases",
-    "Podcasts",
-    "TV Features",
-    "Magazine Features"
-  ];
+  const galleryList = dbData?.mediaGallery && dbData.mediaGallery.length > 0
+    ? dbData.mediaGallery.filter((item: any) => item.status === "Active" || item.status === true || item.status === undefined)
+    : galleryFallback;
+
+  const filters = dbData?.mediaFilters && dbData.mediaFilters.length > 0
+    ? ["All", ...dbData.mediaFilters.filter((f: any) => f.isVisible !== false).map((f: any) => f.name || f)]
+    : [
+        "All",
+        "Photos",
+        "Videos",
+        "Behind the Scenes",
+        "Campaign Images",
+        "Events",
+        "Celebrity Moments",
+        "Awards",
+        "Travel",
+        "Lifestyle",
+        "Interviews",
+        "Press Releases",
+        "Podcasts",
+        "TV Features",
+        "Magazine Features"
+      ];
 
   const filteredItems = activeFilter === "All"
-    ? galleryData
-    : galleryData.filter(item => item.type === activeFilter);
+    ? galleryList
+    : galleryList.filter((item: any) => item.type === activeFilter || item.category === activeFilter);
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
@@ -71,37 +79,37 @@ export const Gallery: React.FC = () => {
       <section className="max-w-7xl mx-auto text-left relative z-10">
         <motion.div layout className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
           <AnimatePresence mode="popLayout">
-            {filteredItems.map((item, index) => (
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.05 }}
-              key={item.id}
-              className="break-inside-avoid glass-panel p-4 rounded-3xl group cursor-pointer hover:border-gold/30 transition-all duration-500 overflow-hidden"
-            >
-              <div className="rounded-2xl overflow-hidden mb-4 relative">
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  loading="lazy"
-                  className="w-full object-cover transition-transform duration-700 group-hover:scale-103"
-                  data-cursor="expand"
-                />
-                <div className="absolute top-3 left-3 bg-black/80 border border-white/10 px-3 py-1 rounded-full text-[9px] uppercase tracking-[1px] font-mono text-gold">
-                  {item.type}
+            {filteredItems.map((item: any, index: number) => (
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.05 }}
+                key={item.id || item._id || index}
+                className="break-inside-avoid glass-panel p-4 rounded-3xl group cursor-pointer hover:border-gold/30 transition-all duration-500 overflow-hidden"
+              >
+                <div className="rounded-2xl overflow-hidden mb-4 relative">
+                  <img
+                    src={item.imageUrl || item.url}
+                    alt={item.title}
+                    loading="lazy"
+                    className="w-full object-cover transition-transform duration-700 group-hover:scale-103"
+                    data-cursor="expand"
+                  />
+                  <div className="absolute top-3 left-3 bg-black/80 border border-white/10 px-3 py-1 rounded-full text-[9px] uppercase tracking-[1px] font-mono text-gold">
+                    {item.type || item.category}
+                  </div>
                 </div>
-              </div>
 
-              <div className="px-2">
-                <h3 className="font-serif text-xl text-white font-medium group-hover:text-gold transition-colors duration-300">
-                  {item.title}
-                </h3>
-                <p className="text-gray-400 text-xs mt-1.5 leading-relaxed font-light">
-                  {item.description}
-                </p>
-              </div>
-            </motion.div>
+                <div className="px-2">
+                  <h3 className="font-serif text-xl text-white font-medium group-hover:text-gold transition-colors duration-300">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-400 text-xs mt-1.5 leading-relaxed font-light">
+                    {item.description}
+                  </p>
+                </div>
+              </motion.div>
             ))}
           </AnimatePresence>
         </motion.div>
