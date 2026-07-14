@@ -20,42 +20,27 @@ import faqRoutes from "./faq.routes";
 import contactRoutes from "./contact.routes";
 import websiteSettingsRoutes from "./websiteSettings.routes";
 
-// Import models and repositories for the update and aggregate endpoints
-import { Homepage } from "../models/Homepage";
-import { About } from "../models/About";
-import { FounderJourney } from "../models/FounderJourney";
-import { MissionVision } from "../models/MissionVision";
-import { WhatWeDo } from "../models/WhatWeDo";
+// Import models and repositories
+import { CMSData } from "../models/CMSData";
 import { Service } from "../models/Service";
-import { Collaboration } from "../models/Collaboration";
-import { Campaign } from "../models/Campaign";
-import { ProductLaunch } from "../models/ProductLaunch";
-import { Event } from "../models/Event";
-import { Portfolio } from "../models/Portfolio";
-import { MediaGallery } from "../models/MediaGallery";
 import { Career } from "../models/Career";
 import { Blog } from "../models/Blog";
 import { Faq } from "../models/FAQ";
-import { Contact } from "../models/Contact";
-import { WebsiteSettings } from "../models/WebsiteSettings";
-import { User } from "../models/User";
+import { Event } from "../models/Event";
+import { Portfolio } from "../models/Portfolio";
+import { MediaGallery } from "../models/MediaGallery";
 
 import {
-  homepageRepository,
-  aboutRepository,
-  founderJourneyRepository,
-  missionVisionRepository,
-  whatWeDoRepository,
   serviceRepository,
-  collaborationRepository,
-  campaignRepository,
-  productLaunchRepository,
+  blogRepository,
+  careerRepository,
+  faqRepository,
   eventRepository,
   portfolioRepository,
   mediaGalleryRepository,
-  careerRepository,
-  blogRepository,
-  faqRepository,
+  collaborationRepository,
+  campaignRepository,
+  productLaunchRepository,
   contactRepository,
   websiteSettingsRepository,
 } from "../repositories";
@@ -65,63 +50,57 @@ const router = Router();
 // Aggregate endpoint for the public frontends
 router.get("/", async (req, res, next) => {
   try {
+    // 1. Fetch all CMSData generic key-value documents
+    const cmsDocs = await CMSData.find({});
+    const cmsDataMap: Record<string, any> = {};
+    for (const doc of cmsDocs) {
+      cmsDataMap[doc.key] = doc.value;
+    }
+
+    // 2. Fetch all collections in parallel for fallback
     const [
-      homepage,
-      about,
-      founderJourney,
-      missionVision,
-      whatWeDo,
       services,
-      collaborations,
-      campaigns,
-      productLaunches,
+      blogs,
+      careers,
+      faqs,
       events,
       portfolio,
       mediaGallery,
-      careers,
-      blogs,
-      faqs,
+      collaborations,
+      campaigns,
+      productLaunches,
       contact,
       websiteSettings,
     ] = await Promise.all([
-      homepageRepository.find(),
-      aboutRepository.find(),
-      founderJourneyRepository.find(),
-      missionVisionRepository.find(),
-      whatWeDoRepository.find(),
       serviceRepository.find(),
-      collaborationRepository.find(),
-      campaignRepository.find(),
-      productLaunchRepository.find(),
+      blogRepository.find(),
+      careerRepository.find(),
+      faqRepository.find(),
       eventRepository.find(),
       portfolioRepository.find(),
       mediaGalleryRepository.find(),
-      careerRepository.find(),
-      blogRepository.find(),
-      faqRepository.find(),
+      collaborationRepository.find(),
+      campaignRepository.find(),
+      productLaunchRepository.find(),
       contactRepository.find(),
       websiteSettingsRepository.find(),
     ]);
 
-    // Singletons usually have only one active document
+    // 3. Construct aggregated CMS state
     const data = {
-      homepage: homepage[0] || null,
-      about: about[0] || null,
-      founderJourney: founderJourney[0] || null,
-      missionVision: missionVision[0] || null,
-      whatWeDo: whatWeDo[0] || null,
       services,
-      collaborations,
-      campaigns,
-      productLaunches,
+      blogs,
+      careers,
+      faqs,
       events,
       portfolio,
       mediaGallery,
-      careers,
-      blogs,
-      faqs,
+      collaborations,
+      campaigns,
+      productLaunches,
       contact: contact[0] || null,
       websiteSettings: websiteSettings[0] || null,
+      ...cmsDataMap, // Dynamically override and inject any updated flat keys
     };
 
     ApiResponse.success(res, "CMS aggregate data retrieved successfully", data);
@@ -134,73 +113,47 @@ router.get("/", async (req, res, next) => {
 router.post("/update", authenticate as any, async (req: any, res: any, next: any) => {
   try {
     const { key, value } = req.body;
-    const userId = req.user?.id;
 
     if (!key) {
       ApiResponse.error(res, "Missing key parameter", 400);
       return;
     }
 
-    const singletons: Record<string, any> = {
-      homepage: Homepage,
-      about: About,
-      founderJourney: FounderJourney,
-      missionVision: MissionVision,
-      whatWeDo: WhatWeDo,
-      contact: Contact,
-      settings: WebsiteSettings,
-    };
+    // 1. Update CMSData key-value collection
+    const doc = await CMSData.findOneAndUpdate(
+      { key },
+      { value },
+      { upsert: true, new: true }
+    );
 
-    const collections: Record<string, any> = {
+    // 2. Sync to structured model if it's a known collection
+    const ModelMap: Record<string, any> = {
       services: Service,
-      collaborations: Collaboration,
-      campaigns: Campaign,
-      launches: ProductLaunch,
-      events: Event,
-      portfolio: Portfolio,
-      mediaGallery: MediaGallery,
       careers: Career,
       blogs: Blog,
       faqs: Faq,
-      users: User,
+      events: Event,
+      portfolio: Portfolio,
+      mediaGallery: MediaGallery,
     };
 
-    if (singletons[key]) {
-      const Model = singletons[key];
-      let doc = await Model.findOne({ isDeleted: false });
-      if (!doc) {
-        doc = new Model({ ...value, createdBy: userId, updatedBy: userId });
-      } else {
-        Object.assign(doc, { ...value, updatedBy: userId });
-      }
-      await doc.save();
-      ApiResponse.success(res, `${key} updated successfully`, doc);
-      return;
-    }
-
-    if (collections[key]) {
-      const Model = collections[key];
-      // Sync list by rewriting (standard mock-sync pattern)
+    if (ModelMap[key]) {
+      const Model = ModelMap[key];
       await Model.deleteMany({});
       
       const payloadArray = Array.isArray(value) ? value : [];
       const recordsToInsert = payloadArray.map((item: any) => {
         const cleanItem = { ...item };
-        // Check if ID is a valid MongoDB ObjectId hex string. If not, mongoose will auto-assign _id
         if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
           cleanItem._id = cleanItem.id;
         }
-        cleanItem.createdBy = userId;
-        cleanItem.updatedBy = userId;
         return cleanItem;
       });
 
-      const insertedDocs = await Model.insertMany(recordsToInsert);
-      ApiResponse.success(res, `${key} synchronized successfully`, insertedDocs);
-      return;
+      await Model.insertMany(recordsToInsert);
     }
 
-    ApiResponse.error(res, `Unknown section key: ${key}`, 400);
+    ApiResponse.success(res, `${key} synchronized successfully`, doc);
   } catch (error) {
     next(error);
   }

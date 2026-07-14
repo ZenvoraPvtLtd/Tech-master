@@ -50,7 +50,7 @@ app.use(
   })
 );
 
-// 3. Rate Limiting (Prevent DDoS/abuse)
+// 3. Rate Limiting (Prevent DDoS/abuse in production)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per window
@@ -58,7 +58,10 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use("/api", limiter);
+
+if (process.env.NODE_ENV === "production") {
+  app.use("/api", limiter);
+}
 
 // 4. Parsing Middlewares
 app.use(express.json({ limit: "50mb" }));
