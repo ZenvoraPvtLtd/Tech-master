@@ -86,6 +86,7 @@ interface DataContextType {
   isLoading: boolean;
   isBackendConnected: boolean;
   dbData: any;
+  refreshData: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -123,6 +124,50 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [dbData, setDbData] = useState<any>(null);
+  const REFRESH_INTERVAL_MS = 60000;
+
+  const refreshData = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/v1/cms");
+      if (!response.ok) throw new Error("Failed to fetch from backend");
+      const result = await response.json();
+      if (result.success && result.data) {
+        console.log('Fetched CMS data:', result.data);
+        setDbData(result.data);
+        setIsBackendConnected(true);
+        if (result.data.homepage) {
+          const rawHero = result.data.homepage.hero || {};
+          setHomeData({
+            hero: {
+              tag: rawHero.title || homeFallback.hero.tag,
+              headline: rawHero.highlightTitle || homeFallback.hero.headline,
+              paragraph: rawHero.description || homeFallback.hero.paragraph,
+              ctaPrimary: rawHero.ctaButtonText || homeFallback.hero.ctaPrimary,
+              ctaSecondary: rawHero.ctaButtonUrl || homeFallback.hero.ctaSecondary,
+            },
+            stats: Array.isArray(result.data.homepage.statisticsCounters) && result.data.homepage.statisticsCounters.length > 0
+              ? result.data.homepage.statisticsCounters
+                  .filter((s: any) => s.status === "Active" || s.status === true || s.status === undefined)
+                  .map((s: any) => ({
+                    value: `${s.prefix || ""}${s.number}${s.suffix || ""}`,
+                    label: s.label,
+                  }))
+              : homeFallback.stats,
+            values: Array.isArray(result.data.homepage.coreValues) && result.data.homepage.coreValues.length > 0
+              ? result.data.homepage.coreValues
+                  .filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
+                  .map((v: any) => ({
+                    title: v.valueName || v.title,
+                    description: v.description,
+                  }))
+              : homeFallback.values,
+          });
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,13 +177,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           throw new Error("Failed to fetch from backend");
         }
         const result = await response.json();
-        
         if (result.success && result.data) {
+          console.log('Initial fetch CMS data:', result.data);
           const db = result.data;
           setDbData(db);
           setIsBackendConnected(true);
 
-          // 1. Map Homepage Data
           if (db.homepage) {
             const rawHero = db.homepage.hero || {};
             setHomeData({
@@ -147,14 +191,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 headline: rawHero.highlightTitle || homeFallback.hero.headline,
                 paragraph: rawHero.description || homeFallback.hero.paragraph,
                 ctaPrimary: rawHero.ctaButtonText || homeFallback.hero.ctaPrimary,
-                ctaSecondary: rawHero.ctaButtonUrl || homeFallback.hero.ctaSecondary
+                ctaSecondary: rawHero.ctaButtonUrl || homeFallback.hero.ctaSecondary,
               },
               stats: Array.isArray(db.homepage.statisticsCounters) && db.homepage.statisticsCounters.length > 0
                 ? db.homepage.statisticsCounters
                     .filter((s: any) => s.status === "Active" || s.status === true || s.status === undefined)
                     .map((s: any) => ({
                       value: `${s.prefix || ""}${s.number}${s.suffix || ""}`,
-                      label: s.label
+                      label: s.label,
                     }))
                 : homeFallback.stats,
               values: Array.isArray(db.homepage.coreValues) && db.homepage.coreValues.length > 0
@@ -162,13 +206,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     .filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
                     .map((v: any) => ({
                       title: v.valueName || v.title,
-                      description: v.description
+                      description: v.description,
                     }))
-                : homeFallback.values
+                : homeFallback.values,
             });
           }
-
-          // 2. Map About Data
           if (db.about) {
             const rawIntro = db.about.introduction || {};
             setAboutData({
@@ -177,22 +219,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
               bio: rawIntro.shortDescription || aboutFallback.bio,
               philosophy: {
                 title: db.about.philosophy?.title || aboutFallback.philosophy.title,
-                paragraph: db.about.philosophy?.description || aboutFallback.philosophy.paragraph
+                paragraph: db.about.philosophy?.description || aboutFallback.philosophy.paragraph,
               },
               credentials: Array.isArray(db.about.highlights) && db.about.highlights.length > 0
                 ? db.about.highlights
                     .filter((h: any) => h.status === "Active" || h.status === true || h.status === undefined)
                     .map((h: any) => ({
                       metric: h.label,
-                      count: `${h.prefix || ""}${h.number}${h.suffix || ""}`
+                      count: `${h.prefix || ""}${h.number}${h.suffix || ""}`,
                     }))
-                : aboutFallback.credentials
+                : aboutFallback.credentials,
             });
-          }
-
-          // 3. Map Journey Data
-          if (db.founderJourney) {
+            
             const rawHero = db.founderJourney.hero || {};
+
             setJourneyHero({
               badgeText: rawHero.badgeText || "FOUNDER CHRONICLES",
               heading: rawHero.heading || "The Journey of",
@@ -489,7 +529,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         launchesData,
         isLoading,
         isBackendConnected,
-        dbData
+        dbData,
+        refreshData
       }}
     >
       {children}
