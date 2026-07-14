@@ -62,8 +62,8 @@ export const About: React.FC = () => {
           transition={{ duration: 1.0, delay: 0.2 }}
           className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8"
         >
-          {aboutData.name} <br />
-          <span className="text-gold italic font-bold">{aboutData.title}</span>
+          {aboutData?.introduction?.founderName} <br />
+          <span className="text-gold italic font-bold">{aboutData?.introduction?.designation}</span>
         </motion.h1>
 
         <motion.div
@@ -73,14 +73,14 @@ export const About: React.FC = () => {
           className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 pt-12 border-t border-white/5"
         >
           <p className="text-gray-400 font-light text-base md:text-lg leading-relaxed">
-            {aboutData.bio}
+            {aboutData?.introduction?.shortDescription}
           </p>
           <div className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300 flex flex-col justify-center">
             <h3 className="font-serif text-xl font-bold text-white mb-3">
               {aboutData.philosophy.title}
             </h3>
             <p className="text-gray-400 text-xs leading-relaxed font-light font-sans">
-              {aboutData.philosophy.paragraph}
+              {aboutData?.philosophy?.description}
             </p>
           </div>
         </motion.div>
@@ -88,7 +88,7 @@ export const About: React.FC = () => {
 
       {/* Dynamic statistics section */}
       <section className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32 text-left relative z-10">
-        {aboutData.credentials.map((cred, idx) => (
+            {aboutData?.highlights?.map((cred: any, idx: number) => (
           <div key={idx} className="glass-panel p-6 rounded-2xl border-t border-white/5">
             <span className="font-serif text-3xl font-black text-gold block mb-1">{cred.count}</span>
             <span className="text-gray-400 text-[10px] uppercase tracking-[1px] font-mono">{cred.metric}</span>

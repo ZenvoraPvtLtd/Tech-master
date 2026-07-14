@@ -403,7 +403,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
               <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
-            {homeData.hero.tag}
+            {homeData?.hero?.title}
           </motion.div>
 
           {/* Headline with split reveal effect */}
@@ -423,7 +423,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             transition={{ duration: 1.0, delay: 0.6 }}
             className="text-gray-400 text-sm md:text-lg font-light max-w-2xl leading-relaxed mb-6 md:mb-12 p-4 md:p-8 rounded-2xl border border-gold bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
           >
-            {homeData.hero.paragraph}
+            {homeData?.hero?.description}
           </motion.div>
 
           <motion.div
@@ -437,7 +437,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 onClick={() => handleNavClick("services")}
                 className="light-sweep px-8 py-4 bg-white text-black font-bold uppercase text-xs tracking-[2px] rounded-full hover:bg-gold hover:text-black transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
               >
-                {homeData.hero.ctaPrimary}
+                {homeData?.hero?.ctaButtonText}
               </button>
             </Magnetic>
 
@@ -457,7 +457,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 onClick={() => handleNavClick("contact")}
                 className="px-8 py-4 border border-white/20 text-white font-bold uppercase text-xs tracking-[2px] rounded-full hover:border-gold hover:text-gold bg-transparent transition-all duration-500 flex items-center gap-2"
               >
-                {homeData.hero.ctaSecondary}
+                {homeData?.hero?.ctaButtonUrl}
                 <ArrowUpRight className="w-4 h-4" />
               </button>
             </Magnetic>
@@ -515,7 +515,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </span>
         </div>
         <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {homeData.values.map((val, idx) => (
+          {homeData?.coreValues?.map((val: any, idx: number) => (
             <div key={idx} className="value-card glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300 opacity-0">
               <h3 className="value-card-heading font-serif text-xl font-medium text-white mb-2">{splitText(val.title)}</h3>
               <p className="value-card-content text-gray-400 text-xs sm:text-sm font-light leading-relaxed opacity-0">{val.description}</p>
@@ -598,9 +598,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="max-w-7xl mx-auto">
           <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-12">INFLUENCE & REACH</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {homeData.stats.map((stat, idx) => (
+            {homeData?.statisticsCounters?.map((stat: any, idx: number) => (
               <div key={idx} className="fade-up">
-                <span className="font-serif text-4xl sm:text-6xl font-black text-gold block mb-2">{stat.value}</span>
+                <span className="font-serif text-4xl sm:text-6xl font-black text-gold block mb-2">{`${stat.prefix || ""}${stat.number}${stat.suffix || ""}`}</span>
                 <span className="text-gray-400 text-xs tracking-[1px] uppercase font-mono">{stat.label}</span>
               </div>
             ))}
