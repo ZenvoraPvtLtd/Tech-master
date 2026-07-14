@@ -505,6 +505,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchData();
   }, []);
 
+  // Periodic refresh using REFRESH_INTERVAL_MS
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshData();
+    }, REFRESH_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <DataContext.Provider
       value={{
