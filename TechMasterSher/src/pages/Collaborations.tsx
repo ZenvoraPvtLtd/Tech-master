@@ -1,7 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
-import brandsFallback from "../data/brands.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Collaborations: React.FC = () => {
@@ -22,7 +21,7 @@ export const Collaborations: React.FC = () => {
 
   const partners = collaborations.partners && collaborations.partners.length > 0
     ? collaborations.partners.filter((p: any) => p.status === "Active" || p.status === true || p.status === undefined)
-    : brandsFallback;
+    : [];
 
   const metrics = collaborations.metrics && collaborations.metrics.length > 0
     ? collaborations.metrics.filter((m: any) => m.status === "Active" || m.status === true || m.status === undefined)

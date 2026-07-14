@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
-import portfolioFallback from "../data/portfolio.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Portfolio: React.FC = () => {
   const { dbData } = useData();
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const portfolioList = dbData?.portfolio && dbData.portfolio.length > 0 ? dbData.portfolio : portfolioFallback;
+  const portfolioList = dbData?.portfolio && dbData.portfolio.length > 0 ? dbData.portfolio : [];
   const portfolioHero = dbData?.portfolioHero || {
     smallHeading: "CURATED SHOWCASES",
     mainHeadingLine1: "Product Engineering &",

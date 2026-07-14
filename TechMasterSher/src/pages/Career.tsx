@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
-import careerFallback from "../data/career.json";
 
 export const Career: React.FC = () => {
   const { careerData } = useData();
-  const careerList = careerData && careerData.length > 0 ? careerData : careerFallback;
+  const careerList = careerData || [];
 
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

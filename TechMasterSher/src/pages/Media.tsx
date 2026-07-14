@@ -2,7 +2,6 @@ import React from "react";
 import { Download, Film } from "lucide-react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
-import mediaFallback from "../data/media.json";
 
 export const Media: React.FC = () => {
   const { dbData } = useData();
@@ -16,15 +15,15 @@ export const Media: React.FC = () => {
 
   const mediaShowreel = dbData?.mediaShowreels && dbData.mediaShowreels.length > 0
     ? dbData.mediaShowreels[0]
-    : mediaFallback.showreel;
+    : null;
 
   const mediaDownloads = dbData?.mediaDownloads && dbData.mediaDownloads.length > 0
     ? dbData.mediaDownloads.filter((d: any) => d.status === "Active" || d.status === true || d.status === undefined)
-    : mediaFallback.downloads;
+    : [];
 
   const editorialMentions = dbData?.mediaGallery && dbData.mediaGallery.length > 0
     ? dbData.mediaGallery.filter((m: any) => m.status === "Active" || m.status === true || m.status === undefined)
-    : mediaFallback.editorialMentions;
+    : [];
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">

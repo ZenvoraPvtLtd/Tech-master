@@ -6,10 +6,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Magnetic } from "../components/Magnetic";
 import { useData } from "../context/DataContext";
 import { LuxuryCard } from "../components/LuxuryCard";
-import servicesFallback from "../data/services.json";
-import campaignsFallback from "../data/campaigns.json";
-import eventsFallback from "../data/events.json";
-import videosFallback from "../data/videos.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -176,9 +172,9 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
 
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   const { homeData, servicesData, campaignsData, eventsData, dbData } = useData();
-  const servicesList = servicesData && servicesData.length > 0 ? servicesData : servicesFallback;
-  const campaignsList = campaignsData && campaignsData.length > 0 ? campaignsData : campaignsFallback;
-  const eventsList = eventsData && eventsData.length > 0 ? eventsData : eventsFallback;
+  const servicesList = servicesData || [];
+  const campaignsList = campaignsData || [];
+  const eventsList = eventsData || [];
 
   const dynamicVideos = [
     ...(dbData?.homepage?.reels || []).map((v: any) => ({
@@ -209,7 +205,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       category: "Long Videos"
     }))
   ];
-  const activeVideos = dynamicVideos.length > 0 ? dynamicVideos : videosFallback;
+  const activeVideos = dynamicVideos.length > 0 ? dynamicVideos : [];
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedVideo, setSelectedVideo] = useState<any>(null);

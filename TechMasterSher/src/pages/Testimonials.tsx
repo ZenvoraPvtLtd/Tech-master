@@ -2,12 +2,11 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Quote, Star } from "lucide-react";
 import { useData } from "../context/DataContext";
-import testimonialsFallback from "../data/testimonials.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Testimonials: React.FC = () => {
   const { testimonialsData } = useData();
-  const testimonialsList = testimonialsData && testimonialsData.length > 0 ? testimonialsData : testimonialsFallback;
+  const testimonialsList = testimonialsData || [];
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">

@@ -1,14 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
-import teamFallback from "../data/team.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const About: React.FC = () => {
   const { aboutData } = useData();
   const aboutDataAny = aboutData as any;
 
-  const teamList = aboutDataAny?.team || teamFallback;
+  const teamList = aboutDataAny?.team || [];
 
   const experiencesList = aboutDataAny?.experience && aboutDataAny.experience.length > 0 ? aboutDataAny.experience : [
     {

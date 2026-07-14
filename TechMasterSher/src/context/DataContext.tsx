@@ -1,16 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
-// Static JSON Fallbacks
-import homeFallback from "../data/home.json";
-import aboutFallback from "../data/about.json";
-import journeyFallback from "../data/journey.json";
-import servicesFallback from "../data/services.json";
-import campaignsFallback from "../data/campaigns.json";
-import faqFallback from "../data/faq.json";
-import blogsFallback from "../data/blogs.json";
-import careerFallback from "../data/career.json";
-import eventsFallback from "../data/events.json";
-import testimonialsFallback from "../data/testimonials.json";
 
 interface HeroData {
   tag: string;
@@ -92,9 +81,9 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [homeData, setHomeData] = useState<HomeData>(homeFallback);
-  const [aboutData, setAboutData] = useState<AboutData>(aboutFallback);
-  const [journeyData, setJourneyData] = useState<JourneyItem[]>(journeyFallback);
+  const [homeData, setHomeData] = useState<HomeData>({ hero: { tag: "", headline: "", paragraph: "", ctaPrimary: "", ctaSecondary: "" }, stats: [], values: [] });
+  const [aboutData, setAboutData] = useState<AboutData>({ name: "", title: "", bio: "", philosophy: { title: "", paragraph: "" }, credentials: [] });
+  const [journeyData, setJourneyData] = useState<JourneyItem[]>([]);
   const [journeyHero, setJourneyHero] = useState({
     badgeText: "FOUNDER CHRONICLES",
     heading: "The Journey of",
@@ -103,13 +92,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     scrollIndicatorText: "Explore timeline"
   });
 
-  const [servicesData, setServicesData] = useState<any[]>(servicesFallback);
-  const [campaignsData, setCampaignsData] = useState<any[]>(campaignsFallback);
-  const [faqData, setFaqData] = useState<any[]>(faqFallback);
-  const [blogsData, setBlogsData] = useState<any[]>(blogsFallback);
-  const [careerData, setCareerData] = useState<any[]>(careerFallback);
-  const [eventsData, setEventsData] = useState<any[]>(eventsFallback);
-  const [testimonialsData, setTestimonialsData] = useState<any[]>(testimonialsFallback);
+  const [servicesData, setServicesData] = useState<any[]>([]);
+  const [campaignsData, setCampaignsData] = useState<any[]>([]);
+  const [faqData, setFaqData] = useState<any[]>([]);
+  const [blogsData, setBlogsData] = useState<any[]>([]);
+  const [careerData, setCareerData] = useState<any[]>([]);
+  const [eventsData, setEventsData] = useState<any[]>([]);
+  const [testimonialsData, setTestimonialsData] = useState<any[]>([]);
 
   // New state for additional admin-managed sections
   const [missionVisionData, setMissionVisionData] = useState<any>(null);
@@ -135,11 +124,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const rawHero = db.homepage.hero || {};
       setHomeData({
         hero: {
-          tag: rawHero.title || homeFallback.hero.tag,
-          headline: rawHero.highlightTitle || homeFallback.hero.headline,
-          paragraph: rawHero.description || homeFallback.hero.paragraph,
-          ctaPrimary: rawHero.ctaButtonText || homeFallback.hero.ctaPrimary,
-          ctaSecondary: rawHero.ctaButtonUrl || homeFallback.hero.ctaSecondary,
+          tag: rawHero.title || "",
+          headline: rawHero.highlightTitle || "",
+          paragraph: rawHero.description || "",
+          ctaPrimary: rawHero.ctaButtonText || "",
+          ctaSecondary: rawHero.ctaButtonUrl || "",
         },
         stats: Array.isArray(db.homepage.statisticsCounters) && db.homepage.statisticsCounters.length > 0
           ? db.homepage.statisticsCounters
@@ -148,7 +137,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 value: `${s.prefix || ""}${s.number}${s.suffix || ""}`,
                 label: s.label,
               }))
-          : homeFallback.stats,
+          : [],
         values: Array.isArray(db.homepage.coreValues) && db.homepage.coreValues.length > 0
           ? db.homepage.coreValues
               .filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
@@ -156,19 +145,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 title: v.valueName || v.title,
                 description: v.description,
               }))
-          : homeFallback.values,
+          : [],
       });
     }
 
     if (db.about) {
       const rawIntro = db.about.introduction || {};
       setAboutData({
-        name: rawIntro.founderName || aboutFallback.name,
-        title: rawIntro.designation || aboutFallback.title,
-        bio: rawIntro.shortDescription || aboutFallback.bio,
+        name: rawIntro.founderName || "",
+        title: rawIntro.designation || "",
+        bio: rawIntro.shortDescription || "",
         philosophy: {
-          title: db.about.philosophy?.title || aboutFallback.philosophy.title,
-          paragraph: db.about.philosophy?.description || aboutFallback.philosophy.paragraph,
+          title: db.about.philosophy?.title || "",
+          paragraph: db.about.philosophy?.description || "",
         },
         credentials: Array.isArray(db.about.highlights) && db.about.highlights.length > 0
           ? db.about.highlights
@@ -177,7 +166,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 metric: h.label,
                 count: `${h.prefix || ""}${h.number}${h.suffix || ""}`,
               }))
-          : aboutFallback.credentials,
+          : [],
       });
 
       const rawHero = db.founderJourney?.hero || {};

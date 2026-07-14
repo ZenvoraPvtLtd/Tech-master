@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Mail, Phone, MapPin, Send, MessageCircle, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
-import contactFallback from "../data/contact.json";
 
 export const Contact: React.FC = () => {
   const { dbData } = useData();
@@ -10,18 +9,18 @@ export const Contact: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const emailVal = dbData?.contactInfoSetup?.email || contactFallback.email;
-  const phoneVal = dbData?.contactInfoSetup?.phone || contactFallback.phone;
-  const addressVal = dbData?.contactInfoSetup?.address || dbData?.contactInfoSetup?.locationTitle || contactFallback.location;
+  const emailVal = dbData?.contactInfoSetup?.email || "";
+  const phoneVal = dbData?.contactInfoSetup?.phone || "";
+  const addressVal = dbData?.contactInfoSetup?.address || dbData?.contactInfoSetup?.locationTitle || "";
   const whatsappNumber = dbData?.contactWhatsAppSetup?.number || phoneVal.replace(/[^0-9+]/g, "");
 
   const socialsList = dbData?.contactSocialLinksSetup && dbData.contactSocialLinksSetup.length > 0
     ? dbData.contactSocialLinksSetup.filter((s: any) => s.status !== false)
-    : contactFallback.socials.map((s: any) => ({ platform: s.name, url: s.url, handle: s.handle }));
+    : [];
 
   const inquiryTypes = dbData?.contactCategoriesSetup && dbData.contactCategoriesSetup.length > 0
     ? dbData.contactCategoriesSetup.filter((c: any) => c.status !== false).map((c: any) => ({ value: c.value, label: c.name }))
-    : contactFallback.inquiryTypes;
+    : [];
 
   const [formData, setFormData] = useState({
     name: "",

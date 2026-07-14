@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
-import galleryFallback from "../data/gallery.json";
 
 export const Gallery: React.FC = () => {
   const { dbData } = useData();
@@ -9,7 +8,7 @@ export const Gallery: React.FC = () => {
 
   const galleryList = dbData?.mediaGallery && dbData.mediaGallery.length > 0
     ? dbData.mediaGallery.filter((item: any) => item.status === "Active" || item.status === true || item.status === undefined)
-    : galleryFallback;
+    : [];
 
   const filters = dbData?.mediaFilters && dbData.mediaFilters.length > 0
     ? ["All", ...dbData.mediaFilters.filter((f: any) => f.isVisible !== false).map((f: any) => f.name || f)]

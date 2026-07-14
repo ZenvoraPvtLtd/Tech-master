@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { ArrowUpRight, BarChart3, TrendingUp, Users, ChevronRight, Target, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
-import blogsFallback from "../data/blogs.json";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 interface StrategyPreset {
@@ -49,7 +48,7 @@ const categories = [
 
 export const Blog: React.FC = () => {
   const { blogsData } = useData();
-  const blogsList = blogsData && blogsData.length > 0 ? blogsData : blogsFallback;
+  const blogsList = blogsData || [];
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeStrategy, setActiveStrategy] = useState("solopreneur");
 
