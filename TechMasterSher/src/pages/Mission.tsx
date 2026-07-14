@@ -27,13 +27,6 @@ const defaultValues = [
   },
 ];
 
-const accentIcons = [
-  <Compass className="w-6 h-6 text-gold" />,
-  <Eye className="w-6 h-6 text-electric-blue" />,
-  <ShieldCheck className="w-6 h-6 text-royal-purple" />,
-  <HeartHandshake className="w-6 h-6 text-pink-500" />,
-];
-
 const accentColors = ["#D4AF37", "#00E5FF", "#aa3bff", "#FF007F"];
 
 export const Mission: React.FC = () => {
@@ -53,10 +46,6 @@ export const Mission: React.FC = () => {
           accent: v.accentColor || accentColors[idx % accentColors.length],
         }))
     : defaultValues;
-
-  const brandPillars = Array.isArray(mv.brandPillars) && mv.brandPillars.length > 0
-    ? mv.brandPillars.filter((p: any) => p.status === "Active" || p.status === true || p.status === undefined)
-    : null;
 
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">

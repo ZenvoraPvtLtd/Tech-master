@@ -114,7 +114,7 @@ export const ProductLaunches: React.FC = () => {
       {/* Product launch items */}
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {products.map((prod, idx) => (
+          {products.map((prod: any, idx: number) => (
             <LuxuryCard key={idx} accentColor={prod.accent} index={idx}>
               <div className="flex justify-between items-start mb-8">
                 <div className="w-12 h-12 rounded-full border border-white/5 bg-white/5 flex items-center justify-center group-hover:border-gold/30 transition-colors duration-300">

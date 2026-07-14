@@ -115,7 +115,7 @@ export const WhatWeDo: React.FC = () => {
       {/* Grid of operations */}
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {operations.map((op, idx) => (
+          {operations.map((op: any, idx: number) => (
             <LuxuryCard key={idx} accentColor={op.accent} index={idx}>
               <div className="flex justify-between items-start mb-6">
                 <div className="w-12 h-12 rounded-2xl border border-white/5 bg-white/5 flex items-center justify-center group-hover:border-gold/30 transition-colors duration-300">
