@@ -40,7 +40,17 @@ export const WebsiteSettings = ({ setCurrentView }) => {
   const [textFields, setTextFields] = useState({
     tagline: 'Establish Authority in the Digital Landscape',
     headline: 'Creative Direction & Brand Consultancy',
-    copyright: settingsData.footerText || '© 2026 TECHMASTER. All Rights Reserved.'
+    copyright: settingsData.footerText || '© 2026 TECHMASTER. All Rights Reserved.',
+    privacyEffectiveDate: settingsData.privacyEffectiveDate || 'July 7, 2026',
+    privacyIntro: settingsData.privacyIntro || 'Aman & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter.',
+    privacyDataCollection: settingsData.privacyDataCollection || 'We collect email addresses solely for sending newsletter digests, cohort details, and technical blogs. Your information is never sold, traded, or shared with third-party advertising companies.',
+    privacyCookies: settingsData.privacyCookies || 'This platform utilizes basic localized storage and caching systems to maintain animations, 3D settings, and user navigation states smoothly.',
+    privacySecurity: settingsData.privacySecurity || 'All direct inquiries and newsletter transmissions are protected with industry-standard cryptographic handshakes.',
+    termsEffectiveDate: settingsData.termsEffectiveDate || 'July 7, 2026',
+    termsIntro: settingsData.termsIntro || 'By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service.',
+    termsIntellectualProperty: settingsData.termsIntellectualProperty || 'All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Aman and Tech Master Labs unless stated otherwise.',
+    termsUserLicense: settingsData.termsUserLicense || 'You are granted a limited license to explore our portfolio and code projects for educational research. Scraping, cloning, or distributing source codes commercially without express written consent is strictly prohibited.',
+    termsSandboxDeclarations: settingsData.termsSandboxDeclarations || 'All forms, databases, and estimates operate in safe sandbox demonstration pipelines.'
   });
   const [textSuccess, setTextSuccess] = useState(false);
 
@@ -122,7 +132,19 @@ export const WebsiteSettings = ({ setCurrentView }) => {
   // Text Save Handler
   const handleTextSave = (e) => {
     e.preventDefault();
-    updateSection('settings', { footerText: textFields.copyright });
+    updateSection('settings', { 
+      footerText: textFields.copyright,
+      privacyEffectiveDate: textFields.privacyEffectiveDate,
+      privacyIntro: textFields.privacyIntro,
+      privacyDataCollection: textFields.privacyDataCollection,
+      privacyCookies: textFields.privacyCookies,
+      privacySecurity: textFields.privacySecurity,
+      termsEffectiveDate: textFields.termsEffectiveDate,
+      termsIntro: textFields.termsIntro,
+      termsIntellectualProperty: textFields.termsIntellectualProperty,
+      termsUserLicense: textFields.termsUserLicense,
+      termsSandboxDeclarations: textFields.termsSandboxDeclarations
+    });
     setTextSuccess(true);
     setTimeout(() => setTextSuccess(false), 1500);
   };
@@ -392,8 +414,94 @@ export const WebsiteSettings = ({ setCurrentView }) => {
                 onChange={e => setTextFields({ ...textFields, copyright: e.target.value })}
                 required
               />
+              <div className="border-t border-zinc-900 my-4 pt-4">
+                <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Privacy Policy Setup</h4>
+                <div className="flex flex-col gap-4">
+                  <Input 
+                    label="Privacy Policy Effective Date" 
+                    value={textFields.privacyEffectiveDate}
+                    onChange={e => setTextFields({ ...textFields, privacyEffectiveDate: e.target.value })}
+                    required
+                  />
+                  <Input 
+                    label="Privacy Policy Introduction" 
+                    textarea
+                    rows={2}
+                    value={textFields.privacyIntro}
+                    onChange={e => setTextFields({ ...textFields, privacyIntro: e.target.value })}
+                    required
+                  />
+                  <Input 
+                    label="Data Collection & Use details" 
+                    textarea
+                    rows={2}
+                    value={textFields.privacyDataCollection}
+                    onChange={e => setTextFields({ ...textFields, privacyDataCollection: e.target.value })}
+                    required
+                  />
+                  <Input 
+                    label="Cookies Policy details" 
+                    textarea
+                    rows={2}
+                    value={textFields.privacyCookies}
+                    onChange={e => setTextFields({ ...textFields, privacyCookies: e.target.value })}
+                    required
+                  />
+                  <Input 
+                    label="Security & Protection details" 
+                    textarea
+                    rows={2}
+                    value={textFields.privacySecurity}
+                    onChange={e => setTextFields({ ...textFields, privacySecurity: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="border-t border-zinc-900 my-4 pt-4">
+                <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Terms of Service Setup</h4>
+                <div className="flex flex-col gap-4">
+                  <Input 
+                    label="Terms Effective Date" 
+                    value={textFields.termsEffectiveDate}
+                    onChange={e => setTextFields({ ...textFields, termsEffectiveDate: e.target.value })}
+                    required
+                  />
+                  <Input 
+                    label="Terms Introduction statement" 
+                    textarea
+                    rows={2}
+                    value={textFields.termsIntro}
+                    onChange={e => setTextFields({ ...textFields, termsIntro: e.target.value })}
+                    required
+                  />
+                  <Input 
+                    label="Intellectual Property details" 
+                    textarea
+                    rows={2}
+                    value={textFields.termsIntellectualProperty}
+                    onChange={e => setTextFields({ ...textFields, termsIntellectualProperty: e.target.value })}
+                    required
+                  />
+                  <Input 
+                    label="User License details" 
+                    textarea
+                    rows={2}
+                    value={textFields.termsUserLicense}
+                    onChange={e => setTextFields({ ...textFields, termsUserLicense: e.target.value })}
+                    required
+                  />
+                  <Input 
+                    label="Sandbox Declarations details" 
+                    textarea
+                    rows={2}
+                    value={textFields.termsSandboxDeclarations}
+                    onChange={e => setTextFields({ ...textFields, termsSandboxDeclarations: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
               <Button type="submit" variant="primary" className="text-white text-xs font-semibold py-2.5 mt-2" disabled={textSuccess}>
-                {textSuccess ? "Copyright Texts Serialized!" : "Save Text Layouts"}
+                {textSuccess ? "Texts, Privacy & Terms Serialized!" : "Save Text Layouts"}
               </Button>
             </form>
           </Card>

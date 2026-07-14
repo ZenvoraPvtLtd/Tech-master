@@ -11,7 +11,7 @@ import {
   Briefcase, History, Edit3, Trash2, 
   RefreshCw, Save, ArrowUp, ArrowDown, 
   UploadCloud, AlertCircle, Play, Film, Video, Handshake,
-  Calendar, Target, Star, Download, Search
+  Calendar, Target, Star, Download, Search, User
 } from 'lucide-react';
 
 export const Homepage = () => {
@@ -19,7 +19,7 @@ export const Homepage = () => {
   const homepageData = db?.homepage || {};
 
   const [expandedCards, setExpandedCards] = useState({
-    hero: true, stats: false, coreValues: false, events: false, newsletter: false,
+    hero: true, founderBio: false, stats: false, coreValues: false, youtubePromo: false, events: false, newsletter: false, contactPreview: false,
     heroSlides: false, videoSlider: false, reels: false, shorts: false, longVideos: false,
     projects: false, services: false, logos: false, whyChooseUs: false, gallery: false, customSections: true
   });
@@ -35,7 +35,10 @@ export const Homepage = () => {
   };
 
   const [heroForm, setHeroForm] = useState(homepageData?.hero || {});
+  const [founderBioForm, setFounderBioForm] = useState(homepageData?.founderBio || {});
+  const [youtubePromoForm, setYoutubePromoForm] = useState(homepageData?.youtubePromo || {});
   const [newsletterForm, setNewsletterForm] = useState(homepageData?.newsletter || {});
+  const [contactPreviewForm, setContactPreviewForm] = useState(homepageData?.contactPreview || {});
   const [eventsForm, setEventsForm] = useState(homepageData?.events || {});
   const [subscriberSearch, setSubscriberSearch] = useState('');
 
@@ -248,24 +251,31 @@ export const Homepage = () => {
           {expandedCards.hero && (
             <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Main Title" value={heroForm.title || ''} onChange={e => setHeroForm({ ...heroForm, title: e.target.value })} />
-                <Input label="Highlight Title" value={heroForm.highlightTitle || ''} onChange={e => setHeroForm({ ...heroForm, highlightTitle: e.target.value })} />
-                <Input label="Subtitle" value={heroForm.subtitle || ''} onChange={e => setHeroForm({ ...heroForm, subtitle: e.target.value })} />
-                <Input label="CTA Button Text" value={heroForm.ctaButtonText || ''} onChange={e => setHeroForm({ ...heroForm, ctaButtonText: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} /></div>
+                <Input label="Animated Tag Line" value={heroForm.tag || ''} onChange={e => setHeroForm({ ...heroForm, tag: e.target.value })} />
+                <Input label="Primary Button CTA Text" value={heroForm.ctaPrimary || ''} onChange={e => setHeroForm({ ...heroForm, ctaPrimary: e.target.value })} />
+                <Input label="Secondary Button CTA Text" value={heroForm.ctaSecondary || ''} onChange={e => setHeroForm({ ...heroForm, ctaSecondary: e.target.value })} />
                 
-                {['desktopImageUrl', 'mobileImageUrl', 'videoUrl'].map(k => (
-                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
-                    {heroForm[k] ? (
-                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={heroForm[k]} className="w-full h-full object-cover" /><button onClick={() => setHeroForm({ ...heroForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
-                    ) : (
-                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
-                    )}
-                  </div>
-                ))}
+                <div className="md:col-span-2">
+                  <Input label="Hero Intro Description paragraph" textarea rows={3} value={heroForm.paragraph || ''} onChange={e => setHeroForm({ ...heroForm, paragraph: e.target.value })} />
+                </div>
               </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('hero', heroForm)}>Save Hero</Button></div>
+              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('hero', heroForm)}>Save Hero Overview</Button></div>
+            </div>
+          )}
+        </Card>
+
+        {/* 1.5. FOUNDER BIOGRAPHY SECTION */}
+        <Card title={<div onClick={() => toggleCard('founderBio')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><User className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Founder Biography</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.founderBio && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input label="Section Title Tag (e.g. Founder Biography)" value={founderBioForm.tag || ''} onChange={e => setFounderBioForm({ ...founderBioForm, tag: e.target.value })} />
+                <Input label="Headline Greeting" value={founderBioForm.title || ''} onChange={e => setFounderBioForm({ ...founderBioForm, title: e.target.value })} />
+                <div className="md:col-span-2">
+                  <Input label="Detailed Bio Paragraph" textarea rows={3} value={founderBioForm.paragraph || ''} onChange={e => setFounderBioForm({ ...founderBioForm, paragraph: e.target.value })} />
+                </div>
+              </div>
+              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('founderBio', founderBioForm)}>Save Founder Bio</Button></div>
             </div>
           )}
         </Card>
@@ -301,6 +311,24 @@ export const Homepage = () => {
                   { key: 'order', label: 'Display Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }
                 ]
               })}
+            </div>
+          )}
+        </Card>
+
+        {/* 3.5. YOUTUBE INITIATIVE PROMO SECTION */}
+        <Card title={<div onClick={() => toggleCard('youtubePromo')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Play className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">YouTube Initiative Promo</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.youtubePromo && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input label="Promo Badge Tag (e.g. YOUTUBE INITIATIVE)" value={youtubePromoForm.tag || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, tag: e.target.value })} />
+                <Input label="Main Heading Headline" value={youtubePromoForm.title || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, title: e.target.value })} />
+                <Input label="CTA Button Text" value={youtubePromoForm.ctaText || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, ctaText: e.target.value })} />
+                <Input label="CTA Redirect URL link" value={youtubePromoForm.ctaUrl || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, ctaUrl: e.target.value })} />
+                <div className="md:col-span-2">
+                  <Input label="Detailed Info Paragraph" textarea rows={3} value={youtubePromoForm.paragraph || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, paragraph: e.target.value })} />
+                </div>
+              </div>
+              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('youtubePromo', youtubePromoForm)}>Save YouTube Initiative Promo</Button></div>
             </div>
           )}
         </Card>
@@ -398,6 +426,20 @@ export const Homepage = () => {
                   { key: 'featuredToggle', label: 'Featured Event', type: 'switch' }, { key: 'activeToggle', label: 'Active', type: 'switch' }
                 ]
               })}
+            </div>
+          )}
+        </Card>
+
+        {/* 5.5. CONTACT COLLABORATION PREVIEW SECTION */}
+        <Card title={<div onClick={() => toggleCard('contactPreview')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Mail className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Contact / Collab Preview</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.contactPreview && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input label="Section Tag (e.g. COLLABORATION INQUIRY)" value={contactPreviewForm.tag || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, tag: e.target.value })} />
+                <Input label="Main Heading Headline" value={contactPreviewForm.title || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, title: e.target.value })} />
+                <Input label="CTA Button Text" value={contactPreviewForm.ctaText || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, ctaText: e.target.value })} />
+              </div>
+              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('contactPreview', contactPreviewForm)}>Save Collab Preview</Button></div>
             </div>
           )}
         </Card>

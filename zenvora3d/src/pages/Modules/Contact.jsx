@@ -207,14 +207,12 @@ export const Contact = () => {
 
               <Card className="border-zinc-800 p-6 bg-zinc-950/40" title="2. Hero Settings">
                 <div className="flex flex-col gap-4 mt-4">
-                  <Switch label="Enable Hero" checked={heroDraft.enable !== false} onChange={v => setHeroDraft(p => ({...p, enable: v}))} />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input label="Small Label" value={heroDraft.label || ''} onChange={e => setHeroDraft(p => ({...p, label: e.target.value}))} />
                     <Input label="Main Heading Line 1" value={heroDraft.mainLine1 || ''} onChange={e => setHeroDraft(p => ({...p, mainLine1: e.target.value}))} />
                   </div>
                   <Input label="Highlight Heading" value={heroDraft.highlight || ''} onChange={e => setHeroDraft(p => ({...p, highlight: e.target.value}))} />
                   <Input label="Hero Description" textarea rows={3} value={heroDraft.description || ''} onChange={e => setHeroDraft(p => ({...p, description: e.target.value}))} />
-                  <Switch label="Background Glow Enable" checked={heroDraft.glowEnable !== false} onChange={v => setHeroDraft(p => ({...p, glowEnable: v}))} />
                 </div>
                 <div className="flex justify-end mt-4"><Button onClick={() => handleSaveSettings('contactHeroSetup', heroDraft, 'Hero Saved')}>Save Hero</Button></div>
               </Card>
@@ -222,26 +220,13 @@ export const Contact = () => {
               <Card className="border-zinc-800 p-6 bg-zinc-950/40" title="3. Contact Information">
                 <div className="flex flex-col gap-4 mt-4">
                   <div className="border border-zinc-800 p-4 rounded bg-zinc-900/30">
-                    <Switch label="Enable Email" checked={infoDraft.enableEmail !== false} onChange={v => setInfoDraft(p => ({...p, enableEmail: v}))} />
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                      <Input label="Email Address" value={infoDraft.email || ''} onChange={e => setInfoDraft(p => ({...p, email: e.target.value}))} />
-                      <Input label="Icon Picker" value={infoDraft.emailIcon || ''} onChange={e => setInfoDraft(p => ({...p, emailIcon: e.target.value}))} />
-                    </div>
+                    <Input label="Email Address" value={infoDraft.email || ''} onChange={e => setInfoDraft(p => ({...p, email: e.target.value}))} />
                   </div>
                   <div className="border border-zinc-800 p-4 rounded bg-zinc-900/30">
-                    <Switch label="Enable Telephone" checked={infoDraft.enablePhone !== false} onChange={v => setInfoDraft(p => ({...p, enablePhone: v}))} />
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                      <Input label="Phone Number" value={infoDraft.phone || ''} onChange={e => setInfoDraft(p => ({...p, phone: e.target.value}))} />
-                      <Input label="Icon Picker" value={infoDraft.phoneIcon || ''} onChange={e => setInfoDraft(p => ({...p, phoneIcon: e.target.value}))} />
-                    </div>
+                    <Input label="Phone Number" value={infoDraft.phone || ''} onChange={e => setInfoDraft(p => ({...p, phone: e.target.value}))} />
                   </div>
                   <div className="border border-zinc-800 p-4 rounded bg-zinc-900/30">
-                    <Switch label="Enable Location" checked={infoDraft.enableLocation !== false} onChange={v => setInfoDraft(p => ({...p, enableLocation: v}))} />
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                      <Input label="Location Title" value={infoDraft.locationTitle || ''} onChange={e => setInfoDraft(p => ({...p, locationTitle: e.target.value}))} />
-                      <Input label="Icon Picker" value={infoDraft.locationIcon || ''} onChange={e => setInfoDraft(p => ({...p, locationIcon: e.target.value}))} />
-                    </div>
-                    <Input label="Full Address" className="mt-4" value={infoDraft.address || ''} onChange={e => setInfoDraft(p => ({...p, address: e.target.value}))} />
+                    <Input label="Full Address / HQ Location" value={infoDraft.address || ''} onChange={e => setInfoDraft(p => ({...p, address: e.target.value}))} />
                   </div>
                 </div>
                 <div className="flex justify-end mt-4"><Button onClick={() => handleSaveSettings('contactInfoSetup', infoDraft, 'Contact Info Saved')}>Save Info</Button></div>

@@ -489,15 +489,8 @@ export const WhatWeDo = () => {
                         <Input label="Small Badge Header" value={heroForm.smallBadge || ''} onChange={e => setHeroForm({ ...heroForm, smallBadge: e.target.value })} />
                         <Input label="Main Heading Title" value={heroForm.headline || ''} onChange={e => setHeroForm({ ...heroForm, headline: e.target.value })} />
                         <Input label="Highlighted Word Tag" value={heroForm.highlightWord || ''} onChange={e => setHeroForm({ ...heroForm, highlightWord: e.target.value })} />
+                        <Input label="Main Heading Title Line 2" value={heroForm.titleLine2 || ''} onChange={e => setHeroForm({ ...heroForm, titleLine2: e.target.value })} />
                         
-                        <div className="p-3 bg-zinc-900/30 border border-zinc-900 rounded flex items-center justify-between">
-                          <div>
-                            <span className="text-xs font-semibold text-zinc-400 block">Background Aurora Glow</span>
-                            <span className="text-[9px] text-zinc-550">Toggles background ambient purple/gold halos</span>
-                          </div>
-                          <Switch checked={heroForm.glowEnabled || false} onChange={val => setHeroForm({ ...heroForm, glowEnabled: val })} />
-                        </div>
-
                         <div className="md:col-span-2">
                           <Input label="Detailed Hero Description subtext" textarea rows={3} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} />
                         </div>

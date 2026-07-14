@@ -28,6 +28,8 @@ export const About = () => {
     achievements: false,
     awards: false,
     experience: false,
+    futureGoals: false,
+    team: false,
     seo: false
   });
 
@@ -48,6 +50,7 @@ export const About = () => {
   const [missionForm, setMissionForm] = useState(aboutData?.mission || {});
   const [visionForm, setVisionForm] = useState(aboutData?.vision || {});
   const [storyForm, setStoryForm] = useState(aboutData?.story || {});
+  const [futureGoalsForm, setFutureGoalsForm] = useState(aboutData?.futureGoals || {});
   const [seoForm, setSeoForm] = useState(aboutData?.seo || {});
 
   // List editor states
@@ -362,7 +365,7 @@ export const About = () => {
     );
   };
 
-  // Fixed 10 sections definitions
+  // Fixed 12 sections definitions
   const sectionsList = [
     { id: "introduction", label: "Introduction", icon: User },
     { id: "philosophy", label: "Philosophy", icon: Star },
@@ -373,6 +376,8 @@ export const About = () => {
     { id: "achievements", label: "Achievements", icon: Trophy },
     { id: "awards", label: "Awards", icon: Award },
     { id: "experience", label: "Experience", icon: Briefcase },
+    { id: "futureGoals", label: "Future Goals", icon: Target },
+    { id: "team", label: "Production Team", icon: Users },
     { id: "seo", label: "SEO Metadata", icon: Globe }
   ];
 
@@ -689,6 +694,43 @@ export const About = () => {
                           { key: 'endDate', label: 'Tenure End Date (e.g. Present)', type: 'text' },
                           { key: 'description', label: 'Job description narrative', type: 'textarea' },
                           { key: 'logoUrl', label: 'Company Logo Image (Upload)', type: 'upload' }
+                        ]
+                      })}
+                    </div>
+                  )}
+
+                  {sec.id === 'futureGoals' && (
+                    <div className="flex flex-col gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Input label="Badge Tag (e.g. LOOKING AHEAD)" value={futureGoalsForm.tag || ''} onChange={e => setFutureGoalsForm({ ...futureGoalsForm, tag: e.target.value })} />
+                        <Input label="Section Title Heading" value={futureGoalsForm.title || ''} onChange={e => setFutureGoalsForm({ ...futureGoalsForm, title: e.target.value })} />
+                        <div className="md:col-span-2">
+                          <Input label="Primary Goal Paragraph Description" textarea rows={3} value={futureGoalsForm.primaryDescription || ''} onChange={e => setFutureGoalsForm({ ...futureGoalsForm, primaryDescription: e.target.value })} />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Input label="Secondary Detail Target Paragraph" textarea rows={3} value={futureGoalsForm.secondaryDescription || ''} onChange={e => setFutureGoalsForm({ ...futureGoalsForm, secondaryDescription: e.target.value })} />
+                        </div>
+                      </div>
+                      <div className="flex justify-end border-t border-zinc-900 pt-3">
+                        <Button onClick={() => handleSingleSave('futureGoals', futureGoalsForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Future Goals</Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {sec.id === 'team' && (
+                    <div>
+                      {renderListManager({
+                        sectionKey: 'team',
+                        displayColumns: [
+                          { key: 'name', label: 'Member Name' },
+                          { key: 'role', label: 'Role Designation' },
+                          { key: 'avatar', label: 'Profile Picture', type: 'image' }
+                        ],
+                        fields: [
+                          { key: 'name', label: 'Member Full Name', type: 'text' },
+                          { key: 'role', label: 'Role Designation (e.g. Lead Developer)', type: 'text' },
+                          { key: 'bio', label: 'Short Biography Statement', type: 'textarea' },
+                          { key: 'avatar', label: 'Profile Avatar Image (Upload)', type: 'upload' }
                         ]
                       })}
                     </div>

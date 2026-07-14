@@ -397,6 +397,15 @@ export const Testimonials = () => {
               onChange={(e) => handleInputChange('role', e.target.value)}
               placeholder="e.g. Creative Lead"
             />
+            <Input 
+              label="Course Taken (e.g. System Architecture)"
+              value={formData.course || ''}
+              onChange={(e) => handleInputChange('course', e.target.value)}
+              placeholder="e.g. Docker Mastery"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select 
               label="Star Rating"
               options={[
@@ -406,14 +415,13 @@ export const Testimonials = () => {
               value={formData.rating || 5}
               onChange={(e) => handleInputChange('rating', Number(e.target.value))}
             />
+            <Input 
+              label="Client Profile Picture URL"
+              value={formData.avatarUrl || ''}
+              onChange={(e) => handleInputChange('avatarUrl', e.target.value)}
+              placeholder="https://unsplash.com/face..."
+            />
           </div>
-
-          <Input 
-            label="Client Profile Picture URL"
-            value={formData.avatarUrl || ''}
-            onChange={(e) => handleInputChange('avatarUrl', e.target.value)}
-            placeholder="https://unsplash.com/face..."
-          />
 
           <Input 
             label="Testimonial Quote Text"

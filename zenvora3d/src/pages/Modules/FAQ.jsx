@@ -163,17 +163,12 @@ export const FAQ = () => {
           
           {/* Hero Settings */}
           <Card className="border-zinc-800 p-6 bg-zinc-950/40" title={<span className="text-luxury-gold font-serif flex items-center gap-2"><LayoutTemplate className="w-4 h-4"/> FAQ Hero Settings</span>}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
-              <Input label="Badge Text" value={heroDraft.badge || ''} onChange={e => setHeroDraft(p => ({...p, badge: e.target.value}))} />
-              <Input label="Background Image URL" value={heroDraft.backgroundImage || ''} onChange={e => setHeroDraft(p => ({...p, backgroundImage: e.target.value}))} />
-              <Input label="Main Heading" value={heroDraft.heading || ''} onChange={e => setHeroDraft(p => ({...p, heading: e.target.value}))} />
-              <Input label="Highlight Heading (Gold Italic)" value={heroDraft.highlightHeading || ''} onChange={e => setHeroDraft(p => ({...p, highlightHeading: e.target.value}))} />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
+              <Input label="Badge Text (e.g. INFORMATION ARCHIVE)" value={heroDraft.badge || ''} onChange={e => setHeroDraft(p => ({...p, badge: e.target.value}))} />
+              <Input label="Main Heading Text (e.g. Answers &)" value={heroDraft.heading || ''} onChange={e => setHeroDraft(p => ({...p, heading: e.target.value}))} />
+              <Input label="Highlight Heading Text (Gold Italic)" value={heroDraft.highlightHeading || ''} onChange={e => setHeroDraft(p => ({...p, highlightHeading: e.target.value}))} />
             </div>
-            <div className="mt-5">
-              <Input label="Description" textarea rows={3} value={heroDraft.description || ''} onChange={e => setHeroDraft(p => ({...p, description: e.target.value}))} />
-            </div>
-            <div className="flex justify-between items-center mt-5 pt-5 border-t border-zinc-900">
-              <Switch label="Enable FAQ Section on Visitor Site" checked={heroDraft.enabled !== false} onChange={v => setHeroDraft(p => ({...p, enabled: v}))} />
+            <div className="flex justify-end items-center mt-5 pt-5 border-t border-zinc-900">
               <Button onClick={handleSaveHero} variant="primary">Save Settings</Button>
             </div>
           </Card>
@@ -281,15 +276,12 @@ export const FAQ = () => {
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-zinc-900/50 to-transparent pointer-events-none" />
             <div className="absolute -top-20 -right-20 w-64 h-64 bg-luxury-gold/10 blur-[100px] pointer-events-none" />
 
-            {heroDraft.enabled !== false && (
-              <div className="text-center mb-8 relative z-10">
-                {heroDraft.badge && <span className="text-[9px] uppercase tracking-[4px] text-luxury-gold font-bold mb-3 block">{heroDraft.badge}</span>}
-                <h4 className="font-serif text-2xl font-light text-white leading-tight">
-                  {heroDraft.heading} <br/><span className="text-luxury-gold italic font-bold">{heroDraft.highlightHeading}</span>
-                </h4>
-                {heroDraft.description && <p className="text-[10px] text-zinc-400 mt-3 max-w-[200px] mx-auto leading-relaxed">{heroDraft.description}</p>}
-              </div>
-            )}
+            <div className="text-center mb-8 relative z-10">
+              {heroDraft.badge && <span className="text-[9px] uppercase tracking-[4px] text-luxury-gold font-bold mb-3 block">{heroDraft.badge}</span>}
+              <h4 className="font-serif text-2xl font-light text-white leading-tight">
+                {heroDraft.heading} <br/><span className="text-luxury-gold italic font-bold">{heroDraft.highlightHeading}</span>
+              </h4>
+            </div>
 
             <div className="flex flex-col gap-3 relative z-10">
               {visiblePreviewFAQs.length === 0 ? (

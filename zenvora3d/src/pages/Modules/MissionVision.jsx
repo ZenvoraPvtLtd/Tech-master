@@ -523,30 +523,14 @@ export const MissionVision = () => {
                   {sec.id === 'hero' && (
                     <div className="flex flex-col gap-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Small Label Header" value={heroForm.smallLabel || ''} onChange={e => setHeroForm({ ...heroForm, smallLabel: e.target.value })} />
-                        <Input label="Main Heading Title" value={heroForm.headline || ''} onChange={e => setHeroForm({ ...heroForm, headline: e.target.value })} />
-                        <Input label="Highlighted Word Tag" value={heroForm.highlightWord || ''} onChange={e => setHeroForm({ ...heroForm, highlightWord: e.target.value })} />
-                        <Input label="Button 1 Text Label" value={heroForm.button1Text || ''} onChange={e => setHeroForm({ ...heroForm, button1Text: e.target.value })} />
-                        
-                        <Input label="Button 1 Redirect Link" value={heroForm.button1Link || ''} onChange={e => setHeroForm({ ...heroForm, button1Link: e.target.value })} />
-                        <Input label="Button 2 Text Label" value={heroForm.button2Text || ''} onChange={e => setHeroForm({ ...heroForm, button2Text: e.target.value })} />
-                        <Input label="Button 2 Redirect Link" value={heroForm.button2Link || ''} onChange={e => setHeroForm({ ...heroForm, button2Link: e.target.value })} />
-
-                        <div className="p-3 bg-zinc-900/30 border border-zinc-900 rounded flex items-center justify-between">
-                          <div>
-                            <span className="text-xs font-semibold text-zinc-400 block">Show Scroll Indicator</span>
-                            <span className="text-[9px] text-zinc-550">Toggles the animated down arrow icon</span>
-                          </div>
-                          <Switch checked={heroForm.scrollIndicatorVisible || false} onChange={val => setHeroForm({ ...heroForm, scrollIndicatorVisible: val })} />
-                        </div>
-
+                        <Input label="Badge Text (e.g. OUR NORTH STAR)" value={heroForm.badge || ''} onChange={e => setHeroForm({ ...heroForm, badge: e.target.value })} />
+                        <Input label="Heading Line 1" value={heroForm.headingLine1 || ''} onChange={e => setHeroForm({ ...heroForm, headingLine1: e.target.value })} />
+                        <Input label="Highlighted Text (Gold Italic)" value={heroForm.highlightText || ''} onChange={e => setHeroForm({ ...heroForm, highlightText: e.target.value })} />
+                        <Input label="Heading Line 2" value={heroForm.headingLine2 || ''} onChange={e => setHeroForm({ ...heroForm, headingLine2: e.target.value })} />
                         <div className="md:col-span-2">
-                          <Input label="Detailed Hero Subtext Description" textarea rows={3} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} />
+                          <Input label="Detailed Hero Description" textarea rows={3} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} />
                         </div>
-
-                        {renderMediaUpload("Background Image Overlay", heroForm.backgroundImage, "backgroundImage")}
                       </div>
-                      
                       <div className="flex justify-end border-t border-zinc-900 pt-3">
                         <Button onClick={() => handleSingleSave('hero', heroForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Hero Parameters</Button>
                       </div>
@@ -556,31 +540,12 @@ export const MissionVision = () => {
                   {sec.id === 'mission' && (
                     <div className="flex flex-col gap-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Mission Main Heading" value={missionForm.heading || ''} onChange={e => setMissionForm({ ...missionForm, heading: e.target.value })} />
-                        <Input label="Mission Sub Heading Tag" value={missionForm.subHeading || ''} onChange={e => setMissionForm({ ...missionForm, subHeading: e.target.value })} />
-                        <Input label="Left Accent Border Color" value={missionForm.leftBorderColor || ''} onChange={e => setMissionForm({ ...missionForm, leftBorderColor: e.target.value })} placeholder="e.g. #D4AF37" />
-                        <Input label="Mission Icon Code Symbol" value={missionForm.missionIcon || ''} onChange={e => setMissionForm({ ...missionForm, missionIcon: e.target.value })} placeholder="e.g. Target, Eye" />
-                        
-                        <Input label="CTA Button Text" value={missionForm.buttonText || ''} onChange={e => setMissionForm({ ...missionForm, buttonText: e.target.value })} />
-                        <Input label="CTA Redirect URL" value={missionForm.buttonUrl || ''} onChange={e => setMissionForm({ ...missionForm, buttonUrl: e.target.value })} />
-
-                        <div className="p-3 bg-zinc-900/30 border border-zinc-900 rounded flex items-center justify-between">
-                          <div>
-                            <span className="text-xs font-semibold text-zinc-400 block">Glassmorphism Effect</span>
-                            <span className="text-[9px] text-zinc-550">Toggles luxury glass overlay visual filters</span>
-                          </div>
-                          <Switch checked={missionForm.glassEffect || false} onChange={val => setMissionForm({ ...missionForm, glassEffect: val })} />
-                        </div>
-
+                        <Input label="Mission Statement Label" value={missionForm.label || ''} onChange={e => setMissionForm({ ...missionForm, label: e.target.value })} />
+                        <Input label="Mission Title" value={missionForm.title || ''} onChange={e => setMissionForm({ ...missionForm, title: e.target.value })} />
                         <div className="md:col-span-2">
-                          <Input label="Mission Copywrite Statement Description" textarea rows={3} value={missionForm.description || ''} onChange={e => setMissionForm({ ...missionForm, description: e.target.value })} />
-                        </div>
-
-                        <div className="md:col-span-2">
-                          {renderMediaUpload("Mission Cover Image", missionForm.missionImage, "missionImage")}
+                          <Input label="Mission Description Statement" textarea rows={3} value={missionForm.description || ''} onChange={e => setMissionForm({ ...missionForm, description: e.target.value })} />
                         </div>
                       </div>
-                      
                       <div className="flex justify-end border-t border-zinc-900 pt-3">
                         <Button onClick={() => handleSingleSave('mission', missionForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Mission Details</Button>
                       </div>
@@ -590,23 +555,12 @@ export const MissionVision = () => {
                   {sec.id === 'vision' && (
                     <div className="flex flex-col gap-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Vision Main Heading" value={visionForm.heading || ''} onChange={e => setVisionForm({ ...visionForm, heading: e.target.value })} />
-                        <Input label="Vision Sub Heading Tag" value={visionForm.subHeading || ''} onChange={e => setVisionForm({ ...visionForm, subHeading: e.target.value })} />
-                        <Input label="Accent Tone Color Code" value={visionForm.accentColor || ''} onChange={e => setVisionForm({ ...visionForm, accentColor: e.target.value })} placeholder="e.g. #00E5FF" />
-                        <Input label="Vision Icon Code Symbol" value={visionForm.visionIcon || ''} onChange={e => setVisionForm({ ...visionForm, visionIcon: e.target.value })} placeholder="e.g. Eye, Compass" />
-                        
-                        <Input label="CTA Button Text" value={visionForm.buttonText || ''} onChange={e => setVisionForm({ ...visionForm, buttonText: e.target.value })} />
-                        <Input label="CTA Redirect URL" value={visionForm.buttonUrl || ''} onChange={e => setVisionForm({ ...visionForm, buttonUrl: e.target.value })} />
-
+                        <Input label="Vision Label" value={visionForm.label || ''} onChange={e => setVisionForm({ ...visionForm, label: e.target.value })} />
+                        <Input label="Vision Title" value={visionForm.title || ''} onChange={e => setVisionForm({ ...visionForm, title: e.target.value })} />
                         <div className="md:col-span-2">
-                          <Input label="Vision Copywrite Statement Description" textarea rows={3} value={visionForm.description || ''} onChange={e => setVisionForm({ ...visionForm, description: e.target.value })} />
-                        </div>
-
-                        <div className="md:col-span-2">
-                          {renderMediaUpload("Vision Cover Image", visionForm.visionImage, "visionImage")}
+                          <Input label="Vision Description Statement" textarea rows={3} value={visionForm.description || ''} onChange={e => setVisionForm({ ...visionForm, description: e.target.value })} />
                         </div>
                       </div>
-                      
                       <div className="flex justify-end border-t border-zinc-900 pt-3">
                         <Button onClick={() => handleSingleSave('vision', visionForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Vision Details</Button>
                       </div>

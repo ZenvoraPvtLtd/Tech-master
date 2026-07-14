@@ -23,6 +23,7 @@ export const FounderJourney = () => {
     hero: true,
     timelineSettings: false,
     milestones: false,
+    roadmap: false,
     highlights: false,
     categories: false,
     futureVision: false,
@@ -45,6 +46,7 @@ export const FounderJourney = () => {
   const [heroForm, setHeroForm] = useState(journeyData?.hero || {});
   const [settingsForm, setSettingsForm] = useState(journeyData?.timelineSettings || {});
   const [visionForm, setVisionForm] = useState(journeyData?.futureVision || {});
+  const [roadmapForm, setRoadmapForm] = useState(journeyData?.roadmap || {});
   const [seoForm, setSeoForm] = useState(journeyData?.seo || {});
 
   // List editor states
@@ -345,11 +347,12 @@ export const FounderJourney = () => {
     );
   };
 
-  // Fixed 8 segments definitions
+  // Fixed 9 segments definitions
   const sectionsList = [
     { id: "hero", label: "Hero Settings", icon: User },
     { id: "timelineSettings", label: "Timeline Config", icon: Settings },
     { id: "milestones", label: "Timeline Milestones", icon: Milestone },
+    { id: "roadmap", label: "Growth Roadmap Ticker", icon: Compass },
     { id: "highlights", label: "Journey Highlights", icon: BarChart2 },
     { id: "categories", label: "Journey Categories", icon: History },
     { id: "futureVision", label: "Future Vision Statement", icon: Target },
@@ -498,15 +501,6 @@ export const FounderJourney = () => {
                         <Input label="Main Heading Title" value={heroForm.heading || ''} onChange={e => setHeroForm({ ...heroForm, heading: e.target.value })} />
                         <Input label="Highlighted Headline Word" value={heroForm.highlightWord || ''} onChange={e => setHeroForm({ ...heroForm, highlightWord: e.target.value })} />
                         <Input label="Scroll Indicator Text" value={heroForm.scrollIndicatorText || ''} onChange={e => setHeroForm({ ...heroForm, scrollIndicatorText: e.target.value })} />
-                        
-                        <div className="p-3 bg-zinc-900/30 border border-zinc-900 rounded flex items-center justify-between">
-                          <div>
-                            <span className="text-xs font-semibold text-zinc-400 block">Show Scroll Indicator</span>
-                            <span className="text-[9px] text-zinc-550">Toggles the animated explore timeline button</span>
-                          </div>
-                          <Switch checked={heroForm.scrollIndicatorVisible || false} onChange={val => setHeroForm({ ...heroForm, scrollIndicatorVisible: val })} />
-                        </div>
-
                         <div className="md:col-span-2">
                           <Input label="Biography Intro Paragraph" textarea rows={3} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} />
                         </div>
@@ -548,6 +542,21 @@ export const FounderJourney = () => {
                           { key: 'title', label: 'Milestone Title Headline', type: 'text' },
                           { key: 'category', label: 'Category Name', type: 'text' },
                           { key: 'description', label: 'Detailed Description Narrative', type: 'textarea' }
+                        ]
+                      })}
+                    </div>
+                  )}
+
+                  {sec.id === 'roadmap' && (
+                    <div>
+                      {renderListManager({
+                        sectionKey: 'roadmap',
+                        displayColumns: [
+                          { key: 'title', label: 'Roadmap Milestone Title' }
+                        ],
+                        fields: [
+                          { key: 'title', label: 'Roadmap Milestone Title (e.g. Childhood)', type: 'text' },
+                          { key: 'desc', label: 'Description Content', type: 'textarea' }
                         ]
                       })}
                     </div>

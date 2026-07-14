@@ -4,6 +4,7 @@ import { Magnetic } from "../components/Magnetic";
 import gsap from "gsap";
 import logo1 from "../assets/logo_transparent-removebg-preview.png";
 import { motion, AnimatePresence } from "framer-motion";
+import { useData } from "../context/DataContext";
 
 
 interface HeaderProps {
@@ -12,6 +13,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
+  const { dbData } = useData();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
@@ -272,11 +274,11 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               </button>
               <h3 className="font-serif text-2xl text-gold font-bold mb-6">Privacy Policy</h3>
               <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
-                <p><strong>Effective Date: July 7, 2026</strong></p>
-                <p>Aman & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter.</p>
-                <p><strong>Data Collection & Use:</strong> We collect email addresses solely for sending newsletter digests, cohort details, and technical blogs. Your information is never sold, traded, or shared with third-party advertising companies.</p>
-                <p><strong>Cookies:</strong> This platform utilizes basic localized storage and caching systems to maintain animations, 3D settings, and user navigation states smoothly.</p>
-                <p><strong>Security:</strong> All direct inquiries and newsletter transmissions are protected with industry-standard cryptographic handshakes.</p>
+                <p><strong>Effective Date: {dbData?.settings?.privacyEffectiveDate || "July 7, 2026"}</strong></p>
+                <p>{dbData?.settings?.privacyIntro || "Aman & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter."}</p>
+                <p><strong>Data Collection & Use:</strong> {dbData?.settings?.privacyDataCollection || "We collect email addresses solely for sending newsletter digests, cohort details, and technical blogs. Your information is never sold, traded, or shared with third-party advertising companies."}</p>
+                <p><strong>Cookies:</strong> {dbData?.settings?.privacyCookies || "This platform utilizes basic localized storage and caching systems to maintain animations, 3D settings, and user navigation states smoothly."}</p>
+                <p><strong>Security:</strong> {dbData?.settings?.privacySecurity || "All direct inquiries and newsletter transmissions are protected with industry-standard cryptographic handshakes."}</p>
               </div>
             </motion.div>
           </div>
@@ -301,11 +303,11 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               </button>
               <h3 className="font-serif text-2xl text-gold font-bold mb-6">Terms of Service</h3>
               <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
-                <p><strong>Effective Date: July 7, 2026</strong></p>
-                <p>By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service.</p>
-                <p><strong>Intellectual Property:</strong> All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Aman and Tech Master Labs unless stated otherwise.</p>
-                <p><strong>User License:</strong> You are granted a limited license to explore our portfolio and code projects for educational research. Scraping, cloning, or distributing source codes commercially without express written consent is strictly prohibited.</p>
-                <p><strong>Sandbox Declarations:</strong> All forms, databases, and estimates operate in safe sandbox demonstration pipelines.</p>
+                <p><strong>Effective Date: {dbData?.settings?.termsEffectiveDate || "July 7, 2026"}</strong></p>
+                <p>{dbData?.settings?.termsIntro || "By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service."}</p>
+                <p><strong>Intellectual Property:</strong> {dbData?.settings?.termsIntellectualProperty || "All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Aman and Tech Master Labs unless stated otherwise."}</p>
+                <p><strong>User License:</strong> {dbData?.settings?.termsUserLicense || "You are granted a limited license to explore our portfolio and code projects for educational research. Scraping, cloning, or distributing source codes commercially without express written consent is strictly prohibited."}</p>
+                <p><strong>Sandbox Declarations:</strong> {dbData?.settings?.termsSandboxDeclarations || "All forms, databases, and estimates operate in safe sandbox demonstration pipelines."}</p>
               </div>
             </motion.div>
           </div>
