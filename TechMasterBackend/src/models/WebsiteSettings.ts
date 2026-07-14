@@ -33,11 +33,11 @@ export interface IWebsiteSettings extends Document, ICmsBase {
 
 const WebsiteSettingsSchema = new Schema<IWebsiteSettings>(
   {
-    companyName: { type: String, required: true, trim: true },
+    companyName: { type: String, default: "", trim: true },
     companyLogo: { type: MediaSchema },
     favicon: { type: MediaSchema },
-    email: { type: String, required: true, trim: true },
-    phone: { type: String, required: true, trim: true },
+    email: { type: String, default: "", trim: true },
+    phone: { type: String, default: "", trim: true },
     whatsApp: { type: String, trim: true },
     address: { type: String },
     googleMapsUrl: { type: String },

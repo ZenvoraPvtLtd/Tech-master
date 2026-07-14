@@ -33,11 +33,11 @@ export interface IHomepage extends Document, ICmsBase {
 const HomepageSchema = new Schema<IHomepage>(
   {
     hero: {
-      title: { type: String, required: true },
-      highlightTitle: { type: String, required: true },
-      description: { type: String, required: true },
-      ctaButtonText: { type: String, required: true },
-      ctaButtonUrl: { type: String, required: true },
+      title: { type: String, default: "" },
+      highlightTitle: { type: String, default: "" },
+      description: { type: String, default: "" },
+      ctaButtonText: { type: String, default: "" },
+      ctaButtonUrl: { type: String, default: "" },
       mediaFile: { type: MediaSchema },
     },
     statisticsCounters: [

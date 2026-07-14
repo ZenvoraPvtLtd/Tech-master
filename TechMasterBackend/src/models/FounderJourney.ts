@@ -24,11 +24,11 @@ export interface IFounderJourney extends Document, ICmsBase {
 const FounderJourneySchema = new Schema<IFounderJourney>(
   {
     hero: {
-      badgeText: { type: String, required: true },
-      heading: { type: String, required: true },
-      highlightWord: { type: String, required: true },
-      description: { type: String, required: true },
-      scrollIndicatorText: { type: String, required: true },
+      badgeText: { type: String, default: "" },
+      heading: { type: String, default: "" },
+      highlightWord: { type: String, default: "" },
+      description: { type: String, default: "" },
+      scrollIndicatorText: { type: String, default: "" },
     },
     milestones: [
       {

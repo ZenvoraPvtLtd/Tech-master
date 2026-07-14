@@ -28,14 +28,14 @@ export interface IAbout extends Document, ICmsBase {
 const AboutSchema = new Schema<IAbout>(
   {
     introduction: {
-      founderName: { type: String, required: true },
-      designation: { type: String, required: true },
-      shortDescription: { type: String, required: true },
+      founderName: { type: String, default: "" },
+      designation: { type: String, default: "" },
+      shortDescription: { type: String, default: "" },
       profileImage: { type: MediaSchema },
     },
     philosophy: {
-      title: { type: String, required: true },
-      description: { type: String, required: true },
+      title: { type: String, default: "" },
+      description: { type: String, default: "" },
       image: { type: MediaSchema },
     },
     highlights: [
