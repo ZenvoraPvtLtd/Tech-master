@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { User } from "../models/User";
 
 export const connectDB = async (): Promise<void> => {
   try {
@@ -21,6 +22,19 @@ export const connectDB = async (): Promise<void> => {
     });
 
     await mongoose.connect(mongoUri);
+
+    // Seed default admin for login verification
+    const adminExists = await User.findOne({ email: "admin@gmail.com" });
+    if (!adminExists) {
+      await User.create({
+        fullName: "Super Admin",
+        email: "admin@gmail.com",
+        password: "Admin@123",
+        role: "Super Admin",
+        status: "Active",
+      });
+      console.log("Seeded default admin credentials: admin@gmail.com / Admin@123");
+    }
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     process.exit(1);

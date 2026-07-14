@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { ApiResponse } from "../utils/apiResponse";
+import { authenticate } from "../middlewares/auth";
 
 import homepageRoutes from "./homepage.routes";
 import aboutRoutes from "./about.routes";
@@ -19,7 +20,26 @@ import faqRoutes from "./faq.routes";
 import contactRoutes from "./contact.routes";
 import websiteSettingsRoutes from "./websiteSettings.routes";
 
-// Import repositories for the aggregate endpoint
+// Import models and repositories for the update and aggregate endpoints
+import { Homepage } from "../models/Homepage";
+import { About } from "../models/About";
+import { FounderJourney } from "../models/FounderJourney";
+import { MissionVision } from "../models/MissionVision";
+import { WhatWeDo } from "../models/WhatWeDo";
+import { Service } from "../models/Service";
+import { Collaboration } from "../models/Collaboration";
+import { Campaign } from "../models/Campaign";
+import { ProductLaunch } from "../models/ProductLaunch";
+import { Event } from "../models/Event";
+import { Portfolio } from "../models/Portfolio";
+import { MediaGallery } from "../models/MediaGallery";
+import { Career } from "../models/Career";
+import { Blog } from "../models/Blog";
+import { Faq } from "../models/FAQ";
+import { Contact } from "../models/Contact";
+import { WebsiteSettings } from "../models/WebsiteSettings";
+import { User } from "../models/User";
+
 import {
   homepageRepository,
   aboutRepository,
@@ -105,6 +125,82 @@ router.get("/", async (req, res, next) => {
     };
 
     ApiResponse.success(res, "CMS aggregate data retrieved successfully", data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Section state update synchronizer endpoint for Admin Dashboard
+router.post("/update", authenticate as any, async (req: any, res: any, next: any) => {
+  try {
+    const { key, value } = req.body;
+    const userId = req.user?.id;
+
+    if (!key) {
+      ApiResponse.error(res, "Missing key parameter", 400);
+      return;
+    }
+
+    const singletons: Record<string, any> = {
+      homepage: Homepage,
+      about: About,
+      founderJourney: FounderJourney,
+      missionVision: MissionVision,
+      whatWeDo: WhatWeDo,
+      contact: Contact,
+      settings: WebsiteSettings,
+    };
+
+    const collections: Record<string, any> = {
+      services: Service,
+      collaborations: Collaboration,
+      campaigns: Campaign,
+      launches: ProductLaunch,
+      events: Event,
+      portfolio: Portfolio,
+      mediaGallery: MediaGallery,
+      careers: Career,
+      blogs: Blog,
+      faqs: Faq,
+      users: User,
+    };
+
+    if (singletons[key]) {
+      const Model = singletons[key];
+      let doc = await Model.findOne({ isDeleted: false });
+      if (!doc) {
+        doc = new Model({ ...value, createdBy: userId, updatedBy: userId });
+      } else {
+        Object.assign(doc, { ...value, updatedBy: userId });
+      }
+      await doc.save();
+      ApiResponse.success(res, `${key} updated successfully`, doc);
+      return;
+    }
+
+    if (collections[key]) {
+      const Model = collections[key];
+      // Sync list by rewriting (standard mock-sync pattern)
+      await Model.deleteMany({});
+      
+      const payloadArray = Array.isArray(value) ? value : [];
+      const recordsToInsert = payloadArray.map((item: any) => {
+        const cleanItem = { ...item };
+        // Check if ID is a valid MongoDB ObjectId hex string. If not, mongoose will auto-assign _id
+        if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
+          cleanItem._id = cleanItem.id;
+        }
+        cleanItem.createdBy = userId;
+        cleanItem.updatedBy = userId;
+        return cleanItem;
+      });
+
+      const insertedDocs = await Model.insertMany(recordsToInsert);
+      ApiResponse.success(res, `${key} synchronized successfully`, insertedDocs);
+      return;
+    }
+
+    ApiResponse.error(res, `Unknown section key: ${key}`, 400);
   } catch (error) {
     next(error);
   }

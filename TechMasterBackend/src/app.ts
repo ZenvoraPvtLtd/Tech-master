@@ -8,6 +8,7 @@ import { errorHandler, AppError } from "./middlewares/errorHandler";
 import { ApiResponse } from "./utils/apiResponse";
 import cmsRouter from "./routes";
 import uploadRoutes from "./routes/upload.routes";
+import adminRoutes from "./routes/admin.routes";
 
 const app: Express = express();
 
@@ -60,6 +61,7 @@ app.use(cookieParser());
 
 // 5. Mount API Routes
 app.use("/api/v1/cms", cmsRouter);
+app.use("/api/v1/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/media", uploadRoutes);
 

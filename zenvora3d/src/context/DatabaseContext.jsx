@@ -76,6 +76,23 @@ export const DatabaseProvider = ({ children }) => {
     return data;
   };
 
+  const syncSectionToBackend = async (key, value) => {
+    try {
+      await apiFetch('/cms/update', {
+        method: 'POST',
+        body: JSON.stringify({ key, value })
+      });
+
+      if (typeof window !== 'undefined') {
+        const syncPayload = { key, timestamp: Date.now() };
+        localStorage.setItem('techmaster-cms-last-updated', JSON.stringify(syncPayload));
+        window.dispatchEvent(new CustomEvent('techmaster-cms-updated', { detail: syncPayload }));
+      }
+    } catch (error) {
+      console.error(`Failed to sync ${key} to backend:`, error);
+    }
+  };
+
   // Sync with MongoDB backend on initial mount
   useEffect(() => {
     const fetchCMSData = async () => {
@@ -155,12 +172,7 @@ export const DatabaseProvider = ({ children }) => {
         const list = prev.users || [];
         const updatedList = list.map(item => item.id === auth.user.id ? { ...item, ...updatedFields } : item);
         
-        setTimeout(() => {
-          apiFetch("/cms/update", {
-            method: "POST",
-            body: JSON.stringify({ key: "users", value: updatedList })
-          }).catch(err => console.error("Failed to sync user list update:", err));
-        }, 0);
+        void syncSectionToBackend("users", updatedList);
 
         return { ...prev, users: updatedList };
       });
@@ -210,12 +222,7 @@ export const DatabaseProvider = ({ children }) => {
       const list = prev[collection] || [];
       const updatedList = [newItem, ...list];
 
-      setTimeout(() => {
-        apiFetch("/cms/update", {
-          method: "POST",
-          body: JSON.stringify({ key: collection, value: updatedList })
-        }).catch(err => console.error(`Failed to sync addItem for ${collection}:`, err));
-      }, 0);
+      void syncSectionToBackend(collection, updatedList);
 
       const nextDb = { ...prev, [collection]: updatedList };
       localStorage.setItem('zenvora_db', JSON.stringify(nextDb));
@@ -229,12 +236,7 @@ export const DatabaseProvider = ({ children }) => {
       const list = prev[collection] || [];
       const updatedList = list.map(item => item.id === id ? { ...item, ...updatedFields } : item);
 
-      setTimeout(() => {
-        apiFetch("/cms/update", {
-          method: "POST",
-          body: JSON.stringify({ key: collection, value: updatedList })
-        }).catch(err => console.error(`Failed to sync updateItem for ${collection}:`, err));
-      }, 0);
+      void syncSectionToBackend(collection, updatedList);
 
       const nextDb = { ...prev, [collection]: updatedList };
       localStorage.setItem('zenvora_db', JSON.stringify(nextDb));
@@ -248,12 +250,7 @@ export const DatabaseProvider = ({ children }) => {
       const list = prev[collection] || [];
       const updatedList = list.filter(item => item.id !== id);
 
-      setTimeout(() => {
-        apiFetch("/cms/update", {
-          method: "POST",
-          body: JSON.stringify({ key: collection, value: updatedList })
-        }).catch(err => console.error(`Failed to sync deleteItem for ${collection}:`, err));
-      }, 0);
+      void syncSectionToBackend(collection, updatedList);
 
       const nextDb = { ...prev, [collection]: updatedList };
       localStorage.setItem('zenvora_db', JSON.stringify(nextDb));
@@ -271,12 +268,7 @@ export const DatabaseProvider = ({ children }) => {
         [listKey]: updatedList
       };
 
-      setTimeout(() => {
-        apiFetch("/cms/update", {
-          method: "POST",
-          body: JSON.stringify({ key: sectionName, value: updatedSection })
-        }).catch(err => console.error(`Failed to sync deleteNestedItem for ${sectionName}:`, err));
-      }, 0);
+      void syncSectionToBackend(sectionName, updatedSection);
 
       const nextDb = { ...prev, [sectionName]: updatedSection };
       localStorage.setItem('zenvora_db', JSON.stringify(nextDb));
@@ -303,12 +295,7 @@ export const DatabaseProvider = ({ children }) => {
         return item;
       });
 
-      setTimeout(() => {
-        apiFetch("/cms/update", {
-          method: "POST",
-          body: JSON.stringify({ key: collection, value: updatedList })
-        }).catch(err => console.error(`Failed to sync toggleStatus for ${collection}:`, err));
-      }, 0);
+      void syncSectionToBackend(collection, updatedList);
 
       const nextDb = { ...prev, [collection]: updatedList };
       localStorage.setItem('zenvora_db', JSON.stringify(nextDb));
@@ -326,12 +313,7 @@ export const DatabaseProvider = ({ children }) => {
         ...payload
       };
 
-      setTimeout(() => {
-        apiFetch("/cms/update", {
-          method: "POST",
-          body: JSON.stringify({ key: sectionName, value: updatedSection })
-        }).catch(err => console.error(`Failed to sync updateSection for ${sectionName}:`, err));
-      }, 0);
+      void syncSectionToBackend(sectionName, updatedSection);
 
       const nextDb = { ...prev, [sectionName]: updatedSection };
       localStorage.setItem('zenvora_db', JSON.stringify(nextDb));
