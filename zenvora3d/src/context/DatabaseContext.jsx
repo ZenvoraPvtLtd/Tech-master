@@ -316,12 +316,14 @@ export const DatabaseProvider = ({ children }) => {
     });
   };
 
-  const updateSection = (sectionName, data) => {
+  const updateSection = (sectionName, data, legacyPayload) => {
     setDb(prev => {
-      const isArray = Array.isArray(data);
-      const updatedSection = isArray ? data : {
+      // Handle the case where the caller used the 3-argument pattern: updateSection(key, null, payload)
+      const payload = (data === null && legacyPayload !== undefined) ? legacyPayload : data;
+      const isArray = Array.isArray(payload);
+      const updatedSection = isArray ? payload : {
         ...prev[sectionName],
-        ...data
+        ...payload
       };
 
       setTimeout(() => {
