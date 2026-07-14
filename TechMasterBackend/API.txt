@@ -1,0 +1,247 @@
+Portfolio API
+✅ Create Portfolio
+✅ Get All Portfolio
+✅ Get Portfolio By ID
+✅ Update Portfolio
+✅ Delete Portfolio
+Featured API
+Get Portfolio By Category
+
+
+Create API:- base url= http://localhost:5000/api/portfolio/create
+----------------------------------------------------------------
+
+Get All API:- base url=  http://localhost:5000/api/portfolio
+------------------------------------------------------------------
+
+Get by id 
+base url= http://localhost:5000/api/portfolio/6a489e335208aeacfe412588
+------------------------------------------------------
+API: Update
+base url=http://localhost:5000/api/portfolio/6a489fcd5208aeacfe412589
+------------------------------------------------------------------------------
+Delete API
+base url=http://localhost:5000/api/portfolio/6a489e335208aeacfe412588
+-------------------------------------------------------
+Featured API
+base url=http://localhost:5000/api/portfolio/featured
+----------------------------------------------------------------------
+Get Portfolio By Category
+base url=http://localhost:5000/api/portfolio/category/Branding
+===============================================================================================
+
+Gallery 
+API	Status
+✅ Create Gallery	
+base url=http://localhost:5000/api/gallery/create
+
+✅ Get All Gallery	
+base url=http://localhost:5000/api/gallery
+
+✅ Get Gallery By ID	
+base url=http://localhost:5000/api/gallery/6a48b350ec0dfe74f8644d7c
+
+✅ Update Gallery	
+base url=http://localhost:5000/api/gallery/6a48b350ec0dfe74f8644d7c
+
+✅ Delete Gallery	
+base url=http://localhost:5000/api/gallery/6a48b350ec0dfe74f8644d7c
+
+✅ Get Gallery By Portfolio	
+base url=http://localhost:5000/api/gallery/portfolio/6a4898d5362bfc343d56f71c
+
+✅ Update Display Order	
+base url = http://localhost:5000/api/gallery/6a4a0ef4ec0dfe74f8644d7d/display-order
+
+✅ Toggle Gallery Status
+base url= http://localhost:5000/api/gallery/6a4a0ef4ec0dfe74f8644d7d/status
+
+==================================================================================================
+
+Media coverage
+✅ Create Media	POST	
+base url= http://localhost:5000/api/media-coverage/create
+
+✅ Get All Media	GET	
+base url= http://localhost:5000/api/media-coverage
+
+✅ Get Media By ID	GET	
+base yrl= http://localhost:5000/api/media-coverage/6a4c8da763d46ff0f41adce0
+
+✅ Update Media	PUT	
+base url= http://localhost:5000/api/media-coverage/6a4c8da763d46ff0f41adce0
+
+✅ Delete Media	DELETE	
+base url= http://localhost:5000/api/media-coverage/6a4c8da763d46ff0f41adce0
+
+========================================================================================
+Testimonials 
+
+
+Create Testimonial	POST	
+base url= http://localhost:5000/api/testimonials/create
+
+Get All Testimonials	GET
+base url=http://localhost:5000/api/testimonials
+
+Get Testimonial By ID	GET
+base url=http://localhost:5000/api/testimonials/6a4c982e3ed575b3f2870dc0
+
+
+Update Testimonial	PUT
+base url=http://localhost:5000/api/testimonials/6a4c982e3ed575b3f2870dc0
+
+Delete Testimonial
+base url=http://localhost:5000/api/testimonials/6a4c982e3ed575b3f2870dc0
+
+======================================================================================================
+FAQ
+Create FAQ	POST
+base url= http://localhost:5000/api/faq/create
+
+Get All FAQs	GET
+base url=http://localhost:5000/api/faq
+
+Get FAQ By ID	GET
+base url= http://localhost:5000/api/faq/6a4ca4a7dee7df4b277c7050
+
+Update FAQ	PUT
+base url= http://localhost:5000/api/faq/6a4ca4a7dee7df4b277c7050
+
+Delete FAQ	DELETE
+base url= http://localhost:5000/api/faq/6a4ca4a7dee7df4b277c7050
+
+Create Enquiry	POST
+base url= http://localhost:5000/api/faq/enquiry/create
+
+Get All Enquiries	GET
+base url= http://localhost:5000/api/faq/enquiry/6a4cbfb6dee7df4b277c7052
+
+Update Enquiry	PUT
+base url= http://localhost:5000/api/faq/enquiry/reply/6a4cbfb6dee7df4b277c7052
+
+Delete Enquiry	DELETE
+base url=http://localhost:5000/api/faq/enquiry/6a4cbfb6dee7df4b277c7052
+============================================================================================
+
+
+Blogs
+
+✅ 1. Create Blog
+✅ 2. Get All Blogs
+✅ 3. Get Blog By ID
+✅ 4. Update Blog
+✅ 5. Delete Blog
+Media Upload:
+✅ Cover Image Upload (Cloudinary)create blog
+✅ Video Upload (Cloudinary)update blog
+
+Create blog 
+base url=http://localhost:5000/api/blogs/create
+
+
+Get All blogs
+base url=http://localhost:5000/api/blogs
+
+Get Blog by ID
+base url=http://localhost:5000/api/blogs/6a4cd21e396287db8cc906bb
+
+Update Blog
+base url=http://localhost:5000/api/blogs/6a4f2ae7918d01a9a689df8e
+
+Delete Blog
+base url=http://localhost:5000/api/blogs/6a4f2ae7918d01a9a689df8e
+
+=========================================================================================
+Career/JOB/RESUME
+
+Create Job ✅ (logo upload)
+base url=http://localhost:5000/api/career/create
+
+Get All Jobs 
+base url=http://localhost:5000/api/career
+
+Get Job By ID
+base url=http://localhost:5000/api/career/6a51e254a8d89733a2b334e3
+
+Update Job ✅ (logo update)
+base url=http://localhost:5000/api/career/6a51e254a8d89733a2b334e3
+
+Delete Job
+base url=http://localhost:5000/api/career/6a51e254a8d89733a2b334e3
+
+Get Active Jobs (Frontend)
+base url=http://localhost:5000/api/career/active
+
+Get Featured Jobs
+base url=http://localhost:5000/api/career/featured
+
+Apply Job / Upload Resume ✅ (PDF/DOC upload)
+base url=http://localhost:5000/api/resume/create
+
+Get All Applications
+base url=http://localhost:5000/api/resume
+
+Get Application By ID
+base url=http://localhost:5000/api/resume/6a51e7c9beafccc7eac7d774
+
+Update Status / HR Notes
+base url=http://localhost:5000/api/resume/6a51e7c9beafccc7eac7d774
+
+Delete Application
+base url=http://localhost:5000/api/resume/6a51e7c9beafccc7eac7d774
+==========================================================================================
+
+USER MANAGEMENT
+
+ Create User     CRUD 
+ base url=http://localhost:5000/api/users/create
+
+ Get All Users   CRUD
+ base url=http://localhost:5000/api/users
+
+ Get User By ID  CRUD   
+ base url=http://localhost:5000/api/users/6a51ed99dc0d2b9fde8a80a4
+
+ Update User     CRUD   
+ base url=http://localhost:5000/api/users/6a51ed99dc0d2b9fde8a80a4
+
+ Delete User     CRUD   
+ base url=http://localhost:5000/api/users/6a51ed99dc0d2b9fde8a80a4
+
+ Toggle Status   Custom 
+ base url=http://localhost:5000/api/users/6a51ed99dc0d2b9fde8a80a4/status
+
+======================================================================================
+SEO MANAGEMENT
+#global seo setting
+GET ALL Users
+base url=http://localhost:5000/api/seo
+
+Update SEO Settings PUT
+base url= http://localhost:5000/api/seo
+
+
+
+PAGESEO
+POST http://localhost:5000/api/page-seo/create
+GET http://localhost:5000/api/page-seo
+GET BY ID http://localhost:5000/api/page-seo/6a52931b4089b15accd256c1
+UPDATE PUT http://localhost:5000/api/page-seo/6a52931b4089b15accd256c1
+DELETE DELETE http://localhost:5000/api/page-seo/6a52931b4089b15accd256c1
+
+REDIRECT 
+http://localhost:5000/api/redirects/create
+http://localhost:5000/api/redirects GET ALL
+GET BY ID http://localhost:5000/api/redirects/6a52964934476efa18f0130a
+UPDATE http://localhost:5000/api/redirects/6a52964934476efa18f0130a
+DELETE http://localhost:5000/api/redirects/6a52964934476efa18f0130a
+
+===================================================================================
+WEBSITE Settings
+POST http://localhost:5000/api/website-settings
+GET http://localhost:5000/api/website-settings
+PUT http://localhost:5000/api/website-settings
+===========================================================================
+ANALYTICS
+GET http://localhost:5000/api/analytics
