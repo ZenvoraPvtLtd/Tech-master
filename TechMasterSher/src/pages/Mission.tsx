@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Compass, Eye, ShieldCheck, HeartHandshake } from "lucide-react";
 import { LuxuryCard } from "../components/LuxuryCard";
 import { useData } from "../context/DataContext";
 
