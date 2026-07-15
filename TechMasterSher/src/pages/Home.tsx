@@ -525,26 +525,26 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
         <div className="flex justify-center mb-12 relative z-20">
           <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            CORE SERVICES & TRAINING
+            {coreServicesConfig?.tag || "CORE SERVICES & TRAINING"}
           </span>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-20 items-end">
           <div className="lg:col-span-2 text-left">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">EDUCATIONAL PILLARS</p>
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{coreServicesConfig?.pillarsText || "EDUCATIONAL PILLARS"}</p>
             <h2 className="font-serif text-4xl sm:text-6xl font-light text-white leading-tight fade-up">
-              Bridging the gap between <br />
-              <span className="text-gold italic font-bold">Code & Placement</span>.
+              {coreServicesConfig?.headingLine1 || "Bridging the gap between"} <br />
+              <span className="text-gold italic font-bold">{coreServicesConfig?.highlightedHeading || "Code & Placement"}</span>.
             </h2>
           </div>
           <div className="text-left">
             <p className="text-gray-400 font-light leading-relaxed mb-6 fade-up">
-              We design structured curricula, virtual sandbox playgrounds, and live cohort workshops, transforming traditional programming paths into cinematic student success pipelines.
+              {coreServicesConfig?.description || "We design structured curricula, virtual sandbox playgrounds, and live cohort workshops, transforming traditional programming paths into cinematic student success pipelines."}
             </p>
             <button
-              onClick={() => handleNavClick("services")}
+              onClick={() => handleNavClick(coreServicesConfig?.ctaButtonUrl || "services")}
               className="text-xs uppercase tracking-[2px] text-gold hover:text-white transition-colors duration-300 font-bold flex items-center gap-1.5 fade-up"
             >
-              View Service Portals <ArrowUpRight className="w-4 h-4" />
+              {coreServicesConfig?.ctaButtonText || "View Service Portals"} <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>
         </div>
