@@ -597,8 +597,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {(homeData?.statistics || homeData?.statisticsCounters)?.map((stat: any, idx: number) => (
               <div key={idx} className="fade-up">
-                <span className="font-serif text-4xl sm:text-6xl font-black text-gold block mb-2">{`${stat.prefix || ""}${stat.number}${stat.suffix || ""}`}</span>
-                <span className="text-gray-400 text-xs tracking-[1px] uppercase font-mono">{stat.label}</span>
+                <span className="font-serif text-4xl sm:text-6xl font-black text-gold block mb-2">{`${stat.prefix || ""}${stat.counterNumber ?? stat.number}${stat.suffix || ""}`}</span>
+                <span className="text-gray-400 text-xs tracking-[1px] uppercase font-mono">{stat.counterLabel ?? stat.label}</span>
               </div>
             ))}
           </div>
