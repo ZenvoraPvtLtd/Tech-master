@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { Linkedin, Twitter, Instagram, Globe } from "lucide-react";
 
 export const About: React.FC = () => {
   const { aboutData } = useData();
@@ -305,31 +306,51 @@ export const About: React.FC = () => {
         </section>
       )}
 
-      {/* 8. Team Section */}
-      {isSectionActive("team") && teamList.length > 0 && (
-        <section className="max-w-7xl mx-auto text-left relative z-10">
+      {/* 8. Core Collaborators Section */}
+      {aboutDataAny?.coreCollaborators?.enableSection !== false && (aboutDataAny?.coreCollaborators?.list?.length > 0 || teamList.length > 0) && (
+        <section className="max-w-7xl mx-auto text-left relative z-10" style={{
+          backgroundImage: aboutDataAny?.coreCollaborators?.backgroundImage ? `url(${mediaUrl(aboutDataAny?.coreCollaborators?.backgroundImage)})` : 'none',
+          backgroundSize: 'cover', backgroundPosition: 'center'
+        }}>
           <div className="mb-16">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">PRODUCTION TEAM</p>
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{aboutDataAny?.coreCollaborators?.smallHeading || aboutDataAny?.coreCollaborators?.sectionTag || "PRODUCTION TEAM"}</p>
             <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
-              Core <span className="text-gold italic font-bold">Collaborators</span>
+              {aboutDataAny?.coreCollaborators?.mainHeading || "Core"} <span className="text-gold italic font-bold">{aboutDataAny?.coreCollaborators?.highlightHeading || "Collaborators"}</span>
             </h2>
+            {aboutDataAny?.coreCollaborators?.description && (
+              <p className="text-gray-400 font-light text-sm mt-4 max-w-2xl leading-relaxed">
+                {aboutDataAny.coreCollaborators.description}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {teamList.map((member: any, idx: number) => (
+            {(aboutDataAny?.coreCollaborators?.list?.length > 0 ? aboutDataAny.coreCollaborators.list : teamList).map((member: any, idx: number) => (
               <LuxuryCard key={member.id || idx} accentColor="#D4AF37" index={idx}>
-                <div className="aspect-square w-full overflow-hidden relative border-b border-white/5 mb-6 rounded-2xl">
+                <div className="aspect-square w-full overflow-hidden relative border-b border-white/5 mb-6 rounded-2xl group">
                   <img
-                    src={mediaUrl(member.avatar) || mediaUrl(member.image) || mediaUrl(member.imageUrl) || ""}
+                    src={mediaUrl(member.image) || mediaUrl(member.avatar) || mediaUrl(member.imageUrl) || ""}
                     alt={member.name || "Team member"}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
+                  {/* Social Links Overlay on Hover */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end items-center pb-6">
+                    <div className="flex items-center gap-3">
+                      {member.linkedin && <a href={member.linkedin} target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-gold hover:text-black text-white flex items-center justify-center transition-colors"><Linkedin className="w-4 h-4" /></a>}
+                      {member.twitter && <a href={member.twitter} target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-gold hover:text-black text-white flex items-center justify-center transition-colors"><Twitter className="w-4 h-4" /></a>}
+                      {member.instagram && <a href={member.instagram} target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-gold hover:text-black text-white flex items-center justify-center transition-colors"><Instagram className="w-4 h-4" /></a>}
+                      {member.website && <a href={member.website} target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full bg-white/10 hover:bg-gold hover:text-black text-white flex items-center justify-center transition-colors"><Globe className="w-4 h-4" /></a>}
+                    </div>
+                  </div>
                 </div>
                 <div>
-                  <span className="text-[9px] uppercase tracking-[2px] text-gold font-mono block mb-1">{member.role || ""}</span>
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="text-[9px] uppercase tracking-[2px] text-gold font-mono block">{member.role || ""}</span>
+                    {member.company && <span className="text-[9px] uppercase tracking-[1px] text-gray-500 font-mono block text-right max-w-[50%] truncate" title={member.company}>{member.company}</span>}
+                  </div>
                   <h4 className="font-serif text-lg font-bold text-white mb-3">{member.name || ""}</h4>
-                  <p className="text-gray-400 text-xs leading-relaxed font-light">{member.bio || ""}</p>
+                  <p className="text-gray-400 text-xs leading-relaxed font-light">{member.description || member.bio || ""}</p>
                 </div>
               </LuxuryCard>
             ))}

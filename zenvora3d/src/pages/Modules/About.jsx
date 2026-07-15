@@ -30,6 +30,7 @@ export const About = () => {
     experience: false,
     futureGoals: false,
     team: false,
+    coreCollaborators: false,
     seo: false
   });
 
@@ -51,6 +52,7 @@ export const About = () => {
   const [visionForm, setVisionForm] = useState(aboutData?.vision || {});
   const [storyForm, setStoryForm] = useState(aboutData?.story || {});
   const [futureGoalsForm, setFutureGoalsForm] = useState(aboutData?.futureGoals || {});
+  const [coreCollaboratorsForm, setCoreCollaboratorsForm] = useState(aboutData?.coreCollaborators || {});
   const [seoForm, setSeoForm] = useState(aboutData?.seo || {});
 
   // List editor states
@@ -78,6 +80,7 @@ export const About = () => {
           setVisionForm(prev => (targetKey in prev || ['iconUrl'].includes(targetKey) ? { ...prev, [targetKey]: url } : prev));
           setStoryForm(prev => (targetKey in prev || ['imageUrl'].includes(targetKey) ? { ...prev, [targetKey]: url } : prev));
           setSeoForm(prev => (targetKey in prev || ['ogImageUrl'].includes(targetKey) ? { ...prev, [targetKey]: url } : prev));
+          setCoreCollaboratorsForm(prev => (targetKey in prev || ['backgroundImage', 'backgroundVideo'].includes(targetKey) ? { ...prev, [targetKey]: url } : prev));
         }
       }
     });
@@ -183,10 +186,12 @@ export const About = () => {
   // --- REUSABLE LIST MANAGER ---
   const renderListManager = ({
     sectionKey,
+    innerListKey = null,
     fields = [],
     displayColumns = []
   }) => {
-    const listData = aboutData[sectionKey] || [];
+    const baseData = aboutData[sectionKey] || (innerListKey ? {} : []);
+    const listData = innerListKey ? (baseData[innerListKey] || []) : baseData;
     const isEditing = activeEditorSection === sectionKey;
 
     const handleSaveItem = () => {
@@ -199,24 +204,38 @@ export const About = () => {
         nextList = [...listData, newItem];
         showToast("New item created.");
       }
-      updateSection('about', { [sectionKey]: nextList });
+      
+      if (innerListKey) {
+        updateSection('about', { [sectionKey]: { ...baseData, [innerListKey]: nextList } });
+      } else {
+        updateSection('about', { [sectionKey]: nextList });
+      }
+      
       setActiveEditorSection(null);
       setEditingItemId(null);
       setDraftItem({});
     };
 
     const handleDeleteItem = (id) => {
-      if (window.confirm("Are you sure you want to delete this item?")) {
+      if (window.confirm("Delete this item permanently?")) {
         const nextList = listData.filter(item => item.id !== id);
-        updateSection('about', { [sectionKey]: nextList });
+        if (innerListKey) {
+          updateSection('about', { [sectionKey]: { ...baseData, [innerListKey]: nextList } });
+        } else {
+          updateSection('about', { [sectionKey]: nextList });
+        }
         showToast("Item deleted.");
       }
     };
 
     const handleToggleStatus = (id, currentStatus) => {
       const nextList = listData.map(item => item.id === id ? { ...item, status: currentStatus === 'Active' ? 'Inactive' : 'Active' } : item);
-      updateSection('about', { [sectionKey]: nextList });
-      showToast("Visibility state updated.");
+      if (innerListKey) {
+        updateSection('about', { [sectionKey]: { ...baseData, [innerListKey]: nextList } });
+      } else {
+        updateSection('about', { [sectionKey]: nextList });
+      }
+      showToast("Status updated.");
     };
 
     const handleMoveItem = (index, direction) => {
@@ -226,7 +245,11 @@ export const About = () => {
         const temp = nextList[index];
         nextList[index] = nextList[target];
         nextList[target] = temp;
-        updateSection('about', { [sectionKey]: nextList });
+        if (innerListKey) {
+          updateSection('about', { [sectionKey]: { ...baseData, [innerListKey]: nextList } });
+        } else {
+          updateSection('about', { [sectionKey]: nextList });
+        }
       }
     };
 
@@ -378,6 +401,7 @@ export const About = () => {
     { id: "experience", label: "Experience", icon: Briefcase },
     { id: "futureGoals", label: "Future Goals", icon: Target },
     { id: "team", label: "Production Team", icon: Users },
+    { id: "coreCollaborators", label: "Core Collaborators", icon: Users },
     { id: "seo", label: "SEO Metadata", icon: Globe }
   ];
 
@@ -731,6 +755,49 @@ export const About = () => {
                           { key: 'role', label: 'Role Designation (e.g. Lead Developer)', type: 'text' },
                           { key: 'bio', label: 'Short Biography Statement', type: 'textarea' },
                           { key: 'avatar', label: 'Profile Avatar Image (Upload)', type: 'upload' }
+                        ]
+                      })}
+                    </div>
+                  )}
+
+                  {sec.id === 'coreCollaborators' && (
+                    <div className="flex flex-col gap-4">
+                      <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Core Collaborators Settings</span>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <Switch label="Enable Core Collaborators Section" checked={coreCollaboratorsForm.enableSection !== false} onChange={v => setCoreCollaboratorsForm({...coreCollaboratorsForm, enableSection: v})} />
+                        <Input label="Section Tag (e.g. PRODUCTION TEAM)" value={coreCollaboratorsForm.sectionTag || ''} onChange={e => setCoreCollaboratorsForm({ ...coreCollaboratorsForm, sectionTag: e.target.value })} />
+                        <Input label="Small Heading" value={coreCollaboratorsForm.smallHeading || ''} onChange={e => setCoreCollaboratorsForm({ ...coreCollaboratorsForm, smallHeading: e.target.value })} />
+                        <Input label="Main Heading" value={coreCollaboratorsForm.mainHeading || ''} onChange={e => setCoreCollaboratorsForm({ ...coreCollaboratorsForm, mainHeading: e.target.value })} />
+                        <Input label="Highlight Heading" value={coreCollaboratorsForm.highlightHeading || ''} onChange={e => setCoreCollaboratorsForm({ ...coreCollaboratorsForm, highlightHeading: e.target.value })} />
+                        <div className="md:col-span-2"><Input label="Section Description" textarea rows={2} value={coreCollaboratorsForm.description || ''} onChange={e => setCoreCollaboratorsForm({ ...coreCollaboratorsForm, description: e.target.value })} /></div>
+                        {renderMediaUpload("Background Image", coreCollaboratorsForm.backgroundImage, "backgroundImage", true)}
+                        {renderMediaUpload("Background Video", coreCollaboratorsForm.backgroundVideo, "backgroundVideo", true)}
+                      </div>
+                      <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('coreCollaborators', coreCollaboratorsForm)}>Save Settings</Button></div>
+                      
+                      <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Collaborator Cards Management</span>
+                      {renderListManager({
+                        sectionKey: 'coreCollaborators',
+                        innerListKey: 'list',
+                        displayColumns: [
+                          { key: 'name', label: 'Collaborator Name' }, 
+                          { key: 'role', label: 'Designation' },
+                          { key: 'company', label: 'Company' },
+                          { key: 'image', label: 'Profile Image', type: 'image' },
+                          { key: 'active', label: 'Active', type: 'switch' }
+                        ],
+                        fields: [
+                          { key: 'name', label: 'Collaborator Full Name', type: 'text' },
+                          { key: 'role', label: 'Role Designation (e.g. Lead Designer)', type: 'text' },
+                          { key: 'company', label: 'Company / Organization', type: 'text' },
+                          { key: 'description', label: 'Short Biography Statement', type: 'textarea' },
+                          { key: 'image', label: 'Profile Avatar Image', type: 'upload' },
+                          { key: 'linkedin', label: 'LinkedIn URL', type: 'text' },
+                          { key: 'twitter', label: 'X/Twitter URL', type: 'text' },
+                          { key: 'instagram', label: 'Instagram URL', type: 'text' },
+                          { key: 'website', label: 'Personal Website URL', type: 'text' },
+                          { key: 'order', label: 'Display Order', type: 'number' },
+                          { key: 'active', label: 'Active Toggle', type: 'switch' }
                         ]
                       })}
                     </div>
