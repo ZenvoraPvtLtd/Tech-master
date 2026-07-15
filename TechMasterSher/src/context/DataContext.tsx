@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { normalizeCmsMedia } from "../utils/media";
 
 interface DataContextType {
   homeData: any;
@@ -60,6 +61,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const CMS_API_URL = `${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}/cms`;
 
   const applyCmsDataToState = useCallback((db: any) => {
+    db = normalizeCmsMedia(db);
     setDbData(db);
     setIsBackendConnected(true);
 

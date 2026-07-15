@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Quote, Star } from "lucide-react";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Testimonials: React.FC = () => {
@@ -63,7 +64,7 @@ export const Testimonials: React.FC = () => {
 
               <div className="flex items-center gap-4 pt-4 border-t border-white/5 mt-auto">
                 <img
-                  src={test.avatar}
+                  src={mediaUrl(test.avatar) || mediaUrl(test.image) || mediaUrl(test.imageUrl)}
                   alt={test.name}
                   className="w-10 h-10 rounded-full border border-white/10 object-cover"
                 />

@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Magnetic } from "../components/Magnetic";
 import { useData } from "../context/DataContext";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { mediaUrl } from "../utils/media";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -742,52 +743,80 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* Featured Campaigns */}
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
+      {homeData?.featuredCampaigns?.enableSection !== false && (
+      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10" style={{
+        backgroundImage: homeData?.featuredCampaigns?.backgroundImage ? `url(${mediaUrl(homeData?.featuredCampaigns?.backgroundImage)})` : 'none',
+        backgroundSize: 'cover', backgroundPosition: 'center'
+      }}>
         <div className="flex justify-center mb-12 relative z-20">
           <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            FEATURED EDUCATION CAMPAIGNS
+            {homeData?.featuredCampaigns?.sectionTag || "FEATURED EDUCATION CAMPAIGNS"}
           </span>
         </div>
-        <div className="mb-16 text-center">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR IMPACT</p>
+        <div className="mb-16 text-center relative z-20">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{homeData?.featuredCampaigns?.smallHeading || "OUR IMPACT"}</p>
           <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
-            Featured <span className="text-gold italic font-bold">Campaigns</span>
+            {homeData?.featuredCampaigns?.mainHeading || "Featured"} <span className="text-gold italic font-bold">{homeData?.featuredCampaigns?.highlightHeading || "Campaigns"}</span>
           </h2>
+          {homeData?.featuredCampaigns?.description && (
+            <p className="text-gray-400 text-sm font-light mt-4 max-w-2xl mx-auto fade-up">{homeData?.featuredCampaigns?.description}</p>
+          )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {campaignsList?.slice(0, 3)?.map((camp: any) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-20">
+          {(homeData?.featuredCampaigns?.list?.length > 0 ? homeData.featuredCampaigns.list : campaignsList?.slice(0, 3) || [])?.map((camp: any) => (
             <div key={camp.id} className="glass-panel p-6 rounded-2xl border border-white/5 fade-up flex flex-col">
-              <img src={camp.coverImage} alt={camp.title} className="w-full h-40 object-cover rounded-xl mb-4" />
+              {camp.coverImage && <img src={mediaUrl(camp.coverImage)} alt={camp.title} className="w-full h-40 object-cover rounded-xl mb-4" />}
               <h3 className="font-serif text-xl text-white mb-2">{camp.title}</h3>
               <p className="text-gray-400 text-xs font-light flex-grow">{camp.description}</p>
+              {camp.ctaUrl && (
+                <a href={camp.ctaUrl} className="inline-block mt-4 text-xs font-bold uppercase tracking-wider text-gold hover:text-white transition-colors">
+                  {camp.ctaText || "View Campaign"} &rarr;
+                </a>
+              )}
             </div>
           ))}
         </div>
       </section>
+      )}
 
       {/* Event Highlights */}
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
+      {homeData?.eventHighlights?.enableSection !== false && (
+      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10" style={{
+        backgroundImage: homeData?.eventHighlights?.backgroundImage ? `url(${mediaUrl(homeData?.eventHighlights?.backgroundImage)})` : 'none',
+        backgroundSize: 'cover', backgroundPosition: 'center'
+      }}>
         <div className="flex justify-center mb-12 relative z-20">
           <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            EVENT HIGHLIGHTS
+            {homeData?.eventHighlights?.sectionTag || "EVENT HIGHLIGHTS"}
           </span>
         </div>
-        <div className="mb-16 text-center">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">COMMUNITY</p>
+        <div className="mb-16 text-center relative z-20">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{homeData?.eventHighlights?.smallHeading || "COMMUNITY"}</p>
           <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
-            Event <span className="text-gold italic font-bold">Highlights</span>
+            {homeData?.eventHighlights?.mainHeading || "Event"} <span className="text-gold italic font-bold">{homeData?.eventHighlights?.highlightHeading || "Highlights"}</span>
           </h2>
+          {homeData?.eventHighlights?.description && (
+            <p className="text-gray-400 text-sm font-light mt-4 max-w-2xl mx-auto fade-up">{homeData?.eventHighlights?.description}</p>
+          )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {eventsList?.slice(0, 2)?.map((evt: any) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-20">
+          {(homeData?.eventHighlights?.list?.length > 0 ? homeData.eventHighlights.list : eventsList?.slice(0, 2) || [])?.map((evt: any) => (
             <div key={evt.id} className="glass-panel p-8 rounded-2xl border-l-2 hover:border-l-gold transition-all duration-300 fade-up">
-              <span className="text-gold text-xs font-mono mb-3 block">{evt.date}</span>
+              {evt.image && <img src={mediaUrl(evt.image)} alt={evt.title} className="w-full h-48 object-cover rounded-xl mb-4" />}
+              <span className="text-gold text-xs font-mono mb-3 block">{evt.date} {evt.time ? `• ${evt.time}` : ''}</span>
               <h3 className="font-serif text-2xl text-white mb-3">{evt.title}</h3>
               <p className="text-gray-400 text-sm font-light">{evt.description}</p>
+              {evt.location && <p className="text-xs text-gray-500 mt-2 font-mono uppercase tracking-widest">{evt.location}</p>}
+              {evt.ctaUrl && (
+                <a href={evt.ctaUrl} className="inline-block mt-4 text-xs font-bold uppercase tracking-wider text-gold hover:text-white transition-colors">
+                  {evt.ctaText || "Learn More"} &rarr;
+                </a>
+              )}
             </div>
           ))}
         </div>
       </section>
+      )}
 
 
 

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Award, ArrowUpRight } from "lucide-react";
 import { LuxuryCard } from "../components/LuxuryCard";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -73,7 +74,7 @@ export const Events: React.FC = () => {
             <LuxuryCard key={evt.id} accentColor={evt.accentColor} className="event-card-reveal" index={idx}>
               <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/5 mb-6 relative">
                 <img
-                  src={evt.media}
+                  src={mediaUrl(evt.media) || mediaUrl(evt.image) || mediaUrl(evt.imageUrl) || mediaUrl(evt.bannerImage)}
                   alt={evt.title}
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

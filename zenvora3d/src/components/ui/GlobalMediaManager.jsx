@@ -67,9 +67,13 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
 
       setUploadProgress(50);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}` + "/cms/upload", {
+      const baseHost = (import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com").replace(/\/api\/v1\/?$/i, "");
+      const uploadPath = selectedFile.type.startsWith("video/") ? "/api/upload/video" : "/api/upload/image";
+      
+      const response = await fetch(`${baseHost}${uploadPath}`, {
         method: "POST",
         headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        credentials: "include",
         body: formData
       });
 
@@ -85,13 +89,19 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
 
       setUploadProgress(90);
 
+      const uploadedMedia = data.data;
+      if (!uploadedMedia?.cloudinaryUrl) {
+        throw new Error("Upload completed without a Cloudinary URL.");
+      }
+
       const newMedia = {
         ...uploadForm,
-        id: `media-${Date.now()}`,
-        url: data.url,
-        publicId: data.publicId,
-        size: (data.size / (1024 * 1024)).toFixed(2) + " MB",
-        extension: data.format ? data.format.toUpperCase() : uploadForm.extension,
+        id: uploadedMedia._id || `media-${Date.now()}`,
+        url: uploadedMedia.cloudinaryUrl,
+        imageUrl: uploadedMedia.mediaType === "image" ? uploadedMedia.cloudinaryUrl : undefined,
+        videoUrl: uploadedMedia.mediaType === "video" ? uploadedMedia.cloudinaryUrl : undefined,
+        publicId: uploadedMedia.publicId,
+        size: `${((uploadedMedia.fileSize || selectedFile.size) / (1024 * 1024)).toFixed(2)} MB`,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

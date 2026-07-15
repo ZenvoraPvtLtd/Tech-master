@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const About: React.FC = () => {
@@ -124,7 +125,7 @@ export const About: React.FC = () => {
             <div className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300 flex flex-col justify-center">
               {intro.profileImageUrl && (
                 <img
-                  src={intro.profileImageUrl}
+                  src={mediaUrl(intro.profileImageUrl) || mediaUrl(intro.image)}
                   alt={intro.imageAltText || intro.founderName || "Profile"}
                   className="w-24 h-24 rounded-full object-cover border-2 border-gold/30 mb-4"
                 />
@@ -196,7 +197,7 @@ export const About: React.FC = () => {
             </div>
             <div className="glass-panel p-8 rounded-3xl relative">
               <img
-                src={story.imageUrl || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80"}
+                src={mediaUrl(story.imageUrl) || mediaUrl(story.image) || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80"}
                 alt={story.title || "Our story"}
                 className="w-full h-auto rounded-xl object-cover"
               />
@@ -218,8 +219,8 @@ export const About: React.FC = () => {
             {experiencesList.map((exp: any) => (
               <div key={exp.id || exp._id} className="glass-panel p-8 rounded-3xl border-l-4 border-gold/50">
                 <div className="flex items-start gap-4">
-                  {exp.logoUrl && (
-                    <img src={exp.logoUrl} alt={exp.companyName} className="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0" />
+                  {mediaUrl(exp.logoUrl) && (
+                    <img src={mediaUrl(exp.logoUrl)} alt={exp.companyName} className="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0" />
                   )}
                   <div>
                     <h3 className="font-serif text-2xl text-white mb-2">{exp.designation || ""} at {exp.companyName || ""}</h3>
@@ -319,7 +320,7 @@ export const About: React.FC = () => {
               <LuxuryCard key={member.id || idx} accentColor="#D4AF37" index={idx}>
                 <div className="aspect-square w-full overflow-hidden relative border-b border-white/5 mb-6 rounded-2xl">
                   <img
-                    src={member.avatar || ""}
+                    src={mediaUrl(member.avatar) || mediaUrl(member.image) || mediaUrl(member.imageUrl) || ""}
                     alt={member.name || "Team member"}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

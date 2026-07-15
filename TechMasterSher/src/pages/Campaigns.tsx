@@ -3,6 +3,7 @@ import { Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { mediaUrl } from "../utils/media";
 
 export const Campaigns: React.FC = () => {
   const { campaignsData } = useData();
@@ -41,7 +42,7 @@ export const Campaigns: React.FC = () => {
               
               <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/5 mb-6 relative">
                 <img
-                  src={item.coverImage}
+                  src={mediaUrl(item.coverImage) || mediaUrl(item.image) || mediaUrl(item.imageUrl)}
                   alt={item.title}
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

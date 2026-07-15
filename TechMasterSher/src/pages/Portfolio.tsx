@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Portfolio: React.FC = () => {
@@ -94,7 +95,7 @@ export const Portfolio: React.FC = () => {
                     <div>
                       <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/5 mb-6 relative">
                         <img
-                          src={project.coverImage}
+                          src={mediaUrl(project.coverImage) || mediaUrl(project.image) || mediaUrl(project.imageUrl)}
                           alt={project.title}
                           loading="lazy"
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

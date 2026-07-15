@@ -60,6 +60,7 @@ app.use("/api/v1/cms", cmsRouter);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/media", uploadRoutes);
+// Versioned alias removed per user request
 
 // 6. Health Check Route
 app.get("/health", (req: Request, res: Response) => {

@@ -3,6 +3,7 @@ import { ArrowUpRight, BarChart3, TrendingUp, Users, ChevronRight, Target, BookO
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { mediaUrl } from "../utils/media";
 
 interface StrategyPreset {
   impressions: string;
@@ -283,7 +284,7 @@ export const Blog: React.FC = () => {
                       <div>
                         <div className="aspect-video w-full overflow-hidden border-b border-white/5 relative rounded-2xl mb-6">
                           <img
-                            src={post.coverImage}
+                            src={mediaUrl(post.coverImage) || mediaUrl(post.image) || mediaUrl(post.imageUrl)}
                             alt={post.title}
                             loading="lazy"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"

@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Cpu, Layers, Box, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 
 export const Services: React.FC = () => {
   const { servicesData } = useData();
@@ -251,7 +252,7 @@ export const Services: React.FC = () => {
                       <div className="grid grid-cols-3 gap-4">
                         {srv.gallery.map((img, i) => (
                           <div key={i} className="aspect-video rounded-xl overflow-hidden border border-white/10">
-                            <img src={img} alt="Gallery" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                            <img src={mediaUrl(img)} alt="Gallery" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                           </div>
                         ))}
                       </div>

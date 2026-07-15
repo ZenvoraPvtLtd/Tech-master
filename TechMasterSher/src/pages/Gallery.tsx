@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 
 export const Gallery: React.FC = () => {
   const { dbData } = useData();
@@ -89,7 +90,7 @@ export const Gallery: React.FC = () => {
               >
                 <div className="rounded-2xl overflow-hidden mb-4 relative">
                   <img
-                    src={item.imageUrl || item.url}
+                    src={mediaUrl(item.imageUrl) || mediaUrl(item.image) || mediaUrl(item.mediaFile) || mediaUrl(item.url)}
                     alt={item.title}
                     loading="lazy"
                     className="w-full object-cover transition-transform duration-700 group-hover:scale-103"

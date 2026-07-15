@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Laptop, Terminal, Layers, ArrowUpRight, Cpu } from "lucide-react";
 import { LuxuryCard } from "../components/LuxuryCard";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 
 const iconMap: Record<string, React.ReactNode> = {
   Laptop: <Laptop className="w-6 h-6 text-gold" />,
@@ -182,7 +183,7 @@ export const ProductLaunches: React.FC = () => {
 
           <div className="md:w-1/3 w-full aspect-video rounded-2xl overflow-hidden border border-white/5 relative">
             <img
-              src={featureVideo.thumbnailUrl || "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=400&q=80"}
+              src={mediaUrl(featureVideo.thumbnailUrl) || mediaUrl(featureVideo.thumbnail) || mediaUrl(featureVideo.coverImage) || "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=400&q=80"}
               alt="Launch Thumbnail"
               className="w-full h-full object-cover"
             />

@@ -40,7 +40,7 @@ export const Career: React.FC = () => {
       dataPayload.append("message", formData.coverLetter); // Map cover letter to message
       dataPayload.append("resume", formData.resumeFile); // Single file upload field name in backend is 'resume'
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}` + "/cms/public/resume", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"}` + "/cms/public/resume", {
         method: "POST",
         body: dataPayload
       });

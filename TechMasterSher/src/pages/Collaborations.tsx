@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
 
 export const Collaborations: React.FC = () => {
@@ -224,8 +225,8 @@ export const Collaborations: React.FC = () => {
             <div key={idx} className="glass-panel p-8 rounded-3xl border border-white/5">
               <p className="text-gray-400 font-light italic mb-6">"{test.quote}"</p>
               <div className="flex items-center gap-4">
-                {test.avatar ? (
-                  <img src={test.avatar} alt={test.personName} className="w-10 h-10 rounded-full object-cover border border-white/10" />
+                {mediaUrl(test.avatar) ? (
+                  <img src={mediaUrl(test.avatar)} alt={test.personName} className="w-10 h-10 rounded-full object-cover border border-white/10" />
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/50" />
                 )}

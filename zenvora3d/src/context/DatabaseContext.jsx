@@ -1,6 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initialData } from '../utils/initialData';
 
+const DEFAULT_API_URL = "https://tech-master-6km7.onrender.com/api/v1";
+const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL?.trim();
+  if (!envUrl) return DEFAULT_API_URL;
+  const normalized = envUrl.replace(/\/+$|\/api\/v1\/*$/i, "");
+  return normalized.endsWith("/api/v1") ? normalized : `${normalized}/api/v1`;
+};
+
 const DatabaseContext = createContext();
 
 export const DatabaseProvider = ({ children }) => {
@@ -54,13 +62,18 @@ export const DatabaseProvider = ({ children }) => {
       ...(options.headers || {})
     };
 
+    if (options.body instanceof FormData) {
+      delete headers["Content-Type"];
+    }
+
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}${path}`, {
+    const response = await fetch(`${getApiBaseUrl()}${path}`, {
       ...options,
-      headers
+      headers,
+      credentials: "include"
     });
 
     if (response.status === 401) {
@@ -349,7 +362,8 @@ export const DatabaseProvider = ({ children }) => {
       updateSection,
       updateProfile,
       markNotificationRead,
-      clearAllNotifications
+      clearAllNotifications,
+      apiFetch
     }}>
       {children}
     </DatabaseContext.Provider>

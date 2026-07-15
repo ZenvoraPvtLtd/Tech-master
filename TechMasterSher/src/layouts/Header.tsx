@@ -5,6 +5,7 @@ import gsap from "gsap";
 import logo1 from "../assets/logo_transparent-removebg-preview.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 
 
 interface HeaderProps {
@@ -99,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           data-cursor="home"
         >
           <img
-            src={websiteSettings?.companyLogo?.url || logo1}
+            src={mediaUrl(websiteSettings?.companyLogo) || logo1}
             alt="Tech Master Logo"
             className="h-16 sm:h-20 lg:h-28 w-auto object-contain -my-4 sm:-my-6 lg:-my-8"
             style={{

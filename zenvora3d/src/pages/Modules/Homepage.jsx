@@ -19,7 +19,7 @@ export const Homepage = () => {
   const homepageData = db?.homepage || {};
 
   const [expandedCards, setExpandedCards] = useState({
-    heroMainHeading: true, brandPartners: false, hero: true, founderBio: false, stats: false, coreValues: false, youtubePromo: false, events: false, newsletter: false, contactPreview: false,
+    heroMainHeading: true, brandPartners: false, hero: true, founderBio: false, stats: false, coreValues: false, youtubePromo: false, events: false, newsletter: false, contactPreview: false, eventHighlights: false, featuredCampaigns: false,
     heroSlides: false, videoSlider: false, reels: false, shorts: false, longVideos: false,
     projects: false, services: false, logos: false, whyChooseUs: false, gallery: false, customSections: true
   });
@@ -42,6 +42,8 @@ export const Homepage = () => {
   const [newsletterForm, setNewsletterForm] = useState(homepageData?.newsletter || {});
   const [contactPreviewForm, setContactPreviewForm] = useState(homepageData?.contactPreview || {});
   const [eventsForm, setEventsForm] = useState(homepageData?.events || {});
+  const [eventHighlightsForm, setEventHighlightsForm] = useState(homepageData?.eventHighlights || {});
+  const [featuredCampaignsForm, setFeaturedCampaignsForm] = useState(homepageData?.featuredCampaigns || {});
   const [subscriberSearch, setSubscriberSearch] = useState('');
 
   const [activeEditorSection, setActiveEditorSection] = useState(null);
@@ -60,6 +62,8 @@ export const Homepage = () => {
         } else {
           if (targetKey in heroForm || ['desktopImageUrl', 'mobileImageUrl', 'videoUrl'].includes(targetKey)) setHeroForm(prev => ({ ...prev, [targetKey]: url }));
           if (targetKey in newsletterForm || ['backgroundImage', 'backgroundVideo', 'leftIllustration', 'rightIllustration'].includes(targetKey)) setNewsletterForm(prev => ({ ...prev, [targetKey]: url }));
+          if (targetKey in eventHighlightsForm || ['backgroundImage', 'backgroundVideo'].includes(targetKey)) setEventHighlightsForm(prev => ({ ...prev, [targetKey]: url }));
+          if (targetKey in featuredCampaignsForm || ['backgroundImage', 'backgroundVideo'].includes(targetKey)) setFeaturedCampaignsForm(prev => ({ ...prev, [targetKey]: url }));
         }
       }
     });
@@ -234,7 +238,7 @@ export const Homepage = () => {
           <Button onClick={() => { setExpandedCards(prev => ({...prev, customSections: true})); setActiveEditorSection('customSections'); setEditingItemId(null); setDraftItem({}); document.getElementById('customSections')?.scrollIntoView(); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
              <Plus className="w-4 h-4 mr-1.5" /> Add Section
           </Button>
-          <Button onClick={() => { setHeroForm(homepageData?.hero || {}); setNewsletterForm(homepageData?.newsletter || {}); setEventsForm(homepageData?.events || {}); showToast("Forms reset to original database state.", "info"); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
+          <Button onClick={() => { setHeroForm(homepageData?.hero || {}); setNewsletterForm(homepageData?.newsletter || {}); setEventsForm(homepageData?.events || {}); setEventHighlightsForm(homepageData?.eventHighlights || {}); setFeaturedCampaignsForm(homepageData?.featuredCampaigns || {}); showToast("Forms reset to original database state.", "info"); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
              <RefreshCw className="w-4 h-4 mr-1.5" /> Reset
           </Button>
           <Button onClick={() => showToast("Draft saved locally.", "success")} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
@@ -373,6 +377,100 @@ export const Homepage = () => {
                 </div>
               </div>
               <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('youtubePromo', youtubePromoForm)}>Save YouTube Initiative Promo</Button></div>
+            </div>
+          )}
+        </Card>
+
+        {/* 3.7. FEATURED CAMPAIGNS SECTION */}
+        <Card title={<div onClick={() => toggleCard('featuredCampaigns')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Featured Campaigns</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.featuredCampaigns && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
+              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Featured Campaigns Settings</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <Switch label="Enable Featured Campaigns Section" checked={featuredCampaignsForm.enableSection !== false} onChange={v => setFeaturedCampaignsForm({...featuredCampaignsForm, enableSection: v})} />
+                <Input label="Section Tag (e.g. OUR IMPACT)" value={featuredCampaignsForm.sectionTag || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, sectionTag: e.target.value })} />
+                <Input label="Small Heading" value={featuredCampaignsForm.smallHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, smallHeading: e.target.value })} />
+                <Input label="Main Heading" value={featuredCampaignsForm.mainHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, mainHeading: e.target.value })} />
+                <Input label="Highlight Heading" value={featuredCampaignsForm.highlightHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, highlightHeading: e.target.value })} />
+                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={featuredCampaignsForm.description || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, description: e.target.value })} /></div>
+                
+                {['backgroundImage', 'backgroundVideo'].map(k => (
+                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
+                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
+                    {featuredCampaignsForm[k] ? (
+                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={featuredCampaignsForm[k]} className="w-full h-full object-cover" /><button onClick={() => setFeaturedCampaignsForm({ ...featuredCampaignsForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
+                    ) : (
+                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('featuredCampaigns', featuredCampaignsForm)}>Save Settings</Button></div>
+              
+              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Campaign Cards Management</span>
+              {renderListManager({
+                sectionKey: 'featuredCampaigns',
+                innerListKey: 'list',
+                displayColumns: [{ key: 'title', label: 'Campaign Title' }, { key: 'coverImage', label: 'Cover Image', type: 'image' }, { key: 'active', label: 'Active', type: 'switch' }],
+                fields: [
+                  { key: 'title', label: 'Campaign Title' }, { key: 'description', label: 'Campaign Description', type: 'textarea' },
+                  { key: 'coverImage', label: 'Cover Image', type: 'upload' },
+                  { key: 'video', label: 'Campaign Video', type: 'video' },
+                  { key: 'ctaText', label: 'CTA Button Text' }, { key: 'ctaUrl', label: 'CTA Button URL' },
+                  { key: 'order', label: 'Display Order', type: 'number' },
+                  { key: 'featured', label: 'Featured Toggle', type: 'switch' }, { key: 'active', label: 'Active Toggle', type: 'switch' }
+                ]
+              })}
+            </div>
+          )}
+        </Card>
+
+        {/* 3.8. EVENT HIGHLIGHTS SECTION */}
+        <Card title={<div onClick={() => toggleCard('eventHighlights')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Calendar className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Event Highlights</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.eventHighlights && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
+              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Event Highlights Settings</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <Switch label="Enable Event Highlights Section" checked={eventHighlightsForm.enableSection !== false} onChange={v => setEventHighlightsForm({...eventHighlightsForm, enableSection: v})} />
+                <Input label="Section Tag (e.g. COMMUNITY)" value={eventHighlightsForm.sectionTag || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, sectionTag: e.target.value })} />
+                <Input label="Small Heading" value={eventHighlightsForm.smallHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, smallHeading: e.target.value })} />
+                <Input label="Main Heading" value={eventHighlightsForm.mainHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, mainHeading: e.target.value })} />
+                <Input label="Highlight Heading" value={eventHighlightsForm.highlightHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, highlightHeading: e.target.value })} />
+                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={eventHighlightsForm.description || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, description: e.target.value })} /></div>
+                
+                {['backgroundImage', 'backgroundVideo'].map(k => (
+                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
+                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
+                    {eventHighlightsForm[k] ? (
+                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={eventHighlightsForm[k]} className="w-full h-full object-cover" /><button onClick={() => setEventHighlightsForm({ ...eventHighlightsForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
+                    ) : (
+                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('eventHighlights', eventHighlightsForm)}>Save Settings</Button></div>
+              
+              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Event Cards Management</span>
+              {renderListManager({
+                sectionKey: 'eventHighlights',
+                innerListKey: 'list',
+                displayColumns: [{ key: 'title', label: 'Event Title' }, { key: 'date', label: 'Date' }, { key: 'image', label: 'Image', type: 'image' }, { key: 'active', label: 'Active', type: 'switch' }],
+                fields: [
+                  { key: 'title', label: 'Event Title' }, { key: 'date', label: 'Event Date' },
+                  { key: 'description', label: 'Event Description', type: 'textarea' },
+                  { key: 'time', label: 'Event Time' }, { key: 'location', label: 'Location' },
+                  { key: 'category', label: 'Category' },
+                  { key: 'image', label: 'Event Image', type: 'upload' },
+                  { key: 'banner', label: 'Event Banner', type: 'upload' },
+                  { key: 'thumbnail', label: 'Event Thumbnail', type: 'upload' },
+                  { key: 'video', label: 'Event Video', type: 'video' },
+                  { key: 'reel', label: 'Event Reel', type: 'reel' },
+                  { key: 'ctaText', label: 'CTA Button Text' }, { key: 'ctaUrl', label: 'CTA Button URL' },
+                  { key: 'order', label: 'Display Order', type: 'number' },
+                  { key: 'featured', label: 'Featured Toggle', type: 'switch' }, { key: 'active', label: 'Active Toggle', type: 'switch' }
+                ]
+              })}
             </div>
           )}
         </Card>
