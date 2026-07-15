@@ -19,7 +19,7 @@ export const Homepage = () => {
   const homepageData = db?.homepage || {};
 
   const [expandedCards, setExpandedCards] = useState({
-    hero: true, founderBio: false, stats: false, coreValues: false, youtubePromo: false, events: false, newsletter: false, contactPreview: false,
+    heroMainHeading: true, brandPartners: false, hero: true, founderBio: false, stats: false, coreValues: false, youtubePromo: false, events: false, newsletter: false, contactPreview: false,
     heroSlides: false, videoSlider: false, reels: false, shorts: false, longVideos: false,
     projects: false, services: false, logos: false, whyChooseUs: false, gallery: false, customSections: true
   });
@@ -34,6 +34,8 @@ export const Homepage = () => {
     setTimeout(() => setToast(null), 3000);
   };
 
+  
+  const [heroMainHeadingForm, setHeroMainHeadingForm] = useState(homepageData?.heroMainHeading || {});
   const [heroForm, setHeroForm] = useState(homepageData?.hero || {});
   const [founderBioForm, setFounderBioForm] = useState(homepageData?.founderBio || {});
   const [youtubePromoForm, setYoutubePromoForm] = useState(homepageData?.youtubePromo || {});
@@ -246,6 +248,28 @@ export const Homepage = () => {
 
       <div className="grid grid-cols-1 gap-4 max-w-5xl">
         
+        
+        {/* 0.5 HERO MAIN HEADING SECTION */}
+        <Card title={<div onClick={() => toggleCard('heroMainHeading')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Sparkles className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Hero Main Heading</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.heroMainHeading && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input label="Small Badge" value={heroMainHeadingForm.smallBadge || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, smallBadge: e.target.value })} />
+                <Input label="Heading Line 1" value={heroMainHeadingForm.headingLine1 || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, headingLine1: e.target.value })} />
+                <Input label="Highlighted Heading" value={heroMainHeadingForm.highlightedHeading || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, highlightedHeading: e.target.value })} />
+                <Input label="Heading Line 3" value={heroMainHeadingForm.headingLine3 || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, headingLine3: e.target.value })} />
+                <Input label="Primary Button Text" value={heroMainHeadingForm.primaryButton || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, primaryButton: e.target.value })} />
+                <Input label="Secondary Button Text" value={heroMainHeadingForm.secondaryButton || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, secondaryButton: e.target.value })} />
+                
+                <div className="md:col-span-2">
+                  <Input label="Description" textarea rows={3} value={heroMainHeadingForm.description || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, description: e.target.value })} />
+                </div>
+              </div>
+              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('heroMainHeading', heroMainHeadingForm)}>Save Hero Heading</Button></div>
+            </div>
+          )}
+        </Card>
+
         {/* 1. HERO SECTION */}
         <Card title={<div onClick={() => toggleCard('hero')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Sparkles className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Hero Overview</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
           {expandedCards.hero && (
@@ -276,6 +300,26 @@ export const Homepage = () => {
                 </div>
               </div>
               <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('founderBio', founderBioForm)}>Save Founder Bio</Button></div>
+            </div>
+          )}
+        </Card>
+
+        
+        {/* BRAND PARTNERS SECTION */}
+        <Card title={<div onClick={() => toggleCard('brandPartners')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Brand Partners</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.brandPartners && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
+              {renderListManager({
+                sectionKey: 'brandPartners',
+                displayColumns: [{ key: 'brandName', label: 'Brand Name' }, { key: 'status', label: 'Status' }],
+                fields: [
+                  { key: 'brandName', label: 'Brand Name' }, 
+                  { key: 'logo', label: 'Logo / Image URL' }, 
+                  { key: 'website', label: 'Website URL' },
+                  { key: 'status', label: 'Status' },
+                  { key: 'order', label: 'Display Order', type: 'number' }
+                ]
+              })}
             </div>
           )}
         </Card>

@@ -126,7 +126,7 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
         >
-          {journeyHero.badgeText}
+          {journeyHero?.badgeText}
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
@@ -134,8 +134,8 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
         >
-          {journeyHero.heading} <br />
-          <span className="text-gold italic font-bold">{journeyHero.highlightWord}</span>
+          {journeyHero?.heading} <br />
+          <span className="text-gold italic font-bold">{journeyHero?.highlightWord}</span>
         </motion.h1>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -143,12 +143,12 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-300 text-sm sm:text-base font-light max-w-2xl mx-auto leading-relaxed p-6 rounded-2xl border border-gold bg-black/40 backdrop-blur-md shadow-[0_0_15px_rgba(212,175,55,0.15)] mt-4"
         >
-          {journeyHero.description}
+          {journeyHero?.description}
         </motion.div>
 
         {/* Scroll Indicator */}
         <div className="flex flex-col items-center gap-2 mt-12 opacity-55">
-          <span className="text-[9px] uppercase tracking-[3px]">{journeyHero.scrollIndicatorText}</span>
+          <span className="text-[9px] uppercase tracking-[3px]">{journeyHero?.scrollIndicatorText}</span>
           <ArrowDown className="w-4 h-4 text-gold animate-bounce" />
         </div>
       </div>

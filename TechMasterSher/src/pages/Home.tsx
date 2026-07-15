@@ -171,7 +171,8 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
 };
 
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
-  const { homeData, servicesData, campaignsData, eventsData, dbData } = useData();
+  const { homeData, servicesData, campaignsData, eventsData, dbData, isLoading } = useData();
+  if (isLoading || !homeData) return <div className="min-h-screen bg-black flex items-center justify-center"><span className="text-gold uppercase tracking-widest text-xs font-bold">Initializing CMS...</span></div>;
   const servicesList = servicesData || [];
   const campaignsList = campaignsData || [];
   const eventsList = eventsData || [];
@@ -403,7 +404,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
               <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
-            {homeData?.hero?.title}
+            {homeData?.heroMainHeading?.smallBadge || "HERO LANDING"}
           </motion.div>
 
           {/* Headline with split reveal effect */}
@@ -413,8 +414,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             transition={{ duration: 1.0, delay: 0.4, ease: "easeOut" }}
             className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-light leading-[1.1] tracking-tight mb-8 text-reveal"
           >
-            Orchestrating <br />
-            <span className="font-bold italic text-gold font-serif">Immersive Tech</span> Education.
+            {homeData?.heroMainHeading?.headingLine1 || "Orchestrating"} <br />
+            <span className="font-bold italic text-gold font-serif">{homeData?.heroMainHeading?.highlightedHeading || "Immersive Tech"}</span> {homeData?.heroMainHeading?.headingLine3 || "Education."}
           </motion.h1>
 
           <motion.div
@@ -423,7 +424,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             transition={{ duration: 1.0, delay: 0.6 }}
             className="text-gray-400 text-sm md:text-lg font-light max-w-2xl leading-relaxed mb-6 md:mb-12 p-4 md:p-8 rounded-2xl border border-gold bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
           >
-            {homeData?.hero?.description}
+            {homeData?.heroMainHeading?.description || "We design structured curricula, virtual sandbox playgrounds, and live cohort workshops, transforming traditional programming paths into cinematic student success pipelines."}
           </motion.div>
 
           <motion.div
@@ -437,7 +438,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 onClick={() => handleNavClick("services")}
                 className="light-sweep px-8 py-4 bg-white text-black font-bold uppercase text-xs tracking-[2px] rounded-full hover:bg-gold hover:text-black transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
               >
-                {homeData?.hero?.ctaButtonText}
+                {homeData?.heroMainHeading?.primaryButton || "Discover Services"}
               </button>
             </Magnetic>
 
@@ -457,7 +458,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 onClick={() => handleNavClick("contact")}
                 className="px-8 py-4 border border-white/20 text-white font-bold uppercase text-xs tracking-[2px] rounded-full hover:border-gold hover:text-gold bg-transparent transition-all duration-500 flex items-center gap-2"
               >
-                {homeData?.hero?.ctaButtonUrl}
+                {homeData?.heroMainHeading?.secondaryButton || "Contact Us"}
                 <ArrowUpRight className="w-4 h-4" />
               </button>
             </Magnetic>
@@ -468,15 +469,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* Personal Introduction */}
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-8 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            FOUNDER BIOGRAPHY
-          </span>
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.founderBio?.tag || "FOUNDER BIOGRAPHY"}</span>
         </div>
         <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6 fade-up">
-          Hello, I'm <span className="font-bold italic text-gold">Aman</span>.
+          {homeData?.founderBio?.title || "Hello, I'm Aman."}
         </h2>
         <p className="text-gray-400 text-sm md:text-lg font-light leading-relaxed max-w-3xl mx-auto fade-up">
-          I am a software engineer, educator, and content creator dedicated to democratizing tech education. My mission is to bridge the gap between academic theory and industry expectations, helping aspiring developers master modern web architectures.
+          {homeData?.founderBio?.paragraph || "I am a software engineer..."}
         </p>
       </section>
 
@@ -489,18 +488,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
-          transition={{ ease: "linear", duration: 20, repeat: Infinity }}
+          transition={{ ease: "linear", duration: Math.max(20, (homeData?.brandPartners?.length || 6) * 3.33), repeat: Infinity }}
           className="flex gap-12 md:gap-24 w-max"
         >
           {[1, 2].map((groupIndex) => (
             <div key={groupIndex} className="flex items-center gap-12 md:gap-24">
-              {["NVIDIA", "GITHUB", "GOOGLE CLOUD", "APPLE DEVELOPER", "VERCEL", "MICROSOFT"].map((brand) => (
+              {(homeData?.brandPartners?.length > 0 ? homeData.brandPartners : [{ brandName: "NVIDIA" }, { brandName: "GITHUB" }, { brandName: "GOOGLE CLOUD" }, { brandName: "APPLE DEVELOPER" }, { brandName: "VERCEL" }, { brandName: "MICROSOFT" }]).map((brand: any, idx: number) => (
                 <span
-                  key={brand}
+                  key={`${brand.brandName}-${idx}`}
                   className="font-serif text-xl sm:text-2xl font-black text-gold tracking-[6px] transition-colors duration-300 select-none cursor-default"
-                >
-                  {brand}
-                </span>
+                >{brand.brandName}</span>
               ))}
             </div>
           ))}
@@ -553,7 +550,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
 
         <div className="services-grid grid grid-cols-1 md:grid-cols-2 gap-8">
-          {servicesList.map((srv, idx) => (
+          {servicesList?.map((srv, idx) => (
             <LuxuryCard
               key={srv.id}
               accentColor={srv.accentColor}
@@ -577,7 +574,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               </p>
 
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 border-t border-white/5">
-                {srv.features.map((feat: any, fidx: number) => (
+                {srv?.features?.map((feat: any, fidx: number) => (
                   <li key={fidx} className="flex items-center gap-2 text-xs text-gray-400">
                     <span>{feat}</span>
                   </li>
@@ -598,7 +595,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="max-w-7xl mx-auto">
           <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-12">INFLUENCE & REACH</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {homeData?.statisticsCounters?.map((stat: any, idx: number) => (
+            {(homeData?.statistics || homeData?.statisticsCounters)?.map((stat: any, idx: number) => (
               <div key={idx} className="fade-up">
                 <span className="font-serif text-4xl sm:text-6xl font-black text-gold block mb-2">{`${stat.prefix || ""}${stat.number}${stat.suffix || ""}`}</span>
                 <span className="text-gray-400 text-xs tracking-[1px] uppercase font-mono">{stat.label}</span>
@@ -685,7 +682,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </div>
         ) : activeFilter === "long" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 video-showcase-grid-container">
-            {filteredVideos.map((video, idx) => {
+            {filteredVideos?.map((video, idx) => {
               const isLastAndOdd = idx === filteredVideos.length - 1 && filteredVideos.length % 2 !== 0;
               return (
                 <div
@@ -704,7 +701,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto video-showcase-grid-container">
-            {filteredVideos.map((video) => (
+            {filteredVideos?.map((video) => (
               <div key={video.id} className="video-fade-in w-full aspect-[9/16]">
                 <VideoCard
                   video={video}
@@ -720,18 +717,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* 8. Quick YouTube Promo Callout */}
       <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-left">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            YOUTUBE INITIATIVE
-          </span>
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.youtubePromo?.tag || "YOUTUBE INITIATIVE"}</span>
         </div>
         <div className="glass-panel p-8 md:p-12 rounded-3xl flex flex-col md:flex-row gap-8 items-center border border-white/5">
           <div className="md:w-2/3">
-            <span className="text-[10px] uppercase font-bold tracking-[3px] text-gold block mb-2">YOUTUBE INITIATIVE</span>
+            <span className="text-[10px] uppercase font-bold tracking-[3px] text-gold block mb-2">{homeData?.youtubePromo?.tag || "YOUTUBE INITIATIVE"}</span>
             <h3 className="font-serif text-3xl font-light text-white mb-4">
-              Building Web Apps Live for 2.5 Million Learners
+              {homeData?.youtubePromo?.heading || "Building Web Apps Live for 2.5 Million Learners"}
             </h3>
             <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed mb-6">
-              Join Aman as he takes raw coding problems and transforms them into interactive systems. Subscribing gains you access to Github action alerts, workspace repositories, and community-guided streams.
+              {homeData?.youtubePromo?.description || "Join Aman as he takes raw coding problems..."}
             </p>
             <a href="https://youtube.com/c/techmasterf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs uppercase tracking-[2px] text-gold hover:text-white transition-colors duration-300 font-bold">
               Explore YouTube Channel <ArrowUpRight className="w-4 h-4" />
@@ -760,7 +755,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {campaignsList.slice(0, 3).map((camp: any) => (
+          {campaignsList?.slice(0, 3)?.map((camp: any) => (
             <div key={camp.id} className="glass-panel p-6 rounded-2xl border border-white/5 fade-up flex flex-col">
               <img src={camp.coverImage} alt={camp.title} className="w-full h-40 object-cover rounded-xl mb-4" />
               <h3 className="font-serif text-xl text-white mb-2">{camp.title}</h3>
@@ -784,7 +779,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {eventsList.slice(0, 2).map((evt: any) => (
+          {eventsList?.slice(0, 2)?.map((evt: any) => (
             <div key={evt.id} className="glass-panel p-8 rounded-2xl border-l-2 hover:border-l-gold transition-all duration-300 fade-up">
               <span className="text-gold text-xs font-mono mb-3 block">{evt.date}</span>
               <h3 className="font-serif text-2xl text-white mb-3">{evt.title}</h3>
@@ -799,16 +794,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* Newsletter */}
       <section className="scroll-section py-24 px-6 max-w-4xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            NEWSLETTER SUBSCRIPTION
-          </span>
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.newsletter?.tag || "NEWSLETTER SUBSCRIPTION"}</span>
         </div>
         <div className="glass-panel p-6 sm:p-12 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(212,175,55,0.05)] fade-up">
-          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">Stay in the Loop</h2>
-          <p className="text-gray-400 text-sm mb-8 font-light">Join my newsletter to get the latest tech insights, coding tips, and event updates delivered directly to your inbox.</p>
+          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">{homeData?.newsletter?.heading || "Stay in the Loop"}</h2>
+          <p className="text-gray-400 text-sm mb-8 font-light">{homeData?.newsletter?.description || "Join my newsletter..."}</p>
           <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
             <input type="email" placeholder="Enter your email" className="flex-1 bg-black/50 border border-white/10 rounded-full px-6 py-3 text-white focus:outline-none focus:border-gold/50 transition-colors" />
-            <button type="submit" className="bg-gold text-black px-8 py-3 rounded-full font-bold uppercase text-xs tracking-[1px] hover:bg-white transition-colors">Subscribe</button>
+            <button type="submit" className="bg-gold text-black px-8 py-3 rounded-full font-bold uppercase text-xs tracking-[1px] hover:bg-white transition-colors">{homeData?.newsletter?.buttonText || "Subscribe"}</button>
           </form>
         </div>
       </section>
@@ -816,19 +809,15 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* Contact Preview */}
       <section className="scroll-section pb-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            COLLABORATION INQUIRY
-          </span>
+          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.contactPreview?.tag || "COLLABORATION INQUIRY"}</span>
         </div>
         <h2 className="font-serif text-4xl sm:text-6xl font-light text-white leading-tight mb-8 fade-up">
-          Ready to <span className="text-gold italic font-bold">Collaborate?</span>
+          {homeData?.contactPreview?.heading || "Ready to Collaborate?"}
         </h2>
         <button
           onClick={() => handleNavClick("contact")}
           className="light-sweep px-8 py-4 bg-white text-black font-bold uppercase text-xs tracking-[2px] rounded-full hover:bg-gold hover:text-black transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)] fade-up"
-        >
-          Get In Touch
-        </button>
+        >{homeData?.contactPreview?.primaryCta || "Get In Touch"}</button>
       </section>
 
       {/* Lightbox Modal */}

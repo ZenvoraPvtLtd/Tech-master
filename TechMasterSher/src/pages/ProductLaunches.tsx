@@ -14,6 +14,15 @@ const iconMap: Record<string, React.ReactNode> = {
 export const ProductLaunches: React.FC = () => {
   const { launchesData } = useData();
 
+  if (!launchesData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#060606]">
+        <p className="text-gold font-mono uppercase tracking-[3px] text-xs">Loading Content...</p>
+      </div>
+    );
+  }
+
+
   const hero = launchesData?.hero || {
     smallBadge: "SOFTWARE RELEASES",
     headline: "Product Launches &",

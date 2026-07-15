@@ -13,12 +13,12 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
-  const { dbData } = useData();
+  const { dbData, websiteSettings } = useData();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
 
-  const identityItems = [
+  const identityItems = dbData?.navigation?.identityItems || [
     { name: "Home", id: "home" },
     { name: "About Founder", id: "about" },
     { name: "Founder's Journey", id: "journey" },
@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
     { name: "What We Do", id: "what-we-do" },
   ];
 
-  const engagementItems = [
+  const engagementItems = dbData?.navigation?.engagementItems || [
     { name: "Brand Collabs", id: "collaborations" },
     { name: "Campaigns", id: "campaigns" },
     { name: "Product Launches", id: "product-launches" },
@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
     { name: "Insights / Blog", id: "blog" },
   ];
 
-  const quickLinksItems = [
+  const quickLinksItems = dbData?.navigation?.quickLinksItems || [
     { name: "Core Services", id: "services" },
     { name: "Testimonials", id: "testimonials" },
     { name: "FAQ Portal", id: "faq" },
@@ -99,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           data-cursor="home"
         >
           <img
-            src={logo1}
+            src={websiteSettings?.companyLogo?.url || logo1}
             alt="Tech Master Logo"
             className="h-16 sm:h-20 lg:h-28 w-auto object-contain -my-4 sm:-my-6 lg:-my-8"
             style={{
@@ -117,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
 
         {/* Desktop Navigation Link Cluster */}
         <nav className="hidden lg:flex items-center gap-5">
-          {[
+          {(dbData?.navigation?.desktopLinks || [
             { name: "Home", id: "home" },
             { name: "About", id: "about" },
             { name: "Journey", id: "journey" },
@@ -125,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             { name: "Portfolio", id: "portfolio" },
             { name: "Careers", id: "career" },
             { name: "Blog", id: "blog" },
-          ].map((item) => (
+          ]).map((item: any) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
@@ -185,7 +185,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <div className="flex flex-col gap-4 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">IDENTITY</p>
             <div className="flex flex-col gap-2 w-full">
-              {identityItems.map((item) => (
+              {identityItems.map((item: any) => (
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
@@ -209,7 +209,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <div className="flex flex-col gap-4 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">ENGAGEMENT</p>
             <div className="flex flex-col gap-2 w-full">
-              {engagementItems.map((item) => (
+              {engagementItems.map((item: any) => (
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
@@ -233,7 +233,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <div className="flex flex-col gap-4 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">QUICK LINKS</p>
             <div className="flex flex-col gap-2 w-full">
-              {quickLinksItems.map((item) => (
+              {quickLinksItems.map((item: any) => (
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}

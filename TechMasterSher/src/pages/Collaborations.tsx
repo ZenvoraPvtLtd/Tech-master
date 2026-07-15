@@ -6,6 +6,7 @@ import { LuxuryCard } from "../components/LuxuryCard";
 export const Collaborations: React.FC = () => {
   const { dbData } = useData();
 
+
   const collaborations = dbData?.collaborationsPage || {};
 
   const hero = collaborations.hero || {

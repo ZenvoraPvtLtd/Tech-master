@@ -217,7 +217,7 @@ const ContactCard: React.FC<ContactCardProps> = ({ icon, label, value, href, acc
 };
 
 export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
-  const { dbData } = useData();
+  const { dbData, websiteSettings, contactData } = useData();
   const footerRef = useRef<HTMLElement>(null);
   const [mouseGlow, setMouseGlow] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -324,12 +324,12 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div>
             <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">IDENTITY</p>
             <ul className="flex flex-col gap-3">
-              {[
+              {(dbData?.navigation?.identityItems || [
                 { name: "About Founder", id: "about" },
                 { name: "Founder's Journey", id: "journey" },
                 { name: "Mission & Vision", id: "mission" },
                 { name: "What We Do", id: "what-we-do" },
-              ].map((link) => (
+              ]).map((link: any) => (
                 <li key={link.id}>
                   <button
                     onClick={() => handleNavClick(link.id)}
@@ -346,14 +346,14 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div>
             <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">ENGAGEMENT</p>
             <ul className="flex flex-col gap-3">
-              {[
+              {(dbData?.navigation?.engagementItems || [
                 { name: "Brand Collabs", id: "collaborations" },
                 { name: "Campaigns", id: "campaigns" },
                 { name: "Product Launches", id: "product-launches" },
                 { name: "Events & Talks", id: "events" },
                 { name: "Student Work", id: "portfolio" },
                 { name: "Media Gallery", id: "gallery" },
-              ].map((link) => (
+              ]).map((link: any) => (
                 <li key={link.id}>
                   <button
                     onClick={() => handleNavClick(link.id)}
@@ -370,14 +370,14 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div>
             <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">QUICK LINKS</p>
             <ul className="flex flex-col gap-3">
-              {[
+              {(dbData?.navigation?.quickLinksItems || [
                 { name: "Core Services", id: "services" },
                 { name: "Testimonials", id: "testimonials" },
                 { name: "FAQ Portal", id: "faq" },
                 { name: "Contact Page", id: "contact" },
                 { name: "Privacy Policy", id: "privacy" },
                 { name: "Terms of Service", id: "terms" },
-              ].map((link) => (
+              ]).map((link: any) => (
                 <li key={link.id}>
                   <button
                     onClick={() => handleNavClick(link.id)}
@@ -416,22 +416,23 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
         <ContactCard
           icon={<Mail className="w-4 h-4" />}
           label="DIRECT MAIL"
-          value="bookings@techmasterf.com"
-          href="mailto:bookings@techmasterf.com"
+          value={contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
+          href={`mailto:${contactData?.heroSetup?.email || websiteSettings?.email || ""}`}
           accent="#D4AF37"
         />
         <ContactCard
           icon={<Phone className="w-4 h-4" />}
           label="BOOKING OFFICE"
-          value="+1 (800) 555-CODE"
-          href="tel:+18005552633"
+          value={contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
+          href={`tel:${contactData?.heroSetup?.phone || websiteSettings?.phone || ""}`}
           accent="#00E5FF"
         />
         <div className="md:col-span-2 lg:col-span-1">
           <ContactCard
             icon={<MapPin className="w-4 h-4" />}
             label="CREATOR HQ"
-            value="Silicon Valley Creator Labs, Suite 40"
+            value={websiteSettings?.address || "Silicon Valley Creator Labs, Suite 40"}
+            href={websiteSettings?.googleMapsUrl}
             accent="#aa3bff"
           />
         </div>
@@ -441,7 +442,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
         <div className="text-left">
           <p className="text-[10px] uppercase tracking-[2px] text-white font-light">
-            &copy; {new Date().getFullYear()} TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.
+            &copy; {new Date().getFullYear()} {websiteSettings?.copyrightText || websiteSettings?.companyName || "TECH MASTER MEDIA & CREATIVE LABS"}. ALL RIGHTS RESERVED.
           </p>
           <p className="text-[9px] uppercase tracking-[1px] text-gray-400 mt-1">
             Premium Creator Blueprint &bull; Designed to Awwwards Site of the Day Standard

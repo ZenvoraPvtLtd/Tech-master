@@ -5,6 +5,8 @@ import { useData } from "../context/DataContext";
 
 export const Contact: React.FC = () => {
   const { dbData } = useData();
+
+
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");

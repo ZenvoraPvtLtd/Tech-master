@@ -6,6 +6,8 @@ import { useData } from "../context/DataContext";
 export const Media: React.FC = () => {
   const { dbData } = useData();
 
+
+
   const mediaHero = dbData?.mediaHero || {
     badge: "NEWSROOM HUB",
     titleLine1: "Press Kit &",

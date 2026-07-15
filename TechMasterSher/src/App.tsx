@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CustomCursor } from "./components/CustomCursor";
 import { SmoothScroll } from "./components/SmoothScroll";
 import { IntroLoader } from "./components/IntroLoader";
 import { SceneContainer } from "./three/SceneContainer";
 import { Header } from "./layouts/Header";
 import { Footer } from "./layouts/Footer";
+import { useData } from "./context/DataContext";
 import { BackgroundVideo } from "./components/BackgroundVideo";
 import gsap from "gsap";
 
@@ -32,6 +33,24 @@ import { Contact } from "./pages/Contact";
 function App() {
   const [activePage, setActivePage] = useState("home");
   const [isLoading, setIsLoading] = useState(true);
+  const { dbData, isLoading: isDataLoading } = useData();
+
+  useEffect(() => {
+    if (dbData?.globalSEO) {
+      if (dbData.globalSEO.metaTitle) {
+        document.title = dbData.globalSEO.metaTitle;
+      }
+      if (dbData.globalSEO.metaDescription) {
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+          metaDesc = document.createElement('meta');
+          metaDesc.setAttribute('name', 'description');
+          document.head.appendChild(metaDesc);
+        }
+        metaDesc.setAttribute('content', dbData.globalSEO.metaDescription);
+      }
+    }
+  }, [dbData?.globalSEO]);
 
   const navigatePage = (pageId: string) => {
     if (pageId === activePage) {
@@ -108,6 +127,8 @@ function App() {
         return <Home onChangePage={navigatePage} />;
     }
   };
+
+  if (isDataLoading || !dbData) return <div className="min-h-screen bg-black flex items-center justify-center text-gold text-xs tracking-widest">SYSTEM INITIALIZING...</div>;
 
   return (
     <>

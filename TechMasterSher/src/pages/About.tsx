@@ -5,6 +5,15 @@ import { LuxuryCard } from "../components/LuxuryCard";
 
 export const About: React.FC = () => {
   const { aboutData } = useData();
+  
+  if (!aboutData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#060606]">
+        <p className="text-gold font-mono uppercase tracking-[3px] text-xs">Loading Content...</p>
+      </div>
+    );
+  }
+
   const aboutDataAny = aboutData as any;
 
   const teamList = aboutDataAny?.team || [];
@@ -77,7 +86,7 @@ export const About: React.FC = () => {
           </p>
           <div className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300 flex flex-col justify-center">
             <h3 className="font-serif text-xl font-bold text-white mb-3">
-              {aboutData.philosophy.title}
+              {aboutData?.philosophy?.title}
             </h3>
             <p className="text-gray-400 text-xs leading-relaxed font-light font-sans">
               {aboutData?.philosophy?.description}

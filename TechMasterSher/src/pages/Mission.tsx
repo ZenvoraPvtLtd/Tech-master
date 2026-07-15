@@ -30,6 +30,15 @@ const accentColors = ["#D4AF37", "#00E5FF", "#aa3bff", "#FF007F"];
 
 export const Mission: React.FC = () => {
   const { missionVisionData } = useData();
+
+  if (!missionVisionData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#060606]">
+        <p className="text-gold font-mono uppercase tracking-[3px] text-xs">Loading Content...</p>
+      </div>
+    );
+  }
+
   const mv = missionVisionData || {};
 
   const heroData = mv.hero || {};

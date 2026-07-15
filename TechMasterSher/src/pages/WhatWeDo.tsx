@@ -17,6 +17,15 @@ const iconMap: Record<string, React.ReactNode> = {
 export const WhatWeDo: React.FC = () => {
   const { whatWeDoData } = useData();
 
+  if (!whatWeDoData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#060606]">
+        <p className="text-gold font-mono uppercase tracking-[3px] text-xs">Loading Content...</p>
+      </div>
+    );
+  }
+
+
   const hero = whatWeDoData?.hero || {
     smallBadge: "CORE ACTIVITIES",
     headline: "What We Do to",
