@@ -67,7 +67,7 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
 
       setUploadProgress(50);
 
-      const response = await fetch("http://localhost:5000/api/v1/cms/upload", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}` + "/cms/upload", {
         method: "POST",
         headers: token ? { "Authorization": `Bearer ${token}` } : {},
         body: formData

@@ -128,7 +128,15 @@ function App() {
     }
   };
 
-  if (isDataLoading || !dbData) return <div className="min-h-screen bg-black flex items-center justify-center text-gold text-xs tracking-widest">SYSTEM INITIALIZING...</div>;
+  if (isDataLoading) return <div className="min-h-screen bg-black flex items-center justify-center text-gold text-xs tracking-widest">SYSTEM INITIALIZING...</div>;
+  if (!isDataLoading && !dbData) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-red-500 gap-4">
+        <span className="text-sm tracking-widest font-bold">API CONNECTION ERROR</span>
+        <button onClick={() => window.location.reload()} className="px-4 py-2 border border-red-500 text-xs tracking-widest uppercase hover:bg-red-500 hover:text-black transition-colors">Retry Connection</button>
+      </div>
+    );
+  }
 
   return (
     <>

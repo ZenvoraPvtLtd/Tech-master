@@ -58,7 +58,7 @@ export const DatabaseProvider = ({ children }) => {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`http://localhost:5000/api/v1${path}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}${path}`, {
       ...options,
       headers
     });

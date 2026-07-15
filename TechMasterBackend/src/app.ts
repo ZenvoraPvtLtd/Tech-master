@@ -30,20 +30,7 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      console.log(`[CORS Request] Origin: "${origin}"`);
-      // Allow requests with no origin (like mobile apps or curl)
-      if (
-        !origin ||
-        allowedOrigins.indexOf(origin) !== -1 ||
-        /^https?:\/\/localhost:\d+$/.test(origin)
-      ) {
-        callback(null, true);
-      } else {
-        console.warn(`[CORS Blocked] Origin "${origin}" rejected`);
-        callback(new AppError(`Origin ${origin} not allowed by CORS`, 403));
-      }
-    },
+    origin: true, // Allow any origin
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
