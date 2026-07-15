@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             { name: "Home", id: "home" },
             { name: "About", id: "about" },
             { name: "Journey", id: "journey" },
-            { name: "Services", id: "services" },
+            { name: "Media Gallery", id: "gallery" },
             { name: "Portfolio", id: "portfolio" },
             { name: "Careers", id: "career" },
             { name: "Blog", id: "blog" },

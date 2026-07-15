@@ -15,27 +15,51 @@ export const About: React.FC = () => {
   }
 
   const aboutDataAny = aboutData as any;
+  const sectionSettings = aboutDataAny?.sectionSettings || {};
 
-  const teamList = aboutDataAny?.team || [];
+  // Helper: check if a section is active
+  const isSectionActive = (sectionId: string) => {
+    const setting = sectionSettings[sectionId];
+    if (!setting) return true; // default to visible if no setting
+    return setting.status === "Active";
+  };
 
-  const experiencesList = aboutDataAny?.experience && aboutDataAny.experience.length > 0 ? aboutDataAny.experience : [
-    {
-      id: "exp-1",
-      companyName: "TechGiants",
-      designation: "Senior Architect",
-      startDate: "2018",
-      endDate: "2022",
-      description: "Spearheaded the development of scalable microservices architectures. Led a team of 20+ engineers to deliver robust enterprise solutions, reducing server response times by 40%."
-    },
-    {
-      id: "exp-2",
-      companyName: "StartupX",
-      designation: "Lead Developer",
-      startDate: "2015",
-      endDate: "2018",
-      description: "Architected the core product from the ground up, implementing cutting-edge frontend frameworks and real-time backend systems. Instrumental in securing Series A funding."
-    }
-  ];
+  // --- Data extraction with CMS fallbacks ---
+
+  // Introduction
+  const intro = aboutDataAny?.introduction || {};
+
+  // Philosophy, Mission, Vision → dynamic cards
+  const philosophy = aboutDataAny?.philosophy || {};
+  const mission = aboutDataAny?.mission || {};
+  const vision = aboutDataAny?.vision || {};
+
+  const missionVisionCards = [
+    { key: "mission", title: mission.title, desc: mission.description },
+    { key: "vision", title: vision.title, desc: vision.description },
+    { key: "philosophy", title: philosophy.title, desc: philosophy.description },
+  ].filter(c => c.title || c.desc); // only show cards that have content
+
+  // Story
+  const story = aboutDataAny?.story || {};
+
+  // Highlights (counters)
+  const highlightsList = (aboutDataAny?.highlights || []).filter((h: any) => h.status === "Active");
+
+  // Experience
+  const experiencesList = (aboutDataAny?.experience || []).filter((e: any) => e.status === "Active");
+
+  // Achievements
+  const achievementsList = (aboutDataAny?.achievements || []).filter((a: any) => a.status === "Active");
+
+  // Awards
+  const awardsList = (aboutDataAny?.awards || []).filter((a: any) => a.status === "Active");
+
+  // Future Goals
+  const futureGoals = aboutDataAny?.futureGoals || {};
+
+  // Team
+  const teamList = (aboutDataAny?.team || []).filter((t: any) => t.status === "Active" || !t.status);
 
   const getYear = (dateStr: string) => {
     if (!dateStr) return "";
@@ -43,204 +67,274 @@ export const About: React.FC = () => {
     return dateStr;
   };
 
-  const achievementsList = aboutDataAny?.achievements && aboutDataAny.achievements.length > 0 ? aboutDataAny.achievements : [
-    { id: "ach-1", title: "Developer of the Year", description: "Global Tech Summit 2021", year: "" },
-    { id: "ach-2", title: "Best Educational Platform", description: "EdTech Innovation Awards 2023", year: "" },
-    { id: "ach-3", title: "Top 100 Tech Influencers", description: "TechMedia Global 2022", year: "" }
-  ];
   return (
     <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
       {/* Background Orbs */}
       <div className="absolute top-1/4 left-1/3 w-[30vw] h-[30vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2" />
 
-      {/* Unique Page Hero */}
-      <section className="max-w-7xl mx-auto text-left mb-24 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
-        >
-          FOUNDER IDENTITY
-        </motion.div>
-        
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.0, delay: 0.2 }}
-          className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8"
-        >
-          {aboutData?.introduction?.founderName} <br />
-          <span className="text-gold italic font-bold">{aboutData?.introduction?.designation}</span>
-        </motion.h1>
+      {/* 1. Introduction / Hero */}
+      {isSectionActive("introduction") && (
+        <section className="max-w-7xl mx-auto text-left mb-24 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          >
+            {intro.subtitle || "FOUNDER IDENTITY"}
+          </motion.div>
+          
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.0, delay: 0.2 }}
+            className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8"
+          >
+            {intro.founderName || ""} <br />
+            <span className="text-gold italic font-bold">{intro.designation || ""}</span>
+          </motion.h1>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.0, delay: 0.4 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 pt-12 border-t border-white/5"
-        >
-          <p className="text-gray-400 font-light text-base md:text-lg leading-relaxed">
-            {aboutData?.introduction?.shortDescription}
-          </p>
-          <div className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300 flex flex-col justify-center">
-            <h3 className="font-serif text-xl font-bold text-white mb-3">
-              {aboutData?.philosophy?.title}
-            </h3>
-            <p className="text-gray-400 text-xs leading-relaxed font-light font-sans">
-              {aboutData?.philosophy?.description}
-            </p>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Dynamic statistics section */}
-      <section className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32 text-left relative z-10">
-            {aboutData?.highlights?.map((cred: any, idx: number) => (
-          <div key={idx} className="glass-panel p-6 rounded-2xl border-t border-white/5">
-            <span className="font-serif text-3xl font-black text-gold block mb-1">{cred.count}</span>
-            <span className="text-gray-400 text-[10px] uppercase tracking-[1px] font-mono">{cred.metric}</span>
-          </div>
-        ))}
-      </section>
-
-      {/* Mission & Vision Section */}
-      <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 text-left relative z-10">
-        {[
-          {
-            title: "Democratizing Tech",
-            desc: "Aman started with coding guidelines in 2015, seeking to make raw systems design and deployment concepts accessible to everyone."
-          },
-          {
-            title: "Cinematic Syllabus",
-            desc: "Pioneering the border of virtual reality and education. Aman believes engineering courses should feel visual, beautiful, and interactive."
-          },
-          {
-            title: "Quality Benchmarks",
-            desc: "We commit to strict developer standards, real-world sandboxed container instances, and active recruiter links."
-          }
-        ].map((item, idx) => (
-          <div key={idx} className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300">
-            <h3 className="font-serif text-xl font-bold text-white mb-3">{item.title}</h3>
-            <p className="text-gray-400 text-xs leading-relaxed font-light">{item.desc}</p>
-          </div>
-        ))}
-      </section>
-
-      {/* Story & Passion */}
-      <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">THE JOURNEY</p>
-            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
-              Our <span className="text-gold italic font-bold">Story & Passion</span>
-            </h2>
-            <p className="text-gray-400 font-light text-base leading-relaxed mb-6">
-              It all started with a simple belief: education should not be confined to boring lectures. We set out to create an ecosystem where code meets creativity. 
-              Our passion is fueled by the desire to ignite the same spark in others, turning complex algorithms into compelling visual narratives.
-            </p>
-            <p className="text-gray-400 font-light text-base leading-relaxed">
-              We live and breathe technology. Every late-night coding session, every bug fixed, and every project shipped is a testament to our unwavering dedication to the craft. 
-              Our story is just beginning, and our passion is what keeps us moving forward.
-            </p>
-          </div>
-          <div className="glass-panel p-8 rounded-3xl relative">
-             <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80" alt="Passion for coding" className="w-full h-auto rounded-xl object-cover" />
-          </div>
-        </div>
-      </section>
-
-      {/* Professional Background & Experience */}
-      <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
-        <div className="text-center mb-16">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">EXPERTISE</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
-            Professional <span className="text-gold italic font-bold">Background & Experience</span>
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {experiencesList.map((exp: any) => (
-            <div key={exp.id || exp._id} className="glass-panel p-8 rounded-3xl border-l-4 border-gold/50">
-              <h3 className="font-serif text-2xl text-white mb-2">{exp.designation} at {exp.companyName}</h3>
-              <span className="text-gold text-xs font-mono mb-4 block">
-                {getYear(exp.startDate)} - {getYear(exp.endDate)}
-              </span>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
-                {exp.description}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.0, delay: 0.4 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 pt-12 border-t border-white/5"
+          >
+            <div>
+              <p className="text-gray-400 font-light text-base md:text-lg leading-relaxed mb-4">
+                {intro.shortDescription || ""}
+              </p>
+              {intro.fullBiography && (
+                <p className="text-gray-500 font-light text-sm leading-relaxed">
+                  {intro.fullBiography}
+                </p>
+              )}
+              {intro.buttonVisible && intro.ctaButtonText && (
+                <a
+                  href={intro.ctaButtonLink || "#"}
+                  target={intro.openInNewTab ? "_blank" : "_self"}
+                  rel={intro.openInNewTab ? "noopener noreferrer" : undefined}
+                  className="inline-flex items-center gap-2 mt-6 text-xs uppercase tracking-[2px] text-gold hover:text-white transition-colors duration-300 font-bold"
+                >
+                  {intro.ctaButtonText}
+                </a>
+              )}
+            </div>
+            <div className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300 flex flex-col justify-center">
+              {intro.profileImageUrl && (
+                <img
+                  src={intro.profileImageUrl}
+                  alt={intro.imageAltText || intro.founderName || "Profile"}
+                  className="w-24 h-24 rounded-full object-cover border-2 border-gold/30 mb-4"
+                />
+              )}
+              <h3 className="font-serif text-xl font-bold text-white mb-3">
+                {philosophy.title || ""}
+              </h3>
+              <p className="text-gray-400 text-xs leading-relaxed font-light font-sans">
+                {philosophy.description || ""}
               </p>
             </div>
-          ))}
-        </div>
-      </section>
+          </motion.div>
+        </section>
+      )}
 
-      {/* Achievements & Awards */}
-      <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
-        <div className="glass-panel p-12 rounded-3xl border border-white/5">
-          <div className="mb-12 text-center md:text-left">
-             <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">RECOGNITION</p>
-             <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
-               Achievements <span className="text-gold italic font-bold">& Awards</span>
-             </h2>
+      {/* 2. Dynamic Highlights / Statistics */}
+      {isSectionActive("highlights") && highlightsList.length > 0 && (
+        <section className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32 text-left relative z-10">
+          {highlightsList.map((cred: any, idx: number) => (
+            <div key={cred.id || idx} className="glass-panel p-6 rounded-2xl border-t border-white/5">
+              <span className="font-serif text-3xl font-black text-gold block mb-1">
+                {`${cred.prefix || ""}${cred.number}${cred.suffix || ""}`}
+              </span>
+              <span className="text-gray-400 text-[10px] uppercase tracking-[1px] font-mono">
+                {cred.label || ""}
+              </span>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* 3. Mission, Vision & Philosophy Cards */}
+      {missionVisionCards.length > 0 && (
+        <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 text-left relative z-10">
+          {missionVisionCards.map((item) => (
+            isSectionActive(item.key) && (
+              <div key={item.key} className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300">
+                <h3 className="font-serif text-xl font-bold text-white mb-3">{item.title || ""}</h3>
+                <p className="text-gray-400 text-xs leading-relaxed font-light">{item.desc || ""}</p>
+              </div>
+            )
+          ))}
+        </section>
+      )}
+
+      {/* 4. Story & Passion */}
+      {isSectionActive("story") && (story.title || story.description) && (
+        <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">
+                {story.subtitle || "THE JOURNEY"}
+              </p>
+              <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+                {story.title ? (
+                  <>
+                    {story.title.split(" ").slice(0, -2).join(" ")}{" "}
+                    <span className="text-gold italic font-bold">
+                      {story.title.split(" ").slice(-2).join(" ")}
+                    </span>
+                  </>
+                ) : (
+                  <>Our <span className="text-gold italic font-bold">Story & Passion</span></>
+                )}
+              </h2>
+              <p className="text-gray-400 font-light text-base leading-relaxed">
+                {story.description || ""}
+              </p>
+            </div>
+            <div className="glass-panel p-8 rounded-3xl relative">
+              <img
+                src={story.imageUrl || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80"}
+                alt={story.title || "Our story"}
+                className="w-full h-auto rounded-xl object-cover"
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {achievementsList.map((ach: any) => (
-              <div key={ach.id || ach._id} className="text-center">
-                <h4 className="text-white font-bold mb-2">{ach.title}</h4>
-                <p className="text-gray-400 text-xs font-light">
-                  {ach.description || ach.organization} {ach.year ? ach.year : ""}
-                </p>
+        </section>
+      )}
+
+      {/* 5. Professional Background & Experience */}
+      {isSectionActive("experience") && experiencesList.length > 0 && (
+        <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+          <div className="text-center mb-16">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">EXPERTISE</p>
+            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+              Professional <span className="text-gold italic font-bold">Background & Experience</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {experiencesList.map((exp: any) => (
+              <div key={exp.id || exp._id} className="glass-panel p-8 rounded-3xl border-l-4 border-gold/50">
+                <div className="flex items-start gap-4">
+                  {exp.logoUrl && (
+                    <img src={exp.logoUrl} alt={exp.companyName} className="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0" />
+                  )}
+                  <div>
+                    <h3 className="font-serif text-2xl text-white mb-2">{exp.designation || ""} at {exp.companyName || ""}</h3>
+                    <span className="text-gold text-xs font-mono mb-4 block">
+                      {getYear(exp.startDate)} - {getYear(exp.endDate)}
+                      {exp.location ? ` \u2022 ${exp.location}` : ""}
+                    </span>
+                    <p className="text-gray-400 text-sm font-light leading-relaxed">
+                      {exp.description || ""}
+                    </p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Future Goals */}
-      <section className="max-w-7xl mx-auto mb-32 text-center relative z-10">
-        <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">LOOKING AHEAD</p>
-        <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-8">
-          Future <span className="text-gold italic font-bold">Goals</span>
-        </h2>
-        <div className="glass-panel p-10 rounded-3xl max-w-4xl mx-auto border-t-2 border-gold/50">
-          <p className="text-gray-300 font-light text-lg leading-relaxed mb-6">
-            Our vision extends beyond today's boundaries. We aim to establish a decentralized global tech academy, where every aspiring developer has free access to enterprise-grade education.
-          </p>
-          <p className="text-gray-400 font-light text-sm leading-relaxed">
-            By 2030, we plan to partner with over 500 universities worldwide, integrating our cinematic syllabus into traditional computer science degrees and launching the careers of a million new developers.
-          </p>
-        </div>
-      </section>
+      {/* 6. Achievements & Awards */}
+      {isSectionActive("achievements") && (achievementsList.length > 0 || awardsList.length > 0) && (
+        <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+          <div className="glass-panel p-12 rounded-3xl border border-white/5">
+            <div className="mb-12 text-center md:text-left">
+               <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">RECOGNITION</p>
+               <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+                 Achievements <span className="text-gold italic font-bold">& Awards</span>
+               </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {achievementsList.map((ach: any) => (
+                <div key={ach.id || ach._id} className="text-center">
+                  {ach.iconUrl && <span className="text-3xl block mb-2">{ach.iconUrl}</span>}
+                  <h4 className="text-white font-bold mb-2">{ach.title || ""}</h4>
+                  <p className="text-gray-400 text-xs font-light">
+                    {ach.description || ""} {ach.year ? `(${ach.year})` : ""}
+                  </p>
+                </div>
+              ))}
+              {awardsList.map((aw: any) => (
+                <div key={aw.id || aw._id} className="text-center">
+                  {aw.imageUrl && <span className="text-3xl block mb-2">{aw.imageUrl}</span>}
+                  <h4 className="text-white font-bold mb-2">{aw.name || ""}</h4>
+                  <p className="text-gray-400 text-xs font-light">
+                    {aw.organization || ""} {aw.year ? `(${aw.year})` : ""}
+                  </p>
+                  {aw.description && <p className="text-gray-500 text-xs font-light mt-1">{aw.description}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
-      {/* Team Section */}
-      <section className="max-w-7xl mx-auto text-left relative z-10">
-        <div className="mb-16">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">PRODUCTION TEAM</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
-            Core <span className="text-gold italic font-bold">Collaborators</span>
+      {/* 7. Future Goals */}
+      {isSectionActive("futureGoals") && (futureGoals.title || futureGoals.primaryDescription) && (
+        <section className="max-w-7xl mx-auto mb-32 text-center relative z-10">
+          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">
+            {futureGoals.tag || "LOOKING AHEAD"}
+          </p>
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-8">
+            {futureGoals.title ? (
+              <>
+                {futureGoals.title.split(" ").slice(0, -1).join(" ")}{" "}
+                <span className="text-gold italic font-bold">
+                  {futureGoals.title.split(" ").slice(-1).join(" ")}
+                </span>
+              </>
+            ) : (
+              <>Future <span className="text-gold italic font-bold">Goals</span></>
+            )}
           </h2>
-        </div>
+          <div className="glass-panel p-10 rounded-3xl max-w-4xl mx-auto border-t-2 border-gold/50">
+            <p className="text-gray-300 font-light text-lg leading-relaxed mb-6">
+              {futureGoals.primaryDescription || ""}
+            </p>
+            {futureGoals.secondaryDescription && (
+              <p className="text-gray-400 font-light text-sm leading-relaxed">
+                {futureGoals.secondaryDescription}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {teamList.map((member: any, idx: number) => (
-            <LuxuryCard key={member.id} accentColor="#D4AF37" index={idx}>
-              <div className="aspect-square w-full overflow-hidden relative border-b border-white/5 mb-6 rounded-2xl">
-                <img
-                  src={member.avatar}
-                  alt={member.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-              <div>
-                <span className="text-[9px] uppercase tracking-[2px] text-gold font-mono block mb-1">{member.role}</span>
-                <h4 className="font-serif text-lg font-bold text-white mb-3">{member.name}</h4>
-                <p className="text-gray-400 text-xs leading-relaxed font-light">{member.bio}</p>
-              </div>
-            </LuxuryCard>
-          ))}
-        </div>
-      </section>
+      {/* 8. Team Section */}
+      {isSectionActive("team") && teamList.length > 0 && (
+        <section className="max-w-7xl mx-auto text-left relative z-10">
+          <div className="mb-16">
+            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">PRODUCTION TEAM</p>
+            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+              Core <span className="text-gold italic font-bold">Collaborators</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {teamList.map((member: any, idx: number) => (
+              <LuxuryCard key={member.id || idx} accentColor="#D4AF37" index={idx}>
+                <div className="aspect-square w-full overflow-hidden relative border-b border-white/5 mb-6 rounded-2xl">
+                  <img
+                    src={member.avatar || ""}
+                    alt={member.name || "Team member"}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div>
+                  <span className="text-[9px] uppercase tracking-[2px] text-gold font-mono block mb-1">{member.role || ""}</span>
+                  <h4 className="font-serif text-lg font-bold text-white mb-3">{member.name || ""}</h4>
+                  <p className="text-gray-400 text-xs leading-relaxed font-light">{member.bio || ""}</p>
+                </div>
+              </LuxuryCard>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };
