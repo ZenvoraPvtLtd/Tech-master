@@ -24,6 +24,7 @@ interface DataContextType {
   isBackendConnected: boolean;
   dbData: any;
   websiteSettings: any;
+  coreServicesConfig: any;
   refreshData: () => Promise<void>;
 }
 
@@ -50,6 +51,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [contactData, setContactData] = useState<any>(null);
   const [launchesData, setLaunchesData] = useState<any>(null);
   const [websiteSettings, setWebsiteSettings] = useState<any>(null);
+  const [coreServicesConfig, setCoreServicesConfig] = useState<any>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
@@ -115,6 +117,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     else if (db.launches) setLaunchesData(db.launches);
 
     if (db.websiteSettings) setWebsiteSettings(db.websiteSettings);
+    if (db.coreServicesConfig) setCoreServicesConfig(db.coreServicesConfig);
   }, []);
 
   const refreshData = useCallback(async () => {
@@ -202,6 +205,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isBackendConnected,
         dbData,
         websiteSettings,
+        coreServicesConfig,
         refreshData
       }}
     >

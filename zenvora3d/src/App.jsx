@@ -10,6 +10,7 @@ import { Homepage } from './pages/Modules/Homepage';
 import { About } from './pages/Modules/About';
 import { FounderJourney } from './pages/Modules/FounderJourney';
 import { MissionVision } from './pages/Modules/MissionVision';
+import { CoreServices } from './pages/Modules/CoreServices';
 import { Careers } from './pages/Modules/Careers';
 import { FAQContact } from './pages/Modules/FAQContact';
 import { Analytics } from './pages/Modules/Analytics';
@@ -65,6 +66,9 @@ function AppContent() {
 
       case 'what-we-do':
         return <WhatWeDo />;
+
+      case 'core-services':
+        return <CoreServices />;
 
       case 'services':
         return <Services />;

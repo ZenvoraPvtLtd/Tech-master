@@ -171,9 +171,9 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
 };
 
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
-  const { homeData, servicesData, campaignsData, eventsData, dbData, isLoading } = useData();
+  const { homeData, servicesData, campaignsData, eventsData, dbData, coreServicesConfig, isLoading } = useData();
   if (isLoading || !homeData) return <div className="min-h-screen bg-black flex items-center justify-center"><span className="text-gold uppercase tracking-widest text-xs font-bold">Initializing CMS...</span></div>;
-  const servicesList = servicesData || [];
+  const servicesList = (servicesData || []).filter((s: any) => s.status === 'Active').sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   const campaignsList = campaignsData || [];
   const eventsList = eventsData || [];
 
