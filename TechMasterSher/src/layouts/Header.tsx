@@ -180,17 +180,17 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] aurora-glow-purple -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-blue translate-x-1/2 translate-y-1/2 opacity-10 pointer-events-none" />
 
-        <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 z-10 py-8 md:py-24">
+        <div className="w-full max-w-5xl mx-auto my-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 z-10 py-8 md:py-16">
           
           {/* Column 1: Identity */}
-          <div className="flex flex-col gap-4 text-center items-center">
+          <div className="flex flex-col gap-2 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">IDENTITY</p>
-            <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col gap-0 md:gap-0.5 w-full">
               {identityItems.map((item: any) => (
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-1.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
@@ -207,14 +207,14 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           </div>
 
           {/* Column 2: Engagement */}
-          <div className="flex flex-col gap-4 text-center items-center">
+          <div className="flex flex-col gap-2 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">ENGAGEMENT</p>
-            <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col gap-0 md:gap-0.5 w-full">
               {engagementItems.map((item: any) => (
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-1.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
@@ -231,14 +231,14 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           </div>
 
           {/* Column 3: Quick Links */}
-          <div className="flex flex-col gap-4 text-center items-center">
+          <div className="flex flex-col gap-2 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">QUICK LINKS</p>
-            <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col gap-0 md:gap-0.5 w-full">
               {quickLinksItems.map((item: any) => (
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-1.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}

@@ -661,13 +661,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
         {/* Video Cards Grid */}
         {activeFilter === "all" ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 video-showcase-grid-container">
+          <div className="flex flex-col md:flex-row gap-8 w-full video-showcase-grid-container">
             {/* Left Column for Reels & Shorts (Vertical) */}
-            <div className="flex flex-col gap-8 col-span-1">
+            <div className="flex flex-col gap-8 w-full" style={{ flex: "1 1 0%" }}>
               {filteredVideos
                 .filter((v) => v.type === "reel" || v.type === "short")
                 .map((video) => (
-                  <div key={video.id} className="video-fade-in w-full aspect-[9/16]">
+                  <div key={video.id} className="video-fade-in w-full aspect-[16/27]">
                     <VideoCard
                       video={video}
                       onClick={() => setSelectedVideo(video)}
@@ -676,7 +676,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 ))}
             </div>
             {/* Right Column for Long Videos (Horizontal) */}
-            <div className="flex flex-col gap-8 col-span-1 md:col-span-2">
+            <div className="flex flex-col gap-8 w-full" style={{ flex: "3 1 0%" }}>
               {filteredVideos
                 .filter((v) => v.type === "long_video")
                 .map((video) => (
@@ -844,7 +844,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* Contact Preview */}
-      <section className="scroll-section pb-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
+      <section className="scroll-section pb-8 px-6 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.contactPreview?.tag || "COLLABORATION INQUIRY"}</span>
         </div>

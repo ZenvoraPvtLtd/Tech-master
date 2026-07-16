@@ -254,7 +254,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-transparent border-t border-white/5 pt-32 pb-12 px-6 md:px-12 relative overflow-hidden text-left"
+      className="bg-transparent border-t border-white/5 pt-12 pb-12 px-6 md:px-12 relative overflow-hidden text-left"
     >
       {/* 1. Cinematic Background Video inside the footer (disabled to show global background) */}
       {/*
@@ -322,7 +322,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           {/* Column 1: Identity */}
           <div>
             <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">IDENTITY</p>
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-1 md:gap-1.5">
               {(dbData?.navigation?.identityItems || [
                 { name: "About Founder", id: "about" },
                 { name: "Founder's Journey", id: "journey" },
@@ -344,7 +344,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           {/* Column 2: Engagement */}
           <div>
             <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">ENGAGEMENT</p>
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-1 md:gap-1.5">
               {(dbData?.navigation?.engagementItems || [
                 { name: "Brand Collabs", id: "collaborations" },
                 { name: "Campaigns", id: "campaigns" },
@@ -368,7 +368,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           {/* Column 3: Quick Links */}
           <div>
             <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">QUICK LINKS</p>
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-1 md:gap-1.5">
               {(dbData?.navigation?.quickLinksItems || [
                 { name: "Core Services", id: "services" },
                 { name: "Testimonials", id: "testimonials" },
