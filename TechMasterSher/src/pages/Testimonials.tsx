@@ -11,13 +11,13 @@ export const Testimonials: React.FC = () => {
   const testimonialsList = testimonialsData || [];
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
       {/* Background radial glows */}
       <div className="absolute top-1/4 left-1/4 w-[45vw] h-[45vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2" />
 
       {/* Hero Header */}
-      <div className="max-w-4xl mx-auto text-center mb-24 relative z-10">
+      <div className="max-w-4xl mx-auto text-center mb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -92,7 +92,7 @@ export const Testimonials: React.FC = () => {
             Video <span className="text-gold italic font-bold">Testimonials</span>
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <div className="glass-panel p-4 rounded-3xl group relative overflow-hidden border-t border-white/5 hover:border-gold/30 transition-all duration-500">
             <div className="aspect-video w-full rounded-2xl overflow-hidden relative flex items-center justify-center bg-black">
               <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80" alt="Video thumbnail" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500 absolute inset-0" />

@@ -68,13 +68,13 @@ export const Collaborations: React.FC = () => {
       ];
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/4 left-1/4 w-[35vw] h-[35vw] aurora-glow-purple opacity-20 pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
 
       {/* Hero Header */}
-      <section className="max-w-7xl mx-auto text-left mb-24 relative z-10">
+      <section className="max-w-7xl mx-auto text-left mb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -95,7 +95,7 @@ export const Collaborations: React.FC = () => {
       </section>
 
       {/* Interactive Logo Carousel */}
-      <section className="mb-24 py-12 border-y border-white/5 bg-black/40 overflow-hidden relative z-10">
+      <section className="mb-12 py-12 border-y border-white/5 bg-black/40 overflow-hidden relative z-10">
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
           transition={{ ease: "linear", duration: 25, repeat: Infinity }}
@@ -148,7 +148,7 @@ export const Collaborations: React.FC = () => {
       </section>
 
       {/* Success Metrics */}
-      <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10 text-center">
+      <section className="max-w-7xl mx-auto mb-12 px-6 relative z-10 text-center">
         <p className="typo-badge mb-4">IMPACT</p>
         <h2 className="typo-h2 mb-12">
           Success <span className="text-gold italic font-bold">Metrics</span>
@@ -164,7 +164,7 @@ export const Collaborations: React.FC = () => {
       </section>
 
       {/* Case Studies & Campaign Highlights */}
-      <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10">
+      <section className="max-w-7xl mx-auto mb-12 px-6 relative z-10">
         <div className="text-center mb-12">
           <p className="typo-badge mb-4">SHOWCASE</p>
           <h2 className="typo-h2">
@@ -183,7 +183,7 @@ export const Collaborations: React.FC = () => {
       </section>
 
       {/* Collaboration History & Process */}
-      <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10">
+      <section className="max-w-7xl mx-auto mb-12 px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
             <p className="typo-badge mb-4">{history.eyebrow || "TIMELINE"}</p>
@@ -216,7 +216,7 @@ export const Collaborations: React.FC = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10 text-center">
+      <section className="max-w-7xl mx-auto mb-12 px-6 relative z-10 text-center">
         <p className="typo-badge mb-4">ENDORSEMENTS</p>
         <h2 className="typo-h2 mb-12">
           Partner <span className="text-gold italic font-bold">Testimonials</span>

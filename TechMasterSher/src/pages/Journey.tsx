@@ -113,13 +113,13 @@ export const Journey: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
       {/* Background radial glows */}
       <div className="absolute top-1/4 left-1/2 w-[60vw] h-[60vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2 translate-y-1/2" />
 
       {/* Hero Section */}
-      <div className="max-w-4xl mx-auto text-center mb-24 relative z-10">
+      <div className="max-w-4xl mx-auto text-center mb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

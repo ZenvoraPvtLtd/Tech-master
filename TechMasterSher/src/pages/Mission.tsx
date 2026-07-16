@@ -56,13 +56,13 @@ export const Mission: React.FC = () => {
     : defaultValues;
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
       {/* Glow overlays */}
       <div className="absolute top-1/3 left-1/4 w-[45vw] h-[45vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-blue opacity-15 pointer-events-none translate-x-1/2" />
 
       {/* Hero Header */}
-      <div className="max-w-4xl mx-auto text-center mb-24 relative z-10">
+      <div className="max-w-4xl mx-auto text-center mb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -92,7 +92,7 @@ export const Mission: React.FC = () => {
 
       {/* Core Mission grids */}
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -149,7 +149,7 @@ export const Mission: React.FC = () => {
         </div>
 
         {/* Core Pillars */}
-        <div className="mb-24">
+        <div className="mb-12">
           <div className="mb-12 text-center">
             <p className="typo-badge mb-4">OUR PILLARS</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white font-light mb-8">

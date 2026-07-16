@@ -28,7 +28,7 @@ export const Media: React.FC = () => {
     : [];
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
       {/* Background Orbs */}
       <div className="absolute top-1/4 right-1/3 w-[30vw] h-[30vw] aurora-glow-blue opacity-15 pointer-events-none -translate-y-1/2" />
       <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-purple opacity-10 pointer-events-none" />

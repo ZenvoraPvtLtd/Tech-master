@@ -32,13 +32,13 @@ export const Events: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
       {/* Background aurora glows */}
       <div className="absolute top-1/4 left-1/4 w-[45vw] h-[45vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2" />
 
       {/* Hero Header */}
-      <div className="max-w-4xl mx-auto text-center mb-24 relative z-10">
+      <div className="max-w-4xl mx-auto text-center mb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -108,7 +108,7 @@ export const Events: React.FC = () => {
         </div>
 
         {/* Engagement Types */}
-        <section className="mb-24 pt-12 border-t border-white/5 relative z-10 text-center">
+        <section className="mb-12 pt-12 border-t border-white/5 relative z-10 text-center">
           <p className="typo-badge mb-4">CAPABILITIES</p>
           <h2 className="typo-h2 mb-10">
             Engagement <span className="text-gold italic font-bold">Types</span>
@@ -133,7 +133,7 @@ export const Events: React.FC = () => {
         </section>
 
         {/* Media & Highlights */}
-        <section className="mb-24 relative z-10">
+        <section className="mb-12 relative z-10">
           <div className="text-center mb-12">
             <p className="typo-badge mb-4">MEDIA ARCHIVE</p>
             <h2 className="typo-h2">

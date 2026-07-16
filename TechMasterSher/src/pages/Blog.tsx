@@ -58,7 +58,7 @@ export const Blog: React.FC = () => {
     : blogsList.filter(post => post.category === selectedCategory);
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-purple opacity-20 pointer-events-none" />
       <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
@@ -81,7 +81,7 @@ export const Blog: React.FC = () => {
       </section>
 
       {/* Content Marketing Section */}
-      <section className="max-w-7xl mx-auto mb-24 relative z-10 text-left">
+      <section className="max-w-7xl mx-auto mb-12 relative z-10 text-left">
         <div className="border border-white/5 bg-black/40 backdrop-blur-md rounded-3xl p-8 md:p-12">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">

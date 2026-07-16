@@ -60,7 +60,7 @@ export const Career: React.FC = () => {
   };
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-24 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/4 left-1/3 w-[30vw] h-[30vw] aurora-glow-blue opacity-15 pointer-events-none" />
       <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-purple opacity-10 pointer-events-none" />
@@ -87,7 +87,7 @@ export const Career: React.FC = () => {
       </section>
 
       {/* Active Roles */}
-      <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 text-left mb-24 relative z-10">
+      <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 text-left mb-12 relative z-10">
         {/* Roles List */}
         <div>
           <h3 className="font-serif text-2xl text-white font-bold mb-6">Open Positions</h3>
@@ -233,7 +233,7 @@ export const Career: React.FC = () => {
       </section>
 
       {/* Culture & Benefits */}
-      <section className="max-w-7xl mx-auto mt-16 mb-24 relative z-10 text-left">
+      <section className="max-w-7xl mx-auto mt-16 mb-12 relative z-10 text-left">
         <div className="text-center mb-16">
           <p className="typo-badge mb-4">OUR DNA</p>
           <h2 className="typo-h2 mb-6">
