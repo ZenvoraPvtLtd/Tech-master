@@ -661,33 +661,32 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
         {/* Video Cards Grid */}
         {activeFilter === "all" ? (
-          <div className="flex flex-col md:flex-row gap-8 w-full video-showcase-grid-container">
-            {/* Left Column for Reels & Shorts (Vertical) */}
-            <div className="flex flex-col gap-8 w-full" style={{ flex: "1 1 0%" }}>
-              {filteredVideos
-                .filter((v) => v.type === "reel" || v.type === "short")
-                .map((video) => (
-                  <div key={video.id} className="video-fade-in w-full aspect-[16/27]">
-                    <VideoCard
-                      video={video}
-                      onClick={() => setSelectedVideo(video)}
-                    />
-                  </div>
-                ))}
-            </div>
-            {/* Right Column for Long Videos (Horizontal) */}
-            <div className="flex flex-col gap-8 w-full" style={{ flex: "3 1 0%" }}>
-              {filteredVideos
-                .filter((v) => v.type === "long_video")
-                .map((video) => (
-                  <div key={video.id} className="video-fade-in w-full aspect-[16/9]">
-                    <VideoCard
-                      video={video}
-                      onClick={() => setSelectedVideo(video)}
-                    />
-                  </div>
-                ))}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mx-auto video-showcase-grid-container auto-rows-[300px] md:auto-rows-[200px] lg:auto-rows-[240px]">
+            {(() => {
+              const reels = filteredVideos.filter((v) => v.type === "reel" || v.type === "short");
+              const longs = filteredVideos.filter((v) => v.type === "long_video");
+              const maxGroups = Math.max(reels.length, Math.ceil(longs.length / 2));
+              
+              return Array.from({ length: maxGroups }).map((_, i) => (
+                <React.Fragment key={i}>
+                  {reels[i] && (
+                    <div className="video-fade-in w-full h-full md:col-span-1 md:row-span-2">
+                      <VideoCard video={reels[i]} onClick={() => setSelectedVideo(reels[i])} />
+                    </div>
+                  )}
+                  {longs[i * 2] && (
+                    <div className="video-fade-in w-full h-full md:col-span-2 md:row-span-1">
+                      <VideoCard video={longs[i * 2]} onClick={() => setSelectedVideo(longs[i * 2])} />
+                    </div>
+                  )}
+                  {longs[i * 2 + 1] && (
+                    <div className="video-fade-in w-full h-full md:col-span-2 md:row-span-1">
+                      <VideoCard video={longs[i * 2 + 1]} onClick={() => setSelectedVideo(longs[i * 2 + 1])} />
+                    </div>
+                  )}
+                </React.Fragment>
+              ));
+            })()}
           </div>
         ) : activeFilter === "long" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 video-showcase-grid-container">
