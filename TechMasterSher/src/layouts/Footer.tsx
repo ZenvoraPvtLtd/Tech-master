@@ -261,7 +261,6 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       <div className="absolute inset-0 w-full h-full opacity-15 pointer-events-none overflow-hidden z-0">
         <video
           src="https://assets.mixkit.co/videos/preview/mixkit-abstract-dark-waves-fluid-loop-43093-large.mp4"
-          autoPlay
           loop
           muted
           playsInline

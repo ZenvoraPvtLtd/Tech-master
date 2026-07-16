@@ -31,9 +31,8 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
     setIsPlaying(false);
     if (videoRef.current) {
       videoRef.current.muted = true;
-      videoRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(() => {});
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
     }
   }, [video.url]);
 
@@ -49,6 +48,11 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
   };
 
   const handleMouseLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
     if (containerRef.current) {
       containerRef.current.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), shadow 0.5s ease, border-color 0.5s ease";
       containerRef.current.style.setProperty("--rx", "0deg");
@@ -130,7 +134,6 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
       <video
         ref={videoRef}
         src={video.url}
-        autoPlay
         loop
         muted
         playsInline
@@ -868,7 +871,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               <video 
                 src={selectedVideo.url} 
                 controls 
-                autoPlay 
                 playsInline
                 className="w-full h-full max-h-[70vh] object-contain"
               />

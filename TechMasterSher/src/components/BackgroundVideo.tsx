@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -117,6 +117,39 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({ activePage }) 
   const [videoSrcFeature, setVideoSrcFeature] = useState(activePair.feature);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [transitionOpacity, setTransitionOpacity] = useState(1);
+  const heroRef = useRef<HTMLVideoElement>(null);
+  const midRef = useRef<HTMLVideoElement>(null);
+  const featureRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const handleGlobalMouseEnter = () => {
+      heroRef.current?.play().catch(() => {});
+      midRef.current?.play().catch(() => {});
+      featureRef.current?.play().catch(() => {});
+    };
+    const handleGlobalMouseLeave = () => {
+      if (heroRef.current) {
+        heroRef.current.pause();
+        heroRef.current.currentTime = 0;
+      }
+      if (midRef.current) {
+        midRef.current.pause();
+        midRef.current.currentTime = 0;
+      }
+      if (featureRef.current) {
+        featureRef.current.pause();
+        featureRef.current.currentTime = 0;
+      }
+    };
+
+    document.addEventListener("mouseenter", handleGlobalMouseEnter);
+    document.addEventListener("mouseleave", handleGlobalMouseLeave);
+
+    return () => {
+      document.removeEventListener("mouseenter", handleGlobalMouseEnter);
+      document.removeEventListener("mouseleave", handleGlobalMouseLeave);
+    };
+  }, []);
 
   useEffect(() => {
     // Cross-fade the page video sources change smoothly on route transitions
@@ -253,9 +286,9 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({ activePage }) 
     >
       {/* 1. Hero Video: Visible at top screen, fades as we scroll down */}
       <video
+        ref={heroRef}
         key={videoSrcHero}
         src={videoSrcHero}
-        autoPlay
         loop
         muted
         playsInline
@@ -265,9 +298,9 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({ activePage }) 
 
       {/* 2. Mid Video: Cross-fades in mid scroll */}
       <video
+        ref={midRef}
         key={videoSrcMid}
         src={videoSrcMid}
-        autoPlay
         loop
         muted
         playsInline
@@ -277,9 +310,9 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({ activePage }) 
 
       {/* 3. Feature Video: Fades in bottom scroll */}
       <video
+        ref={featureRef}
         key={videoSrcFeature}
         src={videoSrcFeature}
-        autoPlay
         loop
         muted
         playsInline
