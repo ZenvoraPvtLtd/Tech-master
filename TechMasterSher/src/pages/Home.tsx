@@ -7,6 +7,7 @@ import { Magnetic } from "../components/Magnetic";
 import { useData } from "../context/DataContext";
 import { LuxuryCard } from "../components/LuxuryCard";
 import { mediaUrl } from "../utils/media";
+import { AnimatedCounter } from "../components/AnimatedCounter";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -260,16 +261,17 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         }
       });
 
-      cards.forEach((card) => {
+      cards.forEach((card, i) => {
         const headingChars = card.querySelectorAll(".char");
         const content = card.querySelector(".value-card-content");
 
+        // Stagger cards in quickly
         tl.to(card, {
           opacity: 1,
           y: 0,
           duration: 0.8,
           ease: "power3.out"
-        });
+        }, i * 0.15); // Add overlap based on index
 
         if (headingChars.length > 0) {
           tl.to(headingChars, {
@@ -277,7 +279,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             duration: 0.03,
             stagger: 0.05,
             ease: "none"
-          }, "-=0.35");
+          }, i * 0.15 + 0.3); // Start typing shortly after card starts appearing
         }
 
         tl.to(content, {
@@ -285,7 +287,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           y: 0,
           duration: 0.9,
           ease: "power2.out"
-        }, "-=0.15");
+        }, i * 0.15 + 0.5);
       });
     }
 
@@ -390,7 +392,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* 1. Hero Section */}
       <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-32 lg:pt-40 text-center">
         <div className="flex justify-center mb-6 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             HERO LANDING
           </span>
         </div>
@@ -403,7 +405,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-6 border border-gold/25 px-4 py-1.5 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2"
+            className="typo-badge mb-6 border border-gold/25 px-4 py-1.5 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2"
           >
             <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
               <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -416,7 +418,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.4, ease: "easeOut" }}
-            className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-light leading-[1.1] tracking-tight mb-8 text-reveal"
+            className="typo-h1 mb-8 text-reveal"
           >
             {homeData?.heroMainHeading?.headingLine1 || "Orchestrating"} <br />
             <span className="font-bold italic text-gold font-serif">{homeData?.heroMainHeading?.highlightedHeading || "Immersive Tech"}</span> {homeData?.heroMainHeading?.headingLine3 || "Education."}
@@ -471,14 +473,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* Personal Introduction */}
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
+      <section className="scroll-section section-padding relative z-10 text-center">
         <div className="flex justify-center mb-8 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.founderBio?.tag || "FOUNDER BIOGRAPHY"}</span>
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.founderBio?.tag || "FOUNDER BIOGRAPHY"}</span>
         </div>
-        <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6 fade-up">
+        <h2 className="typo-h2 mb-6 fade-up">
           {homeData?.founderBio?.title || "Hello, I'm Aman."}
         </h2>
-        <p className="text-gray-400 text-sm md:text-lg font-light leading-relaxed max-w-3xl mx-auto fade-up">
+        <p className="typo-body max-w-3xl mx-auto fade-up">
           {homeData?.founderBio?.paragraph || "I am a software engineer..."}
         </p>
       </section>
@@ -486,7 +488,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* 2. Brand Partner Logos Ticker */}
       <section className="py-12 bg-black/40 border-y border-white/5 relative z-10 overflow-hidden text-center">
         <div className="flex justify-center mb-6 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             TRUSTED PARTNERS TICKER
           </span>
         </div>
@@ -509,16 +511,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 3. Core Values Grid Section */}
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-left">
+      <section className="scroll-section section-padding relative z-10 text-left">
         <div className="flex justify-center mb-12 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             CORE VALUES
           </span>
         </div>
         <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-8">
           {homeData?.coreValues?.map((val: any, idx: number) => (
             <div key={idx} className="value-card glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300 opacity-0">
-              <h3 className="value-card-heading font-serif text-xl font-medium text-white mb-2">{splitText(val.title)}</h3>
+              <h3 className="value-card-heading typo-h4 mb-2">{splitText(val.title)}</h3>
               <p className="value-card-content text-gray-400 text-xs sm:text-sm font-light leading-relaxed opacity-0">{val.description}</p>
             </div>
           ))}
@@ -526,16 +528,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 4. Core Services Section */}
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10">
+      <section className="scroll-section section-padding relative z-10">
         <div className="flex justify-center mb-12 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             {coreServicesConfig?.tag || "CORE SERVICES & TRAINING"}
           </span>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-20 items-end">
           <div className="lg:col-span-2 text-left">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{coreServicesConfig?.pillarsText || "EDUCATIONAL PILLARS"}</p>
-            <h2 className="font-serif text-4xl sm:text-6xl font-light text-white leading-tight fade-up">
+            <p className="typo-badge mb-4">{coreServicesConfig?.pillarsText || "EDUCATIONAL PILLARS"}</p>
+            <h2 className="typo-h2 fade-up">
               {coreServicesConfig?.headingLine1 || "Bridging the gap between"} <br />
               <span className="text-gold italic font-bold">{coreServicesConfig?.highlightedHeading || "Code & Placement"}</span>.
             </h2>
@@ -570,10 +572,10 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 </span>
               </div>
 
-              <h3 className="font-serif text-2xl md:text-3xl text-white font-medium mb-4 group-hover:text-gold transition-colors duration-300">
+              <h3 className="typo-card-title mb-4 group-hover:text-gold transition-colors duration-300">
                 {srv.title}
               </h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed mb-8">
+              <p className="typo-card-desc mb-8">
                 {srv.description}
               </p>
 
@@ -592,17 +594,20 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* 5. Statistics Callout */}
       <section className="scroll-section py-24 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             GLOBAL REACH & STATISTICS
           </span>
         </div>
         <div className="max-w-7xl mx-auto">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-12">INFLUENCE & REACH</p>
+          <p className="typo-badge mb-12">INFLUENCE & REACH</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {(homeData?.statistics || homeData?.statisticsCounters)?.map((stat: any, idx: number) => (
               <div key={idx} className="fade-up">
-                <span className="font-serif text-4xl sm:text-6xl font-black text-gold block mb-2">{`${stat.prefix || ""}${stat.counterNumber ?? stat.number}${stat.suffix || ""}`}</span>
-                <span className="text-gray-400 text-xs tracking-[1px] uppercase font-mono">{stat.counterLabel ?? stat.label}</span>
+                <AnimatedCounter 
+                  value={`${stat.prefix || ""}${stat.counterNumber ?? stat.number}${stat.suffix || ""}`} 
+                  className="typo-stat block mb-2" 
+                />
+                <span className="typo-stat-desc">{stat.counterLabel ?? stat.label}</span>
               </div>
             ))}
           </div>
@@ -612,15 +617,15 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* 6. Video Showcase Section */}
       <section className="scroll-section py-32 px-6 max-w-7xl mx-auto relative z-10 text-left">
         <div className="flex justify-center mb-12 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             FEATURED VIDEO SHOWCASE
           </span>
         </div>
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
           <div>
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">VIDEO PORTFOLIO</p>
-            <h2 className="font-serif text-4xl sm:text-6xl font-light text-white leading-tight">
+            <p className="typo-badge mb-4">VIDEO PORTFOLIO</p>
+            <h2 className="typo-h2">
               Cinematic <span className="text-gold italic font-bold">Video Streams</span>
             </h2>
           </div>
@@ -719,9 +724,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
 
       {/* 8. Quick YouTube Promo Callout */}
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10 text-left">
+      <section className="scroll-section section-padding relative z-10 text-left">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.youtubePromo?.tag || "YOUTUBE INITIATIVE"}</span>
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.youtubePromo?.tag || "YOUTUBE INITIATIVE"}</span>
         </div>
         <div className="glass-panel p-8 md:p-12 rounded-3xl flex flex-col md:flex-row gap-8 items-center border border-white/5">
           <div className="md:w-2/3">
@@ -747,18 +752,18 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* Featured Campaigns */}
       {homeData?.featuredCampaigns?.enableSection !== false && (
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10" style={{
+      <section className="scroll-section section-padding relative z-10" style={{
         backgroundImage: homeData?.featuredCampaigns?.backgroundImage ? `url(${mediaUrl(homeData?.featuredCampaigns?.backgroundImage)})` : 'none',
         backgroundSize: 'cover', backgroundPosition: 'center'
       }}>
         <div className="flex justify-center mb-12 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             {homeData?.featuredCampaigns?.sectionTag || "FEATURED EDUCATION CAMPAIGNS"}
           </span>
         </div>
         <div className="mb-16 text-center relative z-20">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{homeData?.featuredCampaigns?.smallHeading || "OUR IMPACT"}</p>
-          <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
+          <p className="typo-badge mb-4">{homeData?.featuredCampaigns?.smallHeading || "OUR IMPACT"}</p>
+          <h2 className="typo-h2 fade-up">
             {homeData?.featuredCampaigns?.mainHeading || "Featured"} <span className="text-gold italic font-bold">{homeData?.featuredCampaigns?.highlightHeading || "Campaigns"}</span>
           </h2>
           {homeData?.featuredCampaigns?.description && (
@@ -784,18 +789,18 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* Event Highlights */}
       {homeData?.eventHighlights?.enableSection !== false && (
-      <section className="scroll-section py-24 px-6 max-w-7xl mx-auto relative z-10" style={{
+      <section className="scroll-section section-padding relative z-10" style={{
         backgroundImage: homeData?.eventHighlights?.backgroundImage ? `url(${mediaUrl(homeData?.eventHighlights?.backgroundImage)})` : 'none',
         backgroundSize: 'cover', backgroundPosition: 'center'
       }}>
         <div className="flex justify-center mb-12 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             {homeData?.eventHighlights?.sectionTag || "EVENT HIGHLIGHTS"}
           </span>
         </div>
         <div className="mb-16 text-center relative z-20">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{homeData?.eventHighlights?.smallHeading || "COMMUNITY"}</p>
-          <h2 className="font-serif text-4xl sm:text-5xl font-light text-white fade-up">
+          <p className="typo-badge mb-4">{homeData?.eventHighlights?.smallHeading || "COMMUNITY"}</p>
+          <h2 className="typo-h2 fade-up">
             {homeData?.eventHighlights?.mainHeading || "Event"} <span className="text-gold italic font-bold">{homeData?.eventHighlights?.highlightHeading || "Highlights"}</span>
           </h2>
           {homeData?.eventHighlights?.description && (
@@ -826,7 +831,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* Newsletter */}
       <section className="scroll-section py-24 px-6 max-w-4xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.newsletter?.tag || "NEWSLETTER SUBSCRIPTION"}</span>
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.newsletter?.tag || "NEWSLETTER SUBSCRIPTION"}</span>
         </div>
         <div className="glass-panel p-6 sm:p-12 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(212,175,55,0.05)] fade-up">
           <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">{homeData?.newsletter?.heading || "Stay in the Loop"}</h2>
@@ -841,9 +846,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* Contact Preview */}
       <section className="scroll-section pb-24 px-6 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="text-[12px] md:text-[14px] uppercase tracking-[4px] text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.contactPreview?.tag || "COLLABORATION INQUIRY"}</span>
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.contactPreview?.tag || "COLLABORATION INQUIRY"}</span>
         </div>
-        <h2 className="font-serif text-4xl sm:text-6xl font-light text-white leading-tight mb-8 fade-up">
+        <h2 className="typo-h2 mb-8 fade-up">
           {homeData?.contactPreview?.heading || "Ready to Collaborate?"}
         </h2>
         <button

@@ -69,12 +69,12 @@ export const Blog: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           CREATOR JOURNAL
         </motion.div>
         
-        <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8">
+        <h1 className="typo-h1 mb-8">
           Thoughts on Tech <br />
           <span className="text-gold italic font-bold">education & scalability</span>.
         </h1>
@@ -86,7 +86,7 @@ export const Blog: React.FC = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
-              <div className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-3 flex items-center gap-2">
+              <div className="typo-badge mb-3 flex items-center gap-2">
                 <Target className="w-3.5 h-3.5" />
                 Featured Strategy
               </div>

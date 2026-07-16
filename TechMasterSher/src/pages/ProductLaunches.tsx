@@ -98,7 +98,7 @@ export const ProductLaunches: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           {hero.smallBadge || "SOFTWARE RELEASES"}
         </motion.div>
@@ -106,7 +106,7 @@ export const ProductLaunches: React.FC = () => {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
+          className="typo-h2 mb-6"
         >
           {hero.headline || "Product Launches &"} <br />
           <span className="text-gold italic font-bold">{hero.highlightWord || "Tech Innovations"}</span> {hero.titleLine2 || ""}
@@ -196,8 +196,8 @@ export const ProductLaunches: React.FC = () => {
         {/* Product Launch Highlights */}
         <section className="max-w-7xl mx-auto mt-32 text-left relative z-10 px-6">
           <div className="text-center mb-16">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">PORTFOLIO</p>
-            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+            <p className="typo-badge mb-4">PORTFOLIO</p>
+            <h2 className="typo-h2 mb-6">
               Launch <span className="text-gold italic font-bold">Initiatives</span>
             </h2>
           </div>
@@ -206,7 +206,7 @@ export const ProductLaunches: React.FC = () => {
             {initiatives.map((init: any, idx: number) => (
               <div key={idx} className={`glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 ${idx === initiatives.length - 1 && initiatives.length % 3 === 2 ? 'lg:col-span-2' : ''}`}>
                 <h3 className="font-serif text-xl font-bold text-white mb-3">{init.title}</h3>
-                <p className="text-gray-400 text-sm font-light leading-relaxed">
+                <p className="typo-card-desc">
                   {init.description}
                 </p>
               </div>

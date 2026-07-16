@@ -4,6 +4,7 @@ import { Quote, Star } from "lucide-react";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { AnimatedCounter } from "../components/AnimatedCounter";
 
 export const Testimonials: React.FC = () => {
   const { testimonialsData } = useData();
@@ -21,7 +22,7 @@ export const Testimonials: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           COMMUNITY ACCLAIM
         </motion.div>
@@ -29,7 +30,7 @@ export const Testimonials: React.FC = () => {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
+          className="typo-h2 mb-6"
         >
           Student Placements & <br />
           <span className="text-gold italic font-bold">Academics Success</span>
@@ -86,8 +87,8 @@ export const Testimonials: React.FC = () => {
 
         {/* Video Testimonials */}
         <div className="text-center mb-12 mt-16">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">WATCH EXPERIENCES</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+          <p className="typo-badge mb-4">WATCH EXPERIENCES</p>
+          <h2 className="typo-h2">
             Video <span className="text-gold italic font-bold">Testimonials</span>
           </h2>
         </div>
@@ -135,10 +136,11 @@ export const Testimonials: React.FC = () => {
               { value: "450+", label: "Tech Partners" }
             ].map((stat, idx) => (
               <div key={idx}>
-                <span className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-1">
-                  {stat.value}
-                </span>
-                <span className="text-gray-400 text-[9px] uppercase tracking-[1px] font-mono font-light">
+                <AnimatedCounter 
+                  value={stat.value} 
+                  className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-1" 
+                />
+                <span className="text-gray-400 text-[10px] uppercase tracking-[1px] font-mono">
                   {stat.label}
                 </span>
               </div>

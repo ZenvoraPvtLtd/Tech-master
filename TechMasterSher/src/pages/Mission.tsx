@@ -67,7 +67,7 @@ export const Mission: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           {heroData.badge || "OUR NORTH STAR"}
         </motion.div>
@@ -75,7 +75,7 @@ export const Mission: React.FC = () => {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
+          className="typo-h2 mb-6"
         >
           {heroData.headingLine1 || "Democratizing"} <br />
           <span className="text-gold italic font-bold">{heroData.highlightText || "Tech Literacy"}</span> {heroData.headingLine2 || "Globally"}
@@ -105,7 +105,7 @@ export const Mission: React.FC = () => {
             <h2 className="font-serif text-2xl md:text-3xl font-light text-white mb-6 leading-snug">
               {missionData.title || "To inspire, educate, and place the next million full-stack developers."}
             </h2>
-            <p className="text-gray-400 text-sm font-light leading-relaxed">
+            <p className="typo-card-desc">
               {missionData.description || "Our target is to break down complex system design systems, database architectures, and compiler dynamics into engaging, cinematic formats. We enable students to transition seamlessly from beginners to self-sufficient contributors."}
             </p>
           </motion.div>
@@ -121,7 +121,7 @@ export const Mission: React.FC = () => {
             <h2 className="font-serif text-2xl md:text-3xl font-light text-white mb-6 leading-snug">
               {visionData.title || "Vision 2030: Bridging the global developer deficit."}
             </h2>
-            <p className="text-gray-400 text-sm font-light leading-relaxed">
+            <p className="typo-card-desc">
               {visionData.description || "Technology evolves at a rapid pace, yet university syllabi remain outdated. We are constructing an open, adaptive, cloud-native learning playground that responds directly to modern tech requirements."}
             </p>
           </motion.div>
@@ -129,7 +129,7 @@ export const Mission: React.FC = () => {
 
         {/* Core Values grid using LuxuryCard */}
         <div className="mb-12 text-center">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR FUNDAMENTAL PRINCIPLES</p>
+          <p className="typo-badge mb-4">OUR FUNDAMENTAL PRINCIPLES</p>
           <h2 className="font-serif text-3xl md:text-4xl text-white font-light mb-16">
             The Values that <span className="text-gold italic font-bold">Drive Us</span> Forward
           </h2>
@@ -151,7 +151,7 @@ export const Mission: React.FC = () => {
         {/* Core Pillars */}
         <div className="mb-24">
           <div className="mb-12 text-center">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR PILLARS</p>
+            <p className="typo-badge mb-4">OUR PILLARS</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white font-light mb-8">
               The <span className="text-gold italic font-bold">Foundation</span> of Our Work
             </h2>
@@ -165,7 +165,7 @@ export const Mission: React.FC = () => {
               className="glass-panel p-8 rounded-2xl border-l-2 hover:border-l-gold transition-all duration-300"
             >
               <h3 className="font-serif text-xl font-bold text-white mb-3">Brand Philosophy</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
+              <p className="typo-card-desc">
                 We believe that education is not just about transferring information, but about creating an engaging, premium experience. Our philosophy is rooted in cinematic storytelling, making complex engineering concepts feel accessible, beautiful, and deeply impactful.
               </p>
             </motion.div>
@@ -177,7 +177,7 @@ export const Mission: React.FC = () => {
               className="glass-panel p-8 rounded-2xl border-l-2 border-white/5 hover:border-l-[#00E5FF] transition-all duration-300"
             >
               <h3 className="font-serif text-xl font-bold text-white mb-3">Community Vision</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
+              <p className="typo-card-desc">
                 A thriving ecosystem where learners support each other. We envision a global network of open-source contributors, mentors, and innovators collaborating in real-time to solve the industry's most pressing challenges.
               </p>
             </motion.div>
@@ -189,7 +189,7 @@ export const Mission: React.FC = () => {
               className="glass-panel p-8 rounded-2xl border-l-2 border-white/5 hover:border-l-[#aa3bff] transition-all duration-300"
             >
               <h3 className="font-serif text-xl font-bold text-white mb-3">Creator Mission</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
+              <p className="typo-card-desc">
                 To empower the next generation of technical creators. By providing the tools, templates, and guidance needed, we are helping developers build their own personal brands and share their knowledge with the world.
               </p>
             </motion.div>
@@ -201,7 +201,7 @@ export const Mission: React.FC = () => {
               className="glass-panel p-8 rounded-2xl border-l-2 border-white/5 hover:border-l-[#FF007F] transition-all duration-300"
             >
               <h3 className="font-serif text-xl font-bold text-white mb-3">Future Roadmap</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
+              <p className="typo-card-desc">
                 Looking ahead to 2030, our roadmap includes launching a decentralized tech academy, expanding our interactive coding environments to mobile platforms, and partnering with fortune 500 companies to guarantee placement for our top-tier graduates.
               </p>
             </motion.div>

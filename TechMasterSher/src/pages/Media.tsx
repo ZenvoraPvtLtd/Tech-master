@@ -39,12 +39,12 @@ export const Media: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           {mediaHero.badge || "NEWSROOM HUB"}
         </motion.div>
         
-        <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-6">
+        <h1 className="typo-h1 mb-6">
           {mediaHero.titleLine1} <br />
           <span className="text-gold italic font-bold">{mediaHero.titleLine2}</span>.
         </h1>

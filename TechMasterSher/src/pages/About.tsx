@@ -5,6 +5,8 @@ import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
 import { Globe } from "lucide-react";
 
+import { AnimatedCounter } from "../components/AnimatedCounter";
+
 const Linkedin = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
 );
@@ -94,7 +96,7 @@ export const About: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+            className="typo-badge mb-4"
           >
             {intro.subtitle || "FOUNDER IDENTITY"}
           </motion.div>
@@ -103,7 +105,7 @@ export const About: React.FC = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.2 }}
-            className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8"
+            className="typo-h1 mb-8"
           >
             {intro.founderName || ""} <br />
             <span className="text-gold italic font-bold">{intro.designation || ""}</span>
@@ -159,9 +161,10 @@ export const About: React.FC = () => {
         <section className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32 text-left relative z-10">
           {highlightsList.map((cred: any, idx: number) => (
             <div key={cred.id || idx} className="glass-panel p-6 rounded-2xl border-t border-white/5">
-              <span className="font-serif text-3xl font-black text-gold block mb-1">
-                {`${cred.prefix || ""}${cred.number}${cred.suffix || ""}`}
-              </span>
+              <AnimatedCounter 
+                value={`${cred.prefix || ""}${cred.number}${cred.suffix || ""}`} 
+                className="font-serif text-3xl font-black text-gold block mb-1"
+              />
               <span className="text-gray-400 text-[10px] uppercase tracking-[1px] font-mono">
                 {cred.label || ""}
               </span>
@@ -189,10 +192,10 @@ export const About: React.FC = () => {
         <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">
+              <p className="typo-badge mb-4">
                 {story.subtitle || "THE JOURNEY"}
               </p>
-              <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+              <h2 className="typo-h2 mb-6">
                 {story.title ? (
                   <>
                     {story.title.split(" ").slice(0, -2).join(" ")}{" "}
@@ -223,8 +226,8 @@ export const About: React.FC = () => {
       {isSectionActive("experience") && experiencesList.length > 0 && (
         <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
           <div className="text-center mb-16">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">EXPERTISE</p>
-            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+            <p className="typo-badge mb-4">EXPERTISE</p>
+            <h2 className="typo-h2">
               Professional <span className="text-gold italic font-bold">Background & Experience</span>
             </h2>
           </div>
@@ -241,7 +244,7 @@ export const About: React.FC = () => {
                       {getYear(exp.startDate)} - {getYear(exp.endDate)}
                       {exp.location ? ` \u2022 ${exp.location}` : ""}
                     </span>
-                    <p className="text-gray-400 text-sm font-light leading-relaxed">
+                    <p className="typo-card-desc">
                       {exp.description || ""}
                     </p>
                   </div>
@@ -257,8 +260,8 @@ export const About: React.FC = () => {
         <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
           <div className="glass-panel p-12 rounded-3xl border border-white/5">
             <div className="mb-12 text-center md:text-left">
-               <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">RECOGNITION</p>
-               <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+               <p className="typo-badge mb-4">RECOGNITION</p>
+               <h2 className="typo-h2">
                  Achievements <span className="text-gold italic font-bold">& Awards</span>
                </h2>
             </div>
@@ -290,10 +293,10 @@ export const About: React.FC = () => {
       {/* 7. Future Goals */}
       {isSectionActive("futureGoals") && (futureGoals.title || futureGoals.primaryDescription) && (
         <section className="max-w-7xl mx-auto mb-32 text-center relative z-10">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">
+          <p className="typo-badge mb-4">
             {futureGoals.tag || "LOOKING AHEAD"}
           </p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-8">
+          <h2 className="typo-h2 mb-8">
             {futureGoals.title ? (
               <>
                 {futureGoals.title.split(" ").slice(0, -1).join(" ")}{" "}
@@ -325,8 +328,8 @@ export const About: React.FC = () => {
           backgroundSize: 'cover', backgroundPosition: 'center'
         }}>
           <div className="mb-16">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{aboutDataAny?.coreCollaborators?.smallHeading || aboutDataAny?.coreCollaborators?.sectionTag || "PRODUCTION TEAM"}</p>
-            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+            <p className="typo-badge mb-4">{aboutDataAny?.coreCollaborators?.smallHeading || aboutDataAny?.coreCollaborators?.sectionTag || "PRODUCTION TEAM"}</p>
+            <h2 className="typo-h2">
               {aboutDataAny?.coreCollaborators?.mainHeading || "Core"} <span className="text-gold italic font-bold">{aboutDataAny?.coreCollaborators?.highlightHeading || "Collaborators"}</span>
             </h2>
             {aboutDataAny?.coreCollaborators?.description && (

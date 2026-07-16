@@ -71,12 +71,12 @@ export const Career: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           JOIN THE TEAM
         </motion.div>
         
-        <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8">
+        <h1 className="typo-h1 mb-8">
           Join Aman's <br />
           <span className="text-gold italic font-bold">Creator & Education Lab</span>.
         </h1>
@@ -235,8 +235,8 @@ export const Career: React.FC = () => {
       {/* Culture & Benefits */}
       <section className="max-w-7xl mx-auto mt-16 mb-24 relative z-10 text-left">
         <div className="text-center mb-16">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR DNA</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+          <p className="typo-badge mb-4">OUR DNA</p>
+          <h2 className="typo-h2 mb-6">
             Culture & <span className="text-gold italic font-bold">Benefits</span>
           </h2>
         </div>
@@ -264,8 +264,8 @@ export const Career: React.FC = () => {
       {/* Hiring Process */}
       <section className="max-w-5xl mx-auto mb-32 relative z-10">
         <div className="text-center mb-16">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">HOW WE HIRE</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+          <p className="typo-badge mb-4">HOW WE HIRE</p>
+          <h2 className="typo-h2 mb-6">
             The <span className="text-gold italic font-bold">Process</span>
           </h2>
         </div>

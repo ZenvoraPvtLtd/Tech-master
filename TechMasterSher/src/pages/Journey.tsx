@@ -124,7 +124,7 @@ export const Journey: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           {journeyHero?.badgeText}
         </motion.div>
@@ -132,7 +132,7 @@ export const Journey: React.FC = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
+          className="typo-h2 mb-6"
         >
           {journeyHero?.heading} <br />
           <span className="text-gold italic font-bold">{journeyHero?.highlightWord}</span>
@@ -254,8 +254,8 @@ export const Journey: React.FC = () => {
         `}</style>
 
         <div className="mb-16 text-center">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">ROADMAP</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+          <p className="typo-badge mb-4">ROADMAP</p>
+          <h2 className="typo-h2">
             Founder's <span className="text-gold italic font-bold">Growth Roadmap</span>
           </h2>
           <p className="text-xs text-gray-500 font-mono tracking-[1px] uppercase mt-2">Hover to Pause Timeline</p>

@@ -43,7 +43,7 @@ export const Events: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           PUBLIC ENGAGEMENTS
         </motion.div>
@@ -51,7 +51,7 @@ export const Events: React.FC = () => {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
+          className="typo-h2 mb-6"
         >
           Keynote Speaking & <br />
           <span className="text-gold italic font-bold">Live Coding Seminars</span>
@@ -68,7 +68,7 @@ export const Events: React.FC = () => {
 
       {/* Main events catalog */}
       <div className="max-w-6xl mx-auto relative z-10 events-grid-trigger">
-        <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-10 text-center">FEATURED CONFERENCES & KEYNOTES</p>
+        <p className="typo-badge mb-10 text-center">FEATURED CONFERENCES & KEYNOTES</p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
           {eventsData.map((evt, idx) => (
             <LuxuryCard key={evt.id} accentColor={evt.accentColor} className="event-card-reveal" index={idx}>
@@ -109,8 +109,8 @@ export const Events: React.FC = () => {
 
         {/* Engagement Types */}
         <section className="mb-24 pt-12 border-t border-white/5 relative z-10 text-center">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">CAPABILITIES</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-10">
+          <p className="typo-badge mb-4">CAPABILITIES</p>
+          <h2 className="typo-h2 mb-10">
             Engagement <span className="text-gold italic font-bold">Types</span>
           </h2>
           <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
@@ -135,8 +135,8 @@ export const Events: React.FC = () => {
         {/* Media & Highlights */}
         <section className="mb-24 relative z-10">
           <div className="text-center mb-12">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">MEDIA ARCHIVE</p>
-            <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+            <p className="typo-badge mb-4">MEDIA ARCHIVE</p>
+            <h2 className="typo-h2">
               Gallery, Videos & <span className="text-gold italic font-bold">Highlights</span>
             </h2>
           </div>

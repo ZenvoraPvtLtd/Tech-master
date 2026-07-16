@@ -73,12 +73,12 @@ export const Services: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           CORE PORTALS
         </motion.div>
         
-        <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8">
+        <h1 className="typo-h1 mb-8">
           Services, Courses & <br />
           <span className="text-gold italic font-bold">Keynote Bookings</span>.
         </h1>
@@ -166,8 +166,8 @@ export const Services: React.FC = () => {
       {/* Comprehensive Services - Tabbed Interface */}
       <section className="max-w-7xl mx-auto text-left flex flex-col gap-6 relative z-10 mt-32 mb-12">
         <div className="mb-12 text-center">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR EXPERTISE</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-6">
+          <p className="typo-badge mb-4">OUR EXPERTISE</p>
+          <h2 className="typo-h2 mb-6">
             Comprehensive <span className="text-gold italic font-bold">Solutions</span>
           </h2>
         </div>

@@ -98,7 +98,7 @@ export const WhatWeDo: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           {hero.smallBadge || "CORE ACTIVITIES"}
         </motion.div>
@@ -106,7 +106,7 @@ export const WhatWeDo: React.FC = () => {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-4xl sm:text-6xl font-light leading-tight mb-6"
+          className="typo-h2 mb-6"
         >
           {hero.headline || "What We Do to"} <br />
           <span className="text-gold italic font-bold">{hero.highlightWord || "Reshape Learning"}</span> {hero.titleLine2 || ""}
@@ -152,7 +152,7 @@ export const WhatWeDo: React.FC = () => {
         {/* Comprehensive Services List */}
         <div className="mt-24 mb-12">
           <div className="text-center mb-12">
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">OUR EXPERTISE</p>
+            <p className="typo-badge mb-4">OUR EXPERTISE</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white font-light">
               Comprehensive <span className="text-gold italic font-bold">Services</span>
             </h2>

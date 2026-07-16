@@ -45,12 +45,12 @@ export const Portfolio: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           {portfolioHero.smallHeading}
         </motion.div>
         
-        <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight">
+        <h1 className="typo-h1">
           {portfolioHero.mainHeadingLine1} <br />
           <span className="text-gold italic font-bold">{portfolioHero.highlightText}</span>.
         </h1>
@@ -111,7 +111,7 @@ export const Portfolio: React.FC = () => {
                         <span className="font-mono text-xs text-gold">{project.year}</span>
                       </div>
 
-                      <h3 className="font-serif text-2xl md:text-3xl text-white font-medium mb-3 group-hover:text-gold transition-colors duration-300">
+                      <h3 className="typo-card-title mb-3 group-hover:text-gold transition-colors duration-300">
                         {project.title}
                       </h3>
                       

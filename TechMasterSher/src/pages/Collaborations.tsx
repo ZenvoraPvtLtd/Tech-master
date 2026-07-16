@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
+import { AnimatedCounter } from "../components/AnimatedCounter";
 
 export const Collaborations: React.FC = () => {
   const { dbData } = useData();
@@ -78,12 +79,12 @@ export const Collaborations: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4"
+          className="typo-badge mb-4"
         >
           {hero.eyebrowText || "BRAND COOPERATIONS"}
         </motion.div>
         
-        <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8">
+        <h1 className="typo-h1 mb-8">
           {hero.title.replace(hero.highlightedTitle, "")} <br />
           <span className="text-gold italic font-bold">{hero.highlightedTitle}</span>.
         </h1>
@@ -148,14 +149,14 @@ export const Collaborations: React.FC = () => {
 
       {/* Success Metrics */}
       <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10 text-center">
-        <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">IMPACT</p>
-        <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-12">
+        <p className="typo-badge mb-4">IMPACT</p>
+        <h2 className="typo-h2 mb-12">
           Success <span className="text-gold italic font-bold">Metrics</span>
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {metrics.map((stat: any, idx: number) => (
             <div key={idx} className="glass-panel p-6 rounded-2xl border border-white/5 hover:border-gold/30 transition-all duration-300">
-              <span className="font-serif text-4xl font-black text-gold block mb-2">{stat.value}</span>
+              <AnimatedCounter value={stat.value} className="font-serif text-4xl font-black text-gold block mb-2" />
               <span className="text-gray-400 text-xs tracking-[1px] uppercase font-mono">{stat.label}</span>
             </div>
           ))}
@@ -165,8 +166,8 @@ export const Collaborations: React.FC = () => {
       {/* Case Studies & Campaign Highlights */}
       <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10">
         <div className="text-center mb-12">
-          <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">SHOWCASE</p>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-white">
+          <p className="typo-badge mb-4">SHOWCASE</p>
+          <h2 className="typo-h2">
             Case Studies & <span className="text-gold italic font-bold">Campaigns</span>
           </h2>
         </div>
@@ -175,7 +176,7 @@ export const Collaborations: React.FC = () => {
             <div key={camp.id || idx} className="glass-panel p-8 rounded-3xl border-l-2 hover:bg-white/5 transition-all cursor-pointer" style={{ borderLeftColor: camp.accentColor || "#D4AF37" }}>
               <h3 className="font-serif text-2xl text-white mb-2">{camp.title}</h3>
               <p className="text-gray-400 text-sm font-light mb-4">{camp.description}</p>
-              <span className="text-xs uppercase tracking-[2px] font-bold" style={{ color: camp.accentColor || "#D4AF37" }}>{camp.buttonText || "View Highlight"}</span>
+              <span className="typo-btn" style={{ color: camp.accentColor || "#D4AF37" }}>{camp.buttonText || "View Highlight"}</span>
             </div>
           ))}
         </div>
@@ -185,11 +186,11 @@ export const Collaborations: React.FC = () => {
       <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">{history.eyebrow || "TIMELINE"}</p>
+            <p className="typo-badge mb-4">{history.eyebrow || "TIMELINE"}</p>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-white mb-6">
               {history.title.replace(history.highlightedTitle || "", "")} <span className="text-gold italic font-bold">{history.highlightedTitle}</span>
             </h2>
-            <p className="text-gray-400 text-sm font-light leading-relaxed mb-6">
+            <p className="typo-card-desc mb-6">
               {history.description}
             </p>
             <div className="glass-panel p-6 rounded-2xl border-l-4 border-l-gold">
@@ -198,7 +199,7 @@ export const Collaborations: React.FC = () => {
             </div>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">HOW IT WORKS</p>
+            <p className="typo-badge mb-4">HOW IT WORKS</p>
             <h2 className="font-serif text-3xl sm:text-4xl font-light text-white mb-6">
               Partnership <span className="text-gold italic font-bold">Process</span>
             </h2>
@@ -216,8 +217,8 @@ export const Collaborations: React.FC = () => {
 
       {/* Testimonials */}
       <section className="max-w-7xl mx-auto mb-24 px-6 relative z-10 text-center">
-        <p className="text-[10px] uppercase tracking-[6px] text-gold font-bold mb-4">ENDORSEMENTS</p>
-        <h2 className="font-serif text-3xl sm:text-5xl font-light text-white mb-12">
+        <p className="typo-badge mb-4">ENDORSEMENTS</p>
+        <h2 className="typo-h2 mb-12">
           Partner <span className="text-gold italic font-bold">Testimonials</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
