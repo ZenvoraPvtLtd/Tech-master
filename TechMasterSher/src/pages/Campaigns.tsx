@@ -8,7 +8,7 @@ import { mediaUrl } from "../utils/media";
 export const Campaigns: React.FC = () => {
   const { campaignsData } = useData();
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-purple opacity-20 pointer-events-none" />
       <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
@@ -82,7 +82,7 @@ export const Campaigns: React.FC = () => {
       </section>
 
       {/* Campaign Lifecycle & Success */}
-      <section className="max-w-7xl mx-auto mt-32 text-left relative z-10">
+      <section className="max-w-7xl mx-auto mt-16 text-left relative z-10">
         <div className="text-center mb-16">
           <p className="typo-badge mb-4">OUR PROCESS</p>
           <h2 className="typo-h2 mb-6">
@@ -90,7 +90,7 @@ export const Campaigns: React.FC = () => {
           </h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           <div className="glass-panel p-8 rounded-2xl border-t border-white/5 hover:border-gold/30 transition-all duration-300">
             <h3 className="font-serif text-xl font-bold text-white mb-3">1. Campaign Planning</h3>
             <p className="typo-card-desc">

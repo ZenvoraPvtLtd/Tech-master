@@ -87,7 +87,7 @@ export const WhatWeDo: React.FC = () => {
   };
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background glow layers */}
       <div className="absolute top-1/4 left-1/3 w-[55vw] h-[55vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2" />
@@ -150,7 +150,7 @@ export const WhatWeDo: React.FC = () => {
         </div>
 
         {/* Comprehensive Services List */}
-        <div className="mt-24 mb-12">
+        <div className="mt-12 mb-12">
           <div className="text-center mb-12">
             <p className="typo-badge mb-4">OUR EXPERTISE</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white font-light">
@@ -179,7 +179,7 @@ export const WhatWeDo: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1.0 }}
-          className="glass-panel p-8 md:p-16 rounded-3xl mt-20 text-center max-w-4xl mx-auto border border-gold/20 shadow-[0_0_30px_rgba(212,175,55,0.05)]"
+          className="glass-panel p-8 md:p-16 rounded-3xl mt-10 text-center max-w-4xl mx-auto border border-gold/20 shadow-[0_0_30px_rgba(212,175,55,0.05)]"
         >
           <Award className="w-10 h-10 text-gold mx-auto mb-6" />
           <h2 className="font-serif text-2xl md:text-3xl font-light italic text-white leading-relaxed mb-6">

@@ -390,7 +390,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-32 lg:pt-40 text-center">
+      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-24 lg:pt-24 text-center">
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             HERO LANDING
@@ -494,19 +494,24 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
-          transition={{ ease: "linear", duration: Math.max(20, (homeData?.brandPartners?.length || 6) * 3.33), repeat: Infinity }}
+          transition={{ ease: "linear", duration: Math.max(15, (homeData?.brandPartners?.length || 6) * 2.2), repeat: Infinity }}
+          style={{ willChange: "transform" }}
           className="flex gap-12 md:gap-24 w-max"
         >
-          {[1, 2].map((groupIndex) => (
-            <div key={groupIndex} className="flex items-center gap-12 md:gap-24">
-              {(homeData?.brandPartners?.length > 0 ? homeData.brandPartners : [{ brandName: "NVIDIA" }, { brandName: "GITHUB" }, { brandName: "GOOGLE CLOUD" }, { brandName: "APPLE DEVELOPER" }, { brandName: "VERCEL" }, { brandName: "MICROSOFT" }]).map((brand: any, idx: number) => (
-                <span
-                  key={`${brand.brandName}-${idx}`}
-                  className="font-serif text-xl sm:text-2xl font-black text-gold tracking-[6px] transition-colors duration-300 select-none cursor-default"
-                >{brand.brandName}</span>
-              ))}
-            </div>
-          ))}
+          {[1, 2].map((groupIndex) => {
+            const basePartners = homeData?.brandPartners?.length > 0 ? homeData.brandPartners : [{ brandName: "NVIDIA" }, { brandName: "GITHUB" }, { brandName: "GOOGLE CLOUD" }, { brandName: "APPLE DEVELOPER" }, { brandName: "VERCEL" }, { brandName: "MICROSOFT" }];
+            const displayPartners = [...basePartners, { brandName: "TechMaster Technologies" }, { brandName: "TechMaster Technologies" }];
+            return (
+              <div key={groupIndex} className="flex items-center gap-12 md:gap-24">
+                {displayPartners.map((brand: any, idx: number) => (
+                  <span
+                    key={`${brand.brandName}-${idx}-${groupIndex}`}
+                    className="font-serif text-xl sm:text-2xl font-black text-gold tracking-[6px] transition-colors duration-300 select-none cursor-default whitespace-nowrap"
+                  >{brand.brandName}</span>
+                ))}
+              </div>
+            );
+          })}
         </motion.div>
       </section>
 
@@ -534,7 +539,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             {coreServicesConfig?.tag || "CORE SERVICES & TRAINING"}
           </span>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-20 items-end">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-10 items-end">
           <div className="lg:col-span-2 text-left">
             <p className="typo-badge mb-4">{coreServicesConfig?.pillarsText || "EDUCATIONAL PILLARS"}</p>
             <h2 className="typo-h2 fade-up">
@@ -592,7 +597,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 5. Statistics Callout */}
-      <section className="scroll-section py-24 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-center">
+      <section className="scroll-section py-12 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             GLOBAL REACH & STATISTICS
@@ -615,14 +620,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 6. Video Showcase Section */}
-      <section className="scroll-section py-32 px-6 max-w-7xl mx-auto relative z-10 text-left">
+      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10 text-left">
         <div className="flex justify-center mb-12 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             FEATURED VIDEO SHOWCASE
           </span>
         </div>
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-8">
           <div>
             <p className="typo-badge mb-4">VIDEO PORTFOLIO</p>
             <h2 className="typo-h2">
@@ -667,25 +672,50 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               const longs = filteredVideos.filter((v) => v.type === "long_video");
               const maxGroups = Math.max(reels.length, Math.ceil(longs.length / 2));
               
-              return Array.from({ length: maxGroups }).map((_, i) => (
-                <React.Fragment key={i}>
-                  {reels[i] && (
-                    <div className="video-fade-in w-full h-full md:col-span-1 md:row-span-2">
-                      <VideoCard video={reels[i]} onClick={() => setSelectedVideo(reels[i])} />
-                    </div>
-                  )}
-                  {longs[i * 2] && (
-                    <div className="video-fade-in w-full h-full md:col-span-2 md:row-span-1">
-                      <VideoCard video={longs[i * 2]} onClick={() => setSelectedVideo(longs[i * 2])} />
-                    </div>
-                  )}
-                  {longs[i * 2 + 1] && (
-                    <div className="video-fade-in w-full h-full md:col-span-2 md:row-span-1">
-                      <VideoCard video={longs[i * 2 + 1]} onClick={() => setSelectedVideo(longs[i * 2 + 1])} />
-                    </div>
-                  )}
-                </React.Fragment>
-              ));
+              return Array.from({ length: maxGroups }).map((_, i) => {
+                const isEven = i % 2 === 0;
+                return (
+                  <React.Fragment key={i}>
+                    {isEven ? (
+                      <>
+                        {reels[i] && (
+                          <div className="video-fade-in w-full h-full md:col-span-1 md:row-span-2">
+                            <VideoCard video={reels[i]} onClick={() => setSelectedVideo(reels[i])} />
+                          </div>
+                        )}
+                        {longs[i * 2] && (
+                          <div className="video-fade-in w-full h-full md:col-span-2 md:row-span-1">
+                            <VideoCard video={longs[i * 2]} onClick={() => setSelectedVideo(longs[i * 2])} />
+                          </div>
+                        )}
+                        {longs[i * 2 + 1] && (
+                          <div className="video-fade-in w-full h-full md:col-span-2 md:row-span-1">
+                            <VideoCard video={longs[i * 2 + 1]} onClick={() => setSelectedVideo(longs[i * 2 + 1])} />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {longs[i * 2] && (
+                          <div className="video-fade-in w-full h-full md:col-span-2 md:row-span-1">
+                            <VideoCard video={longs[i * 2]} onClick={() => setSelectedVideo(longs[i * 2])} />
+                          </div>
+                        )}
+                        {reels[i] && (
+                          <div className="video-fade-in w-full h-full md:col-span-1 md:row-span-2">
+                            <VideoCard video={reels[i]} onClick={() => setSelectedVideo(reels[i])} />
+                          </div>
+                        )}
+                        {longs[i * 2 + 1] && (
+                          <div className="video-fade-in w-full h-full md:col-span-2 md:row-span-1">
+                            <VideoCard video={longs[i * 2 + 1]} onClick={() => setSelectedVideo(longs[i * 2 + 1])} />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </React.Fragment>
+                );
+              });
             })()}
           </div>
         ) : activeFilter === "long" ? (
@@ -828,7 +858,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
 
       {/* Newsletter */}
-      <section className="scroll-section py-24 px-6 max-w-4xl mx-auto relative z-10 text-center">
+      <section className="scroll-section py-12 px-6 max-w-4xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.newsletter?.tag || "NEWSLETTER SUBSCRIPTION"}</span>
         </div>

@@ -34,7 +34,7 @@ export const Portfolio: React.FC = () => {
     : portfolioList.filter((proj: any) => proj.category === activeFilter || (proj.categories && proj.categories.includes(activeFilter)));
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background radial overlay */}
       <div className="absolute top-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-purple opacity-20 pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />

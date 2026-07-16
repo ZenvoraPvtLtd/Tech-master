@@ -36,13 +36,13 @@ export const Gallery: React.FC = () => {
     : galleryList.filter((item: any) => item.type === activeFilter || item.category === activeFilter);
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background Orbs */}
       <div className="absolute top-1/3 left-1/2 w-[40vw] h-[40vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
 
       {/* Hero Header */}
-      <section className="max-w-7xl mx-auto text-left mb-20 relative z-10">
+      <section className="max-w-7xl mx-auto text-left mb-10 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

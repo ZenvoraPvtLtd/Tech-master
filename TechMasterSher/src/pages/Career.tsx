@@ -60,13 +60,13 @@ export const Career: React.FC = () => {
   };
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/4 left-1/3 w-[30vw] h-[30vw] aurora-glow-blue opacity-15 pointer-events-none" />
       <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-purple opacity-10 pointer-events-none" />
 
       {/* Hero Header */}
-      <section className="max-w-7xl mx-auto text-left mb-20 relative z-10">
+      <section className="max-w-7xl mx-auto text-left mb-10 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -262,7 +262,7 @@ export const Career: React.FC = () => {
       </section>
 
       {/* Hiring Process */}
-      <section className="max-w-5xl mx-auto mb-32 relative z-10">
+      <section className="max-w-5xl mx-auto mb-16 relative z-10">
         <div className="text-center mb-16">
           <p className="typo-badge mb-4">HOW WE HIRE</p>
           <h2 className="typo-h2 mb-6">

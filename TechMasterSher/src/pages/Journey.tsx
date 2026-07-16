@@ -113,7 +113,7 @@ export const Journey: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background radial glows */}
       <div className="absolute top-1/4 left-1/2 w-[60vw] h-[60vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2 translate-y-1/2" />
@@ -237,7 +237,7 @@ export const Journey: React.FC = () => {
       </div>
 
       {/* Thematic Growth Roadmap */}
-      <div className="roadmap-container max-w-7xl mx-auto px-6 relative z-10 pb-32">
+      <div className="roadmap-container max-w-7xl mx-auto px-6 relative z-10 pb-16">
         <style>{`
           @keyframes roadmapScroll {
             0% { transform: translateX(0); }

@@ -68,7 +68,7 @@ export const Collaborations: React.FC = () => {
       ];
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/4 left-1/4 w-[35vw] h-[35vw] aurora-glow-purple opacity-20 pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
@@ -114,7 +114,7 @@ export const Collaborations: React.FC = () => {
       </section>
 
       {/* Partners Grid */}
-      <section className="max-w-7xl mx-auto text-left grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 relative z-10">
+      <section className="max-w-7xl mx-auto text-left grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 relative z-10">
         {partners.map((item: any, idx: number) => (
           <LuxuryCard key={item.id || item._id || idx} accentColor={item.accentColor} index={idx}>
             <div className="flex justify-between items-start mb-6">

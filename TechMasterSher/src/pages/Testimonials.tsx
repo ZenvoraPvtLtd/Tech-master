@@ -11,7 +11,7 @@ export const Testimonials: React.FC = () => {
   const testimonialsList = testimonialsData || [];
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background radial glows */}
       <div className="absolute top-1/4 left-1/4 w-[45vw] h-[45vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2" />
@@ -47,7 +47,7 @@ export const Testimonials: React.FC = () => {
 
       {/* Testimonials Grids */}
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           {testimonialsList.map((test: any, idx: number) => (
             <LuxuryCard key={test.id || test._id} accentColor="#D4AF37" index={idx}>
               <div className="flex justify-between items-start mb-6">

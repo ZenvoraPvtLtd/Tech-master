@@ -84,7 +84,7 @@ export const About: React.FC = () => {
   };
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background Orbs */}
       <div className="absolute top-1/4 left-1/3 w-[30vw] h-[30vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2" />
@@ -158,7 +158,7 @@ export const About: React.FC = () => {
 
       {/* 2. Dynamic Highlights / Statistics */}
       {isSectionActive("highlights") && highlightsList.length > 0 && (
-        <section className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32 text-left relative z-10">
+        <section className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16 text-left relative z-10">
           {highlightsList.map((cred: any, idx: number) => (
             <div key={cred.id || idx} className="glass-panel p-6 rounded-2xl border-t border-white/5">
               <AnimatedCounter 
@@ -175,7 +175,7 @@ export const About: React.FC = () => {
 
       {/* 3. Mission, Vision & Philosophy Cards */}
       {missionVisionCards.length > 0 && (
-        <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-32 text-left relative z-10">
+        <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 text-left relative z-10">
           {missionVisionCards.map((item) => (
             isSectionActive(item.key) && (
               <div key={item.key} className="glass-panel p-8 rounded-3xl relative hover:border-gold/30 transition-all duration-300">
@@ -189,7 +189,7 @@ export const About: React.FC = () => {
 
       {/* 4. Story & Passion */}
       {isSectionActive("story") && (story.title || story.description) && (
-        <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+        <section className="max-w-7xl mx-auto mb-16 text-left relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <p className="typo-badge mb-4">
@@ -224,7 +224,7 @@ export const About: React.FC = () => {
 
       {/* 5. Professional Background & Experience */}
       {isSectionActive("experience") && experiencesList.length > 0 && (
-        <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+        <section className="max-w-7xl mx-auto mb-16 text-left relative z-10">
           <div className="text-center mb-16">
             <p className="typo-badge mb-4">EXPERTISE</p>
             <h2 className="typo-h2">
@@ -257,7 +257,7 @@ export const About: React.FC = () => {
 
       {/* 6. Achievements & Awards */}
       {isSectionActive("achievements") && (achievementsList.length > 0 || awardsList.length > 0) && (
-        <section className="max-w-7xl mx-auto mb-32 text-left relative z-10">
+        <section className="max-w-7xl mx-auto mb-16 text-left relative z-10">
           <div className="glass-panel p-12 rounded-3xl border border-white/5">
             <div className="mb-12 text-center md:text-left">
                <p className="typo-badge mb-4">RECOGNITION</p>
@@ -292,7 +292,7 @@ export const About: React.FC = () => {
 
       {/* 7. Future Goals */}
       {isSectionActive("futureGoals") && (futureGoals.title || futureGoals.primaryDescription) && (
-        <section className="max-w-7xl mx-auto mb-32 text-center relative z-10">
+        <section className="max-w-7xl mx-auto mb-16 text-center relative z-10">
           <p className="typo-badge mb-4">
             {futureGoals.tag || "LOOKING AHEAD"}
           </p>

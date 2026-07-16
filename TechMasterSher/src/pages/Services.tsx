@@ -62,7 +62,7 @@ export const Services: React.FC = () => {
   };
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/3 right-1/4 w-[35vw] h-[35vw] aurora-glow-purple opacity-20 pointer-events-none" />
       <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
@@ -164,7 +164,7 @@ export const Services: React.FC = () => {
       </section>
 
       {/* Comprehensive Services - Tabbed Interface */}
-      <section className="max-w-7xl mx-auto text-left flex flex-col gap-6 relative z-10 mt-32 mb-12">
+      <section className="max-w-7xl mx-auto text-left flex flex-col gap-6 relative z-10 mt-16 mb-12">
         <div className="mb-12 text-center">
           <p className="typo-badge mb-4">OUR EXPERTISE</p>
           <h2 className="typo-h2 mb-6">

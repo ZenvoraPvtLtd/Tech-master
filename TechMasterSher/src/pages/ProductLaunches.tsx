@@ -87,7 +87,7 @@ export const ProductLaunches: React.FC = () => {
       ];
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Glow overlays */}
       <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2" />
@@ -161,7 +161,7 @@ export const ProductLaunches: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1.0 }}
-          className="glass-panel p-8 md:p-12 rounded-3xl mt-24 text-left max-w-5xl mx-auto flex flex-col md:flex-row gap-8 items-center"
+          className="glass-panel p-8 md:p-12 rounded-3xl mt-12 text-left max-w-5xl mx-auto flex flex-col md:flex-row gap-8 items-center"
         >
           <div className="md:w-2/3">
             <span className="text-[10px] uppercase font-bold tracking-[3px] text-gold block mb-2">{featureVideo.smallBadge || "LATEST LAUNCH VIDEO"}</span>
@@ -194,7 +194,7 @@ export const ProductLaunches: React.FC = () => {
         </motion.div>
 
         {/* Product Launch Highlights */}
-        <section className="max-w-7xl mx-auto mt-32 text-left relative z-10 px-6">
+        <section className="max-w-7xl mx-auto mt-16 text-left relative z-10 px-6">
           <div className="text-center mb-16">
             <p className="typo-badge mb-4">PORTFOLIO</p>
             <h2 className="typo-h2 mb-6">

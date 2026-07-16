@@ -32,7 +32,7 @@ export const Events: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative text-white min-h-screen pt-32 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background aurora glows */}
       <div className="absolute top-1/4 left-1/4 w-[45vw] h-[45vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-gold opacity-10 pointer-events-none translate-x-1/2" />
@@ -69,7 +69,7 @@ export const Events: React.FC = () => {
       {/* Main events catalog */}
       <div className="max-w-6xl mx-auto relative z-10 events-grid-trigger">
         <p className="typo-badge mb-10 text-center">FEATURED CONFERENCES & KEYNOTES</p>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
           {eventsData.map((evt, idx) => (
             <LuxuryCard key={evt.id} accentColor={evt.accentColor} className="event-card-reveal" index={idx}>
               <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/5 mb-6 relative">
