@@ -190,7 +190,7 @@ export const Testimonials: React.FC = () => {
                   className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500 absolute inset-0" 
                 />
                 <button 
-                  onClick={() => setActiveVideo(mediaUrl(video.video))}
+                  onClick={() => setActiveVideo(mediaUrl(video.video) || null)}
                   className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center backdrop-blur-md border border-gold/50 z-10 cursor-pointer group-hover:scale-110 transition-transform duration-300 outline-none"
                 >
                   <Play className="w-6 h-6 text-gold fill-gold ml-1" />
