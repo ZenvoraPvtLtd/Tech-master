@@ -16,7 +16,13 @@ import {
   blogService,
   faqService,
   contactService,
+  servicesPageService,
   websiteSettingsService,
+  testimonialsPageService,
+  termsPolicyService,
+  privacyPolicyService,
+  cookiePolicyService,
+  legalSettingsService,
 } from "../services";
 import { IHomepage } from "../models/Homepage";
 import { IAbout } from "../models/About";
@@ -34,7 +40,13 @@ import { ICareer } from "../models/Career";
 import { IBlog } from "../models/Blog";
 import { IFaq } from "../models/FAQ";
 import { IContact } from "../models/Contact";
+import { IServicesPage } from '../models/ServicesPage';
 import { IWebsiteSettings } from "../models/WebsiteSettings";
+import { ITestimonialsPage } from "../models/TestimonialsPage";
+import { ITermsPolicy } from "../models/TermsPolicy";
+import { IPrivacyPolicy } from "../models/PrivacyPolicy";
+import { ICookiePolicy } from "../models/CookiePolicy";
+import { ILegalSettings } from "../models/LegalSettings";
 
 export const homepageController = new BaseController<IHomepage>(homepageService, "Homepage");
 export const aboutController = new BaseController<IAbout>(aboutService, "About");
@@ -52,5 +64,11 @@ export const careerController = new BaseController<ICareer>(careerService, "Care
 export const blogController = new BaseController<IBlog>(blogService, "Blog");
 export const faqController = new BaseController<IFaq>(faqService, "Faq");
 export const contactController = new BaseController<IContact>(contactService, "Contact");
+export const servicesPageController = new BaseController<IServicesPage>(servicesPageService, 'ServicesPage');
 export const websiteSettingsController = new BaseController<IWebsiteSettings>(websiteSettingsService, "WebsiteSettings");
+export const testimonialsPageController = new BaseController<ITestimonialsPage>(testimonialsPageService, "TestimonialsPage");
+export const termsPolicyController = new BaseController<ITermsPolicy>(termsPolicyService, "TermsPolicy");
+export const privacyPolicyController = new BaseController<IPrivacyPolicy>(privacyPolicyService, "PrivacyPolicy");
+export const cookiePolicyController = new BaseController<ICookiePolicy>(cookiePolicyService, "CookiePolicy");
+export const legalSettingsController = new BaseController<ILegalSettings>(legalSettingsService, "LegalSettings");
 export { BaseController };

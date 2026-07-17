@@ -2,10 +2,27 @@ import React, { useState } from "react";
 import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
+import { mediaUrl } from "../utils/media";
 
 export const Career: React.FC = () => {
-  const { careerData } = useData();
-  const careerList = careerData || [];
+  const { careerData, dbData } = useData();
+  const careerList = careerData && careerData.length > 0 
+    ? careerData.filter((c: any) => c.active !== false && c.status !== false) 
+    : [];
+  
+  const careerHero = dbData?.careerHero || {};
+  const careerCulture = dbData?.careerCulture || [
+    { title: "Remote First", description: "Work from anywhere in the world. We believe in output, not office hours." },
+    { title: "Learning Budget", description: "$2,000 annual stipend for courses, books, and conference tickets." },
+    { title: "Health & Wellness", description: "Premium global health coverage and mental wellness stipends." },
+    { title: "Creator Autonomy", description: "Own your projects. We cultivate leaders who can drive their own vision." }
+  ];
+  const careerProcess = dbData?.careerProcess || [
+    { step: "01", title: "Application Review", description: "We review your portfolio, GitHub, and application answers." },
+    { step: "02", title: "Intro Call", description: "A 30-minute culture and vibe check with our ops team." },
+    { step: "03", title: "Technical Task", description: "A paid, asynchronous take-home project relevant to your role." },
+    { step: "04", title: "Final Interview", description: "A conversation with Aman and the leads. No live whiteboarding." }
+  ];
 
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,8 +31,10 @@ export const Career: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     jobTitle: "",
     portfolioLink: "",
+    whyJoin: "",
     coverLetter: "",
     resumeFile: null as File | null
   });
@@ -35,9 +54,11 @@ export const Career: React.FC = () => {
       const dataPayload = new FormData();
       dataPayload.append("name", formData.name);
       dataPayload.append("email", formData.email);
+      dataPayload.append("phone", formData.phone);
       dataPayload.append("jobTitle", formData.jobTitle || "General Application");
       dataPayload.append("experience", formData.portfolioLink); // Map portfolio link to experience field
-      dataPayload.append("message", formData.coverLetter); // Map cover letter to message
+      dataPayload.append("message", formData.whyJoin); // Map why join to message
+      dataPayload.append("coverLetter", formData.coverLetter); 
       dataPayload.append("resume", formData.resumeFile); // Single file upload field name in backend is 'resume'
 
       const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"}` + "/cms/public/resume", {
@@ -65,6 +86,17 @@ export const Career: React.FC = () => {
       <div className="absolute top-1/4 left-1/3 w-[30vw] h-[30vw] aurora-glow-blue opacity-15 pointer-events-none" />
       <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-purple opacity-10 pointer-events-none" />
 
+      {careerHero.bgVideoUrl || careerHero.bgImageUrl ? (
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+          {careerHero.bgVideoUrl ? (
+            <video src={mediaUrl(careerHero.bgVideoUrl)} className="w-full h-full object-cover" autoPlay loop muted playsInline />
+          ) : (
+            <img src={mediaUrl(careerHero.bgImageUrl)} className="w-full h-full object-cover" alt="Background" />
+          )}
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+      ) : null}
+
       {/* Hero Header */}
       <section className="max-w-7xl mx-auto text-left mb-10 relative z-10">
         <motion.div
@@ -73,16 +105,16 @@ export const Career: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="typo-badge mb-4"
         >
-          JOIN THE TEAM
+          {careerHero.badge || "JOIN THE TEAM"}
         </motion.div>
         
         <h1 className="typo-h1 mb-8">
-          Join Aman's <br />
-          <span className="text-gold italic font-bold">Creator & Education Lab</span>.
+          {careerHero.titleLine1 || "Join Aman's"} <br />
+          <span className="text-gold italic font-bold">{careerHero.titleLine2 || "Creator & Education Lab"}</span>.
         </h1>
 
         <p className="text-gray-400 font-light text-base md:text-lg max-w-2xl leading-relaxed mt-6">
-          We look for cinematic editors, curriculum writers, and developer advocates who want to construct the future of tech education.
+          {careerHero.description || "We look for cinematic editors, curriculum writers, and developer advocates who want to construct the future of tech education."}
         </p>
       </section>
 
@@ -163,6 +195,18 @@ export const Career: React.FC = () => {
               </div>
 
               <div>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">PHONE NUMBER</label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="+1 (555) 000-0000"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                />
+              </div>
+
+              <div>
                 <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">POSITION APPLYING FOR</label>
                 <select
                   value={formData.jobTitle}
@@ -196,6 +240,17 @@ export const Career: React.FC = () => {
                   rows={3}
                   required
                   placeholder="Briefly tell us how you want to contribute to the education space."
+                  value={formData.whyJoin}
+                  onChange={(e) => setFormData({ ...formData, whyJoin: e.target.value })}
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                />
+              </div>
+
+              <div>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">COVER LETTER</label>
+                <textarea
+                  rows={4}
+                  placeholder="Tell us why you are the best fit for this role."
                   value={formData.coverLetter}
                   onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
                   className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
@@ -203,10 +258,10 @@ export const Career: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">UPLOAD RESUME (PDF/DOC)</label>
+                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">UPLOAD RESUME (PDF/DOC/PPT)</label>
                 <input
                   type="file"
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf,.doc,.docx,.ppt,.pptx"
                   required
                   onChange={(e) => {
                     const files = e.target.files;
@@ -242,22 +297,12 @@ export const Career: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
-            <h4 className="font-serif text-xl font-bold text-white mb-3">Remote First</h4>
-            <p className="text-gray-400 text-sm font-light">Work from anywhere in the world. We believe in output, not office hours.</p>
-          </div>
-          <div className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
-            <h4 className="font-serif text-xl font-bold text-white mb-3">Learning Budget</h4>
-            <p className="text-gray-400 text-sm font-light">$2,000 annual stipend for courses, books, and conference tickets.</p>
-          </div>
-          <div className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
-            <h4 className="font-serif text-xl font-bold text-white mb-3">Health & Wellness</h4>
-            <p className="text-gray-400 text-sm font-light">Premium global health coverage and mental wellness stipends.</p>
-          </div>
-          <div className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
-            <h4 className="font-serif text-xl font-bold text-white mb-3">Creator Autonomy</h4>
-            <p className="text-gray-400 text-sm font-light">Own your projects. We cultivate leaders who can drive their own vision.</p>
-          </div>
+          {careerCulture.map((item: any, idx: number) => (
+            <div key={item.id || idx} className="glass-panel p-8 rounded-3xl border-t border-white/5 hover:border-gold/30 transition-all duration-300 text-center">
+              <h4 className="font-serif text-xl font-bold text-white mb-3">{item.title}</h4>
+              <p className="text-gray-400 text-sm font-light">{item.description}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -270,19 +315,14 @@ export const Career: React.FC = () => {
           </h2>
         </div>
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative before:absolute before:top-8 before:left-8 md:before:left-0 md:before:top-12 before:w-0.5 md:before:w-full before:h-full md:before:h-0.5 before:bg-white/10">
-          {[
-            { step: "01", title: "Application Review", desc: "We review your portfolio, GitHub, and application answers." },
-            { step: "02", title: "Intro Call", desc: "A 30-minute culture and vibe check with our ops team." },
-            { step: "03", title: "Technical Task", desc: "A paid, asynchronous take-home project relevant to your role." },
-            { step: "04", title: "Final Interview", desc: "A conversation with Aman and the leads. No live whiteboarding." }
-          ].map((item, idx) => (
-            <div key={idx} className="relative z-10 flex md:flex-col items-start md:items-center gap-6 md:gap-4 text-left md:text-center">
+          {careerProcess.map((item: any, idx: number) => (
+            <div key={item.id || idx} className="relative z-10 flex md:flex-col items-start md:items-center gap-6 md:gap-4 text-left md:text-center">
               <div className="w-16 h-16 rounded-full bg-[#0d0d0d] border border-gold flex items-center justify-center font-serif text-xl text-gold font-bold shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                {item.step}
+                {item.step || `0${idx + 1}`}
               </div>
               <div>
                 <h4 className="font-bold text-white mb-2">{item.title}</h4>
-                <p className="text-gray-400 text-xs font-light max-w-[200px]">{item.desc}</p>
+                <p className="text-gray-400 text-xs font-light max-w-[200px]">{item.description || item.desc}</p>
               </div>
             </div>
           ))}

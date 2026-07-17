@@ -8,28 +8,12 @@ export const Gallery: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState("All");
 
   const galleryList = dbData?.mediaGallery && dbData.mediaGallery.length > 0
-    ? dbData.mediaGallery.filter((item: any) => item.status === "Active" || item.status === true || item.status === undefined)
+    ? dbData.mediaGallery.filter((item: any) => item.status === "Active" || item.status === "Published" || item.status === true || item.status === undefined)
     : [];
 
   const filters = dbData?.mediaFilters && dbData.mediaFilters.length > 0
     ? ["All", ...dbData.mediaFilters.filter((f: any) => f.isVisible !== false).map((f: any) => f.name || f)]
-    : [
-        "All",
-        "Photos",
-        "Videos",
-        "Behind the Scenes",
-        "Campaign Images",
-        "Events",
-        "Celebrity Moments",
-        "Awards",
-        "Travel",
-        "Lifestyle",
-        "Interviews",
-        "Press Releases",
-        "Podcasts",
-        "TV Features",
-        "Magazine Features"
-      ];
+    : ["All"];
 
   const filteredItems = activeFilter === "All"
     ? galleryList
@@ -49,12 +33,12 @@ export const Gallery: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="typo-badge mb-4"
         >
-          CREATOR ARCHIVES
+          {dbData?.mediaHero?.badge || "CREATOR ARCHIVES"}
         </motion.div>
         
         <h1 className="typo-h1">
-          Media Coverage & <br />
-          <span className="text-gold italic font-bold">Gallery</span>.
+          {dbData?.mediaHero?.titleLine1 || "Media Coverage &"} <br />
+          <span className="text-gold italic font-bold">{dbData?.mediaHero?.titleLine2 || "Gallery"}</span>.
         </h1>
       </section>
 
@@ -89,13 +73,28 @@ export const Gallery: React.FC = () => {
                 className="break-inside-avoid glass-panel p-4 rounded-3xl group cursor-pointer hover:border-gold/30 transition-all duration-500 overflow-hidden"
               >
                 <div className="rounded-2xl overflow-hidden mb-4 relative">
-                  <img
-                    src={mediaUrl(item.imageUrl) || mediaUrl(item.image) || mediaUrl(item.mediaFile) || mediaUrl(item.url)}
-                    alt={item.title}
-                    loading="lazy"
-                    className="w-full object-cover transition-transform duration-700 group-hover:scale-103"
-                    data-cursor="expand"
-                  />
+                  {(() => {
+                    const srcUrl = mediaUrl(item.imageUrl) || mediaUrl(item.image) || mediaUrl(item.thumbnail) || mediaUrl(item.mediaFile) || mediaUrl(item.url);
+                    const isVid = typeof srcUrl === 'string' && srcUrl.match(/\.(mp4|webm|mov)$/i);
+                    return isVid ? (
+                      <video
+                        src={srcUrl}
+                        className="w-full object-cover transition-transform duration-700 group-hover:scale-103"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      />
+                    ) : (
+                      <img
+                        src={srcUrl}
+                        alt={item.title}
+                        loading="lazy"
+                        className="w-full object-cover transition-transform duration-700 group-hover:scale-103"
+                        data-cursor="expand"
+                      />
+                    );
+                  })()}
                   <div className="absolute top-3 left-3 bg-black/80 border border-white/10 px-3 py-1 rounded-full text-[9px] uppercase tracking-[1px] font-mono text-gold">
                     {item.type || item.category}
                   </div>

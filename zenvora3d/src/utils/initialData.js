@@ -1724,17 +1724,22 @@ export const initialData = {
       glowEnabled: true,
       status: "Active"
     },
-    mainServices: [
-      { id: "ms-1", title: "YouTube Production", tagline: "Cinematic Coding Breakdowns", description: "We script, record, and edit deep-dive developer tutorials that run like cinematic stories. Reaching over 2.5 million subscribers with weekly guides.", icon: "Cpu", accentColor: "#D4AF37", features: ["Weekly content guides", "Cinematic pacing", "Target placements"], order: 1, status: "Active" },
-      { id: "ms-2", title: "Interactive Syllabus Design", tagline: "Online MasterClasses", description: "Drafting production-level courses that focus on Docker pipelines, testing arrays, and backend scale, complete with live browser containers.", icon: "Layers", accentColor: "#00E5FF", features: ["Docker pipelines", "Testing arrays", "Backend scale"], order: 2, status: "Active" }
+    statistics: [
+      { id: "stat-1", label: "Students Enrolled", value: "2M+" },
+      { id: "stat-2", label: "Enterprise Clients", value: "50+" }
     ],
-    advancedServices: [
-      { id: "as-1", title: "Brand Promotion", overview: "Our Brand Promotion service is designed to elevate your brand's presence in the competitive tech landscape. We combine cinematic production with deep industry insights to deliver unparalleled results.", benefits: ["Targeted audience reach and engagement", "Premium cinematic production quality", "Data-driven strategic approach"], process: ["Discovery & Strategy alignment", "Creative Production & Execution", "Review Analytics & Optimization"], gallery: [], cta: "Inquire Now", order: 1, status: "Active" }
+    testimonials: [
+      { id: "test-1", quote: "Outstanding cinematic production value.", author: "Rohan V.", role: "CEO", image: "" }
     ],
-    categories: [
-      { id: "cat-1", title: "Branding", color: "#D4AF37", order: 1, status: "Active" },
-      { id: "cat-2", title: "Design", color: "#00E5FF", order: 2, status: "Active" }
+    faqs: [
+      { id: "faq-1", question: "What is your pricing model?", answer: "We offer customized packages based on scope." }
     ],
+    cta: {
+      heading: "Ready to Transform Your Business?",
+      subtext: "Let's discuss how we can help you achieve your goals.",
+      buttonText: "Contact Us",
+      buttonUrl: "/contact"
+    },
     seo: {
       metaTitle: "Services | TechMaster",
       metaDescription: "Explore our main accordion services, advanced services tabs, and categories.",
@@ -1743,9 +1748,9 @@ export const initialData = {
     },
     sectionSettings: {
       hero: { order: 1, status: "Active" },
-      mainServices: { order: 2, status: "Active" },
-      advancedServices: { order: 3, status: "Active" },
-      categories: { order: 4, status: "Active" },
+      statistics: { order: 2, status: "Active" },
+      testimonials: { order: 3, status: "Active" },
+      faqs: { order: 4, status: "Active" },
       seo: { order: 5, status: "Active" }
     }
   },
@@ -1894,5 +1899,114 @@ export const initialData = {
     conferences: [
       { id: "cf-1", title: "Tech Summit 2026", date: "12 Aug 2026", location: "Mumbai", guests: 250, status: "Upcoming" }
     ]
+  },
+  testimonialsPage: {
+    hero: {
+      title: "Student Placements & Academics Success",
+      smallBadge: "COMMUNITY ACCLAIM",
+      highlightText: "Academics Success",
+      description: "Discover reviews from Aman's mentored students, university professors, and tech partners who have integrated our curricula.",
+      bgImage: "",
+      bgOverlay: "rgba(0, 0, 0, 0.7)",
+      bgOpacity: 70,
+      bgGradient: "linear-gradient(to bottom, transparent, #060606)",
+      status: "Active",
+      order: 1
+    },
+    successStats: [
+      { id: "ss-1", label: "Placement Rate", value: "94.2", suffix: "%", icon: "Award", color: "#D4AF37", order: 1, status: "Active" },
+      { id: "ss-2", label: "Average Salary", value: "120", suffix: "K", icon: "TrendingUp", color: "#00E5FF", order: 2, status: "Active" },
+      { id: "ss-3", label: "Students Hired", value: "15000", suffix: "+", icon: "Users", color: "#aa3bff", order: 3, status: "Active" },
+      { id: "ss-4", label: "Tech Partners", value: "450", suffix: "+", icon: "Briefcase", color: "#FF007F", order: 4, status: "Active" }
+    ],
+    videoTestimonials: [
+      { id: "vt-1", name: "Sarah Jenkins", role: "VP of Engineering", company: "Acme Corp", thumbnail: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80", video: "", duration: "2:45", description: "AWS placement success story.", rating: 5, featured: true, order: 1, status: "Active" },
+      { id: "vt-2", name: "David Chen", role: "Founder", company: "StartupX", thumbnail: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80", video: "", duration: "3:10", description: "MongoDB Atlas Hackathon winner.", rating: 5, featured: true, order: 2, status: "Active" }
+    ],
+    writtenTestimonials: [
+      { id: "wt-1", name: "Sabrina D'Souza", designation: "Brand Director", company: "Armani Beauty", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150", review: "TechMaster brings unparalleled professionalism and a meticulous eye for luxury aesthetic.", rating: 5, logo: "", featured: true, status: "Active", order: 1 }
+    ],
+    categories: [
+      { id: "cat-1", title: "Content Creation", description: "Cinematic videos covering software architecture.", icon: "Film", order: 1, status: "Active" },
+      { id: "cat-2", title: "Influencer Marketing", description: "Targeted campaigns for tech products.", icon: "Share2", order: 2, status: "Active" },
+      { id: "cat-3", title: "Brand Promotions", description: "Bespoke digital showcases.", icon: "Sparkles", order: 3, status: "Active" },
+      { id: "cat-4", title: "Software Tutorials", description: "Step-by-step masterclasses.", icon: "BookOpen", order: 4, status: "Active" }
+    ],
+    featuredQuote: {
+      quote: "The best way to predict the future is to invent it.",
+      author: "Alan Kay",
+      subtitle: "Computer Scientist",
+      background: "linear-gradient(to right, #111, #000)",
+      accentColor: "#D4AF37",
+      showSection: true,
+      order: 6
+    },
+    whatWeDo: [
+      { id: "wwd-1", title: "Content Production", subtitle: "High-end Dev Ed", description: "We produce educational content with high production values.", icon: "Camera", image: "", buttonText: "Explore Videos", buttonLink: "/gallery", order: 1, status: "Active" }
+    ],
+    seo: {
+      metaTitle: "Testimonials & Success Stories | TechMaster",
+      metaDescription: "Read reviews and placements statistics from our students and brand partners.",
+      metaKeywords: "Testimonials, Placements, Success, Reviews",
+      ogImageUrl: "",
+      canonicalUrl: "",
+      index: true,
+      follow: true
+    },
+    sectionSettings: {
+      hero: { order: 1, status: "Active" },
+      successStats: { order: 2, status: "Active" },
+      videoTestimonials: { order: 3, status: "Active" },
+      writtenTestimonials: { order: 4, status: "Active" },
+      categories: { order: 5, status: "Active" },
+      featuredQuote: { order: 6, status: "Active" },
+      whatWeDo: { order: 7, status: "Active" },
+      seo: { order: 8, status: "Active" }
+    }
+  },
+  termsPolicy: {
+    popupTitle: "Terms of Service",
+    effectiveDate: "July 7, 2026",
+    smallBadge: "LEGAL PROTOCOLS",
+    subtitle: "TechMaster Terms",
+    introParagraph: "By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service.",
+    sections: [
+      { id: "ts-1", title: "Intellectual Property", body: "All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Aman and Tech Master Labs unless stated otherwise.", order: 1, status: "Active" },
+      { id: "ts-2", title: "User License", body: "You are granted a limited license to explore our portfolio and code projects for educational research. Scraping, cloning, or distributing source codes commercially without express written consent is strictly prohibited.", order: 2, status: "Active" },
+      { id: "ts-3", title: "Sandbox Declarations", body: "All forms, databases, and estimates operate in safe sandbox demonstration pipelines.", order: 3, status: "Active" }
+    ]
+  },
+  privacyPolicy: {
+    popupTitle: "Privacy Policy",
+    effectiveDate: "July 7, 2026",
+    smallBadge: "USER PRIVACY",
+    introParagraph: "Aman & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter.",
+    sections: [
+      { id: "pp-1", heading: "Data Collection & Use", description: "We collect email addresses solely for sending newsletter digests, cohort details, and technical blogs. Your information is never sold, traded, or shared with third-party advertising companies.", order: 1, status: "Active" },
+      { id: "pp-2", heading: "Cookies", description: "This platform utilizes basic localized storage and caching systems to maintain animations, 3D settings, and user navigation states smoothly.", order: 2, status: "Active" },
+      { id: "pp-3", heading: "Security", description: "All direct inquiries and newsletter transmissions are protected with industry-standard cryptographic handshakes.", order: 3, status: "Active" }
+    ]
+  },
+  cookiePolicy: {
+    title: "Cookie Policy",
+    effectiveDate: "July 7, 2026",
+    description: "We use cookies to personalize content and analyze traffic.",
+    categories: [
+      { id: "cc-1", name: "Necessary", description: "Required for core system security and layout features.", order: 1, status: "Active" },
+      { id: "cc-2", name: "Analytics", description: "Help us understand traffic channels and tutorial view loops.", order: 2, status: "Active" }
+    ]
+  },
+  legalSettings: {
+    showTerms: true,
+    showPrivacy: true,
+    showCookiePolicy: true,
+    enablePopup: true,
+    popupAnimation: "fade",
+    blurBackground: true,
+    closeOnOutsideClick: true,
+    showLastUpdated: true,
+    popupWidth: "max-w-2xl",
+    theme: "dark",
+    overlayOpacity: 80
   }
 };

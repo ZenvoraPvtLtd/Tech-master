@@ -18,6 +18,7 @@ import { Mission } from "./pages/Mission";
 import { WhatWeDo } from "./pages/WhatWeDo";
 import { Services } from "./pages/Services";
 import { Collaborations } from "./pages/Collaborations";
+
 import { Campaigns } from "./pages/Campaigns";
 import { ProductLaunches } from "./pages/ProductLaunches";
 import { Events } from "./pages/Events";
@@ -27,6 +28,7 @@ import { Media } from "./pages/Media";
 import { Testimonials } from "./pages/Testimonials";
 import { Career } from "./pages/Career";
 import { Blog } from "./pages/Blog";
+import { BlogDetails } from "./pages/BlogDetails";
 import { FAQ } from "./pages/FAQ";
 import { Contact } from "./pages/Contact";
 
@@ -118,12 +120,16 @@ function App() {
       case "career":
         return <Career />;
       case "blog":
-        return <Blog />;
+        return <Blog onChangePage={navigatePage} />;
       case "faq":
         return <FAQ />;
       case "contact":
         return <Contact />;
       default:
+        if (activePage.startsWith("blog-details/")) {
+          const slug = activePage.split("blog-details/")[1];
+          return <BlogDetails slug={slug} onChangePage={navigatePage} />;
+        }
         return <Home onChangePage={navigatePage} />;
     }
   };

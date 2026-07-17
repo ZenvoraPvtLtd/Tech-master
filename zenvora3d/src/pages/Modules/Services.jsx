@@ -157,9 +157,11 @@ export default function Services() {
   // Collapsible cards state
   const [expandedCards, setExpandedCards] = useState({
     hero: true,
-    mainServices: false,
-    advancedServices: false,
-    categories: false,
+    catalog: false,
+    statistics: false,
+    testimonials: false,
+    faqs: false,
+    cta: false,
     seo: false
   });
 
@@ -178,8 +180,8 @@ export default function Services() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Single Forms State
   const [heroForm, setHeroForm] = useState(servicesPage?.hero || {});
+  const [ctaForm, setCtaForm] = useState(servicesPage?.cta || {});
   const [seoForm, setSeoForm] = useState(servicesPage?.seo || {});
 
   // List editor states
@@ -306,10 +308,11 @@ export default function Services() {
   // --- REUSABLE LIST MANAGER (WITH SEARCH & FILTERS & MODALS CONNECTED) ---
   const renderListManager = ({
     sectionKey,
+    rootKey = 'servicesPage',
     fields = [],
     displayColumns = []
   }) => {
-    const listData = servicesPage[sectionKey] || [];
+    const listData = rootKey === 'servicesPage' ? (servicesPage[sectionKey] || []) : (db[sectionKey] || []);
     
     // Apply search filter
     const filteredList = listData.filter(item => {
@@ -325,20 +328,34 @@ export default function Services() {
 
     const handleSaveItem = () => {
       let nextList = [];
+      
+      // Clean up array fields for the database
+      const cleanDraftItem = { ...draftItem };
+      const arrayFields = ['features', 'benefits', 'process'];
+      arrayFields.forEach(field => {
+        if (typeof cleanDraftItem[field] === 'string') {
+          cleanDraftItem[field] = cleanDraftItem[field].split(',').map(s => s.trim()).filter(s => s);
+        }
+      });
+
       if (editingItemId) {
-        nextList = listData.map(item => item.id === editingItemId ? { ...item, ...draftItem } : item);
+        nextList = listData.map(item => item.id === editingItemId ? { ...item, ...cleanDraftItem } : item);
         showToast("Item updated successfully.");
       } else {
         const newItem = { 
-          ...draftItem, 
+          ...cleanDraftItem, 
           id: `item-${Date.now()}`, 
-          status: draftItem.status || 'Active', 
+          status: cleanDraftItem.status || 'Active', 
           order: listData.length + 1 
         };
         nextList = [...listData, newItem];
         showToast("New item created.");
       }
-      updateSection('servicesPage', { [sectionKey]: nextList });
+      if (rootKey === 'servicesPage') {
+        updateSection('servicesPage', { [sectionKey]: nextList });
+      } else {
+        updateSection(sectionKey, nextList);
+      }
       setActiveEditorSection(null);
       setEditingItemId(null);
       setDraftItem({});
@@ -346,7 +363,11 @@ export default function Services() {
 
     const handleToggleStatus = (id, currentStatus) => {
       const nextList = listData.map(item => item.id === id ? { ...item, status: currentStatus === 'Active' ? 'Inactive' : 'Active' } : item);
-      updateSection('servicesPage', { [sectionKey]: nextList });
+      if (rootKey === 'servicesPage') {
+        updateSection('servicesPage', { [sectionKey]: nextList });
+      } else {
+        updateSection(sectionKey, nextList);
+      }
       // Silent update on toggle switch, no notifications popped up!
     };
 
@@ -357,7 +378,11 @@ export default function Services() {
         const temp = nextList[index];
         nextList[index] = nextList[target];
         nextList[target] = temp;
-        updateSection('servicesPage', { [sectionKey]: nextList });
+        if (rootKey === 'servicesPage') {
+          updateSection('servicesPage', { [sectionKey]: nextList });
+        } else {
+          updateSection(sectionKey, nextList);
+        }
       }
     };
 
@@ -374,7 +399,17 @@ export default function Services() {
     const handleStartEdit = (item) => {
       setActiveEditorSection(sectionKey);
       setEditingItemId(item.id);
-      setDraftItem({ ...item });
+      
+      // Format array fields for the textarea editing
+      const formattedItem = { ...item };
+      const arrayFields = ['features', 'benefits', 'process'];
+      arrayFields.forEach(field => {
+        if (Array.isArray(formattedItem[field])) {
+          formattedItem[field] = formattedItem[field].join(', ');
+        }
+      });
+      
+      setDraftItem(formattedItem);
     };
 
     return (
@@ -519,13 +554,14 @@ export default function Services() {
     );
   };
 
-  // Fixed 5 segments definitions
   const sectionsList = [
     { id: "hero", label: "Hero Settings", icon: Cpu },
-    { id: "mainServices", label: "Accordion Services", icon: Layers },
-    { id: "advancedServices", label: "Advanced Services Tabs", icon: Box },
-    { id: "categories", label: "Service Categories", icon: Sparkles },
-    { id: "seo", label: "SEO Metadata", icon: Globe }
+    { id: "catalog", label: "Service Catalog (Database)", icon: Layers },
+    { id: "statistics", label: "Statistics Counters", icon: Box },
+    { id: "testimonials", label: "Client Testimonials", icon: Sparkles },
+    { id: "faqs", label: "Frequently Asked Questions", icon: Globe },
+    { id: "cta", label: "Global CTA Block", icon: Edit3 },
+    { id: "seo", label: "SEO Metadata", icon: Search }
   ];
 
   // Dynamic sorting at section level
@@ -593,9 +629,13 @@ export default function Services() {
               <button onClick={() => { setDeletingItemId(null); setDeletingSection(null); }} className="px-3 py-1.5 text-xs text-zinc-550 hover:text-white">Cancel</button>
               <button 
                 onClick={() => {
-                  const listData = servicesPage[deletingSection] || [];
+                  const listData = deletingSection === 'services' ? (db.services || []) : (servicesPage[deletingSection] || []);
                   const nextList = listData.filter(item => item.id !== deletingItemId);
-                  updateSection('servicesPage', { [deletingSection]: nextList });
+                  if (deletingSection === 'services') {
+                    updateSection('services', nextList);
+                  } else {
+                    updateSection('servicesPage', { [deletingSection]: nextList });
+                  }
                   setDeletingItemId(null);
                   setDeletingSection(null);
                   showToast("Record successfully deleted.");
@@ -689,8 +729,8 @@ export default function Services() {
         </div>
         
         <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => { setExpandedCards(prev => ({...prev, mainServices: true})); setActiveEditorSection('mainServices'); setEditingItemId(null); setDraftItem({}); document.getElementById('mainServices')?.scrollIntoView(); }} variant="primary" size="sm" className="bg-luxury-gold border-luxury-gold text-black font-bold">
-             <Plus className="w-4 h-4 mr-1.5" /> Add Services
+          <Button onClick={() => { setExpandedCards(prev => ({...prev, catalog: true})); setActiveEditorSection('services'); setEditingItemId(null); setDraftItem({}); document.getElementById('catalog')?.scrollIntoView(); }} variant="primary" size="sm" className="bg-luxury-gold border-luxury-gold text-black font-bold">
+             <Plus className="w-4 h-4 mr-1.5" /> Add Service
           </Button>
           <Button onClick={() => showToast("💾 Services Draft Saved Successfully!")} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-amber-500/90">
             <Save className="w-3.5 h-3.5" /> <span>Save Draft</span>
@@ -815,56 +855,95 @@ export default function Services() {
                     </div>
                   )}
 
-                  {sec.id === 'mainServices' && (
+                  {sec.id === 'catalog' && (
                     <div>
                       {renderListManager({
-                        sectionKey: 'mainServices',
+                        sectionKey: 'services',
+                        rootKey: 'db',
                         displayColumns: [
                           { key: 'title', label: 'Service Title' },
                           { key: 'tagline', label: 'Tagline' }
                         ],
                         fields: [
-                          { key: 'title', label: 'Service Accordion Title', type: 'text' },
-                          { key: 'tagline', label: 'Service Subtitle Tagline', type: 'text' },
-                          { key: 'icon', label: 'Icon Symbol Tag (e.g. Cpu, Layers, Box, Sparkles)', type: 'text' },
-                          { key: 'accentColor', label: 'Accent Border Color (e.g. #D4AF37)', type: 'text' },
-                          { key: 'features', label: 'Core Features (Comma separated list)', type: 'text' },
-                          { key: 'description', label: 'Detailed Description Narrative text', type: 'textarea' }
+                          { key: 'title', label: 'Service Title', type: 'text' },
+                          { key: 'tagline', label: 'Subtitle Tagline', type: 'text' },
+                          { key: 'icon', label: 'Icon String (e.g. Cpu, Box)', type: 'text' },
+                          { key: 'accentColor', label: 'Accent Color (e.g. #D4AF37)', type: 'text' },
+                          { key: 'description', label: 'Short Description (Accordion)', type: 'textarea' },
+                          { key: 'features', label: 'Features Array (Comma separated string)', type: 'textarea' },
+                          { key: 'overview', label: 'Advanced Overview Paragraph', type: 'textarea' },
+                          { key: 'benefits', label: 'Advanced Benefits (Comma separated string)', type: 'textarea' },
+                          { key: 'process', label: 'Process Steps (Comma separated string)', type: 'textarea' },
+                          { key: 'gallery', label: 'Gallery Images', type: 'gallery' },
+                          { key: 'ctaText', label: 'CTA Button Text', type: 'text' },
+                          { key: 'ctaUrl', label: 'CTA Button URL', type: 'text' },
+                          { key: 'displayOrder', label: 'Sorting Order Number', type: 'number' }
                         ]
                       })}
                     </div>
                   )}
 
-                  {sec.id === 'advancedServices' && (
+                  {sec.id === 'statistics' && (
                     <div>
                       {renderListManager({
-                        sectionKey: 'advancedServices',
+                        sectionKey: 'statistics',
                         displayColumns: [
-                          { key: 'title', label: 'Tab Name' }
+                          { key: 'label', label: 'Statistic Label' },
+                          { key: 'value', label: 'Value (e.g. 10M+)' }
                         ],
                         fields: [
-                          { key: 'title', label: 'Advanced Service Tab Title', type: 'text' },
-                          { key: 'cta', label: 'CTA Button Text', type: 'text' },
-                          { key: 'overview', label: 'Overview Paragraph text', type: 'textarea' },
-                          { key: 'benefits', label: 'Benefits (Comma separated list)', type: 'textarea' },
-                          { key: 'process', label: 'Process Steps (Comma separated list)', type: 'textarea' }
+                          { key: 'label', label: 'Statistic Label (e.g. Students)', type: 'text' },
+                          { key: 'value', label: 'Statistic Value (e.g. 2M+)', type: 'text' }
                         ]
                       })}
                     </div>
                   )}
 
-                  {sec.id === 'categories' && (
+                  {sec.id === 'testimonials' && (
                     <div>
                       {renderListManager({
-                        sectionKey: 'categories',
+                        sectionKey: 'testimonials',
                         displayColumns: [
-                          { key: 'title', label: 'Category Name' }
+                          { key: 'author', label: 'Author Name' },
+                          { key: 'role', label: 'Designation' }
                         ],
                         fields: [
-                          { key: 'title', label: 'Category Name Label', type: 'text' },
-                          { key: 'color', label: 'Display Color (e.g. #D4AF37)', type: 'text' }
+                          { key: 'author', label: 'Author Name', type: 'text' },
+                          { key: 'role', label: 'Designation/Company', type: 'text' },
+                          { key: 'quote', label: 'Testimonial Quote', type: 'textarea' },
+                          { key: 'image', label: 'Profile Image', type: 'upload' }
                         ]
                       })}
+                    </div>
+                  )}
+
+                  {sec.id === 'faqs' && (
+                    <div>
+                      {renderListManager({
+                        sectionKey: 'faqs',
+                        displayColumns: [
+                          { key: 'question', label: 'Question' }
+                        ],
+                        fields: [
+                          { key: 'question', label: 'Question Text', type: 'text' },
+                          { key: 'answer', label: 'Answer Text', type: 'textarea' }
+                        ]
+                      })}
+                    </div>
+                  )}
+
+                  {sec.id === 'cta' && (
+                    <div className="flex flex-col gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Input label="Heading" value={ctaForm.heading || ''} onChange={e => setCtaForm({ ...ctaForm, heading: e.target.value })} />
+                        <Input label="Subtext" value={ctaForm.subtext || ''} onChange={e => setCtaForm({ ...ctaForm, subtext: e.target.value })} />
+                        <Input label="Button Text" value={ctaForm.buttonText || ''} onChange={e => setCtaForm({ ...ctaForm, buttonText: e.target.value })} />
+                        <Input label="Button URL" value={ctaForm.buttonUrl || ''} onChange={e => setCtaForm({ ...ctaForm, buttonUrl: e.target.value })} />
+                      </div>
+                      
+                      <div className="flex justify-end border-t border-zinc-900 pt-3">
+                        <Button onClick={() => handleSingleSave('cta', ctaForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save CTA Parameters</Button>
+                      </div>
                     </div>
                   )}
 

@@ -20,11 +20,11 @@ export const Media: React.FC = () => {
     : null;
 
   const mediaDownloads = dbData?.mediaDownloads && dbData.mediaDownloads.length > 0
-    ? dbData.mediaDownloads.filter((d: any) => d.status === "Active" || d.status === true || d.status === undefined)
+    ? dbData.mediaDownloads.filter((d: any) => d.status === "Active" || d.status === "Published" || d.status === true || d.status === undefined)
     : [];
 
   const editorialMentions = dbData?.mediaGallery && dbData.mediaGallery.length > 0
-    ? dbData.mediaGallery.filter((m: any) => m.status === "Active" || m.status === true || m.status === undefined)
+    ? dbData.mediaGallery.filter((m: any) => m.status === "Active" || m.status === "Published" || m.status === true || m.status === undefined)
     : [];
 
   return (
@@ -51,37 +51,39 @@ export const Media: React.FC = () => {
       </section>
 
       {/* Video Showreel Card */}
-      <section className="max-w-7xl mx-auto mb-10 text-left relative z-10">
-        <div className="glass-panel p-6 md:p-8 rounded-3xl overflow-hidden border border-white/5 relative aspect-video flex flex-col justify-end">
-          {/* Simulated showreel thumbnail */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center opacity-40 hover:scale-103 transition-transform duration-700 pointer-events-none" 
-            style={{ backgroundImage: `url('${mediaShowreel.thumbnailUrl || mediaShowreel.thumbnail}')` }} 
-          />
-          
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
+      {mediaShowreel && (
+        <section className="max-w-7xl mx-auto mb-10 text-left relative z-10">
+          <div className="glass-panel p-6 md:p-8 rounded-3xl overflow-hidden border border-white/5 relative aspect-video flex flex-col justify-end">
+            {/* Simulated showreel thumbnail */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center opacity-40 hover:scale-103 transition-transform duration-700 pointer-events-none" 
+              style={{ backgroundImage: `url('${mediaShowreel.thumbnailUrl || mediaShowreel.thumbnail}')` }} 
+            />
+            
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
 
-          {/* Showreel tag */}
-          <div className="z-10 absolute top-6 right-6 bg-gold/15 border border-gold/30 px-4 py-1.5 rounded-full text-gold text-[9px] uppercase tracking-[2px] font-bold flex items-center gap-2">
-            <Film className="w-3.5 h-3.5" />
-            Core Presentation Showreel
-          </div>
+            {/* Showreel tag */}
+            <div className="z-10 absolute top-6 right-6 bg-gold/15 border border-gold/30 px-4 py-1.5 rounded-full text-gold text-[9px] uppercase tracking-[2px] font-bold flex items-center gap-2">
+              <Film className="w-3.5 h-3.5" />
+              Core Presentation Showreel
+            </div>
 
-          <div className="z-10 max-w-xl">
-            <h2 className="font-serif text-2xl sm:text-4xl text-white font-medium mb-3 uppercase">
-              {mediaShowreel.title}
-            </h2>
-            <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed mb-6">
-              {mediaShowreel.description}
-            </p>
-            {mediaShowreel.videoUrl && (
-              <a href={mediaShowreel.videoUrl} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-3 bg-white text-black font-bold uppercase text-[10px] tracking-[2px] rounded-full hover:bg-gold transition-colors duration-300" data-cursor="play">
-                Play Showreel
-              </a>
-            )}
+            <div className="z-10 max-w-xl">
+              <h2 className="font-serif text-2xl sm:text-4xl text-white font-medium mb-3 uppercase">
+                {mediaShowreel.title}
+              </h2>
+              <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed mb-6">
+                {mediaShowreel.description}
+              </p>
+              {mediaShowreel.videoUrl && (
+                <a href={mediaShowreel.videoUrl} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-3 bg-white text-black font-bold uppercase text-[10px] tracking-[2px] rounded-full hover:bg-gold transition-colors duration-300" data-cursor="play">
+                  Play Showreel
+                </a>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Download Kits & Press Releases */}
       <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 text-left relative z-10">

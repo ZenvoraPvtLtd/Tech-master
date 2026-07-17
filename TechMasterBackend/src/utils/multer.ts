@@ -42,3 +42,27 @@ export const uploadVideo = multer({
     fileSize: 100 * 1024 * 1024, // 100 MB
   },
 });
+
+const ALLOWED_DOCUMENT_TYPES = [
+  "application/pdf", 
+  "application/msword", 
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+];
+
+const documentFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+  if (ALLOWED_DOCUMENT_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Unsupported document format. Allowed: PDF, DOC, DOCX, PPT, PPTX.", 400) as any, false);
+  }
+};
+
+export const uploadDocument = multer({
+  storage,
+  fileFilter: documentFilter,
+  limits: {
+    fileSize: 20 * 1024 * 1024, // 20 MB
+  },
+});

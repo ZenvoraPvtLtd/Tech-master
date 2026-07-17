@@ -29,6 +29,7 @@ import { Portfolio } from './pages/Modules/Portfolio';
 import Events from './pages/Modules/Events';
 import { FAQ } from './pages/Modules/FAQ';
 import { Contact } from './pages/Modules/Contact';
+import { LegalCMS } from './pages/Modules/LegalCMS';
 
 import { schemas } from './utils/schemas';
 import Services from './pages/Modules/Services';
@@ -125,6 +126,9 @@ case 'events':
 
       case 'testimonials':
         return <Testimonials />;
+        
+      case 'legal-cms':
+        return <LegalCMS />;
         
 
       case 'blog':

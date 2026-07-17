@@ -197,7 +197,7 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {filteredLibrary.map(media => (
-                    <div key={media.id} onClick={() => onSelect(media.url)} className="group relative border border-zinc-800 bg-zinc-950 rounded-lg overflow-hidden cursor-pointer hover:border-luxury-gold transition-colors aspect-square flex flex-col">
+                    <div key={media.id} onClick={() => onSelect(media.url, media)} className="group relative border border-zinc-800 bg-zinc-950 rounded-lg overflow-hidden cursor-pointer hover:border-luxury-gold transition-colors aspect-square flex flex-col">
                       <div className="flex-1 relative bg-zinc-900">
                         {media.type === 'Image' ? (
                           <img src={media.url} alt={media.altText} className="w-full h-full object-cover" />

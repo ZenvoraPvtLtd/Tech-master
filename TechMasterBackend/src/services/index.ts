@@ -16,7 +16,13 @@ import {
   blogRepository,
   faqRepository,
   contactRepository,
+  servicesPageRepository,
   websiteSettingsRepository,
+  testimonialsPageRepository,
+  termsPolicyRepository,
+  privacyPolicyRepository,
+  cookiePolicyRepository,
+  legalSettingsRepository,
 } from "../repositories";
 import { IHomepage } from "../models/Homepage";
 import { IAbout } from "../models/About";
@@ -34,7 +40,13 @@ import { ICareer } from "../models/Career";
 import { IBlog } from "../models/Blog";
 import { IFaq } from "../models/FAQ";
 import { IContact } from "../models/Contact";
+import { IServicesPage } from '../models/ServicesPage';
 import { IWebsiteSettings } from "../models/WebsiteSettings";
+import { ITestimonialsPage } from "../models/TestimonialsPage";
+import { ITermsPolicy } from "../models/TermsPolicy";
+import { IPrivacyPolicy } from "../models/PrivacyPolicy";
+import { ICookiePolicy } from "../models/CookiePolicy";
+import { ILegalSettings } from "../models/LegalSettings";
 
 export const homepageService = new BaseService<IHomepage>(homepageRepository, "Homepage");
 export const aboutService = new BaseService<IAbout>(aboutRepository, "About");
@@ -52,4 +64,10 @@ export const careerService = new BaseService<ICareer>(careerRepository, "Career"
 export const blogService = new BaseService<IBlog>(blogRepository, "Blog");
 export const faqService = new BaseService<IFaq>(faqRepository, "Faq");
 export const contactService = new BaseService<IContact>(contactRepository, "Contact");
+export const servicesPageService = new BaseService<IServicesPage>(servicesPageRepository, 'ServicesPage');
 export const websiteSettingsService = new BaseService<IWebsiteSettings>(websiteSettingsRepository, "WebsiteSettings");
+export const testimonialsPageService = new BaseService<ITestimonialsPage>(testimonialsPageRepository, "TestimonialsPage");
+export const termsPolicyService = new BaseService<ITermsPolicy>(termsPolicyRepository, "TermsPolicy");
+export const privacyPolicyService = new BaseService<IPrivacyPolicy>(privacyPolicyRepository, "PrivacyPolicy");
+export const cookiePolicyService = new BaseService<ICookiePolicy>(cookiePolicyRepository, "CookiePolicy");
+export const legalSettingsService = new BaseService<ILegalSettings>(legalSettingsRepository, "LegalSettings");

@@ -15,7 +15,7 @@ import {
 
 /* =========================================================
    FILE UPLOAD SIMULATOR (BLOB)
-========================================================= */
+ ========================================================= */
 const FileUpload = ({ label, value, onChange, accept="image/*" }) => {
   const fileRef = useRef(null);
   const handleFileChange = (e) => {
@@ -35,7 +35,7 @@ const FileUpload = ({ label, value, onChange, accept="image/*" }) => {
           </div>
         )}
         <input type="file" ref={fileRef} className="hidden" accept={accept} onChange={handleFileChange} />
-        <button type="button" onClick={() => fileRef.current?.click()} className="flex-1 border border-dashed border-zinc-700 hover:border-luxury-gold hover:text-luxury-gold bg-zinc-950/50 rounded-lg px-4 py-2 text-sm flex items-center justify-center transition-colors text-zinc-400 min-h-[42px] truncate">
+        <button type="button" onClick={() => fileRef.current?.click()} className="flex-1 border border-dashed border-zinc-700 hover:border-luxury-gold hover:text-luxury-gold bg-zinc-950/50 rounded-lg px-4 py-2.5 text-sm flex items-center justify-center transition-colors text-zinc-400 min-h-[42px] truncate">
           <Upload className="w-4 h-4 mr-2 flex-shrink-0" />
           <span className="truncate">{value ? 'Change Media' : 'Upload File'}</span>
         </button>
@@ -62,6 +62,8 @@ export const Blogs = () => {
 
   const [toastMsg, setToastMsg] = useState('');
   const showToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(''), 3000); };
+
+
 
   // Nav
   const NAV_TABS = ['Articles', 'Hero Setup', 'Strategy Builder', 'Categories', 'Global & SEO'];
@@ -404,6 +406,8 @@ export const Blogs = () => {
       </Dialog>
 
       <ConfirmDialog isOpen={deleteId !== null} onClose={() => setDeleteId(null)} onConfirm={handleDeleteConfirm} />
+
+
     </div>
   );
 }

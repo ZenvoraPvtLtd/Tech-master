@@ -14,10 +14,21 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
-  const { dbData, websiteSettings } = useData();
+  const { dbData, websiteSettings, termsPolicyData, privacyPolicyData, legalSettingsData } = useData();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenTerms = () => setIsTermsOpen(true);
+    const handleOpenPrivacy = () => setIsPrivacyOpen(true);
+    window.addEventListener("open-terms-modal", handleOpenTerms);
+    window.addEventListener("open-privacy-modal", handleOpenPrivacy);
+    return () => {
+      window.removeEventListener("open-terms-modal", handleOpenTerms);
+      window.removeEventListener("open-privacy-modal", handleOpenPrivacy);
+    };
+  }, []);
 
   const identityItems = dbData?.navigation?.identityItems || [
     { name: "Home", id: "home" },
@@ -259,13 +270,25 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
 
       {/* Privacy Policy Modal */}
       <AnimatePresence>
-        {isPrivacyOpen && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-6 text-left">
+        {isPrivacyOpen && legalSettingsData?.showPrivacy !== false && (
+          <div 
+            onClick={(e) => {
+              if (legalSettingsData?.closeOnOutsideClick !== false && e.target === e.currentTarget) {
+                setIsPrivacyOpen(false);
+              }
+            }}
+            style={{
+              backgroundColor: `rgba(0, 0, 0, ${(legalSettingsData?.overlayOpacity ?? 80) / 100})`,
+              backdropFilter: legalSettingsData?.blurBackground !== false ? "blur(8px)" : "none",
+            }}
+            className="fixed inset-0 z-[99999] flex items-center justify-center p-6 text-left"
+          >
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-panel max-w-2xl w-full p-8 rounded-3xl relative max-h-[80vh] overflow-y-auto"
+              initial={legalSettingsData?.popupAnimation === "scale" ? { scale: 0.9, opacity: 0 } : { y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={legalSettingsData?.popupAnimation === "scale" ? { scale: 0.9, opacity: 0 } : { y: 30, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`glass-panel w-full p-8 rounded-3xl relative max-h-[80vh] overflow-y-auto ${legalSettingsData?.popupWidth || "max-w-2xl"}`}
             >
               <button 
                 onClick={() => setIsPrivacyOpen(false)}
@@ -273,13 +296,23 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               >
                 ✕
               </button>
-              <h3 className="font-serif text-2xl text-gold font-bold mb-6">Privacy Policy</h3>
+              <span className="text-[9px] font-mono text-gold uppercase tracking-widest">{privacyPolicyData?.smallBadge || "USER PRIVACY"}</span>
+              <h3 className="font-serif text-2xl text-gold font-bold mb-6 mt-1">{privacyPolicyData?.popupTitle || "Privacy Policy"}</h3>
               <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
-                <p><strong>Effective Date: {dbData?.settings?.privacyEffectiveDate || "July 7, 2026"}</strong></p>
-                <p>{dbData?.settings?.privacyIntro || "Aman & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter."}</p>
-                <p><strong>Data Collection & Use:</strong> {dbData?.settings?.privacyDataCollection || "We collect email addresses solely for sending newsletter digests, cohort details, and technical blogs. Your information is never sold, traded, or shared with third-party advertising companies."}</p>
-                <p><strong>Cookies:</strong> {dbData?.settings?.privacyCookies || "This platform utilizes basic localized storage and caching systems to maintain animations, 3D settings, and user navigation states smoothly."}</p>
-                <p><strong>Security:</strong> {dbData?.settings?.privacySecurity || "All direct inquiries and newsletter transmissions are protected with industry-standard cryptographic handshakes."}</p>
+                {legalSettingsData?.showLastUpdated !== false && (
+                  <p><strong>Effective Date: {privacyPolicyData?.effectiveDate || "July 7, 2026"}</strong></p>
+                )}
+                {privacyPolicyData?.introParagraph && <p>{privacyPolicyData.introParagraph}</p>}
+                
+                {Array.isArray(privacyPolicyData?.sections) && [...privacyPolicyData.sections]
+                  .filter((s: any) => s.status !== "Inactive")
+                  .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+                  .map((sec: any, idx: number) => (
+                    <div key={sec.id || idx} className="mt-4">
+                      <h4 className="text-white font-bold mb-1.5 uppercase tracking-wider text-xs">{sec.heading}</h4>
+                      <div className="text-gray-400 leading-relaxed text-xs" dangerouslySetInnerHTML={{ __html: sec.description }} />
+                    </div>
+                  ))}
               </div>
             </motion.div>
           </div>
@@ -288,13 +321,25 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
 
       {/* Terms of Service Modal */}
       <AnimatePresence>
-        {isTermsOpen && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-6 text-left">
+        {isTermsOpen && legalSettingsData?.showTerms !== false && (
+          <div 
+            onClick={(e) => {
+              if (legalSettingsData?.closeOnOutsideClick !== false && e.target === e.currentTarget) {
+                setIsTermsOpen(false);
+              }
+            }}
+            style={{
+              backgroundColor: `rgba(0, 0, 0, ${(legalSettingsData?.overlayOpacity ?? 80) / 100})`,
+              backdropFilter: legalSettingsData?.blurBackground !== false ? "blur(8px)" : "none",
+            }}
+            className="fixed inset-0 z-[99999] flex items-center justify-center p-6 text-left"
+          >
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-panel max-w-2xl w-full p-8 rounded-3xl relative max-h-[80vh] overflow-y-auto"
+              initial={legalSettingsData?.popupAnimation === "scale" ? { scale: 0.9, opacity: 0 } : { y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={legalSettingsData?.popupAnimation === "scale" ? { scale: 0.9, opacity: 0 } : { y: 30, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`glass-panel w-full p-8 rounded-3xl relative max-h-[80vh] overflow-y-auto ${legalSettingsData?.popupWidth || "max-w-2xl"}`}
             >
               <button 
                 onClick={() => setIsTermsOpen(false)}
@@ -302,13 +347,23 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               >
                 ✕
               </button>
-              <h3 className="font-serif text-2xl text-gold font-bold mb-6">Terms of Service</h3>
+              <span className="text-[9px] font-mono text-gold uppercase tracking-widest">{termsPolicyData?.smallBadge || "LEGAL PROTOCOLS"}</span>
+              <h3 className="font-serif text-2xl text-gold font-bold mb-6 mt-1">{termsPolicyData?.popupTitle || "Terms of Service"}</h3>
               <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
-                <p><strong>Effective Date: {dbData?.settings?.termsEffectiveDate || "July 7, 2026"}</strong></p>
-                <p>{dbData?.settings?.termsIntro || "By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service."}</p>
-                <p><strong>Intellectual Property:</strong> {dbData?.settings?.termsIntellectualProperty || "All site designs, 3D shaders, systems blueprints, and video snippets are the trademark properties of Aman and Tech Master Labs unless stated otherwise."}</p>
-                <p><strong>User License:</strong> {dbData?.settings?.termsUserLicense || "You are granted a limited license to explore our portfolio and code projects for educational research. Scraping, cloning, or distributing source codes commercially without express written consent is strictly prohibited."}</p>
-                <p><strong>Sandbox Declarations:</strong> {dbData?.settings?.termsSandboxDeclarations || "All forms, databases, and estimates operate in safe sandbox demonstration pipelines."}</p>
+                {legalSettingsData?.showLastUpdated !== false && (
+                  <p><strong>Effective Date: {termsPolicyData?.effectiveDate || "July 7, 2026"}</strong></p>
+                )}
+                {termsPolicyData?.introParagraph && <p>{termsPolicyData.introParagraph}</p>}
+                
+                {Array.isArray(termsPolicyData?.sections) && [...termsPolicyData.sections]
+                  .filter((s: any) => s.status !== "Inactive")
+                  .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+                  .map((sec: any, idx: number) => (
+                    <div key={sec.id || idx} className="mt-4">
+                      <h4 className="text-white font-bold mb-1.5 uppercase tracking-wider text-xs">{sec.title}</h4>
+                      <div className="text-gray-400 leading-relaxed text-xs" dangerouslySetInnerHTML={{ __html: sec.body }} />
+                    </div>
+                  ))}
               </div>
             </motion.div>
           </div>

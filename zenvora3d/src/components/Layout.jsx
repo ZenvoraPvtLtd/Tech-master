@@ -7,7 +7,7 @@ import {
   Handshake, Megaphone, Calendar, FolderHeart, Newspaper, 
   Award, FileSpreadsheet, FileText, MessageSquare, Globe, 
   Users, Settings, Menu, LogOut, Bell, X, ChevronDown, 
-  ChevronRight, ShieldAlert, Layers, ExternalLink, PhoneCall 
+  ChevronRight, ShieldAlert, Layers, ExternalLink, PhoneCall, Scale 
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -81,6 +81,8 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
     { id: "blog", label: "Blog", icon: FileText },
     { id: "faq", label: "FAQ Portal", icon: MessageSquare },
     { id: "contact", label: "Contact Page", icon: PhoneCall },
+    { id: "testimonials", label: "Testimonials", icon: Award },
+    { id: "legal-cms", label: "Legal CMS", icon: Scale },
     { id: "seo-management", label: "SEO Management", icon: Globe },
     { id: "user-management", label: "User Management", icon: Users },
     { id: "website-settings", label: "Website Settings", icon: Settings }
@@ -95,7 +97,9 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
     "mission-vision": ["Mission", "Vision", "Core Values", "Roadmap"],
     "what-we-do": ["Overview", "Capabilities Manager"],
     "core-services": ["Header Setup", "Service Cards"],
-    "services": ["Service List", "What We Do", "Categories"],
+    "services": ["Hero Settings", "Service Catalog", "Statistics", "Testimonials", "FAQs", "CTA", "SEO"],
+    "testimonials": ["Hero Settings", "Success Stats", "Video Reviews", "Written Reviews", "Categories", "Featured Quote", "What We Do", "SEO Settings"],
+    "legal-cms": ["Terms of Service", "Privacy Policy", "Cookie Policy", "Legal Settings"],
     "brand-collaborations": ["Brands", "Case Studies", "Success Metrics", "Partner Logos"],
     "campaign-product": ["Campaigns", "Product Launches"],
     "events": ["Events"],

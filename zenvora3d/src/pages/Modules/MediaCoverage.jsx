@@ -13,31 +13,24 @@ import {
   Camera, Users, Mic, Type, FileArchive, Flag, Zap, Upload
 } from 'lucide-react';
 
+import { GlobalMediaManager } from '../../components/ui/GlobalMediaManager';
+
 /* =========================================================
-   FILE UPLOAD SIMULATOR (BLOB)
+   CLOUDINARY UPLOAD TRIGGER
 ========================================================= */
-const FileUpload = ({ label, value, onChange, accept="image/*,video/*,audio/*,.pdf,.zip" }) => {
-  const fileRef = useRef(null);
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      onChange(url, file);
-    }
-  };
+const CloudinaryUploadTrigger = ({ label, value, onClickTarget }) => {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">{label}</label>
       <div className="flex items-center gap-3">
         {value && (
           <div className="w-12 h-10 rounded border border-zinc-700 bg-black overflow-hidden flex-shrink-0 flex items-center justify-center relative group">
-             {value.match(/\.(pdf|zip)$/i) ? <FileDown className="w-5 h-5 text-zinc-500" /> : <img src={value} className="w-full h-full object-cover" onError={(e) => e.target.style.display='none'} />}
+             {(typeof value === 'string' && value.match(/\.(pdf|zip)$/i)) ? <FileDown className="w-5 h-5 text-zinc-500" /> : <img src={value} className="w-full h-full object-cover" onError={(e) => e.target.style.display='none'} />}
           </div>
         )}
-        <input type="file" ref={fileRef} className="hidden" accept={accept} onChange={handleFileChange} />
-        <button type="button" onClick={() => fileRef.current?.click()} className="flex-1 border border-dashed border-zinc-700 hover:border-luxury-gold hover:text-luxury-gold bg-zinc-950/50 rounded-lg px-4 py-2.5 text-sm flex items-center justify-center transition-colors text-zinc-400">
+        <button type="button" onClick={onClickTarget} className="flex-1 border border-dashed border-zinc-700 hover:border-luxury-gold hover:text-luxury-gold bg-zinc-950/50 rounded-lg px-4 py-2.5 text-sm flex items-center justify-center transition-colors text-zinc-400">
           <Upload className="w-4 h-4 mr-2" />
-          {value ? 'Replace File' : 'Browse & Upload'}
+          {value ? 'Replace File (Cloudinary)' : 'Browse & Upload (Cloudinary)'}
         </button>
       </div>
     </div>
@@ -116,6 +109,26 @@ export const MediaCoverage = () => {
   const [editingId, setEditingId] = useState(null);
   const [draftItem, setDraftItem] = useState({});
   const [activeFormTab, setActiveFormTab] = useState('General'); 
+
+  // Media Manager State
+  const [isMediaManagerOpen, setIsMediaManagerOpen] = useState(false);
+  const [mediaManagerTarget, setMediaManagerTarget] = useState(null);
+
+  const handleMediaSelect = (url, mediaObj) => {
+    if (mediaManagerTarget === 'thumbnail') {
+       setDraftItem(p => ({...p, thumbnail: url}));
+    } else if (mediaManagerTarget === 'mediaFile') {
+       setDraftItem(p => ({...p, mediaFile: url}));
+    } else if (mediaManagerTarget === 'albumFiles') {
+       const fileObj = mediaObj || { url, type: 'image', caption: 'Media File', id: Date.now() };
+       setDraftItem(p => ({ ...p, albumFiles: [...(p.albumFiles || []), fileObj] }));
+    } else if (mediaManagerTarget === 'heroBgImage') {
+       setHeroDraft(p => ({...p, bgImageUrl: url}));
+    } else if (mediaManagerTarget === 'heroBgVideo') {
+       setHeroDraft(p => ({...p, bgVideoUrl: url}));
+    }
+    setIsMediaManagerOpen(false);
+  };
   
   // Array inputs
   const [tagInput, setTagInput] = useState('');
@@ -379,8 +392,8 @@ export const MediaCoverage = () => {
               <Input label="Main Title Line 1" value={heroDraft.titleLine1 || ''} onChange={e => setHeroDraft(p => ({...p, titleLine1: e.target.value}))} />
               <Input label="Main Title Line 2" value={heroDraft.titleLine2 || ''} onChange={e => setHeroDraft(p => ({...p, titleLine2: e.target.value}))} />
               <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={heroDraft.description || ''} onChange={e => setHeroDraft(p => ({...p, description: e.target.value}))} /></div>
-              <FileUpload label="Background Image (Upload)" value={heroDraft.bgImageUrl || ''} onChange={url => setHeroDraft(p => ({...p, bgImageUrl: url}))} accept="image/*" />
-              <FileUpload label="Background Video (Upload)" value={heroDraft.bgVideoUrl || ''} onChange={url => setHeroDraft(p => ({...p, bgVideoUrl: url}))} accept="video/*" />
+              <CloudinaryUploadTrigger label="Background Image (Upload)" value={heroDraft.bgImageUrl || ''} onClickTarget={() => { setMediaManagerTarget('heroBgImage'); setIsMediaManagerOpen(true); }} />
+              <CloudinaryUploadTrigger label="Background Video (Upload)" value={heroDraft.bgVideoUrl || ''} onClickTarget={() => { setMediaManagerTarget('heroBgVideo'); setIsMediaManagerOpen(true); }} />
             </div>
             <div className="flex justify-end mt-6 gap-3">
               <Button onClick={() => setHeroDraft(mediaHero)} variant="secondary">Reset</Button>
@@ -539,22 +552,22 @@ export const MediaCoverage = () => {
                 <div className="flex flex-col gap-6">
                    <h4 className="text-sm font-bold text-luxury-gold mb-2 border-b border-zinc-800 pb-2 flex items-center gap-2"><Upload className="w-4 h-4"/> Direct File Uploads</h4>
                    
-                   <FileUpload label="Primary Thumbnail Upload" value={draftItem.thumbnail || ''} onChange={url => setDraftItem(p => ({...p, thumbnail: url}))} accept="image/*" />
+                   <CloudinaryUploadTrigger label="Primary Thumbnail Upload" value={draftItem.thumbnail || ''} onClickTarget={() => { setMediaManagerTarget('thumbnail'); setIsMediaManagerOpen(true); }} />
                    
                    {/* SHOW SPECIFIC UPLOADERS BASED ON CATEGORY */}
                    {editingType === 'Gallery' && (
                       <div className="mt-4">
                          {draftItem.category === 'Podcasts' && (
-                            <FileUpload label="Upload Podcast Audio (MP3/WAV)" value={draftItem.mediaFile || ''} onChange={(url) => setDraftItem(p => ({...p, mediaFile: url}))} accept="audio/*" />
+                            <CloudinaryUploadTrigger label="Upload Podcast Audio (MP3/WAV)" value={draftItem.mediaFile || ''} onClickTarget={() => { setMediaManagerTarget('mediaFile'); setIsMediaManagerOpen(true); }} />
                          )}
                          {['Videos', 'TV Features', 'Interviews'].includes(draftItem.category) && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                               <FileUpload label="Upload Source Video (MP4)" value={draftItem.mediaFile || ''} onChange={(url) => setDraftItem(p => ({...p, mediaFile: url}))} accept="video/*" />
+                               <CloudinaryUploadTrigger label="Upload Source Video (MP4)" value={draftItem.mediaFile || ''} onClickTarget={() => { setMediaManagerTarget('mediaFile'); setIsMediaManagerOpen(true); }} />
                                <Input label="OR External URL (Youtube/Vimeo)" value={draftItem.mediaUrl || ''} onChange={(e) => setDraftItem(p => ({...p, mediaUrl: e.target.value}))} />
                             </div>
                          )}
                          {['Press Releases', 'Magazine Features'].includes(draftItem.category) && (
-                            <FileUpload label="Upload Document (PDF)" value={draftItem.mediaFile || ''} onChange={(url) => setDraftItem(p => ({...p, mediaFile: url}))} accept=".pdf,.doc,.docx" />
+                            <CloudinaryUploadTrigger label="Upload Document (PDF)" value={draftItem.mediaFile || ''} onClickTarget={() => { setMediaManagerTarget('mediaFile'); setIsMediaManagerOpen(true); }} />
                          )}
                       </div>
                    )}
@@ -567,21 +580,10 @@ export const MediaCoverage = () => {
                            <span className="text-xs text-zinc-500 font-mono">{(draftItem.albumFiles || []).length} / 100 Files</span>
                         </div>
                         
-                        <div className="border-2 border-dashed border-zinc-700 bg-zinc-950/40 rounded-xl p-8 text-center hover:border-luxury-gold hover:bg-luxury-gold/5 transition-colors cursor-pointer mb-6" onClick={() => document.getElementById('album-upload').click()}>
+                        <div className="border-2 border-dashed border-zinc-700 bg-zinc-950/40 rounded-xl p-8 text-center hover:border-luxury-gold hover:bg-luxury-gold/5 transition-colors cursor-pointer mb-6" onClick={() => { setMediaManagerTarget('albumFiles'); setIsMediaManagerOpen(true); }}>
                           <Upload className="w-8 h-8 text-zinc-500 mx-auto mb-3" />
-                          <p className="text-sm text-zinc-300 font-medium">Click to browse or drag & drop files here</p>
-                          <p className="text-xs text-zinc-500 mt-1">Supports bulk uploading Images & Videos</p>
-                          <input id="album-upload" type="file" multiple className="hidden" accept="image/*,video/*" onChange={(e) => {
-                            const files = Array.from(e.target.files);
-                            if (!files.length) return;
-                            const newFiles = files.map(file => {
-                              const url = URL.createObjectURL(file);
-                              const type = file.type.startsWith('video') ? 'video' : 'image';
-                              return { url, type, caption: file.name, altText: file.name, id: Date.now() + Math.random() };
-                            });
-                            setDraftItem(p => ({ ...p, albumFiles: [...(p.albumFiles || []), ...newFiles] }));
-                            showToast(`✅ ${files.length} files added to album.`);
-                          }} />
+                          <p className="text-sm text-zinc-300 font-medium">Click to open Cloudinary Media Manager</p>
+                          <p className="text-xs text-zinc-500 mt-1">Select or upload bulk Images & Videos</p>
                         </div>
 
                         <div className="flex flex-col gap-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
@@ -590,9 +592,9 @@ export const MediaCoverage = () => {
                              <div key={file.id || i} className="flex justify-between items-center bg-zinc-900 p-2 rounded border border-zinc-800">
                                 <div className="flex items-center gap-3 w-[80%]">
                                    <div className="w-10 h-10 rounded bg-black flex items-center justify-center border border-zinc-700 overflow-hidden">
-                                     {file.type === 'video' ? <Film className="w-4 h-4 text-zinc-500"/> : <img src={file.url} className="w-full h-full object-cover" />}
+                                     {file.type?.toLowerCase() === 'video' ? <Film className="w-4 h-4 text-zinc-500"/> : <img src={file.url} className="w-full h-full object-cover" />}
                                    </div>
-                                   <div className="flex flex-col overflow-hidden w-full"><span className="text-xs text-zinc-300 truncate">{file.caption}</span><span className="text-[10px] text-zinc-500 truncate uppercase">{file.type}</span></div>
+                                   <div className="flex flex-col overflow-hidden w-full"><span className="text-xs text-zinc-300 truncate">{file.caption || file.title || 'Media File'}</span><span className="text-[10px] text-zinc-500 truncate uppercase">{file.type}</span></div>
                                 </div>
                                 <button onClick={() => handleRemoveAlbumFile(file.id)} className="text-rose-400 p-1.5 hover:bg-rose-500/10 rounded"><Trash2 className="w-4 h-4"/></button>
                              </div>
@@ -694,6 +696,13 @@ export const MediaCoverage = () => {
 
       {/* POPUPS */}
       <ConfirmDialog isOpen={deletingId !== null} onClose={() => { setDeletingId(null); setDeletingType(null); }} title={`Delete Asset`} message="Are you sure you want to permanently delete this record? This action cannot be undone." confirmText="Delete Permanently" cancelText="Cancel" onConfirm={handleDeleteItem} />
+    {isMediaManagerOpen && (
+        <GlobalMediaManager 
+           onClose={() => setIsMediaManagerOpen(false)} 
+           onSelect={handleMediaSelect} 
+           defaultTypeFilter="All"
+        />
+      )}
     </div>
   );
 }

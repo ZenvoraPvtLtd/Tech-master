@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { uploadImage, uploadVideo } from "../utils/multer";
+import { uploadImage, uploadVideo, uploadDocument } from "../utils/multer";
 import { AppError } from "./errorHandler";
 
 // Handle multer error wrapping
@@ -24,3 +24,4 @@ export const parseMultipleImages = handleMulterError(uploadImage.array("files", 
 export const parseSingleVideo = handleMulterError(uploadVideo.single("file"));
 export const parseMultipleVideos = handleMulterError(uploadVideo.array("files", 5));
 export const parseAnyMedia = handleMulterError(uploadVideo.single("file")); // accepts either, video config sets max limit (100MB)
+export const parseDocument = handleMulterError(uploadDocument.single("resume"));

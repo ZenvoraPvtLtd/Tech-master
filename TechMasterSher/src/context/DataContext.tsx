@@ -7,12 +7,18 @@ interface DataContextType {
   journeyData: any[];
   journeyHero: any;
   servicesData: any[];
+  servicesPageData: any;
   campaignsData: any[];
   faqData: any[];
   blogsData: any[];
   careerData: any[];
   eventsData: any[];
   testimonialsData: any[];
+  testimonialsPageData: any;
+  termsPolicyData: any;
+  privacyPolicyData: any;
+  cookiePolicyData: any;
+  legalSettingsData: any;
   missionVisionData: any;
   whatWeDoData: any;
   portfolioData: any[];
@@ -21,6 +27,15 @@ interface DataContextType {
   collaborationsData: any;
   contactData: any;
   launchesData: any;
+  blogHeroData: any;
+  featuredStrategyData: any;
+  strategyStatsData: any[];
+  strategyPillarsData: any[];
+  strategyPresetsData: any[];
+  blogCategoriesData: any[];
+  latestInsightsData: any;
+  blogPageSettingsData: any;
+  blogSEOData: any;
   isLoading: boolean;
   isBackendConnected: boolean;
   dbData: any;
@@ -37,12 +52,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [journeyData, setJourneyData] = useState<any[]>([]);
   const [journeyHero, setJourneyHero] = useState<any>(null);
   const [servicesData, setServicesData] = useState<any[]>([]);
+  const [servicesPageData, setServicesPageData] = useState<any>(null);
   const [campaignsData, setCampaignsData] = useState<any[]>([]);
   const [faqData, setFaqData] = useState<any[]>([]);
   const [blogsData, setBlogsData] = useState<any[]>([]);
   const [careerData, setCareerData] = useState<any[]>([]);
   const [eventsData, setEventsData] = useState<any[]>([]);
   const [testimonialsData, setTestimonialsData] = useState<any[]>([]);
+  const [testimonialsPageData, setTestimonialsPageData] = useState<any>(null);
+  const [termsPolicyData, setTermsPolicyData] = useState<any>(null);
+  const [privacyPolicyData, setPrivacyPolicyData] = useState<any>(null);
+  const [cookiePolicyData, setCookiePolicyData] = useState<any>(null);
+  const [legalSettingsData, setLegalSettingsData] = useState<any>(null);
   const [missionVisionData, setMissionVisionData] = useState<any>(null);
   const [whatWeDoData, setWhatWeDoData] = useState<any>(null);
   const [portfolioData, setPortfolioData] = useState<any[]>([]);
@@ -53,6 +74,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [launchesData, setLaunchesData] = useState<any>(null);
   const [websiteSettings, setWebsiteSettings] = useState<any>(null);
   const [coreServicesConfig, setCoreServicesConfig] = useState<any>(null);
+
+  // Blog CMS Additional States
+  const [blogHeroData, setBlogHeroData] = useState<any>(null);
+  const [featuredStrategyData, setFeaturedStrategyData] = useState<any>(null);
+  const [strategyStatsData, setStrategyStatsData] = useState<any[]>([]);
+  const [strategyPillarsData, setStrategyPillarsData] = useState<any[]>([]);
+  const [strategyPresetsData, setStrategyPresetsData] = useState<any[]>([]);
+  const [blogCategoriesData, setBlogCategoriesData] = useState<any[]>([]);
+  const [latestInsightsData, setLatestInsightsData] = useState<any>(null);
+  const [blogPageSettingsData, setBlogPageSettingsData] = useState<any>(null);
+  const [blogSEOData, setBlogSEOData] = useState<any>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
@@ -82,6 +114,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     else if (db.homepage?.events?.list) setEventsData(db.homepage.events.list);
     
     if (db.testimonials) setTestimonialsData(db.testimonials);
+    if (db.testimonialsPage) setTestimonialsPageData(db.testimonialsPage);
+    if (db.termsPolicy) setTermsPolicyData(db.termsPolicy);
+    if (db.privacyPolicy) setPrivacyPolicyData(db.privacyPolicy);
+    if (db.cookiePolicy) setCookiePolicyData(db.cookiePolicy);
+    if (db.legalSettings) setLegalSettingsData(db.legalSettings);
     if (db.missionVision) setMissionVisionData(db.missionVision);
     if (db.whatWeDo) setWhatWeDoData(db.whatWeDo);
     if (db.portfolio) setPortfolioData(db.portfolio);
@@ -120,6 +157,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (db.websiteSettings) setWebsiteSettings(db.websiteSettings);
     if (db.coreServicesConfig) setCoreServicesConfig(db.coreServicesConfig);
+    if (db.servicesPage) setServicesPageData(db.servicesPage);
+
+    // Blog CMS Hydration
+    if (db.blogHero) setBlogHeroData(db.blogHero);
+    if (db.featuredStrategy) setFeaturedStrategyData(db.featuredStrategy);
+    if (db.strategyStats) setStrategyStatsData(db.strategyStats);
+    if (db.strategyPillars) setStrategyPillarsData(db.strategyPillars);
+    if (db.strategyPresets) setStrategyPresetsData(db.strategyPresets);
+    if (db.blogCategories) setBlogCategoriesData(db.blogCategories);
+    if (db.latestInsights) setLatestInsightsData(db.latestInsights);
+    if (db.blogPageSettings) setBlogPageSettingsData(db.blogPageSettings);
+    if (db.blogSEO) setBlogSEOData(db.blogSEO);
+
   }, []);
 
   const refreshData = useCallback(async () => {
@@ -189,12 +239,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         journeyData,
         journeyHero,
         servicesData,
+        servicesPageData,
         campaignsData,
         faqData,
         blogsData,
         careerData,
         eventsData,
         testimonialsData,
+        testimonialsPageData,
+        termsPolicyData,
+        privacyPolicyData,
+        cookiePolicyData,
+        legalSettingsData,
         missionVisionData,
         whatWeDoData,
         portfolioData,
@@ -208,7 +264,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dbData,
         websiteSettings,
         coreServicesConfig,
-        refreshData
+        refreshData,
+        // Blog CMS Properties
+        blogHeroData,
+        featuredStrategyData,
+        strategyStatsData,
+        strategyPillarsData,
+        strategyPresetsData,
+        blogCategoriesData,
+        latestInsightsData,
+        blogPageSettingsData,
+        blogSEOData
       }}
     >
       {children}

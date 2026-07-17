@@ -9,6 +9,13 @@ export interface IService extends Document, ICmsBase {
   features: string[];
   icon?: string;
   accentColor?: string;
+  overview?: string;
+  benefits?: string[];
+  process?: string[];
+  gallery?: string[];
+  ctaText?: string;
+  ctaUrl?: string;
+  displayOrder?: number;
   seo?: ISeo;
 }
 
@@ -21,6 +28,13 @@ const ServiceSchema = new Schema<IService>(
     features: [{ type: String, required: true }],
     icon: { type: String, default: "Cpu" },
     accentColor: { type: String, default: "#D4AF37" },
+    overview: { type: String },
+    benefits: [{ type: String }],
+    process: [{ type: String }],
+    gallery: [{ type: String }],
+    ctaText: { type: String },
+    ctaUrl: { type: String },
+    displayOrder: { type: Number, default: 0 },
     seo: { type: SeoSchema },
     ...CmsBaseFields,
   },

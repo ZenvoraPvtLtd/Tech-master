@@ -49,12 +49,12 @@ export const Careers = () => {
   
   // Data Collections
   const careerHero = db?.careerHero || {};
-  const careers = db?.careers || [];
-  const resumes = db?.resumes || [];
-  const careerCulture = db?.careerCulture || [];
-  const careerProcess = db?.careerProcess || [];
+  const careers = Array.isArray(db?.careers) ? db.careers : [];
+  const resumes = Array.isArray(db?.resumes) ? db.resumes : [];
+  const careerCulture = Array.isArray(db?.careerCulture) ? db.careerCulture : [];
+  const careerProcess = Array.isArray(db?.careerProcess) ? db.careerProcess : [];
   const careerStats = db?.careerStats || {};
-  const careerGallery = db?.careerGallery || [];
+  const careerGallery = Array.isArray(db?.careerGallery) ? db.careerGallery : [];
   const careerSettings = db?.careerSettings || {};
   const careerSEO = db?.careerSEO || {};
 
@@ -398,10 +398,10 @@ export const Careers = () => {
                      <Input label="Email" value={draftItem.email || ''} onChange={e => setDraftItem(p => ({...p, email: e.target.value}))} />
                      <Input label="Phone" value={draftItem.phone || ''} onChange={e => setDraftItem(p => ({...p, phone: e.target.value}))} />
                      <Input label="Job Applied" value={draftItem.jobApplied || ''} onChange={e => setDraftItem(p => ({...p, jobApplied: e.target.value}))} />
-                     <Input label="Experience (Yrs)" value={draftItem.experienceYears || ''} onChange={e => setDraftItem(p => ({...p, experienceYears: e.target.value}))} />
-                     <Input label="Expected Salary" value={draftItem.expectedSalary || ''} onChange={e => setDraftItem(p => ({...p, expectedSalary: e.target.value}))} />
+                     <Input label="Phone" value={draftItem.phone || ''} onChange={e => setDraftItem(p => ({...p, phone: e.target.value}))} />
                      <div className="md:col-span-2"><Input label="LinkedIn URL" value={draftItem.linkedinUrl || ''} onChange={e => setDraftItem(p => ({...p, linkedinUrl: e.target.value}))} /></div>
                      <div className="md:col-span-2"><Input label="Portfolio URL" value={draftItem.portfolioUrl || ''} onChange={e => setDraftItem(p => ({...p, portfolioUrl: e.target.value}))} /></div>
+                     <div className="md:col-span-2"><Input label="Why Join Tech Master" textarea rows={3} value={draftItem.message || ''} onChange={e => setDraftItem(p => ({...p, message: e.target.value}))} /></div>
                      <div className="md:col-span-2"><Input label="Cover Letter Message" textarea rows={3} value={draftItem.coverLetter || ''} onChange={e => setDraftItem(p => ({...p, coverLetter: e.target.value}))} /></div>
                      <div className="md:col-span-2"><FileUpload label="Resume PDF/DOC Upload" value={draftItem.resumeFileName || ''} onChange={(url, name) => setDraftItem(p => ({...p, resumeFileName: name, resumeFileUrl: url}))} accept=".pdf,.doc,.docx" /></div>
                      
@@ -471,8 +471,6 @@ export const Careers = () => {
                   <div className="grid grid-cols-2 gap-4 text-sm text-zinc-300">
                      <div><span className="text-[10px] text-zinc-500 uppercase block mb-1">Email</span>{viewingResume.email}</div>
                      <div><span className="text-[10px] text-zinc-500 uppercase block mb-1">Phone</span>{viewingResume.phone || 'N/A'}</div>
-                     <div><span className="text-[10px] text-zinc-500 uppercase block mb-1">Experience</span>{viewingResume.experienceYears ? `${viewingResume.experienceYears} Years` : 'N/A'}</div>
-                     <div><span className="text-[10px] text-zinc-500 uppercase block mb-1">Expected Salary</span>{viewingResume.expectedSalary || 'N/A'}</div>
                   </div>
 
                   {/* Links */}
@@ -486,7 +484,7 @@ export const Careers = () => {
                   <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl">
                      <div className="flex items-center justify-between mb-2">
                         <span className="text-[10px] text-zinc-500 uppercase flex items-center gap-2"><FileText className="w-4 h-4 text-luxury-gold"/> Resume Document</span>
-                        {viewingResume.resumeFileUrl && <a href={viewingResume.resumeFileUrl} download className="text-luxury-gold hover:text-white flex items-center gap-1 text-xs"><Download className="w-3 h-3"/> Download</a>}
+                        {viewingResume.resumeFileUrl && <a href={viewingResume.resumeFileUrl.replace('/upload/', '/upload/fl_attachment/')} target="_blank" rel="noopener noreferrer" className="text-luxury-gold hover:text-white flex items-center gap-1 text-xs"><Download className="w-3 h-3"/> Download</a>}
                      </div>
                      {viewingResume.resumeFileUrl ? (
                         <div className="w-full h-40 bg-black rounded border border-zinc-700 flex items-center justify-center relative overflow-hidden">
@@ -503,8 +501,12 @@ export const Careers = () => {
                   {/* Cover Letter & HR Notes */}
                   <div className="space-y-4">
                      <div>
+                        <span className="text-[10px] text-zinc-500 uppercase block mb-1">Why Join Tech Master?</span>
+                        <p className="text-zinc-300 text-sm bg-zinc-900/40 p-4 rounded-lg border border-zinc-800 whitespace-pre-wrap">{viewingResume.message || 'No answer provided.'}</p>
+                     </div>
+                     <div>
                         <span className="text-[10px] text-zinc-500 uppercase block mb-1">Cover Letter</span>
-                        <p className="text-zinc-300 text-sm bg-zinc-900/40 p-4 rounded-lg border border-zinc-800">{viewingResume.coverLetter || 'No message provided.'}</p>
+                        <p className="text-zinc-300 text-sm bg-zinc-900/40 p-4 rounded-lg border border-zinc-800 whitespace-pre-wrap">{viewingResume.coverLetter || 'No cover letter provided.'}</p>
                      </div>
                      {viewingResume.hrNotes && (
                         <div>
