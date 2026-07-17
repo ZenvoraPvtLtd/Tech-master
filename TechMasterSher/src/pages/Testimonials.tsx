@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Quote, Play, X, Eye } from "lucide-react";
+import { Star, Quote, Play, X } from "lucide-react";
 import * as Icons from "lucide-react";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
 import { AnimatedCounter } from "../components/AnimatedCounter";
 
-const getIcon = (name: string, className = "w-6 h-6 text-gold") => {
+const getIcon = (name: string, className = "w-6 h-6 text-gold", color?: string) => {
   const IconComponent = (Icons as any)[name];
-  return IconComponent ? <IconComponent className={className} /> : <Icons.HelpCircle className={className} />;
+  const style = color ? { color } : undefined;
+  return IconComponent ? <IconComponent className={className} style={style} /> : <Icons.HelpCircle className={className} style={style} />;
 };
 
 export const Testimonials: React.FC = () => {
@@ -148,13 +149,12 @@ export const Testimonials: React.FC = () => {
                 <div className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-3">
                   {getIcon(stat.icon || "Award", "w-4 h-4", statColor)}
                 </div>
-                <div className="flex items-baseline justify-center">
+                 <div className="flex items-baseline justify-center" style={{ color: statColor }}>
                   <AnimatedCounter 
                     value={stat.value} 
                     className="font-serif text-3xl sm:text-4xl font-black block mb-1" 
-                    style={{ color: statColor }}
                   />
-                  {stat.suffix && <span className="font-serif text-xl font-bold ml-0.5" style={{ color: statColor }}>{stat.suffix}</span>}
+                  {stat.suffix && <span className="font-serif text-xl font-bold ml-0.5">{stat.suffix}</span>}
                 </div>
                 <span className="text-gray-400 text-[10px] uppercase tracking-[1px] font-mono mt-1">
                   {stat.label}

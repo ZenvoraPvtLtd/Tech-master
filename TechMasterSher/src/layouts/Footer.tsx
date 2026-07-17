@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { ArrowUpRight, Mail, Phone, MapPin } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -221,8 +221,6 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
   const footerRef = useRef<HTMLElement>(null);
   const [mouseGlow, setMouseGlow] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
-  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!footerRef.current) return;
