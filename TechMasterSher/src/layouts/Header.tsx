@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
 import gsap from "gsap";
 import logo1 from "../assets/logo_transparent-removebg-preview.png";

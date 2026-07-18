@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUpRight, Terminal, Play, X } from "lucide-react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Magnetic } from "../components/Magnetic";
+
 import { useData } from "../context/DataContext";
 import { LuxuryCard } from "../components/LuxuryCard";
 import { mediaUrl } from "../utils/media";
