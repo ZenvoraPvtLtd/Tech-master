@@ -301,8 +301,8 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             <input
               type="email"
               required
-              placeholder="ENTER YOUR DIRECT EMAIL"
-              className="w-full bg-[#0d0d0d]/80 border border-white/10 rounded-full px-6 py-4 text-xs font-sans tracking-[2px] uppercase text-white placeholder-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-300 pr-16 backdrop-blur-md"
+              placeholder="ENTER EMAIL"
+              className="w-full bg-[#0d0d0d]/80 border border-white/10 rounded-full pl-6 pr-32 py-4 text-xs font-sans tracking-[1.5px] uppercase text-white placeholder-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-300 backdrop-blur-md"
             />
             <button
               type="submit"

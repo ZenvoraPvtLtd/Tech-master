@@ -611,38 +611,10 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             </h2>
           </div>
 
-          {/* Filter tabs */}
-          <div className="flex gap-4 border-b border-white/10 pb-2 relative">
-            {[
-              { id: "all", label: "All Clips" },
-              { id: "reels_shorts", label: "Reels & Shorts" },
-              { id: "long", label: "Long Videos" }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveFilter(tab.id)}
-                className={`relative text-xs uppercase tracking-[2px] pb-2 px-3 transition-all duration-300 font-bold z-10 ${
-                  activeFilter === tab.id
-                    ? "text-gold font-semibold"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                {tab.label}
-                {activeFilter === tab.id && (
-                  <motion.div
-                    layoutId="activeTabIndicator"
-                    className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-gold"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Video Cards Grid */}
-        {activeFilter === "all" ? (
-          <div className="flex flex-col gap-8 md:gap-12 w-full max-w-5xl mx-auto video-showcase-grid-container">
+        <div className="flex flex-col gap-8 md:gap-12 w-full max-w-5xl mx-auto video-showcase-grid-container">
             {(() => {
               const reels = filteredVideos.filter((v) => v.type === "reel" || v.type === "short");
               const longs = filteredVideos.filter((v) => v.type === "long_video");
@@ -688,37 +660,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               return rows;
             })()}
           </div>
-        ) : activeFilter === "long" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 video-showcase-grid-container">
-            {filteredVideos?.map((video, idx) => {
-              const isLastAndOdd = idx === filteredVideos.length - 1 && filteredVideos.length % 2 !== 0;
-              return (
-                <div
-                  key={video.id}
-                  className={`video-fade-in aspect-[16/9] ${
-                    isLastAndOdd ? "col-span-1 md:col-span-2 max-w-3xl mx-auto w-full" : "col-span-1"
-                  }`}
-                >
-                  <VideoCard
-                    video={video}
-                    onClick={() => setSelectedVideo(video)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto video-showcase-grid-container">
-            {filteredVideos?.map((video) => (
-              <div key={video.id} className="video-fade-in w-full aspect-[9/16]">
-                <VideoCard
-                  video={video}
-                  onClick={() => setSelectedVideo(video)}
-                />
-              </div>
-            ))}
-          </div>
-        )}
       </section>
 
 
