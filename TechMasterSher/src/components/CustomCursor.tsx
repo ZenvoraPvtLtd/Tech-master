@@ -22,6 +22,10 @@ export const CustomCursor: React.FC = () => {
       const cursorAttrTarget = target.closest("[data-cursor]");
       if (cursorAttrTarget) {
         const text = cursorAttrTarget.getAttribute("data-cursor") || "";
+        if (text === "none") {
+          setIsHovered(false);
+          return;
+        }
         setHoverText(text);
         setIsHovered(true);
         return;

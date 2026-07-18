@@ -97,9 +97,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   className="glass-nav fixed top-0 left-0 w-full z-[999] py-1 md:py-2 px-4 md:px-12 flex justify-between items-center transition-all duration-300"
   style={{
     filter: `
-      drop-shadow(0 0 8px rgba(212, 175, 55, 0.8))
-      drop-shadow(0 0 18px rgba(212, 175, 55, 0.6))
-      drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
+      drop-shadow(0 2px 4px rgba(212, 175, 55, 0.7))
+      drop-shadow(0 4px 10px rgba(212, 175, 55, 0.3))
     `,
     background:`black`,
   }}
@@ -117,11 +116,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             style={{
               imageRendering: "-webkit-optimize-contrast",
               filter: `
-                drop-shadow(0 0 8px rgba(212, 175, 55, 0.8))
-                drop-shadow(0 0 18px rgba(212, 175, 55, 0.6))
-                drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
-                drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
-                drop-shadow(0 0 30px rgba(212, 175, 55, 0.4))
+                drop-shadow(0 0 8px rgba(212, 175, 55, 0.6))
+                drop-shadow(0 0 12px rgba(212, 175, 55, 0.3))
               `,
             }}
           />
@@ -167,19 +163,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             </Magnetic>
           </div>
 
-          {/* Menu Button Toggle */}
-          <Magnetic strength={0.25}>
-            <button
-  onClick={() => setIsMenuOpen(!isMenuOpen)}
-  className="w-10 h-10 rounded-full border flex items-center justify-center bg-black/5 transition-all duration-300"
-  style={{
-    color: "#D4AF37"
-  }}
-  data-cursor={isMenuOpen ? "close" : "menu"}
->
-              {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
-          </Magnetic>
+
         </div>
       </header>
       {/* Fullscreen Overlay Menu */}
@@ -201,7 +185,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
@@ -225,7 +209,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
@@ -249,7 +233,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-serif text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
@@ -296,8 +280,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               >
                 ✕
               </button>
-              <span className="text-[9px] font-mono text-gold uppercase tracking-widest">{privacyPolicyData?.smallBadge || "USER PRIVACY"}</span>
-              <h3 className="font-serif text-2xl text-gold font-bold mb-6 mt-1">{privacyPolicyData?.popupTitle || "Privacy Policy"}</h3>
+              <span className="text-[9px] font-sans text-gold uppercase tracking-widest">{privacyPolicyData?.smallBadge || "USER PRIVACY"}</span>
+              <h3 className="font-sans text-2xl text-gold font-bold mb-6 mt-1">{privacyPolicyData?.popupTitle || "Privacy Policy"}</h3>
               <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
                 {legalSettingsData?.showLastUpdated !== false && (
                   <p><strong>Effective Date: {privacyPolicyData?.effectiveDate || "July 7, 2026"}</strong></p>
@@ -347,8 +331,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               >
                 ✕
               </button>
-              <span className="text-[9px] font-mono text-gold uppercase tracking-widest">{termsPolicyData?.smallBadge || "LEGAL PROTOCOLS"}</span>
-              <h3 className="font-serif text-2xl text-gold font-bold mb-6 mt-1">{termsPolicyData?.popupTitle || "Terms of Service"}</h3>
+              <span className="text-[9px] font-sans text-gold uppercase tracking-widest">{termsPolicyData?.smallBadge || "LEGAL PROTOCOLS"}</span>
+              <h3 className="font-sans text-2xl text-gold font-bold mb-6 mt-1">{termsPolicyData?.popupTitle || "Terms of Service"}</h3>
               <div className="text-gray-300 text-xs md:text-sm leading-relaxed space-y-4 font-light">
                 {legalSettingsData?.showLastUpdated !== false && (
                   <p><strong>Effective Date: {termsPolicyData?.effectiveDate || "July 7, 2026"}</strong></p>

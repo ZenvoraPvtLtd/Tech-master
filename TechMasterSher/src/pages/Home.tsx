@@ -32,8 +32,7 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
     setIsPlaying(false);
     if (videoRef.current) {
       videoRef.current.muted = true;
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
     }
   }, [video.url]);
 
@@ -49,11 +48,6 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
   };
 
   const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-      setIsPlaying(false);
-    }
     if (containerRef.current) {
       containerRef.current.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), shadow 0.5s ease, border-color 0.5s ease";
       containerRef.current.style.setProperty("--rx", "0deg");
@@ -135,6 +129,7 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
       <video
         ref={videoRef}
         src={video.url}
+        autoPlay
         loop
         muted
         playsInline
@@ -167,7 +162,7 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
             {video.title}
           </h3>
           <p className="text-xs text-gray-400 font-mono tracking-[1px] uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            Hover to Play • Tap to Watch Fullscreen
+            Playing • Tap to Watch Fullscreen
           </p>
         </div>
       </div>
@@ -390,7 +385,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-24 lg:pt-24 text-center">
+      <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-32 pb-0 text-center">
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             HERO LANDING
@@ -421,7 +416,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             className="typo-h1 mb-8 text-reveal"
           >
             {homeData?.heroMainHeading?.headingLine1 || "Orchestrating"} <br />
-            <span className="font-bold italic text-gold font-serif">{homeData?.heroMainHeading?.highlightedHeading || "Immersive Tech"}</span> {homeData?.heroMainHeading?.headingLine3 || "Education."}
+            <span className="font-bold italic text-gold font-sans">{homeData?.heroMainHeading?.highlightedHeading || "Immersive Tech"}</span> {homeData?.heroMainHeading?.headingLine3 || "Education."}
           </motion.h1>
 
           <motion.div
@@ -437,17 +432,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.8 }}
-            className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center relative z-20"
+            className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center relative z-20 mb-0"
           >
-            <Magnetic strength={0.3}>
-              <button
-                onClick={() => handleNavClick("services")}
-                className="light-sweep px-8 py-4 bg-white text-black font-bold uppercase text-xs tracking-[2px] rounded-full hover:bg-gold hover:text-black transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
-              >
-                {homeData?.heroMainHeading?.primaryButton || "Discover Services"}
-              </button>
-            </Magnetic>
-
             {/* Scroll Indicator */}
             <div className="flex flex-col items-center gap-1 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300 mt-2 sm:mt-0">
               <span className="text-[9px] uppercase tracking-[3px] text-gold font-bold">Scroll down</span>
@@ -458,23 +444,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 <ArrowDown className="w-4 h-4 text-gold" />
               </motion.div>
             </div>
-
-            <Magnetic strength={0.25}>
-              <button
-                onClick={() => handleNavClick("contact")}
-                className="px-8 py-4 border border-white/20 text-white font-bold uppercase text-xs tracking-[2px] rounded-full hover:border-gold hover:text-gold bg-transparent transition-all duration-500 flex items-center gap-2"
-              >
-                {homeData?.heroMainHeading?.secondaryButton || "Contact Us"}
-                <ArrowUpRight className="w-4 h-4" />
-              </button>
-            </Magnetic>
           </motion.div>
         </div>
       </section>
 
       {/* Personal Introduction */}
-      <section className="scroll-section section-padding relative z-10 text-center">
-        <div className="flex justify-center mb-8 relative z-20">
+      <section className="scroll-section pt-0 pb-16 relative z-10 text-center mt-4 md:mt-6">
+        <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.founderBio?.tag || "FOUNDER BIOGRAPHY"}</span>
         </div>
         <h2 className="typo-h2 mb-6 fade-up">

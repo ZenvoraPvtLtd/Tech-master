@@ -188,19 +188,20 @@ const ContactCard: React.FC<ContactCardProps> = ({ icon, label, value, href, acc
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      data-cursor="none"
       style={{ rotateX, rotateY, perspective: 800 }}
-      className="glass-panel p-6 rounded-2xl flex items-center gap-4 hover:border-white/20 transition-all duration-300 select-none cursor-pointer"
+      className="group glass-panel p-3 md:p-4 rounded-2xl flex flex-col xl:flex-row items-center xl:items-start gap-3 hover:border-white/20 transition-all duration-300 select-none cursor-pointer text-center xl:text-left"
       whileHover={{ scale: 1.02 }}
     >
       <div 
-        className="w-10 h-10 rounded-xl bg-white/5 border flex items-center justify-center transition-colors duration-300"
+        className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border flex items-center justify-center transition-colors duration-300"
         style={{ color: accent, borderColor: accent + "30" }}
       >
         {icon}
       </div>
-      <div>
-        <span className="text-[9px] uppercase tracking-[1px] opacity-40 block">{label}</span>
-        <span className="text-xs md:text-sm font-bold text-white transition-colors duration-300 hover:text-gold block">
+      <div className="w-full overflow-hidden">
+        <span className="text-[9px] uppercase tracking-[1px] opacity-40 block mb-0.5">{label}</span>
+        <span className="text-xs font-bold text-white transition-all duration-300 group-hover:text-gold block truncate group-hover:whitespace-normal group-hover:break-words w-full" title={value}>
           {value}
         </span>
       </div>
@@ -283,12 +284,11 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       {/* 4. Animated rotating background glow rings */}
       <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] aurora-glow-purple opacity-20 pointer-events-none blur-[100px] animate-pulse" />
 
-      <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20 items-stretch">
-        
-        {/* Left columns (LGB 4): Newsletter & Slogan */}
-        <div className="lg:col-span-4 flex flex-col justify-between">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 relative z-10 mb-16 pt-24">
+        {/* Left column (LGB 3): Newsletter and branding */}
+        <div className="lg:col-span-3 flex flex-col justify-between z-10">
           <div>
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">
+            <h2 className="font-sans text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">
               Let's create the <br />
               <span className="text-gold italic font-bold">future of code</span>.
             </h2>
@@ -302,7 +302,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
               type="email"
               required
               placeholder="ENTER YOUR DIRECT EMAIL"
-              className="w-full bg-[#0d0d0d]/80 border border-white/10 rounded-full px-6 py-4 text-xs font-mono tracking-[2px] uppercase text-white placeholder-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-300 pr-16 backdrop-blur-md"
+              className="w-full bg-[#0d0d0d]/80 border border-white/10 rounded-full px-6 py-4 text-xs font-sans tracking-[2px] uppercase text-white placeholder-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-300 pr-16 backdrop-blur-md"
             />
             <button
               type="submit"
@@ -315,11 +315,12 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           </form>
         </div>
 
-        {/* Middle columns (LGB 5): sitemap columns */}
-        <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6">
+        {/* Middle columns (LGB 6): sitemap columns */}
+        <div className="lg:col-span-6 flex flex-col gap-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-6">
           {/* Column 1: Identity */}
           <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">IDENTITY</p>
+            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-sans">IDENTITY</p>
             <ul className="flex flex-col gap-1 md:gap-1.5">
               {(dbData?.navigation?.identityItems || [
                 { name: "About Founder", id: "about" },
@@ -341,7 +342,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
           {/* Column 2: Engagement */}
           <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">ENGAGEMENT</p>
+            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-sans">ENGAGEMENT</p>
             <ul className="flex flex-col gap-1 md:gap-1.5">
               {(dbData?.navigation?.engagementItems || [
                 { name: "Brand Collabs", id: "collaborations" },
@@ -365,7 +366,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
           {/* Column 3: Quick Links */}
           <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-mono">QUICK LINKS</p>
+            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-sans">QUICK LINKS</p>
             <ul className="flex flex-col gap-1 md:gap-1.5">
               {(dbData?.navigation?.quickLinksItems || [
                 { name: "Core Services", id: "services" },
@@ -386,6 +387,31 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
               ))}
             </ul>
           </div>
+          </div>
+          {/* Contact Cards Grid Moved Here */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <ContactCard
+              icon={<Mail className="w-4 h-4" />}
+              label="DIRECT MAIL"
+              value={contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
+              href={`mailto:${contactData?.heroSetup?.email || websiteSettings?.email || ""}`}
+              accent="#D4AF37"
+            />
+            <ContactCard
+              icon={<Phone className="w-4 h-4" />}
+              label="BOOKING OFFICE"
+              value={contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
+              href={`tel:${contactData?.heroSetup?.phone || websiteSettings?.phone || ""}`}
+              accent="#00E5FF"
+            />
+            <ContactCard
+              icon={<MapPin className="w-4 h-4" />}
+              label="CREATOR HQ"
+              value={websiteSettings?.address || "Silicon Valley Creator Labs, Suite 40"}
+              href={websiteSettings?.googleMapsUrl}
+              accent="#aa3bff"
+            />
+          </div>
         </div>
 
         {/* Right columns (LGB 3): 3D Scene viewport container */}
@@ -400,7 +426,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             </Canvas>
           </div>
           <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
-            <span className="text-[8px] font-mono tracking-[2px] text-gold uppercase bg-black/80 px-2 py-0.5 rounded border border-white/10">
+            <span className="text-[8px] font-sans tracking-[2px] text-gold uppercase bg-black/80 px-2 py-0.5 rounded border border-white/10">
               3D Spatial Node
             </span>
           </div>
@@ -408,32 +434,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
       </div>
 
-      {/* 5. Contact Cards Grid */}
-      <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 border-t border-white/5 pt-12">
-        <ContactCard
-          icon={<Mail className="w-4 h-4" />}
-          label="DIRECT MAIL"
-          value={contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
-          href={`mailto:${contactData?.heroSetup?.email || websiteSettings?.email || ""}`}
-          accent="#D4AF37"
-        />
-        <ContactCard
-          icon={<Phone className="w-4 h-4" />}
-          label="BOOKING OFFICE"
-          value={contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
-          href={`tel:${contactData?.heroSetup?.phone || websiteSettings?.phone || ""}`}
-          accent="#00E5FF"
-        />
-        <div className="md:col-span-2 lg:col-span-1">
-          <ContactCard
-            icon={<MapPin className="w-4 h-4" />}
-            label="CREATOR HQ"
-            value={websiteSettings?.address || "Silicon Valley Creator Labs, Suite 40"}
-            href={websiteSettings?.googleMapsUrl}
-            accent="#aa3bff"
-          />
-        </div>
-      </div>
+      {/* 5. Contact Cards Grid - Moved underneath quick links */}
 
       {/* Footer Bottom copyright and social handles */}
       <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
