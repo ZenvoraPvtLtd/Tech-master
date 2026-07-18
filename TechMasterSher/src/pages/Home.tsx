@@ -208,7 +208,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   ];
   const activeVideos = dynamicVideos.length > 0 ? dynamicVideos : [];
 
-  const [activeFilter, setActiveFilter] = useState("all");
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
   useEffect(() => {
@@ -368,18 +367,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     return () => {
       ctx.revert();
     };
-  }, [activeFilter]);
+  }, []);
 
   const handleNavClick = (pageId: string) => {
     onChangePage(pageId);
   };
 
-  const filteredVideos = activeVideos.filter((v: any) => {
-    if (activeFilter === "all") return true;
-    if (activeFilter === "reels_shorts") return v.type === "reel" || v.type === "short";
-    if (activeFilter === "long") return v.type === "long_video";
-    return true;
-  });
+  const filteredVideos = activeVideos;
 
   return (
     <div className="relative text-white min-h-screen">
