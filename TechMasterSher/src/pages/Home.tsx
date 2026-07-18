@@ -158,6 +158,10 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
         </div>
 
         <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+          <div className="flex items-center gap-1.5 mb-1 text-[10px] font-sans tracking-wide text-gold">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+            {video.views || "1.2M views"}
+          </div>
           <h3 className="font-serif text-xl md:text-2xl text-white font-medium mb-2 group-hover:text-gold transition-colors duration-300">
             {video.title}
           </h3>
@@ -177,33 +181,38 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   const campaignsList = campaignsData || [];
   const eventsList = eventsData || [];
 
+  const dummyViews = ["1.2M views", "850K views", "3.4M views", "2.1M views", "500K views", "4.8M views", "920K views", "1.5M views", "300K views", "2.9M views"];
+
   const dynamicVideos = [
-    ...(dbData?.homepage?.reels || []).map((v: any) => ({
+    ...(dbData?.homepage?.reels || []).map((v: any, i: number) => ({
       id: v.id,
       title: v.title,
       type: "reel",
       url: v.videoUrl || v.url,
       thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
       aspectRatio: "9/16",
-      category: "Reels & Shorts"
+      category: "Reels & Shorts",
+      views: dummyViews[i % dummyViews.length]
     })),
-    ...(dbData?.homepage?.shorts || []).map((v: any) => ({
+    ...(dbData?.homepage?.shorts || []).map((v: any, i: number) => ({
       id: v.id,
       title: v.title,
       type: "short",
       url: v.videoUrl || v.url,
       thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
       aspectRatio: "9/16",
-      category: "Reels & Shorts"
+      category: "Reels & Shorts",
+      views: dummyViews[(i + 3) % dummyViews.length]
     })),
-    ...(dbData?.homepage?.longVideos || []).map((v: any) => ({
+    ...(dbData?.homepage?.longVideos || []).map((v: any, i: number) => ({
       id: v.id,
       title: v.title,
       type: "long_video",
       url: v.videoUrl || v.url,
       thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
       aspectRatio: "16/9",
-      category: "Long Videos"
+      category: "Long Videos",
+      views: dummyViews[(i + 6) % dummyViews.length]
     }))
   ];
   const activeVideos = dynamicVideos.length > 0 ? dynamicVideos : [];

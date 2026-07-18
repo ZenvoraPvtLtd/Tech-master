@@ -443,7 +443,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             &copy; {new Date().getFullYear()} {websiteSettings?.copyrightText || websiteSettings?.companyName || "TECH MASTER MEDIA & CREATIVE LABS"}. ALL RIGHTS RESERVED.
           </p>
           <p className="text-[9px] uppercase tracking-[1px] text-gray-400 mt-1">
-            Premium Creator Blueprint &bull; Designed to Awwwards Site of the Day Standard
+            Designed and developed by .......
           </p>
         </div>
 

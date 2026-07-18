@@ -44,7 +44,6 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
     { name: "Product Launches", id: "product-launches" },
     { name: "Events & Talks", id: "events" },
     { name: "Student Work", id: "portfolio" },
-    { name: "Media Gallery", id: "gallery" },
     { name: "Careers", id: "career" },
     { name: "Insights / Blog", id: "blog" },
   ];
@@ -129,7 +128,6 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             { name: "Home", id: "home" },
             { name: "About", id: "about" },
             { name: "Journey", id: "journey" },
-            { name: "Media Gallery", id: "gallery" },
             { name: "Portfolio", id: "portfolio" },
             { name: "Careers", id: "career" },
             { name: "Blog", id: "blog" },
