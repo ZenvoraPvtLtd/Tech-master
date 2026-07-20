@@ -140,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         </div>
 
         {/* Desktop Navigation Link Cluster */}
-        <nav className="hidden lg:flex items-center gap-5">
+        <nav className="hidden lg:flex items-center gap-5 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           {(dbData?.navigation?.desktopLinks || [
             { name: "Home", id: "home" },
             { name: "About", id: "about" },
