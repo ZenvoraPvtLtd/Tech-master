@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
 import gsap from "gsap";
@@ -18,13 +18,30 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [viewsCount, setViewsCount] = useState(0);
 
   useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      let scrollPercent = docHeight > 0 ? Math.max(0, Math.min(1, scrollY / docHeight)) : 0;
+      
+      // Ensure it perfectly hits 20 Billion when reaching the bottom
+      if (scrollPercent > 0.95) scrollPercent = 1;
+      
+      // Increase counter strictly based on scroll position
+      setViewsCount(Math.floor(scrollPercent * 20000000000));
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initialize immediately
+    
     const handleOpenTerms = () => setIsTermsOpen(true);
     const handleOpenPrivacy = () => setIsPrivacyOpen(true);
     window.addEventListener("open-terms-modal", handleOpenTerms);
     window.addEventListener("open-privacy-modal", handleOpenPrivacy);
     return () => {
+      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("open-terms-modal", handleOpenTerms);
       window.removeEventListener("open-privacy-modal", handleOpenPrivacy);
     };
@@ -111,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <img
             src={mediaUrl(websiteSettings?.companyLogo) || logo1}
             alt="Tech Master Logo"
-            className="h-16 sm:h-20 lg:h-28 w-auto object-contain -my-4 sm:-my-6 lg:-my-8"
+            className="h-10 sm:h-14 lg:h-20 w-auto object-contain -my-2 sm:-my-4 lg:-my-5"
             style={{
               imageRendering: "-webkit-optimize-contrast",
               filter: `
@@ -136,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               key={item.id}
               onClick={() => handleNavClick(item.id)}
               className={`text-xs uppercase tracking-[2px] transition-all duration-300 relative py-1 hover:text-gold font-black ${
-                activePage === item.id ? "text-gold" : "text-white"
+                activePage === item.id ? "text-gold" : "text-gray-400"
               }`}
             >
               {item.name}
@@ -149,11 +166,15 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
 
         {/* Action Button & Hamburger Toggle */}
         <div className="flex items-center gap-6">
+          <div className="hidden lg:flex flex-col items-end justify-center mr-2 w-[160px]">
+            <span className="font-mono text-[8px] text-gray-400 tracking-[3px] uppercase mb-0.5 mr-2">Views</span>
+            <span className="font-sans font-bold text-gold text-sm tracking-widest tabular-nums text-right">{viewsCount.toLocaleString()}+</span>
+          </div>
           <div className="hidden sm:block">
             <Magnetic strength={0.3}>
               <button
                 onClick={() => handleNavClick("contact")}
-                className="light-sweep px-5 py-2.5 rounded-full border border-gold/30 hover:border-gold hover:text-black hover:bg-gold transition-all duration-500 text-xs font-bold uppercase tracking-[2px] text-gold flex items-center gap-2"
+                className="light-sweep px-5 py-2.5 rounded-full border border-gold/30 hover:border-gold hover:text-black hover:bg-gold transition-all duration-500 text-xs font-black uppercase tracking-[2px] text-gold flex items-center gap-2"
               >
                 Let's Talk
                 <ArrowUpRight className="w-3.5 h-3.5" />
@@ -183,7 +204,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
@@ -207,7 +228,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}
@@ -231,7 +252,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
                 <div key={item.id} className="overflow-hidden">
                   <button
                     onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-white hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-105">
                       {item.name}

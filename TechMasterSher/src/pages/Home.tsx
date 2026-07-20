@@ -419,7 +419,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             className="typo-h1 mb-8 text-reveal"
           >
             {homeData?.heroMainHeading?.headingLine1 || "Orchestrating"} <br />
-            <span className="font-bold italic text-gold font-sans">{homeData?.heroMainHeading?.highlightedHeading || "Immersive Tech"}</span> {homeData?.heroMainHeading?.headingLine3 || "Education."}
+            <span className="text-gold">{homeData?.heroMainHeading?.highlightedHeading || "Immersive Tech"}</span> {homeData?.heroMainHeading?.headingLine3 || "Education."}
           </motion.h1>
 
           <motion.div
@@ -502,75 +502,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </span>
         </div>
         <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {homeData?.coreValues?.map((val: any, idx: number) => (
+          {homeData?.coreValues?.filter((val: any) => 
+            val.valueName !== "DIGITAL LUXURY & BRAND INNOVATION" && val.title !== "Luxury Standard"
+          ).map((val: any, idx: number) => (
             <div key={idx} className="value-card glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300 opacity-0">
               <h3 className="value-card-heading typo-h4 mb-2">{splitText(val.title)}</h3>
               <p className="value-card-content text-gray-400 text-xs sm:text-sm font-light leading-relaxed opacity-0">{val.description}</p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. Core Services Section */}
-      <section className="scroll-section section-padding relative z-10">
-        <div className="flex justify-center mb-12 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            {coreServicesConfig?.tag || "CORE SERVICES & TRAINING"}
-          </span>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-10 items-end">
-          <div className="lg:col-span-2 text-left">
-            <p className="typo-badge mb-4">{coreServicesConfig?.pillarsText || "EDUCATIONAL PILLARS"}</p>
-            <h2 className="typo-h2 fade-up">
-              {coreServicesConfig?.headingLine1 || "Bridging the gap between"} <br />
-              <span className="text-gold italic font-bold">{coreServicesConfig?.highlightedHeading || "Code & Placement"}</span>.
-            </h2>
-          </div>
-          <div className="text-left">
-            <p className="text-gray-400 font-light leading-relaxed mb-6 fade-up">
-              {coreServicesConfig?.description || "We design structured curricula, virtual sandbox playgrounds, and live cohort workshops, transforming traditional programming paths into cinematic student success pipelines."}
-            </p>
-            <button
-              onClick={() => handleNavClick(coreServicesConfig?.ctaButtonUrl || "services")}
-              className="text-xs uppercase tracking-[2px] text-gold hover:text-white transition-colors duration-300 font-bold flex items-center gap-1.5 fade-up"
-            >
-              {coreServicesConfig?.ctaButtonText || "View Service Portals"} <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="services-grid grid grid-cols-1 md:grid-cols-2 gap-8">
-          {servicesList?.map((srv, idx) => (
-            <LuxuryCard
-              key={srv.id}
-              accentColor={srv.accentColor}
-              className="services-card opacity-0"
-              index={idx}
-            >
-              <div className="flex justify-center items-start mb-8">
-                <span 
-                  className="px-3 py-1 rounded-full border text-[9px] uppercase tracking-[1px] font-mono"
-                  style={{ color: srv.accentColor, borderColor: srv.accentColor + "40" }}
-                >
-                  {srv.tagline}
-                </span>
-              </div>
-
-              <h3 className="typo-card-title mb-4 group-hover:text-gold transition-colors duration-300">
-                {srv.title}
-              </h3>
-              <p className="typo-card-desc mb-8">
-                {srv.description}
-              </p>
-
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 border-t border-white/5">
-                {srv?.features?.map((feat: any, fidx: number) => (
-                  <li key={fidx} className="flex items-center gap-2 text-xs text-gray-400">
-                    <span>{feat}</span>
-                  </li>
-                ))}
-              </ul>
-            </LuxuryCard>
           ))}
         </div>
       </section>
@@ -692,82 +630,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </div>
         </div>
       </section>
-
-      {/* Featured Campaigns */}
-      {homeData?.featuredCampaigns?.enableSection !== false && (
-      <section className="scroll-section section-padding relative z-10" style={{
-        backgroundImage: homeData?.featuredCampaigns?.backgroundImage ? `url(${mediaUrl(homeData?.featuredCampaigns?.backgroundImage)})` : 'none',
-        backgroundSize: 'cover', backgroundPosition: 'center'
-      }}>
-        <div className="flex justify-center mb-12 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            {homeData?.featuredCampaigns?.sectionTag || "FEATURED EDUCATION CAMPAIGNS"}
-          </span>
-        </div>
-        <div className="mb-16 text-center relative z-20">
-          <p className="typo-badge mb-4">{homeData?.featuredCampaigns?.smallHeading || "OUR IMPACT"}</p>
-          <h2 className="typo-h2 fade-up">
-            {homeData?.featuredCampaigns?.mainHeading || "Featured"} <span className="text-gold italic font-bold">{homeData?.featuredCampaigns?.highlightHeading || "Campaigns"}</span>
-          </h2>
-          {homeData?.featuredCampaigns?.description && (
-            <p className="text-gray-400 text-sm font-light mt-4 max-w-2xl mx-auto fade-up">{homeData?.featuredCampaigns?.description}</p>
-          )}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-20">
-          {(homeData?.featuredCampaigns?.list?.length > 0 ? homeData.featuredCampaigns.list : campaignsList?.slice(0, 3) || [])?.map((camp: any) => (
-            <div key={camp.id} className="glass-panel p-6 rounded-2xl border border-white/5 fade-up flex flex-col">
-              {camp.coverImage && <img src={mediaUrl(camp.coverImage)} alt={camp.title} className="w-full h-40 object-cover rounded-xl mb-4" />}
-              <h3 className="font-serif text-xl text-white mb-2">{camp.title}</h3>
-              <p className="text-gray-400 text-xs font-light flex-grow">{camp.description}</p>
-              {camp.ctaUrl && (
-                <a href={camp.ctaUrl} className="inline-block mt-4 text-xs font-bold uppercase tracking-wider text-gold hover:text-white transition-colors">
-                  {camp.ctaText || "View Campaign"} &rarr;
-                </a>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-      )}
-
-      {/* Event Highlights */}
-      {homeData?.eventHighlights?.enableSection !== false && (
-      <section className="scroll-section section-padding relative z-10" style={{
-        backgroundImage: homeData?.eventHighlights?.backgroundImage ? `url(${mediaUrl(homeData?.eventHighlights?.backgroundImage)})` : 'none',
-        backgroundSize: 'cover', backgroundPosition: 'center'
-      }}>
-        <div className="flex justify-center mb-12 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            {homeData?.eventHighlights?.sectionTag || "EVENT HIGHLIGHTS"}
-          </span>
-        </div>
-        <div className="mb-16 text-center relative z-20">
-          <p className="typo-badge mb-4">{homeData?.eventHighlights?.smallHeading || "COMMUNITY"}</p>
-          <h2 className="typo-h2 fade-up">
-            {homeData?.eventHighlights?.mainHeading || "Event"} <span className="text-gold italic font-bold">{homeData?.eventHighlights?.highlightHeading || "Highlights"}</span>
-          </h2>
-          {homeData?.eventHighlights?.description && (
-            <p className="text-gray-400 text-sm font-light mt-4 max-w-2xl mx-auto fade-up">{homeData?.eventHighlights?.description}</p>
-          )}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-20">
-          {(homeData?.eventHighlights?.list?.length > 0 ? homeData.eventHighlights.list : eventsList?.slice(0, 2) || [])?.map((evt: any) => (
-            <div key={evt.id} className="glass-panel p-8 rounded-2xl border-l-2 hover:border-l-gold transition-all duration-300 fade-up">
-              {evt.image && <img src={mediaUrl(evt.image)} alt={evt.title} className="w-full h-48 object-cover rounded-xl mb-4" />}
-              <span className="text-gold text-xs font-mono mb-3 block">{evt.date} {evt.time ? `• ${evt.time}` : ''}</span>
-              <h3 className="font-serif text-2xl text-white mb-3">{evt.title}</h3>
-              <p className="text-gray-400 text-sm font-light">{evt.description}</p>
-              {evt.location && <p className="text-xs text-gray-500 mt-2 font-mono uppercase tracking-widest">{evt.location}</p>}
-              {evt.ctaUrl && (
-                <a href={evt.ctaUrl} className="inline-block mt-4 text-xs font-bold uppercase tracking-wider text-gold hover:text-white transition-colors">
-                  {evt.ctaText || "Learn More"} &rarr;
-                </a>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-      )}
 
 
 
