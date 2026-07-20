@@ -5,8 +5,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useData } from "../context/DataContext";
-import { LuxuryCard } from "../components/LuxuryCard";
-import { mediaUrl } from "../utils/media";
 import { AnimatedCounter } from "../components/AnimatedCounter";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -175,11 +173,8 @@ const VideoCard = ({ video, onClick }: { video: any; onClick: () => void }) => {
 };
 
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
-  const { homeData, servicesData, campaignsData, eventsData, dbData, coreServicesConfig, isLoading } = useData();
+  const { homeData, dbData, isLoading } = useData();
   if (isLoading || !homeData) return <div className="min-h-screen bg-black flex items-center justify-center"><span className="text-gold uppercase tracking-widest text-xs font-bold">Initializing CMS...</span></div>;
-  const servicesList = (servicesData || []).filter((s: any) => s.status === 'Active').sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-  const campaignsList = campaignsData || [];
-  const eventsList = eventsData || [];
 
   const dummyViews = ["1.2M views", "850K views", "3.4M views", "2.1M views", "500K views", "4.8M views", "920K views", "1.5M views", "300K views", "2.9M views"];
 
