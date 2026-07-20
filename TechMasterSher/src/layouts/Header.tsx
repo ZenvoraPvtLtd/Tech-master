@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
 import gsap from "gsap";
