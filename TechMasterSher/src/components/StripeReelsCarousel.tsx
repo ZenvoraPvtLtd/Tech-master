@@ -43,8 +43,6 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels 
     ...reels.slice(0, activeIndex)
   ];
 
-  const activeReel = reels[activeIndex];
-
   return (
     <div className="flex flex-col w-full px-4 md:px-8 py-12 md:py-24 max-w-[1600px] mx-auto overflow-hidden">
       
