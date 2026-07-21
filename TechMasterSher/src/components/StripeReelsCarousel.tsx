@@ -48,26 +48,14 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels 
   return (
     <div className="flex flex-col w-full px-4 md:px-8 py-12 md:py-24 max-w-[1600px] mx-auto overflow-hidden">
       
-      {/* Stripe-style Header section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12">
-        <div className="max-w-2xl">
-          <h2 className="text-4xl md:text-6xl font-black text-white font-serif tracking-tight mb-4">
-            What's happening
-          </h2>
-          <p className="text-zinc-400 text-lg md:text-xl font-light">
-            Explore our latest campaigns, insights, and technological breakthroughs in digital luxury.
-          </p>
-        </div>
-        
-      </div>
-
       {/* Carousel Track */}
       <motion.div 
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
-        className="flex flex-row gap-[16px] h-[400px] md:h-[550px] w-full px-1 py-1 cursor-grab active:cursor-grabbing relative overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="flex flex-row gap-[16px] h-[400px] md:h-[550px] w-full py-1 cursor-grab active:cursor-grabbing relative overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        style={{ paddingLeft: "calc(50% - max(140px, min(160px, 15vw)))" }}
       >
         <AnimatePresence initial={false}>
           {displayReels.map((reel, index) => {
@@ -90,7 +78,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels 
                 animate={{
                   flex: isActive ? "1 0 auto" : "0 0 auto",
                   width: isActive 
-                    ? (window.innerWidth < 768 ? "100%" : "72%") 
+                    ? (window.innerWidth < 768 ? "280px" : "320px") 
                     : (window.innerWidth < 768 ? "60px" : "90px"),
                   scale: 1,
                   opacity: 1,
@@ -156,7 +144,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels 
                       className="absolute bottom-4 left-4 z-40 flex items-center gap-2 bg-black/50 backdrop-blur-md border border-white/10 rounded-full px-3 py-1.5"
                     >
                       <Eye className="w-4 h-4 text-white/80" />
-                      <span className="text-white/90 text-xs font-semibold">{reel.views || "1.2M"} views</span>
+                      <span className="text-white/90 text-xs font-semibold">{reel.views || "1.2M"}</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -166,27 +154,6 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels 
         </AnimatePresence>
       </motion.div>
 
-      {/* Text Content Below Carousel */}
-      <div className="mt-8 flex flex-col md:flex-row justify-between items-start gap-6 px-2">
-        <div className="max-w-4xl">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h3 className="font-serif text-2xl md:text-3xl font-black text-white mb-2 leading-tight">
-                {activeReel.title}
-              </h3>
-              <p className="text-zinc-400 font-light text-sm md:text-base leading-relaxed">
-                {activeReel.description || "Experience the cutting edge of digital luxury and technology. This showcase highlights our unique approach to engineering and design."}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
 
     </div>
   );
