@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Play, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { Play, Eye } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { mediaUrl } from "../utils/media";
@@ -29,7 +29,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos }
     setActiveIndex((prev) => (prev - 1 + videos.length) % videos.length);
   }, [videos.length]);
 
-  const handleDragEnd = (_e: any, { offset, velocity }: PanInfo) => {
+  const handleDragEnd = (_e: any, { offset }: PanInfo) => {
     const swipe = offset.x;
     if (swipe < -50) {
       handleNext();

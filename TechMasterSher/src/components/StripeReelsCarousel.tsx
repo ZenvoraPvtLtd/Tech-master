@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Play, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { mediaUrl } from "../utils/media";
