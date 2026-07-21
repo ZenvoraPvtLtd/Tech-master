@@ -5,6 +5,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useData } from "../context/DataContext";
+import { StripeReelsCarousel } from "../components/StripeReelsCarousel";
+import { LongVideosCarousel } from "../components/LongVideosCarousel";
 import { AnimatedCounter } from "../components/AnimatedCounter";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -550,84 +552,91 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
 
         {/* Video Cards Grid */}
-        <div className="flex flex-col gap-8 md:gap-12 w-full max-w-5xl mx-auto video-showcase-grid-container">
+        <div className="flex flex-col gap-8 md:gap-16 w-full max-w-7xl mx-auto video-showcase-grid-container">
             {(() => {
               const reels = filteredVideos.filter((v) => v.type === "reel" || v.type === "short");
               const longs = filteredVideos.filter((v) => v.type === "long_video");
               
-              const rows = [];
-              let reelIndex = 0;
-              let longIndex = 0;
-              let isReelRow = true;
-              
-              while (reelIndex < reels.length || longIndex < longs.length) {
-                if (isReelRow) {
-                  if (reelIndex < reels.length) {
-                    const chunk = reels.slice(reelIndex, reelIndex + 3);
-                    rows.push(
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full" key={`reels-${reelIndex}`}>
-                        {chunk.map(video => (
-                          <div className="video-fade-in w-full aspect-[9/16] md:aspect-auto h-[400px] md:h-[450px]" key={video.id}>
-                            <VideoCard video={video} onClick={() => setSelectedVideo(video)} />
-                          </div>
-                        ))}
-                      </div>
-                    );
-                    reelIndex += 3;
-                  }
-                  isReelRow = false;
-                } else {
-                  if (longIndex < longs.length) {
-                    const chunk = longs.slice(longIndex, longIndex + 2);
-                    rows.push(
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full" key={`longs-${longIndex}`}>
-                        {chunk.map(video => (
-                          <div className="video-fade-in w-full aspect-[16/9]" key={video.id}>
-                            <VideoCard video={video} onClick={() => setSelectedVideo(video)} />
-                          </div>
-                        ))}
-                      </div>
-                    );
-                    longIndex += 2;
-                  }
-                  isReelRow = true;
-                }
-              }
-              return rows;
+              return (
+                <>
+                  {reels.length > 0 && <StripeReelsCarousel reels={reels} />}
+                  
+                  {longs.length > 0 && (
+                    <div className="mt-8 w-full max-w-[100vw] overflow-hidden">
+                      <LongVideosCarousel videos={longs} />
+                    </div>
+                  )}
+                </>
+              );
             })()}
           </div>
-      </section>
-
-
-      {/* 8. Quick YouTube Promo Callout */}
-      <section className="scroll-section section-padding relative z-10 text-left">
-        <div className="flex justify-center mb-10 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.youtubePromo?.tag || "YOUTUBE INITIATIVE"}</span>
+      </section>      {/* 7. Brand Collaborations Teaser */}
+      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10 text-center">
+        <div className="flex justify-center mb-8 relative z-20">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+            {homeData?.brandCollaborations?.tag || "BRAND COLLABORATIONS"}
+          </span>
         </div>
-        <div className="glass-panel p-8 md:p-12 rounded-3xl flex flex-col md:flex-row gap-8 items-center border border-white/5">
-          <div className="md:w-2/3">
-            <span className="text-[10px] uppercase font-bold tracking-[3px] text-gold block mb-2">{homeData?.youtubePromo?.tag || "YOUTUBE INITIATIVE"}</span>
-            <h3 className="font-serif text-3xl font-light text-white mb-4">
-              {homeData?.youtubePromo?.heading || "Building Web Apps Live for 2.5 Million Learners"}
-            </h3>
-            <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed mb-6">
-              {homeData?.youtubePromo?.description || "Join Aman as he takes raw coding problems..."}
-            </p>
-            <a href="https://youtube.com/c/techmasterf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs uppercase tracking-[2px] text-gold hover:text-white transition-colors duration-300 font-bold">
-              Explore YouTube Channel <ArrowUpRight className="w-4 h-4" />
-            </a>
-          </div>
-          <div className="md:w-1/3 w-full aspect-video rounded-2xl overflow-hidden relative border border-white/10 shadow-[0_10px_35px_rgba(0,0,0,0.5)]">
-            <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80" alt="YouTube recording" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-              <Terminal className="w-10 h-10 text-gold animate-pulse" />
+        <div className="glass-panel p-8 md:p-12 rounded-3xl border border-white/5 bg-gradient-to-br from-black via-[#070707] to-black/90 relative overflow-hidden fade-up">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full pointer-events-none" />
+          
+          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">
+            {homeData?.brandCollaborations?.heading || "Partnering with Industry Leaders"}
+          </h2>
+          
+          <p className="text-gray-400 text-sm md:text-base font-light max-w-2xl mx-auto mb-12 relative z-10">
+            {homeData?.brandCollaborations?.description || "We join forces with leading technology companies and cloud giants to build open-source tools, launch hackathons, and deliver industry-relevant education."}
+          </p>
+          
+          {/* Brand Collaboration Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 relative z-10">
+            {/* Card 1 */}
+            <div className="group rounded-2xl overflow-hidden border border-white/10 bg-black/50 relative cursor-pointer aspect-square md:aspect-[4/3] flex flex-col">
+              <img src="https://images.unsplash.com/photo-1542435503-956c469947f6?auto=format&fit=crop&w=600&q=80" alt="Notion Workspace" className="w-full h-1/2 object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+              <div className="flex-1 bg-gradient-to-b from-[#111] to-black p-6 flex flex-col justify-start border-t border-white/5">
+                <span className="text-gray-300 text-[10px] uppercase tracking-widest font-bold mb-2">NOTION</span>
+                <h4 className="text-white font-serif text-xl mb-3">Ultimate Dev Workspace</h4>
+                <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed">
+                  A comprehensive YouTube series on building scalable engineering workflows and personal knowledge bases.
+                </p>
+              </div>
+            </div>
+            
+            {/* Card 2 */}
+            <div className="group rounded-2xl overflow-hidden border border-white/10 bg-black/50 relative cursor-pointer aspect-square md:aspect-[4/3] flex flex-col">
+              <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=600&q=80" alt="Hostinger Deployment" className="w-full h-1/2 object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+              <div className="flex-1 bg-gradient-to-b from-[#111] to-black p-6 flex flex-col justify-start border-t border-white/5">
+                <span className="text-[#673AB7] text-[10px] uppercase tracking-widest font-bold mb-2">HOSTINGER</span>
+                <h4 className="text-white font-serif text-xl mb-3">Scaling Full-Stack Apps</h4>
+                <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed">
+                  Live demonstration of deploying enterprise-grade Next.js applications to handle high user traffic.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="group rounded-2xl overflow-hidden border border-white/10 bg-black/50 relative cursor-pointer aspect-square md:aspect-[4/3] flex flex-col">
+              <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=600&q=80" alt="Logitech Studio" className="w-full h-1/2 object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+              <div className="flex-1 bg-gradient-to-b from-[#111] to-black p-6 flex flex-col justify-start border-t border-white/5">
+                <span className="text-[#00B8D4] text-[10px] uppercase tracking-widest font-bold mb-2">LOGITECH</span>
+                <h4 className="text-white font-serif text-xl mb-3">Professional Studio Setup</h4>
+                <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed">
+                  Behind the scenes look at the hardware powering high-fidelity coding livestreams and tutorials.
+                </p>
+              </div>
             </div>
           </div>
+
+          <div className="flex justify-center relative z-10">
+            <button 
+              onClick={() => onChangePage("collaborations")} 
+              className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-black font-semibold text-xs tracking-widest uppercase rounded-full hover:bg-gold hover:text-white transition-all duration-300"
+            >
+              Explore Collaborations <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </section>
-
-
-
       {/* Newsletter */}
       <section className="scroll-section py-12 px-6 max-w-4xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">

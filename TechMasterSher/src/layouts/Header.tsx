@@ -13,11 +13,7 @@ interface HeaderProps {
   onChangePage: (page: string) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
-  const { dbData, websiteSettings, termsPolicyData, privacyPolicyData, legalSettingsData } = useData();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [isTermsOpen, setIsTermsOpen] = useState(false);
+const ScrollCounter = () => {
   const [viewsCount, setViewsCount] = useState(0);
 
   useEffect(() => {
@@ -25,15 +21,33 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
       const scrollY = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       let scrollPercent = docHeight > 0 ? Math.max(0, Math.min(1, scrollY / docHeight)) : 0;
-      
-      // Ensure it perfectly hits 20 Billion when reaching the bottom
       if (scrollPercent > 0.95) scrollPercent = 1;
-      
-      // Increase counter strictly based on scroll position
       setViewsCount(Math.floor(scrollPercent * 20000000000));
     };
     
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return <span className="font-sans font-bold text-gold text-sm tracking-widest tabular-nums text-right">{viewsCount.toLocaleString()}+</span>;
+};
+
+export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
+  const { dbData, websiteSettings, termsPolicyData, privacyPolicyData, legalSettingsData } = useData();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 50);
+    };
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll(); // Initialize immediately
     
     const handleOpenTerms = () => setIsTermsOpen(true);
@@ -110,20 +124,23 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   return (
     <>
       <header
-  className="glass-nav fixed top-0 left-0 w-full z-[999] py-1 md:py-2 px-4 md:px-12 flex justify-between items-center transition-all duration-300"
+  className={`fixed top-0 left-0 w-full z-[999] py-1 md:py-2 px-4 md:px-12 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
   style={{
-    filter: `
+    filter: isScrolled ? 'none' : `
       drop-shadow(0 2px 4px rgba(212, 175, 55, 0.7))
       drop-shadow(0 4px 10px rgba(212, 175, 55, 0.3))
     `,
-    background:`black`,
+    background: isScrolled ? 'transparent' : 'black',
+    borderBottom: `1px solid ${isScrolled ? 'transparent' : 'rgba(255,255,255,0.1)'}`,
+    pointerEvents: isScrolled ? 'none' : 'auto'
   }}
 >
         {/* Brand Logo */}
         <div 
           onClick={() => handleNavClick("home")} 
-          className="flex items-center gap-2.5 cursor-pointer group"
+          className={`flex items-center gap-2.5 cursor-pointer group transition-opacity duration-300 ${isScrolled ? 'opacity-0' : 'opacity-100'}`}
           data-cursor="home"
+          style={{ pointerEvents: isScrolled ? 'none' : 'auto' }}
         >
           <img
             src={mediaUrl(websiteSettings?.companyLogo) || logo1}
@@ -140,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         </div>
 
         {/* Desktop Navigation Link Cluster */}
-        <nav className="hidden lg:flex items-center gap-5 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <nav className={`hidden lg:flex items-center gap-5 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           {(dbData?.navigation?.desktopLinks || [
             { name: "Home", id: "home" },
             { name: "About", id: "about" },
@@ -168,9 +185,9 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         <div className="flex items-center gap-6">
           <div className="hidden lg:flex flex-col items-end justify-center mr-2 w-[160px]">
             <span className="font-mono text-[8px] text-gray-400 tracking-[3px] uppercase mb-0.5 mr-2">Views</span>
-            <span className="font-sans font-bold text-gold text-sm tracking-widest tabular-nums text-right">{viewsCount.toLocaleString()}+</span>
+            <ScrollCounter />
           </div>
-          <div className="hidden sm:block">
+          <div className={`hidden sm:block transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <Magnetic strength={0.3}>
               <button
                 onClick={() => handleNavClick("contact")}
