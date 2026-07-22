@@ -402,7 +402,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
 
         {/* Video Cards Grid */}
-        <div className="flex flex-col gap-8 md:gap-16 w-full max-w-7xl mx-auto video-showcase-grid-container">
+        <div className="flex flex-col gap-16 md:gap-20 w-full max-w-7xl mx-auto video-showcase-grid-container">
             {(() => {
               const reels = filteredVideos.filter((v) => v.type === "reel" || v.type === "short");
               const longs = filteredVideos.filter((v) => v.type === "long_video");
@@ -412,7 +412,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                   {reels.length > 0 && <StripeReelsCarousel reels={reels} />}
                   
                   {longs.length > 0 && (
-                    <div className="mt-8 w-full max-w-[100vw] overflow-hidden">
+                    <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
                       <LongVideosCarousel videos={longs} />
                     </div>
                   )}
@@ -421,7 +421,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             })()}
           </div>
       </section>      {/* 7. Brand Collaborations Teaser */}
-      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10 text-center">
+      <section className="scroll-section pt-4 pb-16 md:pt-6 md:pb-16 px-6 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-8 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             {homeData?.brandCollaborations?.tag || "BRAND COLLABORATIONS"}

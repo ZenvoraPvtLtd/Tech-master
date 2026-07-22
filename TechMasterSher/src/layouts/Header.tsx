@@ -21,7 +21,7 @@ const ScrollCounter = () => {
       const scrollY = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       let scrollPercent = docHeight > 0 ? Math.max(0, Math.min(1, scrollY / docHeight)) : 0;
-      if (scrollPercent > 0.95) scrollPercent = 1;
+      if (scrollPercent > 0.98) scrollPercent = 1;
       setViewsCount(Math.floor(scrollPercent * 20000000000));
     };
     
@@ -31,7 +31,14 @@ const ScrollCounter = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return <span className="font-sans font-bold text-gold text-sm tracking-widest tabular-nums text-right">{viewsCount.toLocaleString()}+</span>;
+  return (
+    <div className="flex items-center gap-2 bg-[#0a0a0a]/95 backdrop-blur-xl border border-gold/40 rounded-full px-3.5 py-1.5 shadow-[0_4px_25px_rgba(0,0,0,0.9)] pointer-events-auto">
+      <span className="font-mono text-[9px] text-gray-400 tracking-[2px] uppercase">Views</span>
+      <span className="font-sans font-bold text-gold text-xs md:text-sm tracking-wider tabular-nums">
+        {viewsCount.toLocaleString()}+
+      </span>
+    </div>
+  );
 };
 
 export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
@@ -182,9 +189,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         </nav>
 
         {/* Action Button & Hamburger Toggle */}
-        <div className="flex items-center gap-6">
-          <div className="hidden lg:flex flex-col items-end justify-center mr-2 w-[160px]">
-            <span className="font-mono text-[8px] text-gray-400 tracking-[3px] uppercase mb-0.5 mr-2">Views</span>
+        <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center justify-center pointer-events-auto">
             <ScrollCounter />
           </div>
           <div className={`hidden sm:block transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
