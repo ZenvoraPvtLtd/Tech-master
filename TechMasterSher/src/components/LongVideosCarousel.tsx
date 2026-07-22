@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Play, Eye } from "lucide-react";
+import { Play, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { mediaUrl } from "../utils/media";
@@ -47,8 +47,28 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos }
     .sort((a, b) => a.diff - b.diff);
 
   return (
-    <div className="flex flex-col w-full px-4 md:px-8 pt-0 pb-1 md:pt-0 md:pb-2 max-w-[1600px] mx-auto overflow-hidden">
+    <div className="relative flex flex-col w-full px-4 md:px-8 pt-0 pb-1 md:pt-0 md:pb-2 max-w-[1600px] mx-auto overflow-hidden items-center justify-center">
       
+      {/* Chevron Navigation Controls */}
+      {videos.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-2 md:left-6 z-50 p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-gold border border-gold/60 hover:border-gold backdrop-blur-md transition-all shadow-lg text-white cursor-pointer"
+            aria-label="Previous video"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-2 md:right-6 z-50 p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-gold border border-gold/60 hover:border-gold backdrop-blur-md transition-all shadow-lg text-white cursor-pointer"
+            aria-label="Next video"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </>
+      )}
+
       {/* Symmetrical Carousel Track */}
       <motion.div 
         drag="x"
@@ -93,8 +113,10 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos }
                   zIndex: zIndex,
                 }}
                 transition={transitionSettings}
-                className={`relative h-full rounded-[24px] overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border transition-colors duration-300 ${
-                  isActive ? "border-2 border-gold shadow-[0_20px_50px_rgba(255,215,0,0.2)]" : "border border-gold/30 hover:border-gold/60 opacity-60 hover:opacity-100"
+                className={`relative h-full rounded-[24px] overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border-2 transition-all duration-300 ${
+                  isActive 
+                    ? "border-gold shadow-[0_20px_50px_rgba(255,215,0,0.25)]" 
+                    : "border-gold/70 hover:border-gold opacity-80 hover:opacity-100 shadow-[0_0_15px_rgba(255,215,0,0.1)]"
                 }`}
               >
                 {/* Thumbnail Background for Inactive */}
