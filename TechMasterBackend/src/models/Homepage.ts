@@ -101,6 +101,18 @@ export interface IBrandCollaborationItem {
   updatedAt?: Date;
 }
 
+export interface IFeaturedVideoItem {
+  id?: string;
+  youtubeUrl: string;
+  videoId: string;
+  startTime?: string | number;
+  endTime?: string | number;
+  order?: number;
+  status?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 export interface IHomepage extends Document, ICmsBase {
   hero: {
     title: string;
@@ -114,6 +126,7 @@ export interface IHomepage extends Document, ICmsBase {
   coreValues: ICoreValue[];
   brandPartners?: IBrandPartner[];
   brandCollaborationsList?: IBrandCollaborationItem[];
+  featuredVideos?: IFeaturedVideoItem[];
   featuredCampaigns?: IFeaturedCampaigns;
   eventHighlights?: IEventHighlights;
   seo?: ISeo;
@@ -168,6 +181,16 @@ const HomepageSchema = new Schema<IHomepage>(
         brandLogo: { type: String, default: "" },
         status: { type: String, default: "Active" },
         order: { type: Number, default: 0 },
+      },
+    ],
+    featuredVideos: [
+      {
+        youtubeUrl: { type: String, required: true },
+        videoId: { type: String, required: true },
+        startTime: { type: Schema.Types.Mixed, default: "0:00" },
+        endTime: { type: Schema.Types.Mixed, default: "" },
+        order: { type: Number, default: 0 },
+        status: { type: String, default: "Active" },
       },
     ],
     featuredCampaigns: {

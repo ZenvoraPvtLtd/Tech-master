@@ -252,10 +252,10 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-32 pb-0 text-center">
-        <div className="flex justify-center mb-6 relative z-20">
+      <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-32 sm:pt-40 md:pt-48 pb-0 text-center">
+        <div className="flex justify-center mb-6 mt-48 sm:mt-64 md:mt-80 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            HERO LANDING
+            TECH MASTER
           </span>
         </div>
 
@@ -501,23 +501,23 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="flex flex-col gap-16 md:gap-20 w-full max-w-7xl mx-auto video-showcase-grid-container">
             {(() => {
               const reels = filteredVideos.filter((v) => v.type === "reel" || v.type === "short");
-              const longs = filteredVideos.filter((v) => v.type === "long_video");
+              const cmsFeaturedVideos = (homeData?.featuredVideos && homeData.featuredVideos.length > 0)
+                ? homeData.featuredVideos.filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
+                : null;
               
               return (
                 <>
                   {reels.length > 0 && <StripeReelsCarousel reels={reels} isHomePage={true} />}
                   
-                  {longs.length > 0 && (
-                    <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
-                      <LongVideosCarousel videos={longs} isHomePage={true} />
-                    </div>
-                  )}
+                  <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
+                    <LongVideosCarousel videos={cmsFeaturedVideos || []} isHomePage={true} />
+                  </div>
                 </>
               );
             })()}
           </div>
-      </section>      {/* 7. Brand Collaborations Auto-Sliding Showcase */}
-      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10 text-center overflow-hidden">
+      </section>      {/* 7. Brand Collaborations Static Grid (4 Cards Per Row) */}
+      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10 text-center">
         {/* Small Badge */}
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/80 border border-gold/30 px-5 py-2 rounded-full bg-black/50 font-mono font-semibold tracking-[3px] uppercase">
@@ -535,83 +535,69 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </p>
         </div>
 
-        {/* Infinite Auto-Sliding Brand Carousel */}
-        <div className="relative w-full overflow-hidden py-4">
-          {/* Side Fade Gradient Masks */}
-          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-black to-transparent z-20 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-black to-transparent z-20 pointer-events-none" />
+        {/* 4 Cards Per Line Grid */}
+        {(() => {
+          const defaultBrandCollabs = [
+            { brandName: "Samsung", logo: samsungLogo },
+            { brandName: "Xiaomi", logo: miLogo },
+            { brandName: "OnePlus", logo: oneplusLogo },
+            { brandName: "Oppo", logo: oppoLogo },
+            { brandName: "Vivo", logo: vivoLogo },
+            { brandName: "Motorola", logo: motorolaLogo },
+            { brandName: "IQOO", logo: iqooLogo },
+            { brandName: "Realme", logo: realmeLogo },
+            { brandName: "Poco", logo: pocoLogo },
+            { brandName: "Huawei", logo: huaweiLogo },
+            { brandName: "Asus", logo: asusLogo },
+            { brandName: "Google Pixel", logo: pixelLogo },
+            { brandName: "Dell", logo: dellLogo },
+            { brandName: "Amazon", logo: amazonLogo },
+            { brandName: "Flipkart", logo: flipkartLogo },
+            { brandName: "Marshall", logo: marshallLogo }
+          ];
 
-          <motion.div
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ ease: "linear", duration: 35, repeat: Infinity }}
-            style={{ willChange: "transform" }}
-            className="flex items-center gap-6 md:gap-8 w-max"
-          >
-            {[1, 2].map((groupIndex) => {
-              const defaultBrandCollabs = [
-                { brandName: "Samsung", logo: samsungLogo },
-                { brandName: "Xiaomi", logo: miLogo },
-                { brandName: "OnePlus", logo: oneplusLogo },
-                { brandName: "Oppo", logo: oppoLogo },
-                { brandName: "Vivo", logo: vivoLogo },
-                { brandName: "Motorola", logo: motorolaLogo },
-                { brandName: "IQOO", logo: iqooLogo },
-                { brandName: "Realme", logo: realmeLogo },
-                { brandName: "Poco", logo: pocoLogo },
-                { brandName: "Huawei", logo: huaweiLogo },
-                { brandName: "Asus", logo: asusLogo },
-                { brandName: "Google Pixel", logo: pixelLogo },
-                { brandName: "Dell", logo: dellLogo },
-                { brandName: "Amazon", logo: amazonLogo },
-                { brandName: "Flipkart", logo: flipkartLogo },
-                { brandName: "Marshall", logo: marshallLogo }
-              ];
+          const activeCollabs = (homeData?.brandCollaborationsList && homeData.brandCollaborationsList.length > 0)
+            ? homeData.brandCollaborationsList.filter((b: any) => b.status === "Active" || b.status === true || b.status === undefined)
+            : defaultBrandCollabs;
 
-              const activeCollabs = (homeData?.brandCollaborationsList && homeData.brandCollaborationsList.length > 0)
-                ? homeData.brandCollaborationsList.filter((b: any) => b.status === "Active" || b.status === true || b.status === undefined)
-                : defaultBrandCollabs;
+          const displayCollabs = activeCollabs.length > 0
+            ? [...activeCollabs].sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0))
+            : defaultBrandCollabs;
 
-              const displayCollabs = activeCollabs.length > 0
-                ? [...activeCollabs].sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0))
-                : defaultBrandCollabs;
+          return (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-5 w-full">
+              {displayCollabs.map((brand: any, idx: number) => {
+                const logoUrl = brand.logo || brand.brandLogo;
 
-              return (
-                <div key={groupIndex} className="flex items-center gap-6 md:gap-8">
-                  {displayCollabs.map((brand: any, idx: number) => {
-                    const logoUrl = brand.logo || brand.brandLogo;
+                return (
+                  <div
+                    key={`${brand.brandName}-${idx}`}
+                    className="group relative flex items-center justify-center gap-3 bg-black/60 border border-white/10 hover:border-gold/60 px-5 py-4 rounded-2xl backdrop-blur-xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-105 select-none h-20"
+                  >
+                    <div className="absolute inset-0 rounded-2xl bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-                    return (
-                      <div
-                        key={`${brand.brandName}-${idx}-${groupIndex}`}
-                        className="group relative flex items-center justify-center gap-3.5 bg-black/60 border border-white/10 hover:border-gold/60 px-6 py-4 rounded-2xl backdrop-blur-xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-105 select-none min-w-[160px] md:min-w-[190px] h-20"
-                      >
-                        {/* Soft Gold Glow behind card on hover */}
-                        <div className="absolute inset-0 rounded-2xl bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-                        {logoUrl ? (
-                          <img
-                            src={logoUrl}
-                            alt={brand.brandName}
-                            loading="eager"
-                            className="h-8 max-h-9 w-auto max-w-[90px] object-contain rounded transition-transform duration-300 group-hover:scale-110"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center text-gold font-bold text-xs uppercase">
-                            {brand.brandName.substring(0, 2)}
-                          </div>
-                        )}
-
-                        <span className="font-serif text-sm md:text-base font-semibold text-gray-300 group-hover:text-gold tracking-wider transition-colors duration-300 whitespace-nowrap">
-                          {brand.brandName}
-                        </span>
+                    {logoUrl ? (
+                      <img
+                        src={logoUrl}
+                        alt={brand.brandName}
+                        loading="eager"
+                        className="h-8 max-h-9 w-auto max-w-[80px] object-contain rounded transition-transform duration-300 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center text-gold font-bold text-xs uppercase">
+                        {brand.brandName.substring(0, 2)}
                       </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </motion.div>
-        </div>
+                    )}
+
+                    <span className="font-serif text-sm sm:text-base font-semibold text-gray-300 group-hover:text-gold tracking-wider transition-colors duration-300 whitespace-nowrap">
+                      {brand.brandName}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
       </section>
       {/* Newsletter */}
       <section className="scroll-section py-12 px-6 max-w-4xl mx-auto relative z-10 text-center">

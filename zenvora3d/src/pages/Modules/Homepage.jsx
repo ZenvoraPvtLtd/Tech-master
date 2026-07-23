@@ -363,6 +363,32 @@ export const Homepage = () => {
           )}
         </Card>
 
+        {/* FEATURED VIDEOS (YOUTUBE) CMS MODULE */}
+        <Card title={<div onClick={() => toggleCard('featuredVideos')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Video className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Featured Videos (YouTube)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.featuredVideos && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
+              {renderListManager({
+                sectionKey: 'featuredVideos',
+                displayColumns: [
+                  { key: 'youtubeUrl', label: 'YouTube URL' },
+                  { key: 'videoId', label: 'Video ID' },
+                  { key: 'startTime', label: 'Start Time' },
+                  { key: 'endTime', label: 'End Time' },
+                  { key: 'status', label: 'Status' }
+                ],
+                fields: [
+                  { key: 'youtubeUrl', label: 'YouTube Video URL (e.g. https://www.youtube.com/watch?v=8H272rF60dc)' },
+                  { key: 'videoId', label: 'YouTube Video ID (e.g. 8H272rF60dc)' },
+                  { key: 'startTime', label: 'Start Time (e.g. 0:20 or seconds)' },
+                  { key: 'endTime', label: 'End Time (e.g. 6:33 or seconds - optional)' },
+                  { key: 'status', label: 'Active Status (Active/Inactive)' },
+                  { key: 'order', label: 'Display Order', type: 'number' }
+                ]
+              })}
+            </div>
+          )}
+        </Card>
+
         {/* 2. STATISTICS SECTION */}
         <Card title={<div onClick={() => toggleCard('stats')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><BarChart className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Global Impact Statistics</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
           {expandedCards.stats && (

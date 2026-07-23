@@ -57,8 +57,8 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
     if (offset === 0) {
       return { rotateY: 0, scale: 1.0, opacity: 1, zIndex: 40 };
     }
-    const sc = abs === 1 ? 0.88 : 0.75;
-    const op = abs === 1 ? 0.88 : 0.65;
+    const sc = abs === 1 ? 0.96 : 0.92;
+    const op = abs === 1 ? 0.95 : 0.85;
     return { rotateY: 0, scale: sc, opacity: op, zIndex: 40 - abs };
   };
 
@@ -85,6 +85,10 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
         </>
       )}
 
+      {/* Edge Fade Gradients for ultra-smooth blending of outermost cards */}
+      <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-20 md:w-28 bg-gradient-to-r from-black via-black/60 to-transparent z-40 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 md:w-28 bg-gradient-to-l from-black via-black/60 to-transparent z-40 pointer-events-none" />
+
       {/* 3D Coverflow Carousel Track */}
       <motion.div 
         drag="x"
@@ -92,7 +96,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
         style={{ perspective: "1200px" }}
-        className="flex flex-row items-center justify-center gap-2 sm:gap-4 md:gap-8 h-[440px] sm:h-[500px] md:h-[540px] w-full py-4 cursor-grab active:cursor-grabbing relative overflow-hidden"
+        className="flex flex-row items-center justify-center gap-2 sm:gap-3 md:gap-3 h-[360px] sm:h-[440px] md:h-[500px] w-full py-2 cursor-grab active:cursor-grabbing relative overflow-hidden"
       >
         {offsets.map((offset) => {
           const originalIndex = (activeIndex + offset + N * 1000) % N;
@@ -104,19 +108,12 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
           const rawHandle = reel.handle || reel.author || reel.category || "techmaster";
           const formattedHandle = rawHandle.startsWith("@") ? rawHandle : `@${rawHandle.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
 
-          // Blur level: center = 0px (crisp), immediate sides = 3px (light blur), outer sides = 8px (heavy blur)
-          const videoBlurClass = absOffset === 0
-            ? "blur-none opacity-100"
+          // Smooth GPU Overlay level: center = crisp, immediate sides = light glass blur, outer sides = deeper glass blur
+          const overlayGlassClass = absOffset === 0
+            ? "pointer-events-none"
             : absOffset === 1
-              ? "blur-[3px] opacity-90 group-hover:blur-[1px] group-hover:opacity-100"
-              : "blur-[8px] opacity-75 group-hover:blur-[4px] group-hover:opacity-90";
-
-          // Blue tint overlay: center = none, immediate sides = light blue, outer sides = deep blue
-          const blueOverlayClass = absOffset === 0
-            ? ""
-            : absOffset === 1
-              ? "bg-gradient-to-t from-blue-950/50 via-blue-600/30 to-blue-500/15 border border-blue-500/20"
-              : "bg-gradient-to-t from-blue-950/70 via-blue-700/50 to-blue-600/35 border border-blue-600/30";
+              ? "backdrop-blur-[2px] bg-blue-950/30 border border-blue-500/20 pointer-events-none transition-all duration-300"
+              : "backdrop-blur-[6px] bg-black/70 border border-blue-600/20 pointer-events-none transition-all duration-300";
 
           return (
             <motion.div
@@ -134,7 +131,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                 zIndex,
               }}
               transition={transitionSettings}
-              style={{ transformStyle: "preserve-3d" }}
+              style={{ transformStyle: "preserve-3d", willChange: "transform" }}
               className={`relative h-[360px] sm:h-[440px] md:h-[490px] w-[200px] sm:w-[240px] md:w-[265px] overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border transition-all duration-300 ${
                 isHomePage ? "rounded-none" : "rounded-[24px]"
               } ${
@@ -147,7 +144,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                     : "border-blue-500/30 hover:border-blue-400/50"
               }`}
             >
-              {/* Pure Video Element (No Thumbnails) */}
+              {/* Pure Video Element - GPU Accelerated for 60fps Smooth Playback */}
               {(reel.url || reel.videoUrl) && (
                 <video
                   src={mediaUrl(reel.url || reel.videoUrl)}
@@ -155,27 +152,31 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                   muted
                   loop
                   playsInline
-                  className={`w-full h-full object-cover relative z-20 group-hover:scale-105 transition-all duration-700 ${videoBlurClass}`}
+                  preload="auto"
+                  style={{ transform: "translateZ(0)", willChange: "transform" }}
+                  className="w-full h-full object-cover relative z-20 group-hover:scale-105 transition-all duration-500 opacity-100"
                 />
               )}
               
-              {/* Blue Effect Overlay for Side Cards */}
+              {/* GPU Glass Blur & Blue Effect Overlay for Side Cards */}
               {absOffset > 0 && (
-                <div className={`absolute inset-0 pointer-events-none z-30 transition-all duration-500 ${blueOverlayClass}`} />
+                <div className={`absolute inset-0 z-30 ${overlayGlassClass}`} />
               )}
 
               {/* Overlay Gradient at Bottom */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-700 pointer-events-none z-30" />
 
-              {/* Bottom Left Handle Overlay (Matches Reference Image @fashion Modern Style) */}
-              <div className="absolute bottom-5 left-5 z-40 flex flex-col text-left pointer-events-none">
-                <span className="text-white font-bold text-sm sm:text-base tracking-wide font-sans drop-shadow-md">
-                  {formattedHandle}
-                </span>
-                <span className="text-gray-300 text-xs font-light tracking-wide line-clamp-1 drop-shadow-sm">
-                  {reel.title || "Featured Content"}
-                </span>
-              </div>
+              {/* Bottom Left Handle Overlay (Shown only on Center and Immediate Side Cards) */}
+              {absOffset <= 1 && (
+                <div className="absolute bottom-5 left-5 z-40 flex flex-col text-left pointer-events-none transition-opacity duration-300">
+                  <span className="text-white font-bold text-sm sm:text-base tracking-wide font-sans drop-shadow-md">
+                    {formattedHandle}
+                  </span>
+                  <span className="text-gray-300 text-xs font-light tracking-wide line-clamp-1 drop-shadow-sm">
+                    {reel.title || "Featured Content"}
+                  </span>
+                </div>
+              )}
 
               {/* Views Counter & Top Badge */}
               <AnimatePresence>

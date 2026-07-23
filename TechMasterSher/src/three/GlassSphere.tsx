@@ -4,7 +4,7 @@ import { shaderMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 const LionShaderMaterial = shaderMaterial(
-  { uTexture: null, uOpacity: 0.35 },
+  { uTexture: null, uOpacity: 0.85 },
   // vertex shader
   `
   varying vec2 vUv;
@@ -84,7 +84,7 @@ export const GlassSphere: React.FC<GlassSphereProps> = ({ scrollProgress, mouse 
 
     // React to mouse movement (lerped for smoothness)
     const targetX = mouse.current.x * 0.35;
-    const targetY = mouse.current.y * 0.35;
+    const targetY = 0.35 + mouse.current.y * 0.25;
     meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, targetX, 0.05);
     meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, targetY, 0.05);
 
