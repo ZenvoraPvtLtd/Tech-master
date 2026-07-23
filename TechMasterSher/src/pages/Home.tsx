@@ -252,29 +252,30 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-32 sm:pt-40 md:pt-48 pb-0 text-center">
-        <div className="flex justify-center mb-6 mt-48 sm:mt-64 md:mt-80 relative z-20">
+      <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-28 pb-0 text-center">
+        {/* The 2 Badges directly below Navbar */}
+        <div className="flex flex-col items-center gap-3 relative z-20 mb-4 sm:mb-6">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             TECH MASTER
           </span>
-        </div>
 
-
-
-        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10">
-          {/* Animated luxury tag */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="typo-badge mb-6 border border-gold/25 px-4 py-1.5 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2"
+            className="typo-badge border border-gold/25 px-4 py-1.5 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2"
           >
-            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 fill-current text-gold" viewBox="0 0 24 24">
               <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
-            {homeData?.heroMainHeading?.smallBadge || "HERO LANDING"}
+            {homeData?.heroMainHeading?.smallBadge || "INDIA'S LEADING DIGITAL & TECHNICAL SOLUTION"}
           </motion.div>
+        </div>
 
+        {/* Vertical Gap for 3D Lion / Sher Logo */}
+        <div className="h-64 sm:h-72 md:h-80 w-full pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10">
           {/* Headline with split reveal effect */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
