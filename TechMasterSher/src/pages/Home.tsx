@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowDown, ArrowUpRight, X } from "lucide-react";
+import { ArrowDown, X } from "lucide-react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,6 +8,23 @@ import { useData } from "../context/DataContext";
 import { StripeReelsCarousel } from "../components/StripeReelsCarousel";
 import { LongVideosCarousel } from "../components/LongVideosCarousel";
 import { AnimatedCounter } from "../components/AnimatedCounter";
+
+import asusLogo from "../assets/ASUS.jpeg";
+import dellLogo from "../assets/DELL.jpeg";
+import flipkartLogo from "../assets/Flipkart.jpeg";
+import huaweiLogo from "../assets/HUAWEI.jpeg";
+import miLogo from "../assets/MI.jpeg";
+import marshallLogo from "../assets/Marshall_clean.png";
+import motorolaLogo from "../assets/motorola_hd.png";
+import oneplusLogo from "../assets/Oneplus.jpeg";
+import oppoLogo from "../assets/oppo.jpeg";
+import pixelLogo from "../assets/PIXEL.jpeg";
+import pocoLogo from "../assets/Poco.jpeg";
+import realmeLogo from "../assets/realme_official.png";
+import samsungLogo from "../assets/samsung.jpeg";
+import vivoLogo from "../assets/Vivo.jpeg";
+import amazonLogo from "../assets/amazon.jpeg";
+import iqooLogo from "../assets/iQOO.jpeg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -315,26 +332,105 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       <section className="py-12 bg-black/40 border-y border-white/5 relative z-10 overflow-hidden text-center">
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            TRUSTED PARTNERS TICKER
+            OFFICIAL CHANNELS & PARTNERS
           </span>
         </div>
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
-          transition={{ ease: "linear", duration: Math.max(15, (homeData?.brandPartners?.length || 6) * 2.2), repeat: Infinity }}
+          transition={{ ease: "linear", duration: 25, repeat: Infinity }}
           style={{ willChange: "transform" }}
           className="flex gap-12 md:gap-24 w-max"
         >
           {[1, 2].map((groupIndex) => {
-            const basePartners = homeData?.brandPartners?.length > 0 ? homeData.brandPartners : [{ brandName: "NVIDIA" }, { brandName: "GITHUB" }, { brandName: "GOOGLE CLOUD" }, { brandName: "APPLE DEVELOPER" }, { brandName: "VERCEL" }, { brandName: "MICROSOFT" }];
-            const displayPartners = [...basePartners, { brandName: "TechMaster Technologies" }, { brandName: "TechMaster Technologies" }];
+            const defaultBrandChannels = [
+              {
+                brandName: "Tech Master",
+                youtubeUrl: "https://www.youtube.com/@techmasterhq",
+                instagramUrl: "https://www.instagram.com/techmasterco/?hl=en",
+                showYouTube: true,
+                showInstagram: true
+              },
+              {
+                brandName: "Next Univerz",
+                youtubeUrl: "https://www.youtube.com/@NextUniverz",
+                instagramUrl: "https://www.instagram.com/NextUniverz/",
+                showYouTube: true,
+                showInstagram: true
+              },
+              {
+                brandName: "Master Wheels",
+                youtubeUrl: "https://www.youtube.com/@MasterWheelsAK",
+                instagramUrl: "https://www.instagram.com/masterwheel1/",
+                showYouTube: true,
+                showInstagram: true
+              },
+              {
+                brandName: "Full Circle",
+                youtubeUrl: "https://www.youtube.com/@fullcircle_in",
+                instagramUrl: "https://www.instagram.com/fullcircle_in/",
+                showYouTube: true,
+                showInstagram: true
+              }
+            ];
+
+            const activePartners = (homeData?.brandPartners && homeData.brandPartners.length > 0)
+              ? homeData.brandPartners.filter((b: any) => b.status === "Active" || b.status === true || b.status === undefined)
+              : defaultBrandChannels;
+
+            const displayPartners = activePartners.length > 0
+              ? [...activePartners].sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0))
+              : defaultBrandChannels;
+
             return (
-              <div key={groupIndex} className="flex items-center gap-12 md:gap-24">
-                {displayPartners.map((brand: any, idx: number) => (
-                  <span
-                    key={`${brand.brandName}-${idx}-${groupIndex}`}
-                    className="font-serif text-xl sm:text-2xl font-black text-gold tracking-[6px] transition-colors duration-300 select-none cursor-default whitespace-nowrap"
-                  >{brand.brandName}</span>
-                ))}
+              <div key={groupIndex} className="flex items-center gap-12 md:gap-20">
+                {displayPartners.map((brand: any, idx: number) => {
+                  const ytUrl = brand.youtubeUrl || brand.url || "https://www.youtube.com/@techmasterhq";
+                  const instaUrl = brand.instagramUrl || brand.website;
+                  const showYt = brand.showYouTube !== false && !!ytUrl;
+                  const showInsta = brand.showInstagram !== false && !!instaUrl;
+
+                  return (
+                    <div
+                      key={`${brand.brandName}-${idx}-${groupIndex}`}
+                      className="inline-flex items-center gap-3 bg-black/80 border border-gold/30 hover:border-gold px-4 py-2 rounded-xl backdrop-blur-md transition-all duration-300 shadow-md group/brand"
+                    >
+                      {/* Brand Title */}
+                      <span className="font-serif text-base sm:text-lg font-bold text-gold tracking-[3px] whitespace-nowrap">
+                        {brand.brandName}
+                      </span>
+
+                      {/* YouTube Direct Icon */}
+                      {showYt && (
+                        <a
+                          href={ytUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`Open ${brand.brandName} YouTube Channel`}
+                          className="p-1.5 rounded-full bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white transition-all duration-300 border border-red-500/40 hover:scale-110 flex items-center justify-center"
+                        >
+                          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                            <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                          </svg>
+                        </a>
+                      )}
+
+                      {/* Instagram Direct Icon */}
+                      {showInsta && (
+                        <a
+                          href={instaUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`Open ${brand.brandName} Instagram Profile`}
+                          className="p-1.5 rounded-full bg-pink-600/20 hover:bg-pink-600 text-pink-400 hover:text-white transition-all duration-300 border border-pink-500/40 hover:scale-110 flex items-center justify-center"
+                        >
+                          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                          </svg>
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             );
           })}
@@ -409,82 +505,112 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               
               return (
                 <>
-                  {reels.length > 0 && <StripeReelsCarousel reels={reels} />}
+                  {reels.length > 0 && <StripeReelsCarousel reels={reels} isHomePage={true} />}
                   
                   {longs.length > 0 && (
                     <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
-                      <LongVideosCarousel videos={longs} />
+                      <LongVideosCarousel videos={longs} isHomePage={true} />
                     </div>
                   )}
                 </>
               );
             })()}
           </div>
-      </section>      {/* 7. Brand Collaborations Teaser */}
-      <section className="scroll-section pt-4 pb-16 md:pt-6 md:pb-16 px-6 max-w-7xl mx-auto relative z-10 text-center">
-        <div className="flex justify-center mb-8 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            {homeData?.brandCollaborations?.tag || "BRAND COLLABORATIONS"}
+      </section>      {/* 7. Brand Collaborations Auto-Sliding Showcase */}
+      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10 text-center overflow-hidden">
+        {/* Small Badge */}
+        <div className="flex justify-center mb-6 relative z-20">
+          <span className="typo-badge text-gold/80 border border-gold/30 px-5 py-2 rounded-full bg-black/50 font-mono font-semibold tracking-[3px] uppercase">
+            BRAND COLLABORATIONS
           </span>
         </div>
-        <div className="glass-panel p-8 md:p-12 rounded-3xl border border-white/5 bg-gradient-to-br from-black via-[#070707] to-black/90 relative overflow-hidden fade-up">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full pointer-events-none" />
-          
-          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">
-            {homeData?.brandCollaborations?.heading || "Partnering with Industry Leaders"}
+
+        {/* Main Heading & Subtitle */}
+        <div className="max-w-3xl mx-auto mb-12 relative z-20">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-white mb-4 tracking-tight">
+            Trusted By <span className="text-gold italic font-bold">Leading Technology Brands</span>
           </h2>
-          
-          <p className="text-gray-400 text-sm md:text-base font-light max-w-2xl mx-auto mb-12 relative z-10">
-            {homeData?.brandCollaborations?.description || "We join forces with leading technology companies and cloud giants to build open-source tools, launch hackathons, and deliver industry-relevant education."}
+          <p className="text-gray-400 text-xs sm:text-sm md:text-base font-light leading-relaxed">
+            Proud collaborations and partnerships with globally recognized technology brands that have helped shape our educational ecosystem.
           </p>
-          
-          {/* Brand Collaboration Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 relative z-10">
-            {/* Card 1 */}
-            <div className="group rounded-2xl overflow-hidden border border-white/10 bg-black/50 relative cursor-pointer aspect-square md:aspect-[4/3] flex flex-col">
-              <img src="https://images.unsplash.com/photo-1542435503-956c469947f6?auto=format&fit=crop&w=600&q=80" alt="Notion Workspace" className="w-full h-1/2 object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
-              <div className="flex-1 bg-gradient-to-b from-[#111] to-black p-6 flex flex-col justify-start border-t border-white/5">
-                <span className="text-gray-300 text-[10px] uppercase tracking-widest font-bold mb-2">NOTION</span>
-                <h4 className="text-white font-serif text-xl mb-3">Ultimate Dev Workspace</h4>
-                <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed">
-                  A comprehensive YouTube series on building scalable engineering workflows and personal knowledge bases.
-                </p>
-              </div>
-            </div>
-            
-            {/* Card 2 */}
-            <div className="group rounded-2xl overflow-hidden border border-white/10 bg-black/50 relative cursor-pointer aspect-square md:aspect-[4/3] flex flex-col">
-              <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=600&q=80" alt="Hostinger Deployment" className="w-full h-1/2 object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
-              <div className="flex-1 bg-gradient-to-b from-[#111] to-black p-6 flex flex-col justify-start border-t border-white/5">
-                <span className="text-[#673AB7] text-[10px] uppercase tracking-widest font-bold mb-2">HOSTINGER</span>
-                <h4 className="text-white font-serif text-xl mb-3">Scaling Full-Stack Apps</h4>
-                <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed">
-                  Live demonstration of deploying enterprise-grade Next.js applications to handle high user traffic.
-                </p>
-              </div>
-            </div>
+        </div>
 
-            {/* Card 3 */}
-            <div className="group rounded-2xl overflow-hidden border border-white/10 bg-black/50 relative cursor-pointer aspect-square md:aspect-[4/3] flex flex-col">
-              <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=600&q=80" alt="Logitech Studio" className="w-full h-1/2 object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
-              <div className="flex-1 bg-gradient-to-b from-[#111] to-black p-6 flex flex-col justify-start border-t border-white/5">
-                <span className="text-[#00B8D4] text-[10px] uppercase tracking-widest font-bold mb-2">LOGITECH</span>
-                <h4 className="text-white font-serif text-xl mb-3">Professional Studio Setup</h4>
-                <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed">
-                  Behind the scenes look at the hardware powering high-fidelity coding livestreams and tutorials.
-                </p>
-              </div>
-            </div>
-          </div>
+        {/* Infinite Auto-Sliding Brand Carousel */}
+        <div className="relative w-full overflow-hidden py-4">
+          {/* Side Fade Gradient Masks */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-black to-transparent z-20 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-black to-transparent z-20 pointer-events-none" />
 
-          <div className="flex justify-center relative z-10">
-            <button 
-              onClick={() => onChangePage("collaborations")} 
-              className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-black font-semibold text-xs tracking-widest uppercase rounded-full hover:bg-gold hover:text-white transition-all duration-300"
-            >
-              Explore Collaborations <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
+          <motion.div
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ ease: "linear", duration: 35, repeat: Infinity }}
+            style={{ willChange: "transform" }}
+            className="flex items-center gap-6 md:gap-8 w-max"
+          >
+            {[1, 2].map((groupIndex) => {
+              const defaultBrandCollabs = [
+                { brandName: "Samsung", logo: samsungLogo },
+                { brandName: "Xiaomi", logo: miLogo },
+                { brandName: "OnePlus", logo: oneplusLogo },
+                { brandName: "Oppo", logo: oppoLogo },
+                { brandName: "Vivo", logo: vivoLogo },
+                { brandName: "Motorola", logo: motorolaLogo },
+                { brandName: "IQOO", logo: iqooLogo },
+                { brandName: "Realme", logo: realmeLogo },
+                { brandName: "Poco", logo: pocoLogo },
+                { brandName: "Huawei", logo: huaweiLogo },
+                { brandName: "Asus", logo: asusLogo },
+                { brandName: "Google Pixel", logo: pixelLogo },
+                { brandName: "Dell", logo: dellLogo },
+                { brandName: "Amazon", logo: amazonLogo },
+                { brandName: "Flipkart", logo: flipkartLogo },
+                { brandName: "Marshall", logo: marshallLogo }
+              ];
+
+              const activeCollabs = (homeData?.brandCollaborationsList && homeData.brandCollaborationsList.length > 0)
+                ? homeData.brandCollaborationsList.filter((b: any) => b.status === "Active" || b.status === true || b.status === undefined)
+                : defaultBrandCollabs;
+
+              const displayCollabs = activeCollabs.length > 0
+                ? [...activeCollabs].sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0))
+                : defaultBrandCollabs;
+
+              return (
+                <div key={groupIndex} className="flex items-center gap-6 md:gap-8">
+                  {displayCollabs.map((brand: any, idx: number) => {
+                    const logoUrl = brand.logo || brand.brandLogo;
+
+                    return (
+                      <div
+                        key={`${brand.brandName}-${idx}-${groupIndex}`}
+                        className="group relative flex items-center justify-center gap-3.5 bg-black/60 border border-white/10 hover:border-gold/60 px-6 py-4 rounded-2xl backdrop-blur-xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-105 select-none min-w-[160px] md:min-w-[190px] h-20"
+                      >
+                        {/* Soft Gold Glow behind card on hover */}
+                        <div className="absolute inset-0 rounded-2xl bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                        {logoUrl ? (
+                          <img
+                            src={logoUrl}
+                            alt={brand.brandName}
+                            loading="eager"
+                            className="h-8 max-h-9 w-auto max-w-[90px] object-contain rounded transition-transform duration-300 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center text-gold font-bold text-xs uppercase">
+                            {brand.brandName.substring(0, 2)}
+                          </div>
+                        )}
+
+                        <span className="font-serif text-sm md:text-base font-semibold text-gray-300 group-hover:text-gold tracking-wider transition-colors duration-300 whitespace-nowrap">
+                          {brand.brandName}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </motion.div>
         </div>
       </section>
       {/* Newsletter */}

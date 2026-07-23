@@ -253,75 +253,70 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-transparent border-t border-white/5 pt-12 pb-12 px-6 md:px-12 relative overflow-hidden text-left"
+      className="relative bg-gradient-to-b from-black via-[#060606] to-black border-t border-white/10 pt-16 pb-12 px-6 sm:px-10 md:px-16 lg:px-20 overflow-hidden text-left"
     >
-      {/* 1. Cinematic Background Video inside the footer (disabled to show global background) */}
-      {/*
-      <div className="absolute inset-0 w-full h-full opacity-15 pointer-events-none overflow-hidden z-0">
-        <video
-          src="https://assets.mixkit.co/videos/preview/mixkit-abstract-dark-waves-fluid-loop-43093-large.mp4"
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-[#030303]/80" />
-      </div>
-      */}
-
-      {/* 2. Interactive Mouse Glow Spotlight */}
+      {/* Interactive Mouse Glow Spotlight */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-700 z-0"
         style={{
           opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(400px circle at ${mouseGlow.x}px ${mouseGlow.y}px, rgba(212, 175, 55, 0.06), transparent 70%)`,
+          background: `radial-gradient(500px circle at ${mouseGlow.x}px ${mouseGlow.y}px, rgba(212, 175, 55, 0.07), transparent 70%)`,
         }}
       />
 
-      {/* 3. HTML5 Particle Canvas */}
+      {/* HTML5 Particle Canvas */}
       <ParticleCanvas />
 
-      {/* 4. Animated rotating background glow rings */}
-      <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] aurora-glow-purple opacity-20 pointer-events-none blur-[100px] animate-pulse" />
+      {/* Ambient Rotating Background Glow */}
+      <div className="absolute bottom-[-120px] right-[-100px] w-[500px] h-[500px] aurora-glow-purple opacity-15 pointer-events-none blur-[120px] animate-pulse" />
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 relative z-10 mb-16 pt-24">
-        {/* Left column (LGB 3): Newsletter and branding */}
-        <div className="lg:col-span-3 flex flex-col justify-between z-10">
+      {/* Main 12-Column Footer Grid Layout */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 relative z-10 mb-12">
+        
+        {/* LEFT SIDE (lg:col-span-4): Newsletter & Branding */}
+        <div className="lg:col-span-4 flex flex-col justify-between gap-8">
           <div>
-            <h2 className="font-sans text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">
+            <div className="inline-block mb-4">
+              <span className="text-[10px] font-mono tracking-[3px] text-gold uppercase px-3 py-1 rounded-full bg-gold/10 border border-gold/25">
+                CREATOR PLATFORM
+              </span>
+            </div>
+            <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-light text-white leading-snug tracking-tight mb-4">
               Let's create the <br />
               <span className="text-gold italic font-bold">future of code</span>.
             </h2>
-            <p className="text-gray-400 text-sm md:text-base font-light max-w-md leading-relaxed mb-8">
+            <p className="text-gray-400 text-xs sm:text-sm font-light max-w-sm leading-relaxed">
               Subscribe to Aman's newsletter. Receive exclusive design mockups, platform beta keys, systems tips, and speaking logs.
             </p>
           </div>
 
-          <form onSubmit={handleSubscribe} className="relative w-full max-w-md mt-6">
-            <input
-              type="email"
-              required
-              placeholder="ENTER EMAIL"
-              className="w-full bg-[#0d0d0d]/80 border border-white/10 rounded-full pl-6 pr-32 py-4 text-xs font-sans tracking-[1.5px] uppercase text-white placeholder-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-300 backdrop-blur-md"
-            />
-            <button
-              type="submit"
-              className="absolute right-2 top-2 bottom-2 bg-gold hover:bg-gold-light text-black font-bold uppercase text-[10px] tracking-[1.5px] px-5 rounded-full flex items-center gap-1.5 transition-all duration-300"
-              data-cursor="submit"
-            >
-              Subscribe
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
+          <form onSubmit={handleSubscribe} className="relative w-full max-w-md">
+            <div className="relative flex items-center">
+              <input
+                type="email"
+                required
+                placeholder="ENTER EMAIL"
+                className="w-full bg-black/70 border border-white/15 rounded-full pl-5 pr-36 py-3.5 text-xs font-mono tracking-widest uppercase text-white placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all duration-300 backdrop-blur-md"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 top-1.5 bottom-1.5 bg-gradient-to-r from-gold to-gold-light hover:brightness-110 text-black font-bold uppercase text-[10px] tracking-widest px-4 rounded-full flex items-center gap-1.5 transition-all duration-300 shadow-md"
+                data-cursor="submit"
+              >
+                Subscribe
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </form>
         </div>
 
-        {/* Middle columns (LGB 6): sitemap columns */}
-        <div className="lg:col-span-6 flex flex-col gap-10">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-6">
+        {/* CENTER SIDE (lg:col-span-5): 3 Sitemap Columns */}
+        <div className="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
+          
           {/* Column 1: Identity */}
           <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-sans">IDENTITY</p>
-            <ul className="flex flex-col gap-1 md:gap-1.5">
+            <p className="text-[10px] uppercase tracking-[3px] text-gold font-mono font-bold mb-5 block">IDENTITY</p>
+            <ul className="flex flex-col gap-2">
               {(dbData?.navigation?.identityItems || [
                 { name: "About Founder", id: "about" },
                 { name: "Founder's Journey", id: "journey" },
@@ -331,7 +326,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                 <li key={link.id}>
                   <button
                     onClick={() => handleNavClick(link.id)}
-                    className="text-xs uppercase tracking-[1.5px] text-gray-400 hover:text-gold transition-colors duration-300 text-left font-light block"
+                    className="text-xs uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
                   >
                     {link.name}
                   </button>
@@ -342,8 +337,8 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
           {/* Column 2: Engagement */}
           <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-sans">ENGAGEMENT</p>
-            <ul className="flex flex-col gap-1 md:gap-1.5">
+            <p className="text-[10px] uppercase tracking-[3px] text-gold font-mono font-bold mb-5 block">ENGAGEMENT</p>
+            <ul className="flex flex-col gap-2">
               {(dbData?.navigation?.engagementItems || [
                 { name: "Brand Collabs", id: "collaborations" },
                 { name: "Campaigns", id: "campaigns" },
@@ -355,7 +350,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                 <li key={link.id}>
                   <button
                     onClick={() => handleNavClick(link.id)}
-                    className="text-xs uppercase tracking-[1.5px] text-gray-400 hover:text-gold transition-colors duration-300 text-left font-light block"
+                    className="text-xs uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
                   >
                     {link.name}
                   </button>
@@ -366,8 +361,8 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
           {/* Column 3: Quick Links */}
           <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold/80 font-bold mb-6 font-sans">QUICK LINKS</p>
-            <ul className="flex flex-col gap-1 md:gap-1.5">
+            <p className="text-[10px] uppercase tracking-[3px] text-gold font-mono font-bold mb-5 block">QUICK LINKS</p>
+            <ul className="flex flex-col gap-2">
               {(dbData?.navigation?.quickLinksItems || [
                 { name: "Core Services", id: "services" },
                 { name: "Testimonials", id: "testimonials" },
@@ -379,7 +374,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                 <li key={link.id}>
                   <button
                     onClick={() => handleNavClick(link.id)}
-                    className="text-xs uppercase tracking-[1.5px] text-gray-400 hover:text-gold transition-colors duration-300 text-left font-light block"
+                    className="text-xs uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
                   >
                     {link.name}
                   </button>
@@ -387,68 +382,72 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
               ))}
             </ul>
           </div>
-          </div>
-          {/* Contact Cards Grid Moved Here */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <ContactCard
-              icon={<Mail className="w-4 h-4" />}
-              label="DIRECT MAIL"
-              value={contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
-              href={`mailto:${contactData?.heroSetup?.email || websiteSettings?.email || ""}`}
-              accent="#D4AF37"
-            />
-            <ContactCard
-              icon={<Phone className="w-4 h-4" />}
-              label="BOOKING OFFICE"
-              value={contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
-              href={`tel:${contactData?.heroSetup?.phone || websiteSettings?.phone || ""}`}
-              accent="#00E5FF"
-            />
-            <ContactCard
-              icon={<MapPin className="w-4 h-4" />}
-              label="CREATOR HQ"
-              value={websiteSettings?.address || "Silicon Valley Creator Labs, Suite 40"}
-              href={websiteSettings?.googleMapsUrl}
-              accent="#aa3bff"
-            />
-          </div>
         </div>
 
-        {/* Right columns (LGB 3): 3D Scene viewport container */}
-        <div className="lg:col-span-3 h-48 md:h-full min-h-[180px] w-full border border-white/5 rounded-3xl overflow-hidden relative glass-panel flex items-center justify-center">
-          <div className="absolute inset-0 z-0">
-            <Canvas camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: true, alpha: true }}>
-              <ambientLight intensity={0.6} />
-              <directionalLight position={[2, 2, 2]} intensity={1.5} color="#ffffff" />
-              <pointLight position={[-2, -2, 2]} intensity={2.0} color="#aa3bff" />
-              <MorphingTorus />
-              <Environment preset="studio" />
-            </Canvas>
-          </div>
-          <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
-            <span className="text-[8px] font-sans tracking-[2px] text-gold uppercase bg-black/80 px-2 py-0.5 rounded border border-white/10">
-              3D Spatial Node
-            </span>
+        {/* RIGHT SIDE (lg:col-span-3): Unified Luxury Contact & 3D Spatial Panel */}
+        <div className="lg:col-span-3 flex flex-col gap-4">
+          <div className="glass-panel p-5 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+            
+            {/* 3D Scene Viewport */}
+            <div className="h-40 w-full rounded-2xl border border-white/10 overflow-hidden relative glass-panel bg-black/40 flex items-center justify-center">
+              <div className="absolute inset-0 z-0">
+                <Canvas camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: true, alpha: true }}>
+                  <ambientLight intensity={0.6} />
+                  <directionalLight position={[2, 2, 2]} intensity={1.5} color="#ffffff" />
+                  <pointLight position={[-2, -2, 2]} intensity={2.0} color="#aa3bff" />
+                  <MorphingTorus />
+                  <Environment preset="studio" />
+                </Canvas>
+              </div>
+              <div className="absolute bottom-3 left-3 z-10 pointer-events-none">
+                <span className="text-[8px] font-mono tracking-widest text-gold uppercase bg-black/80 px-2 py-0.5 rounded border border-gold/30">
+                  3D Spatial Node
+                </span>
+              </div>
+            </div>
+
+            {/* Contact Panel Cards */}
+            <div className="flex flex-col gap-2.5">
+              <ContactCard
+                icon={<Mail className="w-3.5 h-3.5" />}
+                label="DIRECT MAIL"
+                value={contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
+                href={`mailto:${contactData?.heroSetup?.email || websiteSettings?.email || ""}`}
+                accent="#D4AF37"
+              />
+              <ContactCard
+                icon={<Phone className="w-3.5 h-3.5" />}
+                label="BOOKING OFFICE"
+                value={contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
+                href={`tel:${contactData?.heroSetup?.phone || websiteSettings?.phone || ""}`}
+                accent="#00E5FF"
+              />
+              <ContactCard
+                icon={<MapPin className="w-3.5 h-3.5" />}
+                label="CREATOR HQ"
+                value={websiteSettings?.address || "Silicon Valley Creator Labs, Suite 40"}
+                href={websiteSettings?.googleMapsUrl}
+                accent="#aa3bff"
+              />
+            </div>
           </div>
         </div>
 
       </div>
 
-      {/* 5. Contact Cards Grid - Moved underneath quick links */}
-
       {/* Footer Bottom copyright and social handles */}
-      <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+      <div className="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
         <div className="text-left">
-          <p className="text-[10px] uppercase tracking-[2px] text-white font-light">
+          <p className="text-[10px] uppercase tracking-[2px] text-gray-300 font-light">
             &copy; {new Date().getFullYear()} {websiteSettings?.copyrightText || websiteSettings?.companyName || "TECH MASTER MEDIA & CREATIVE LABS"}. ALL RIGHTS RESERVED.
           </p>
-          <p className="text-[9px] uppercase tracking-[1px] text-gray-400 mt-1">
+          <p className="text-[9px] uppercase tracking-[1px] text-gray-500 mt-1">
             Designed and developed by .......
           </p>
         </div>
 
-        {/* Floating Social Icons */}
-        <div className="flex gap-4">
+        {/* Floating Magnetic Social Icons */}
+        <div className="flex gap-3.5">
           {[
             { 
               // YouTube
@@ -512,7 +511,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                 href={soc.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full border border-white/10 hover:border-gold/50 flex items-center justify-center text-gray-400 hover:text-gold bg-white/5 transition-all duration-300"
+                className="w-9 h-9 rounded-full border border-white/10 hover:border-gold/50 flex items-center justify-center text-gray-400 hover:text-gold bg-white/5 transition-all duration-300 shadow-sm"
                 animate={{ y: [0, -4, 0] }}
                 transition={{
                   repeat: Infinity,
@@ -527,8 +526,6 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           ))}
         </div>
       </div>
-
-
     </footer>
   );
 };

@@ -313,18 +313,49 @@ export const Homepage = () => {
         </Card>
 
         
-        {/* BRAND PARTNERS SECTION */}
-        <Card title={<div onClick={() => toggleCard('brandPartners')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Brand Partners</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+        {/* OFFICIAL CHANNELS & PARTNERS SECTION */}
+        <Card title={<div onClick={() => toggleCard('brandPartners')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Official Channels & Partners</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
           {expandedCards.brandPartners && (
             <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
               {renderListManager({
                 sectionKey: 'brandPartners',
-                displayColumns: [{ key: 'brandName', label: 'Brand Name' }, { key: 'status', label: 'Status' }],
+                displayColumns: [
+                  { key: 'brandName', label: 'Brand Name' }, 
+                  { key: 'youtubeUrl', label: 'YouTube' }, 
+                  { key: 'instagramUrl', label: 'Instagram' }, 
+                  { key: 'status', label: 'Status' }
+                ],
                 fields: [
                   { key: 'brandName', label: 'Brand Name' }, 
-                  { key: 'logo', label: 'Logo / Image URL' }, 
-                  { key: 'website', label: 'Website URL' },
-                  { key: 'status', label: 'Status' },
+                  { key: 'youtubeUrl', label: 'YouTube Channel URL' }, 
+                  { key: 'instagramUrl', label: 'Instagram Profile URL' }, 
+                  { key: 'showYouTube', label: 'Show YouTube Button', type: 'switch' }, 
+                  { key: 'showInstagram', label: 'Show Instagram Button', type: 'switch' }, 
+                  { key: 'brandLogo', label: 'Brand Logo URL' }, 
+                  { key: 'themeColor', label: 'Theme / Accent Color (e.g. #D4AF37)' }, 
+                  { key: 'status', label: 'Status (Active/Inactive)' },
+                  { key: 'order', label: 'Display Order', type: 'number' }
+                ]
+              })}
+            </div>
+          )}
+        </Card>
+
+        {/* BRAND COLLABORATIONS CAROUSEL CMS MODULE */}
+        <Card title={<div onClick={() => toggleCard('brandCollaborationsList')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Layers className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Brand Collaborations Showcase</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
+          {expandedCards.brandCollaborationsList && (
+            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
+              {renderListManager({
+                sectionKey: 'brandCollaborationsList',
+                displayColumns: [
+                  { key: 'brandName', label: 'Brand Name' },
+                  { key: 'logo', label: 'Logo', type: 'image' },
+                  { key: 'status', label: 'Status' }
+                ],
+                fields: [
+                  { key: 'brandName', label: 'Brand Name (e.g. Samsung, Xiaomi, Dell)' },
+                  { key: 'logo', label: 'Brand Logo URL', type: 'upload' },
+                  { key: 'status', label: 'Active Status (Active/Inactive)' },
                   { key: 'order', label: 'Display Order', type: 'number' }
                 ]
               })}
