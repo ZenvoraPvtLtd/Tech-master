@@ -218,8 +218,8 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                         : "shadow-[inset_0_0_35px_rgba(0,0,0,0.6)]"
                   }`} 
                 />
-                {/* Instant Video Stream & Zero-Delay Poster Overlay */}
-                {/* 1. High-Res Thumbnail Poster (Always rendered at z-20 so 0ms delay / zero black screen when switching) */}
+                {/* Instant Video Stream & Zero-Delay Poster Underlay */}
+                {/* 1. Original YouTube High-Res Thumbnail Poster (Underlay at z-20 so zero dark frame) */}
                 <img
                   src={thumbnailUrl}
                   alt={displayTitle}
@@ -227,7 +227,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                   className="w-full h-full object-cover absolute inset-0 z-20 opacity-90 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                 />
 
-                {/* 2. Instant Video Stream iFrame (Overlays on top at z-30 when card becomes active) */}
+                {/* 2. Instant Video Stream iFrame (Mounts & runs immediately at z-30 when card becomes active) */}
                 {isActive && videoId && (
                   <iframe
                     src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
