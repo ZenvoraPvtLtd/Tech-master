@@ -176,15 +176,15 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     }
                   }}
                   initial={{
-                    rotateY: diff > 0 ? -45 : 0,
-                    rotateX: diff > 0 ? 12 : 0,
-                    y: diff > 0 ? 25 : 0,
-                    opacity: 0.85
+                    rotateY: diff > 0 ? -30 : 0,
+                    rotateX: diff > 0 ? 6 : 0,
+                    y: diff > 0 ? 10 : 0,
+                    opacity: 0.9
                   }}
                   animate={{
                     flex: "0 0 auto",
                     width: getWidth(),
-                    scale: isActive ? 1 : 0.92 - absDiff * 0.05,
+                    scale: isActive ? 1 : 0.93 - absDiff * 0.04,
                     rotateY: getRotateY(),
                     rotateX: 0,
                     y: 0,
@@ -193,15 +193,15 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     zIndex: zIndex,
                   }}
                   transition={{
-                    duration: 0.8,
-                    ease: [0.25, 1, 0.5, 1], // Smooth Page Flip Lift Curve
+                    duration: 0.38,
+                    ease: [0.16, 1, 0.3, 1], // Ultra-fast lag-free 60FPS Apple-style spring curve
                   }}
                   style={{ 
                     transformStyle: "preserve-3d",
                     backfaceVisibility: "hidden",
                     willChange: "transform" 
                   }}
-                  className={`relative h-full ${isHomePage ? "rounded-none" : "rounded-2xl"} overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border-2 transition-all duration-500 [transform-style:preserve-3d] ${isActive
+                  className={`relative h-full ${isHomePage ? "rounded-none" : "rounded-2xl"} overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border-2 [transform-style:preserve-3d] ${isActive
                       ? "border-gold/50 shadow-[0_25px_60px_rgba(212,175,55,0.25),0_0_40px_rgba(0,0,0,0.9)] scale-[1.01]"
                       : absDiff === 1
                         ? "border-black/80 hover:border-black opacity-85 hover:opacity-100"
@@ -210,7 +210,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                 >
                 {/* 3D Book Page Fold Crease & Spine Shadow */}
                 <div 
-                  className={`absolute inset-0 pointer-events-none z-37 transition-opacity duration-500 ${
+                  className={`absolute inset-0 pointer-events-none z-37 transition-opacity duration-300 ${
                     diff < 0 
                       ? "bg-gradient-to-r from-transparent via-black/20 to-black/75 border-r border-gold/30" 
                       : diff > 0 
@@ -232,7 +232,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     src={thumbnailUrl}
                     alt={displayTitle}
                     loading="eager"
-                    className="w-full h-full object-cover relative z-20 opacity-85 group-hover:opacity-100 transition-all duration-500"
+                    className="w-full h-full object-cover relative z-20 opacity-85 group-hover:opacity-100 transition-opacity duration-300"
                   />
                 )}
 
@@ -240,7 +240,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                 {isActive ? (
                   <>
                     {/* Bottom-to-Top Dark Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none z-35 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none z-35 transition-opacity duration-300" />
                     {/* Top-to-Bottom Ambient Vignette */}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-none z-35" />
                     {/* Ultra-Luxury Gold/Amber Radial Glow */}
@@ -250,15 +250,15 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     <div className="absolute inset-0 pointer-events-none z-38 overflow-hidden">
                       {/* 1. Real Analogue Film Grain Noise Layer */}
                       <div 
-                        className="absolute inset-0 opacity-[0.25] mix-blend-overlay pointer-events-none"
+                        className="absolute inset-0 opacity-[0.22] mix-blend-overlay pointer-events-none"
                         style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
                           backgroundRepeat: "repeat",
                         }}
                       />
                       {/* 2. Vintage CRT Scanlines Overlay */}
                       <div 
-                        className="absolute inset-0 opacity-[0.16] pointer-events-none"
+                        className="absolute inset-0 opacity-[0.15] pointer-events-none"
                         style={{
                           background: "linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03))",
                           backgroundSize: "100% 4px, 6px 100%"
@@ -270,12 +270,12 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                   </>
                 ) : (
                   <>
-                    <div className={`absolute inset-0 transition-opacity duration-700 pointer-events-none z-35 ${absDiff === 1 ? "bg-black/40 group-hover:bg-black/20" : "bg-black/60 group-hover:bg-black/30"}`} />
+                    <div className={`absolute inset-0 transition-opacity duration-300 pointer-events-none z-35 ${absDiff === 1 ? "bg-black/40 group-hover:bg-black/20" : "bg-black/60 group-hover:bg-black/30"}`} />
                     {/* Subtle Film Grain for side cards */}
                     <div 
-                      className="absolute inset-0 opacity-[0.18] mix-blend-overlay pointer-events-none z-36"
+                      className="absolute inset-0 opacity-[0.16] mix-blend-overlay pointer-events-none z-36"
                       style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
                         backgroundRepeat: "repeat"
                       }}
                     />
