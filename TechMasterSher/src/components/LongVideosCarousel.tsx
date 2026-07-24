@@ -176,15 +176,15 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     }
                   }}
                   initial={{
-                    rotateY: diff > 0 ? -30 : 0,
-                    rotateX: diff > 0 ? 6 : 0,
-                    y: diff > 0 ? 10 : 0,
+                    rotateY: diff > 0 ? -25 : 0,
+                    rotateX: 0,
+                    y: 0,
                     opacity: 0.9
                   }}
                   animate={{
                     flex: "0 0 auto",
                     width: getWidth(),
-                    scale: isActive ? 1 : 0.93 - absDiff * 0.04,
+                    scale: 1,
                     rotateY: getRotateY(),
                     rotateX: 0,
                     y: 0,
@@ -202,7 +202,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     willChange: "transform" 
                   }}
                   className={`relative h-full ${isHomePage ? "rounded-none" : "rounded-2xl"} overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border-2 [transform-style:preserve-3d] ${isActive
-                      ? "border-gold/50 shadow-[0_25px_60px_rgba(212,175,55,0.25),0_0_40px_rgba(0,0,0,0.9)] scale-[1.01]"
+                      ? "border-gold/50 shadow-[0_25px_60px_rgba(212,175,55,0.25),0_0_40px_rgba(0,0,0,0.9)]"
                       : absDiff === 1
                         ? "border-black/80 hover:border-black opacity-85 hover:opacity-100"
                         : "border-black/50 hover:border-black opacity-50 hover:opacity-100"
@@ -218,21 +218,22 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                         : "shadow-[inset_0_0_35px_rgba(0,0,0,0.6)]"
                   }`} 
                 />
-                {/* Pure Clean Video Stream (Zero YouTube Controls/Settings/Branding Clutter) */}
-                {isActive && videoId ? (
+                {/* Instant Video Stream & Zero-Delay Poster Overlay */}
+                {/* 1. High-Res Thumbnail Poster (Always rendered at z-20 so 0ms delay / zero black screen when switching) */}
+                <img
+                  src={thumbnailUrl}
+                  alt={displayTitle}
+                  loading="eager"
+                  className="w-full h-full object-cover absolute inset-0 z-20 opacity-90 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                />
+
+                {/* 2. Instant Video Stream iFrame (Overlays on top at z-30 when card becomes active) */}
+                {isActive && videoId && (
                   <iframe
-                    src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
+                    src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
                     title={displayTitle}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    className="w-full h-full object-cover relative z-30 border-0 pointer-events-none scale-105"
-                  />
-                ) : (
-                  /* YouTube Dynamic High-Res Thumbnail Image for side cards */
-                  <img
-                    src={thumbnailUrl}
-                    alt={displayTitle}
-                    loading="eager"
-                    className="w-full h-full object-cover relative z-20 opacity-85 group-hover:opacity-100 transition-opacity duration-300"
+                    className="w-full h-full object-cover absolute inset-0 z-30 border-0 pointer-events-none scale-105 transition-opacity duration-300"
                   />
                 )}
 
