@@ -14,11 +14,7 @@ interface LongVideosCarouselProps {
   isHomePage?: boolean;
 }
 
-const stripeEasing: [number, number, number, number] = [0.16, 1, 0.3, 1];
-const transitionSettings = {
-  duration: 0.75,
-  ease: stripeEasing,
-};
+
 
 const DEFAULT_YOUTUBE_VIDEOS = [
   { youtubeUrl: "https://www.youtube.com/watch?v=8H272rF60dc", videoId: "8H272rF60dc", startTime: "0:20", views: "1.4M", fallbackTitle: "Building Enterprise Infrastructure" },
