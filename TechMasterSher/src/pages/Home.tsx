@@ -273,9 +273,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
 
         {/* Vertical Gap for 3D Lion / Sher Logo */}
-        <div className="h-64 sm:h-72 md:h-80 w-full pointer-events-none" />
+        <div className="h-80 sm:h-96 md:h-[420px] w-full pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10">
+        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-4 sm:mt-8">
           {/* Headline with split reveal effect */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -338,11 +338,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
-          transition={{ ease: "linear", duration: 25, repeat: Infinity }}
+          transition={{ ease: "linear", duration: 35, repeat: Infinity }}
           style={{ willChange: "transform" }}
-          className="flex gap-12 md:gap-24 w-max"
+          className="flex w-max"
         >
-          {[1, 2].map((groupIndex) => {
+          {[1, 2, 3, 4].map((groupIndex) => {
             const defaultBrandChannels = [
               {
                 brandName: "Tech Master",
@@ -383,14 +383,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               : defaultBrandChannels;
 
             return (
-              <div key={groupIndex} className="flex items-center gap-12 md:gap-20">
+              <div key={groupIndex} className="flex items-center">
                 {displayPartners.map((brand: any, idx: number) => {
                   return (
                     <div
                       key={`${brand.brandName}-${idx}-${groupIndex}`}
                       onClick={() => handleNavClick("portfolio")}
                       data-cursor="CLICK"
-                      className="group/brand relative inline-flex flex-col items-center justify-center px-6 py-3 transition-all duration-300 cursor-pointer select-none"
+                      className="group/brand relative inline-flex flex-col items-center justify-center px-8 sm:px-14 py-3 transition-all duration-300 cursor-pointer select-none"
                     >
                       {/* Clean Brand Title */}
                       <span className="font-serif text-base sm:text-xl font-bold text-gold tracking-[3px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300 relative z-10">

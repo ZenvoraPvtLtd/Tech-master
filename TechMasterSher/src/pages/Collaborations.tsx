@@ -98,13 +98,13 @@ export const Collaborations: React.FC = () => {
       <section className="mb-12 py-12 border-y border-white/5 bg-black/40 overflow-hidden relative z-10">
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
-          transition={{ ease: "linear", duration: 25, repeat: Infinity }}
-          className="flex gap-24 w-max"
+          transition={{ ease: "linear", duration: 35, repeat: Infinity }}
+          className="flex w-max"
         >
-          {[1, 2].map((i) => (
-            <div key={i} className="flex gap-24 items-center">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-center">
               {brandCarousel.map((brand: string, j: number) => (
-                <span key={j} className="font-serif text-2xl sm:text-3xl font-black text-gold tracking-[6px] hover:text-white transition-colors duration-300 cursor-default select-none uppercase">
+                <span key={`${brand}-${j}-${i}`} className="font-serif text-2xl sm:text-3xl font-black text-gold tracking-[6px] hover:text-white transition-colors duration-300 cursor-default select-none uppercase px-12 sm:px-16">
                   {brand}
                 </span>
               ))}
