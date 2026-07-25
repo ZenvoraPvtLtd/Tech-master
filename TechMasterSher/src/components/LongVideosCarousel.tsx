@@ -201,8 +201,8 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     backfaceVisibility: "hidden",
                     willChange: "transform" 
                   }}
-                  className={`relative h-full ${isHomePage ? "rounded-none" : "rounded-2xl"} overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border-2 [transform-style:preserve-3d] ${isActive
-                      ? "border-gold/50 shadow-[0_25px_60px_rgba(212,175,55,0.25),0_0_40px_rgba(0,0,0,0.9)]"
+                  className={`relative h-full ${isHomePage ? "rounded-none" : "rounded-2xl"} overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border [transform-style:preserve-3d] ${isActive
+                      ? "border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.9)]"
                       : absDiff === 1
                         ? "border-black/80 hover:border-black opacity-85 hover:opacity-100"
                         : "border-black/50 hover:border-black opacity-50 hover:opacity-100"
@@ -212,9 +212,9 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                 <div 
                   className={`absolute inset-0 pointer-events-none z-37 transition-opacity duration-300 ${
                     diff < 0 
-                      ? "bg-gradient-to-r from-transparent via-black/20 to-black/75 border-r border-gold/30" 
+                      ? "bg-gradient-to-r from-transparent via-black/20 to-black/75 border-r border-white/10" 
                       : diff > 0 
-                        ? "bg-gradient-to-l from-transparent via-black/20 to-black/75 border-l border-gold/30"
+                        ? "bg-gradient-to-l from-transparent via-black/20 to-black/75 border-l border-white/10"
                         : "shadow-[inset_0_0_35px_rgba(0,0,0,0.6)]"
                   }`} 
                 />
@@ -227,8 +227,8 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                   className="w-full h-full object-cover absolute inset-0 z-20 opacity-90 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                 />
 
-                {/* 2. Instant Video Stream iFrame (Mounts & runs immediately at z-30 when card becomes active) */}
-                {isActive && videoId && (
+                {/* 2. Instant Video Stream iFrame (Autoplays live video streams on all cards by default) */}
+                {videoId && (
                   <iframe
                     src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
                     title={displayTitle}
@@ -237,15 +237,13 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                   />
                 )}
 
-                {/* Multi-Layer Ultra-Premium Luxury Gradient & Retro Grain Overlays */}
+                {/* Multi-Layer Dark Vignette Overlays */}
                 {isActive ? (
                   <>
                     {/* Bottom-to-Top Dark Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none z-35 transition-opacity duration-300" />
                     {/* Top-to-Bottom Ambient Vignette */}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-none z-35" />
-                    {/* Ultra-Luxury Gold/Amber Radial Glow */}
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-amber-500/20 via-gold/10 to-transparent pointer-events-none z-35 mix-blend-screen" />
 
                     {/* Retro + Grainy Film Overlay Effect */}
                     <div className="absolute inset-0 pointer-events-none z-38 overflow-hidden">
@@ -265,8 +263,6 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                           backgroundSize: "100% 4px, 6px 100%"
                         }}
                       />
-                      {/* 3. Retro Warm Amber Vintage Color Grade */}
-                      <div className="absolute inset-0 bg-gradient-to-tr from-amber-950/25 via-transparent to-amber-900/15 mix-blend-overlay pointer-events-none" />
                     </div>
                   </>
                 ) : (
@@ -295,16 +291,16 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     >
                       {/* Top Badge & Live Indicator */}
                       <div className="flex justify-between items-start">
-                        <span className={`px-4 py-1.5 ${isHomePage ? "rounded-none" : "rounded-full"} bg-black/70 backdrop-blur-xl border border-gold/40 text-[10px] uppercase font-mono tracking-[3px] text-gold shadow-lg flex items-center gap-1.5`}>
-                          <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+                        <span className={`px-4 py-1.5 ${isHomePage ? "rounded-none" : "rounded-full"} bg-black/70 backdrop-blur-xl border border-white/20 text-[10px] uppercase font-mono tracking-[3px] text-white/90 shadow-lg flex items-center gap-1.5`}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                           {channelName}
                         </span>
                       </div>
 
                       {/* Bottom Title & Dynamic Views */}
                       <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2 text-gold text-xs font-mono tracking-widest uppercase font-semibold">
-                          <Eye className="w-4 h-4 text-gold" />
+                        <div className="flex items-center gap-2 text-white/80 text-xs font-mono tracking-widest uppercase font-semibold">
+                          <Eye className="w-4 h-4 text-white/80" />
                           <span>{video.views || "1.2M"} views</span>
                         </div>
                         <h3 className="font-serif text-2xl md:text-4xl font-bold text-white shadow-black drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] leading-tight tracking-tight line-clamp-2">

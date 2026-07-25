@@ -55,10 +55,10 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
   const get3DProps = (offset: number) => {
     const abs = Math.abs(offset);
     if (offset === 0) {
-      return { rotateY: 0, scale: 1.0, opacity: 1, zIndex: 40 };
+      return { rotateY: 0, scale: 1.0, opacity: 1, zIndex: 50 };
     }
-    const sc = abs === 1 ? 0.96 : 0.92;
-    const op = abs === 1 ? 0.95 : 0.85;
+    const sc = abs === 1 ? 0.82 : 0.68;
+    const op = abs === 1 ? 0.85 : 0.55;
     return { rotateY: 0, scale: sc, opacity: op, zIndex: 40 - abs };
   };
 
@@ -96,7 +96,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
         style={{ perspective: "1200px" }}
-        className="flex flex-row items-center justify-center gap-2 sm:gap-3 md:gap-3 h-[360px] sm:h-[440px] md:h-[500px] w-full py-2 cursor-grab active:cursor-grabbing relative overflow-hidden"
+        className="flex flex-row items-center justify-center gap-2 sm:gap-2.5 md:gap-3 h-[360px] sm:h-[440px] md:h-[500px] w-full py-2 cursor-grab active:cursor-grabbing relative overflow-hidden"
       >
         {offsets.map((offset) => {
           const originalIndex = (activeIndex + offset + N * 1000) % N;
@@ -105,15 +105,25 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
           const absOffset = Math.abs(offset);
           const { rotateY, scale, opacity, zIndex } = get3DProps(offset);
 
+          // Calculate x shift to pull side cards tightly inward, closing empty gaps between card 1 and card 2
+          const getXShift = (off: number) => {
+            if (off === 0) return 0;
+            const abs = Math.abs(off);
+            const dir = off < 0 ? 1 : -1;
+            if (abs === 1) return dir * 14;
+            return dir * 52;
+          };
+          const xShift = getXShift(offset);
+
           const rawHandle = reel.handle || reel.author || reel.category || "techmaster";
           const formattedHandle = rawHandle.startsWith("@") ? rawHandle : `@${rawHandle.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
 
-          // Smooth GPU Overlay level: center = crisp, immediate sides = light glass blur, outer sides = deeper glass blur
+          // Smooth GPU Overlay level: center = crisp, sides = subtle dark overlay
           const overlayGlassClass = absOffset === 0
             ? "pointer-events-none"
             : absOffset === 1
-              ? "backdrop-blur-[2px] bg-blue-950/30 border border-blue-500/20 pointer-events-none transition-all duration-300"
-              : "backdrop-blur-[6px] bg-black/70 border border-blue-600/20 pointer-events-none transition-all duration-300";
+              ? "bg-black/15 pointer-events-none transition-all duration-300"
+              : "bg-black/25 pointer-events-none transition-all duration-300";
 
           return (
             <motion.div
@@ -129,6 +139,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                 scale,
                 opacity,
                 zIndex,
+                x: xShift,
               }}
               transition={transitionSettings}
               style={{ transformStyle: "preserve-3d", willChange: "transform" }}
@@ -153,6 +164,10 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                   loop
                   playsInline
                   preload="auto"
+                  onCanPlay={(e) => {
+                    const v = e.target as HTMLVideoElement;
+                    v.play().catch(() => {});
+                  }}
                   style={{ transform: "translateZ(0)", willChange: "transform" }}
                   className="w-full h-full object-cover relative z-20 group-hover:scale-105 transition-all duration-500 opacity-100"
                 />

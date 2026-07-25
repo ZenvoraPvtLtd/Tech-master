@@ -196,7 +196,7 @@ export const ProductLaunches: React.FC = () => {
         {/* Product Launch Highlights */}
         <section className="max-w-7xl mx-auto mt-16 text-left relative z-10 px-6">
           <div className="text-center mb-16">
-            <p className="typo-badge mb-4">PORTFOLIO</p>
+            <p className="typo-badge mb-4">OUR WORK</p>
             <h2 className="typo-h2 mb-6">
               Launch <span className="text-gold italic font-bold">Initiatives</span>
             </h2>

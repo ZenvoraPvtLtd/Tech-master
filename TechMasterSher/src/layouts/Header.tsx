@@ -32,9 +32,11 @@ const ScrollCounter = () => {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 bg-[#0a0a0a]/95 backdrop-blur-xl border border-gold/40 rounded-full px-3.5 py-1.5 shadow-[0_4px_25px_rgba(0,0,0,0.9)] pointer-events-auto">
-      <span className="font-mono text-[9px] text-gray-400 tracking-[2px] uppercase">Views</span>
-      <span className="font-sans font-bold text-gold text-xs md:text-sm tracking-wider tabular-nums">
+    <div className="h-7 px-3.5 rounded-full border border-gold/30 bg-[#0a0a0a]/95 backdrop-blur-xl flex items-center justify-center gap-1.5 shadow-sm pointer-events-auto select-none">
+      <span className="font-mono text-[9.5px] text-gray-400 tracking-[1.5px] uppercase font-semibold leading-none self-center translate-y-[0.5px]">
+        VIEWS
+      </span>
+      <span className="font-mono font-bold text-gold text-[10px] tracking-wider tabular-nums leading-none self-center">
         {viewsCount.toLocaleString()}+
       </span>
     </div>
@@ -81,9 +83,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
     { name: "Campaigns", id: "campaigns" },
     { name: "Product Launches", id: "product-launches" },
     { name: "Events & Talks", id: "events" },
-    { name: "Student Work", id: "portfolio" },
+    { name: "Our Work", id: "portfolio" },
     { name: "Careers", id: "career" },
-    { name: "Insights / Blog", id: "blog" },
   ];
 
   const quickLinksItems = dbData?.navigation?.quickLinksItems || [
@@ -169,9 +170,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             { name: "Home", id: "home" },
             { name: "About", id: "about" },
             { name: "Journey", id: "journey" },
-            { name: "Portfolio", id: "portfolio" },
+            { name: "Our Work", id: "portfolio" },
             { name: "Careers", id: "career" },
-            { name: "Blog", id: "blog" },
           ]).map((item: any) => (
             <button
               key={item.id}
@@ -197,10 +197,10 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             <Magnetic strength={0.3}>
               <button
                 onClick={() => handleNavClick("contact")}
-                className="light-sweep px-5 py-2.5 rounded-full border border-gold/30 hover:border-gold hover:text-black hover:bg-gold transition-all duration-500 text-xs font-black uppercase tracking-[2px] text-gold flex items-center gap-2"
+                className="light-sweep h-7 px-3.5 rounded-full border border-gold/30 hover:border-gold hover:text-black hover:bg-gold transition-all duration-500 text-[10px] font-black uppercase tracking-[1.5px] text-gold flex items-center justify-center gap-1.5 shadow-sm"
               >
                 Let's Talk
-                <ArrowUpRight className="w-3.5 h-3.5" />
+                <ArrowUpRight className="w-3 h-3" />
               </button>
             </Magnetic>
           </div>

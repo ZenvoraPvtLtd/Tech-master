@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
-import { ArrowUpRight, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -152,73 +152,8 @@ const ParticleCanvas: React.FC = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0" />;
 };
 
-// Animated 3D Contact Card Component
-interface ContactCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  href?: string;
-  accent: string;
-}
-
-const ContactCard: React.FC<ContactCardProps> = ({ icon, label, value, href, accent }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [10, -10]), { damping: 20, stiffness: 200 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-10, 10]), { damping: 20, stiffness: 200 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const relX = (e.clientX - rect.left) / rect.width - 0.5;
-    const relY = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(relX);
-    y.set(relY);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  const Content = (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      data-cursor="none"
-      style={{ rotateX, rotateY, perspective: 800 }}
-      className="group glass-panel p-3 md:p-4 rounded-2xl flex flex-col xl:flex-row items-center xl:items-start gap-3 hover:border-white/20 transition-all duration-300 select-none cursor-pointer text-center xl:text-left"
-      whileHover={{ scale: 1.02 }}
-    >
-      <div 
-        className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border flex items-center justify-center transition-colors duration-300"
-        style={{ color: accent, borderColor: accent + "30" }}
-      >
-        {icon}
-      </div>
-      <div className="w-full overflow-hidden">
-        <span className="text-[9px] uppercase tracking-[1px] opacity-40 block mb-0.5">{label}</span>
-        <span className="text-xs font-bold text-white transition-all duration-300 group-hover:text-gold block truncate group-hover:whitespace-normal group-hover:break-words w-full" title={value}>
-          {value}
-        </span>
-      </div>
-    </motion.div>
-  );
-
-  return href ? (
-    <a href={href} target="_blank" rel="noopener noreferrer">
-      {Content}
-    </a>
-  ) : (
-    Content
-  );
-};
-
 export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
-  const { dbData, websiteSettings, contactData } = useData();
+  const { websiteSettings, contactData } = useData();
   const footerRef = useRef<HTMLElement>(null);
   const [mouseGlow, setMouseGlow] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -240,11 +175,6 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
     } else {
       onChangePage(pageId);
     }
-  };
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Inquiry successfully logged in sandbox environment.");
   };
 
   return (
@@ -270,168 +200,186 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       {/* Ambient Rotating Background Glow */}
       <div className="absolute bottom-[-120px] right-[-100px] w-[500px] h-[500px] aurora-glow-purple opacity-15 pointer-events-none blur-[120px] animate-pulse" />
 
-      {/* Main 12-Column Footer Grid Layout */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 relative z-10 mb-12">
+      {/* Top Badge: CREATOR PLATFORM (Sits on top with gap) */}
+      <div className="max-w-7xl mx-auto relative z-10 mb-5">
+        <span className="text-[11px] font-mono tracking-[2.5px] text-gold uppercase font-bold block">
+          CREATOR PLATFORM
+        </span>
+      </div>
+
+      {/* Main Top Section Grid Layout (Let's Build & Quick Links headers start on the exact same horizontal top line) */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 relative z-10 mb-14 items-start">
         
-        {/* LEFT SIDE (lg:col-span-4): Newsletter & Branding */}
-        <div className="lg:col-span-4 flex flex-col justify-between gap-8">
-          <div>
-            <div className="inline-block mb-4">
-              <span className="text-[10px] font-mono tracking-[3px] text-gold uppercase px-3 py-1 rounded-full bg-gold/10 border border-gold/25">
-                CREATOR PLATFORM
+        {/* LEFT COLUMN (lg:col-span-5): Branding & Prominent Heading */}
+        <div className="lg:col-span-5 flex flex-col justify-start gap-4">
+          <h2 className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-white leading-[1.1] tracking-tight">
+            Let's Build <br />
+            <span className="text-gold font-sans font-extrabold">
+              Something Amazing.
+            </span>
+          </h2>
+          <p className="text-gray-400 text-xs sm:text-sm font-sans font-normal max-w-md leading-relaxed opacity-90 mt-1">
+            We create premium websites, web applications and digital experiences that help brands grow online. We create premium websites, web applications and digital experiences that help brands grow online.
+          </p>
+        </div>
+
+        {/* MIDDLE COLUMNS (lg:col-span-4): 3 Sitemap Columns */}
+        <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 pt-1 sm:pt-2">
+          {[
+            [
+              { name: "HOME PAGE", id: "home" },
+              { name: "ABOUT FOUNDER", id: "about" },
+              { name: "FOUNDER'S JOURNEY", id: "journey" },
+              { name: "MISSION & VISION", id: "mission" },
+              { name: "WHAT WE DO", id: "what-we-do" },
+              { name: "LATEST BLOG", id: "blog" },
+            ],
+            [
+              { name: "BRAND COLLABS", id: "collaborations" },
+              { name: "CAMPAIGNS", id: "campaigns" },
+              { name: "PRODUCT LAUNCHES", id: "product-launches" },
+              { name: "EVENTS & TALKS", id: "events" },
+              { name: "OUR WORK", id: "portfolio" },
+              { name: "MEDIA GALLERY", id: "gallery" },
+            ],
+            [
+              { name: "CORE SERVICES", id: "services" },
+              { name: "TESTIMONIALS", id: "testimonials" },
+              { name: "FAQ PORTAL", id: "faq" },
+              { name: "CONTACT PAGE", id: "contact" },
+              { name: "PRIVACY POLICY", id: "privacy" },
+              { name: "TERMS OF SERVICE", id: "terms" },
+            ]
+          ].map((columnLinks, colIdx) => {
+            const columnHeaders = ["IDENTITY", "ENGAGEMENT", "QUICK LINKS"];
+            return (
+              <div key={colIdx}>
+                <p className="text-[11px] font-mono tracking-[2.5px] text-gold uppercase font-bold mb-4 block">
+                  {columnHeaders[colIdx]}
+                </p>
+                <ul className="flex flex-col gap-[18px]">
+                  {columnLinks.map((link: any) => (
+                    <li key={link.id || link.name}>
+                      <button
+                        onClick={() => handleNavClick(link.id)}
+                        className="text-[11px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
+                      >
+                        {link.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* RIGHT COLUMN (lg:col-span-3): 3D Spatial Node Panel */}
+        <div className="lg:col-span-3 flex flex-col justify-stretch h-full">
+          <div className="glass-panel p-4 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center relative overflow-hidden h-full min-h-[280px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+            <div className="absolute inset-0 z-0">
+              <Canvas camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: true, alpha: true }}>
+                <ambientLight intensity={0.6} />
+                <directionalLight position={[2, 2, 2]} intensity={1.5} color="#ffffff" />
+                <pointLight position={[-2, -2, 2]} intensity={2.0} color="#aa3bff" />
+                <MorphingTorus />
+                <Environment preset="studio" />
+              </Canvas>
+            </div>
+            <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
+              <span className="text-[8px] font-mono tracking-widest text-gold uppercase bg-black/80 px-2 py-0.5 rounded border border-gold/30">
+                3D SPATIAL NODE
               </span>
             </div>
-            <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-light text-white leading-snug tracking-tight mb-4">
-              Let's create the <br />
-              <span className="text-gold italic font-bold">future of code</span>.
-            </h2>
-            <p className="text-gray-400 text-xs sm:text-sm font-light max-w-sm leading-relaxed">
-              Subscribe to Aman's newsletter. Receive exclusive design mockups, platform beta keys, systems tips, and speaking logs.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubscribe} className="relative w-full max-w-md">
-            <div className="relative flex items-center">
-              <input
-                type="email"
-                required
-                placeholder="ENTER EMAIL"
-                className="w-full bg-black/70 border border-white/15 rounded-full pl-5 pr-36 py-3.5 text-xs font-mono tracking-widest uppercase text-white placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all duration-300 backdrop-blur-md"
-              />
-              <button
-                type="submit"
-                className="absolute right-1.5 top-1.5 bottom-1.5 bg-gradient-to-r from-gold to-gold-light hover:brightness-110 text-black font-bold uppercase text-[10px] tracking-widest px-4 rounded-full flex items-center gap-1.5 transition-all duration-300 shadow-md"
-                data-cursor="submit"
-              >
-                Subscribe
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* CENTER SIDE (lg:col-span-5): 3 Sitemap Columns */}
-        <div className="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
-          
-          {/* Column 1: Identity */}
-          <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold font-mono font-bold mb-5 block">IDENTITY</p>
-            <ul className="flex flex-col gap-2">
-              {(dbData?.navigation?.identityItems || [
-                { name: "About Founder", id: "about" },
-                { name: "Founder's Journey", id: "journey" },
-                { name: "Mission & Vision", id: "mission" },
-                { name: "What We Do", id: "what-we-do" },
-              ]).map((link: any) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => handleNavClick(link.id)}
-                    className="text-xs uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
-                  >
-                    {link.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 2: Engagement */}
-          <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold font-mono font-bold mb-5 block">ENGAGEMENT</p>
-            <ul className="flex flex-col gap-2">
-              {(dbData?.navigation?.engagementItems || [
-                { name: "Brand Collabs", id: "collaborations" },
-                { name: "Campaigns", id: "campaigns" },
-                { name: "Product Launches", id: "product-launches" },
-                { name: "Events & Talks", id: "events" },
-                { name: "Student Work", id: "portfolio" },
-                { name: "Media Gallery", id: "gallery" },
-              ]).map((link: any) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => handleNavClick(link.id)}
-                    className="text-xs uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
-                  >
-                    {link.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Quick Links */}
-          <div>
-            <p className="text-[10px] uppercase tracking-[3px] text-gold font-mono font-bold mb-5 block">QUICK LINKS</p>
-            <ul className="flex flex-col gap-2">
-              {(dbData?.navigation?.quickLinksItems || [
-                { name: "Core Services", id: "services" },
-                { name: "Testimonials", id: "testimonials" },
-                { name: "FAQ Portal", id: "faq" },
-                { name: "Contact Page", id: "contact" },
-                { name: "Privacy Policy", id: "privacy" },
-                { name: "Terms of Service", id: "terms" },
-              ]).map((link: any) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => handleNavClick(link.id)}
-                    className="text-xs uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
-                  >
-                    {link.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
 
-        {/* RIGHT SIDE (lg:col-span-3): Unified Luxury Contact & 3D Spatial Panel */}
-        <div className="lg:col-span-3 flex flex-col gap-4">
-          <div className="glass-panel p-5 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-            
-            {/* 3D Scene Viewport */}
-            <div className="h-40 w-full rounded-2xl border border-white/10 overflow-hidden relative glass-panel bg-black/40 flex items-center justify-center">
-              <div className="absolute inset-0 z-0">
-                <Canvas camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: true, alpha: true }}>
-                  <ambientLight intensity={0.6} />
-                  <directionalLight position={[2, 2, 2]} intensity={1.5} color="#ffffff" />
-                  <pointLight position={[-2, -2, 2]} intensity={2.0} color="#aa3bff" />
-                  <MorphingTorus />
-                  <Environment preset="studio" />
-                </Canvas>
-              </div>
-              <div className="absolute bottom-3 left-3 z-10 pointer-events-none">
-                <span className="text-[8px] font-mono tracking-widest text-gold uppercase bg-black/80 px-2 py-0.5 rounded border border-gold/30">
-                  3D Spatial Node
-                </span>
-              </div>
-            </div>
+      </div>
 
-            {/* Contact Panel Cards */}
-            <div className="flex flex-col gap-2.5">
-              <ContactCard
-                icon={<Mail className="w-3.5 h-3.5" />}
-                label="DIRECT MAIL"
-                value={contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
-                href={`mailto:${contactData?.heroSetup?.email || websiteSettings?.email || ""}`}
-                accent="#D4AF37"
-              />
-              <ContactCard
-                icon={<Phone className="w-3.5 h-3.5" />}
-                label="BOOKING OFFICE"
-                value={contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
-                href={`tel:${contactData?.heroSetup?.phone || websiteSettings?.phone || ""}`}
-                accent="#00E5FF"
-              />
-              <ContactCard
-                icon={<MapPin className="w-3.5 h-3.5" />}
-                label="CREATOR HQ"
-                value={websiteSettings?.address || "Silicon Valley Creator Labs, Suite 40"}
-                href={websiteSettings?.googleMapsUrl}
-                accent="#aa3bff"
-              />
-            </div>
+      {/* BOTTOM HORIZONTAL GRID BAR (4 Cards in 1 Row - Matching Reference Image 1) */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 relative z-10 mb-12">
+        
+        {/* Card 1: DIRECT MAIL */}
+        <motion.a 
+          href={`mailto:${contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}`}
+          whileHover={{ y: -6, scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-gold/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(212,175,55,0.25)] overflow-hidden cursor-pointer"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="w-11 h-11 shrink-0 rounded-2xl border border-gold/40 bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 group-hover:rotate-6 group-hover:bg-gold group-hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+            <Mail className="w-5 h-5" />
           </div>
-        </div>
+          <div className="overflow-hidden relative z-10">
+            <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-gold transition-colors">DIRECT MAIL</span>
+            <span className="text-sm font-bold text-white group-hover:text-gold transition-colors block truncate">
+              {contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
+            </span>
+          </div>
+        </motion.a>
+
+        {/* Card 2: BOOKING OFFICE */}
+        <motion.a 
+          href={`tel:${contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}`}
+          whileHover={{ y: -6, scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-cyan-400/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(34,211,238,0.25)] overflow-hidden cursor-pointer"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="w-11 h-11 shrink-0 rounded-2xl border border-cyan-400/40 bg-cyan-500/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-cyan-400 group-hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]">
+            <Phone className="w-5 h-5" />
+          </div>
+          <div className="overflow-hidden relative z-10">
+            <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-cyan-400 transition-colors">BOOKING OFFICE</span>
+            <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors block truncate">
+              {contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
+            </span>
+          </div>
+        </motion.a>
+
+        {/* Card 3: YOUTUBE CHANNEL */}
+        <motion.a 
+          href="https://youtube.com/c/techmasterf"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ y: -6, scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-red-500/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(239,68,68,0.25)] overflow-hidden cursor-pointer"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="w-11 h-11 shrink-0 rounded-2xl border border-red-500/40 bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-red-500 group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.15)]">
+            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+            </svg>
+          </div>
+          <div className="overflow-hidden relative z-10">
+            <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-red-400 transition-colors">YOUTUBE CHANNEL</span>
+            <span className="text-sm font-bold text-white group-hover:text-red-400 transition-colors block truncate">
+              Tech Master
+            </span>
+          </div>
+        </motion.a>
+
+        {/* Card 4: CREATOR HQ */}
+        <motion.a 
+          href={websiteSettings?.googleMapsUrl || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ y: -6, scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-purple-400/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(192,132,252,0.25)] overflow-hidden cursor-pointer"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="w-11 h-11 shrink-0 rounded-2xl border border-purple-400/40 bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(192,132,252,0.15)]">
+            <MapPin className="w-5 h-5" />
+          </div>
+          <div className="overflow-hidden relative z-10">
+            <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-purple-400 transition-colors">CREATOR HQ</span>
+            <span className="text-sm font-bold text-white group-hover:text-purple-400 transition-colors block truncate">
+              Silicon Valley Creator Lab
+            </span>
+          </div>
+        </motion.a>
 
       </div>
 

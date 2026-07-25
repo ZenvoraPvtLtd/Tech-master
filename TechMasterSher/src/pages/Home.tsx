@@ -330,9 +330,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 2. Brand Partner Logos Ticker */}
-      <section className="py-3 md:py-4 bg-black/40 border-y border-white/5 relative z-10 overflow-hidden text-center">
-        <div className="flex justify-center mb-2 md:mb-3 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-4 py-1.5 rounded-full bg-black/40 font-mono font-semibold text-[10px]">
+      <section className="py-2 md:py-2.5 bg-black/40 border-y border-white/5 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-1.5">
+        <div className="flex justify-center relative z-20">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-3 py-0.5 rounded-full bg-black/40 font-mono font-semibold text-[9px]">
             OFFICIAL CHANNELS & PARTNERS
           </span>
         </div>
@@ -340,7 +340,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           animate={{ x: ["0%", "-50%"] }} 
           transition={{ ease: "linear", duration: 35, repeat: Infinity }}
           style={{ willChange: "transform" }}
-          className="flex w-max"
+          className="flex w-max items-center justify-center"
         >
           {[1, 2, 3, 4].map((groupIndex) => {
             const defaultBrandChannels = [
@@ -390,16 +390,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                       key={`${brand.brandName}-${idx}-${groupIndex}`}
                       onClick={() => handleNavClick("portfolio")}
                       data-cursor="CLICK"
-                      className="group/brand relative inline-flex flex-col items-center justify-center px-8 sm:px-14 py-3 transition-all duration-300 cursor-pointer select-none"
+                      className="group/brand relative inline-flex flex-col items-center justify-center px-8 sm:px-14 py-0.5 transition-all duration-300 cursor-pointer select-none"
                     >
                       {/* Clean Brand Title */}
-                      <span className="font-serif text-base sm:text-xl font-bold text-gold tracking-[3px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300 relative z-10">
+                      <span className="font-serif text-base sm:text-lg font-bold text-gold tracking-[2.5px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300 relative z-10">
                         {brand.brandName}
                       </span>
 
                       {/* Yellow Click Here Quick Link with Angled Arrow */}
-                      <span className="text-yellow-400 group-hover/brand:text-yellow-300 text-xs font-mono font-semibold tracking-wider flex items-center gap-1 transition-colors duration-300 mt-0.5 underline underline-offset-4 relative z-10">
-                        Click Here ↗
+                      <span className="text-yellow-400 group-hover/brand:text-yellow-300 text-[11px] font-mono font-semibold tracking-wider flex items-center gap-1 transition-colors duration-300 relative z-10">
+                        <span className="underline underline-offset-2">Click Here</span> ↗
                       </span>
                     </div>
                   );
@@ -462,7 +462,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-8">
           <div>
-            <p className="typo-badge mb-4">VIDEO PORTFOLIO</p>
+            <p className="typo-badge mb-4">OUR WORK</p>
             <h2 className="typo-h2">
               Cinematic <span className="text-gold italic font-bold">Video Streams</span>
             </h2>
@@ -508,62 +508,117 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </p>
         </div>
 
-        {/* 4 Cards Per Line Grid */}
+        {/* Luxury Brand Wall (16 Exact Image 1 Brands - Transparent Pure White Vector Marks, Zero Background Rectangle) */}
         {(() => {
+          const brandVectorMap: Record<string, { icon: string; fallback: any }> = {
+            amazon: { icon: "https://cdn.simpleicons.org/amazon/white", fallback: amazonLogo },
+            asus: { icon: "https://cdn.simpleicons.org/asus/white", fallback: asusLogo },
+            dell: { icon: "https://cdn.simpleicons.org/dell/white", fallback: dellLogo },
+            flipkart: { icon: flipkartLogo, fallback: flipkartLogo },
+            huawei: { icon: "https://cdn.simpleicons.org/huawei/white", fallback: huaweiLogo },
+            iqoo: { icon: "https://cdn.simpleicons.org/iqoo/white", fallback: iqooLogo },
+            marshall: { icon: marshallLogo, fallback: marshallLogo },
+            xiaomi: { icon: "https://cdn.simpleicons.org/xiaomi/white", fallback: miLogo },
+            mi: { icon: "https://cdn.simpleicons.org/xiaomi/white", fallback: miLogo },
+            motorola: { icon: "https://cdn.simpleicons.org/motorola/white", fallback: motorolaLogo },
+            oneplus: { icon: "https://cdn.simpleicons.org/oneplus/white", fallback: oneplusLogo },
+            oppo: { icon: "https://cdn.simpleicons.org/oppo/white", fallback: oppoLogo },
+            "google pixel": { icon: "https://cdn.simpleicons.org/google/white", fallback: pixelLogo },
+            google: { icon: "https://cdn.simpleicons.org/google/white", fallback: pixelLogo },
+            pixel: { icon: "https://cdn.simpleicons.org/google/white", fallback: pixelLogo },
+            poco: { icon: pocoLogo, fallback: pocoLogo },
+            realme: { icon: realmeLogo, fallback: realmeLogo },
+            samsung: { icon: "https://cdn.simpleicons.org/samsung/white", fallback: samsungLogo },
+            vivo: { icon: "https://cdn.simpleicons.org/vivo/white", fallback: vivoLogo }
+          };
+
           const defaultBrandCollabs = [
-            { brandName: "Samsung", logo: samsungLogo },
-            { brandName: "Xiaomi", logo: miLogo },
-            { brandName: "OnePlus", logo: oneplusLogo },
-            { brandName: "Oppo", logo: oppoLogo },
-            { brandName: "Vivo", logo: vivoLogo },
-            { brandName: "Motorola", logo: motorolaLogo },
-            { brandName: "IQOO", logo: iqooLogo },
-            { brandName: "Realme", logo: realmeLogo },
-            { brandName: "Poco", logo: pocoLogo },
-            { brandName: "Huawei", logo: huaweiLogo },
-            { brandName: "Asus", logo: asusLogo },
-            { brandName: "Google Pixel", logo: pixelLogo },
-            { brandName: "Dell", logo: dellLogo },
-            { brandName: "Amazon", logo: amazonLogo },
-            { brandName: "Flipkart", logo: flipkartLogo },
-            { brandName: "Marshall", logo: marshallLogo }
-          ];
+            "Amazon", "Asus", "Dell", "Flipkart", "Huawei", "IQOO", "Marshall", "Xiaomi",
+            "Motorola", "OnePlus", "Oppo", "Google Pixel", "Poco", "Realme", "Samsung", "Vivo"
+          ].map((name) => {
+            const clean = name.toLowerCase();
+            return {
+              brandName: name,
+              logo: brandVectorMap[clean]?.icon,
+              fallbackLogo: brandVectorMap[clean]?.fallback
+            };
+          });
 
           const activeCollabs = (homeData?.brandCollaborationsList && homeData.brandCollaborationsList.length > 0)
             ? homeData.brandCollaborationsList.filter((b: any) => b.status === "Active" || b.status === true || b.status === undefined)
             : defaultBrandCollabs;
 
           const displayCollabs = activeCollabs.length > 0
-            ? [...activeCollabs].sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0))
+            ? [...activeCollabs].map((b: any) => {
+                const bName = b.brandName || b.name || "";
+                const cleanName = bName.toLowerCase().trim();
+                const vInfo = brandVectorMap[cleanName] || { 
+                  icon: `https://cdn.simpleicons.org/${cleanName.replace(/[^a-z0-9]/g, "")}/white`, 
+                  fallback: b.logo || b.brandLogo
+                };
+                return {
+                  brandName: bName,
+                  logo: vInfo.icon,
+                  fallbackLogo: vInfo.fallback || b.logo || b.brandLogo,
+                  order: Number(b.order) || 0
+                };
+              }).sort((a: any, b: any) => a.order - b.order)
             : defaultBrandCollabs;
 
           return (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-5 w-full">
-              {displayCollabs.map((brand: any, idx: number) => {
-                const logoUrl = brand.logo || brand.brandLogo;
+            <div className="relative max-w-7xl mx-auto px-2 sm:px-4">
+              {/* Background Ambient Aurora Glow behind Grid */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold/5 via-purple-900/10 to-transparent blur-3xl pointer-events-none" />
 
-                return (
-                  <div
-                    key={`${brand.brandName}-${idx}`}
-                    className="group relative flex items-center justify-center bg-black/60 border border-white/10 hover:border-gold/60 px-6 py-4 rounded-2xl backdrop-blur-xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-105 select-none h-20 md:h-24"
-                  >
-                    <div className="absolute inset-0 rounded-2xl bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              {/* Luxury Apple + Linear Grid Wall Container */}
+              <div className="border border-white/5 rounded-3xl overflow-hidden bg-black/30 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative z-10 p-4 sm:p-6">
+                <motion.div 
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, margin: "-50px" }}
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.04 }
+                    }
+                  }}
+                  className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full items-center justify-items-center"
+                >
+                  {displayCollabs.map((brand: any, idx: number) => {
+                    const bName = brand.brandName;
 
-                    {logoUrl ? (
-                      <img
-                        src={logoUrl}
-                        alt={brand.brandName}
-                        loading="eager"
-                        className="h-9 md:h-11 max-h-12 w-auto max-w-[120px] sm:max-w-[150px] object-contain transition-transform duration-300 group-hover:scale-110"
-                      />
-                    ) : (
-                      <span className="font-serif text-base font-semibold text-gold tracking-wider">
-                        {brand.brandName}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+                    return (
+                      <motion.div
+                        key={`${bName}-${idx}`}
+                        variants={{
+                          hidden: { opacity: 0, y: 15, scale: 0.96 },
+                          show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
+                        }}
+                        whileHover={{ y: -3, scale: 1.04 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        className="group relative flex items-center justify-center p-4 sm:p-6 h-28 sm:h-36 w-full rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
+                      >
+                        {/* Subtle Cell Hover Ambient Light Sweep */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                        <img
+                          src={brand.logo}
+                          alt={bName}
+                          loading="eager"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (brand.fallbackLogo && target.src !== brand.fallbackLogo) {
+                              target.src = brand.fallbackLogo;
+                            }
+                          }}
+                          className="h-12 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[240px] md:max-w-[280px] object-contain transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10"
+                        />
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
             </div>
           );
         })()}
