@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { mediaUrl } from "../utils/media";
@@ -14,6 +14,44 @@ const transitionSettings = {
   duration: 0.75,
   ease: stripeEasing,
 };
+
+function getEmbedUrl(url: string): { type: "youtube" | "instagram" | "direct"; embedUrl?: string } {
+  if (!url) return { type: "direct" };
+  
+  let ytId: string | null = null;
+  if (url.includes("youtube.com/shorts/")) {
+    const parts = url.split("youtube.com/shorts/");
+    if (parts[1]) ytId = parts[1].split(/[?#]/)[0];
+  } else if (url.includes("youtu.be/")) {
+    const parts = url.split("youtu.be/");
+    if (parts[1]) ytId = parts[1].split(/[?#]/)[0];
+  } else if (url.includes("youtube.com/watch")) {
+    const match = url.match(/[?&]v=([^&#]+)/);
+    if (match) ytId = match[1];
+  }
+  
+  if (ytId) {
+    return {
+      type: "youtube",
+      embedUrl: `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1`
+    };
+  }
+  
+  if (url.includes("instagram.com/reel/") || url.includes("instagram.com/p/") || url.includes("/reel/")) {
+    let instId: string | null = null;
+    const match = url.match(/\/reel\/([^/?#]+)/) || url.match(/\/p\/([^/?#]+)/);
+    if (match) instId = match[1];
+    
+    if (instId) {
+      return {
+        type: "instagram",
+        embedUrl: `https://www.instagram.com/reel/${instId}/embed`
+      };
+    }
+  }
+  
+  return { type: "direct" };
+}
 
 export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels, isHomePage = false }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -115,15 +153,18 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
           };
           const xShift = getXShift(offset);
 
-          const rawHandle = reel.handle || reel.author || reel.category || "techmaster";
-          const formattedHandle = rawHandle.startsWith("@") ? rawHandle : `@${rawHandle.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+          const isShort = reel.category === "Short" || reel.type === "short";
+          const rawHandle = reel.author || reel.handle || reel.category || "techmaster";
+          const formattedHandle = isShort 
+            ? rawHandle 
+            : rawHandle.startsWith("@") ? rawHandle : `@${rawHandle.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
 
           // Smooth GPU Overlay level: center = crisp, sides = subtle dark overlay
           const overlayGlassClass = absOffset === 0
             ? "pointer-events-none"
             : absOffset === 1
-              ? "bg-black/15 pointer-events-none transition-all duration-300"
-              : "bg-black/25 pointer-events-none transition-all duration-300";
+              ? "bg-black/20 pointer-events-none transition-all duration-300"
+              : "bg-black/35 pointer-events-none transition-all duration-300";
 
           return (
             <motion.div
@@ -131,6 +172,11 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
               onClick={() => {
                 if (!isActive) {
                   changeActiveIndex(originalIndex);
+                } else {
+                  const targetUrl = reel.url || reel.videoUrl;
+                  if (targetUrl) {
+                    window.open(targetUrl, "_blank", "noopener,noreferrer");
+                  }
                 }
               }}
               initial={false}
@@ -155,23 +201,61 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                     : "border-blue-500/30 hover:border-blue-400/50"
               }`}
             >
-              {/* Pure Video Element - GPU Accelerated for 60fps Smooth Playback */}
-              {(reel.url || reel.videoUrl) && (
-                <video
-                  src={mediaUrl(reel.url || reel.videoUrl)}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  onCanPlay={(e) => {
-                    const v = e.target as HTMLVideoElement;
-                    v.play().catch(() => {});
-                  }}
-                  style={{ transform: "translateZ(0)", willChange: "transform" }}
-                  className="w-full h-full object-cover relative z-20 group-hover:scale-105 transition-all duration-500 opacity-100"
-                />
-              )}
+              {/* Pointer events overlay to capture drag/click and block iframe interception */}
+              <div className="absolute inset-0 z-35 bg-transparent cursor-pointer" />
+
+              {/* Pure Video Element or IFrame - GPU Accelerated for 60fps Smooth Playback */}
+              <div 
+                className="w-full h-full absolute inset-0 z-20 overflow-hidden"
+                style={{ 
+                  filter: absOffset === 0 ? "none" : absOffset === 1 ? "blur(3px)" : "blur(6px)",
+                  transform: "translateZ(0)"
+                }}
+              >
+                {(() => {
+                  const videoSrc = reel.videoUrl || reel.url || "";
+                  const embedInfo = getEmbedUrl(videoSrc);
+                  
+                  if (embedInfo.type === "youtube") {
+                    return (
+                      <iframe
+                        src={embedInfo.embedUrl}
+                        title={reel.title || "YouTube video player"}
+                        className="w-full h-full object-cover scale-[1.3] pointer-events-none border-none"
+                        allow="autoplay; encrypted-media"
+                        loading="lazy"
+                      />
+                    );
+                  } else if (embedInfo.type === "instagram") {
+                    return (
+                      <iframe
+                        src={embedInfo.embedUrl}
+                        title={reel.title || "Instagram reel player"}
+                        className="w-full h-full object-cover scale-[1.1] pointer-events-none bg-black border-none"
+                        allow="autoplay"
+                        loading="lazy"
+                      />
+                    );
+                  } else if (videoSrc) {
+                    return (
+                      <video
+                        src={mediaUrl(videoSrc)}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="auto"
+                        onCanPlay={(e) => {
+                          const v = e.target as HTMLVideoElement;
+                          v.play().catch(() => {});
+                        }}
+                        className="w-full h-full object-cover"
+                      />
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
               
               {/* GPU Glass Blur & Blue Effect Overlay for Side Cards */}
               {absOffset > 0 && (
@@ -216,9 +300,9 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ delay: 0.2 }}
-                      className={`absolute bottom-5 right-5 z-40 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border ${isHomePage ? "rounded-none border-black" : "rounded-full border-white/20"} px-2.5 py-1 text-gold shadow-lg`}
+                      className={`absolute bottom-5 right-5 z-40 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-gold/40 rounded-full px-3 py-1 shadow-lg`}
                     >
-                      <Eye className="w-3.5 h-3.5 text-gold" />
+                      <span className="text-gray-400 text-[9px] uppercase font-mono tracking-[1.5px] font-semibold">VIEWS</span>
                       <span className="text-gold text-xs font-semibold font-mono">{reel.views || "1.2M"}</span>
                     </motion.div>
                   </>

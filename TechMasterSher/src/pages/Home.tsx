@@ -52,31 +52,40 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       id: v.id,
       title: v.title,
       type: "reel",
-      url: v.videoUrl || v.url,
+      url: v.url || v.videoUrl,
+      videoUrl: v.videoUrl || v.url,
       thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
       aspectRatio: "9/16",
       category: "Reels & Shorts",
-      views: dummyViews[i % dummyViews.length]
+      views: v.views || dummyViews[i % dummyViews.length],
+      author: v.author,
+      handle: v.handle
     })),
     ...(dbData?.homepage?.shorts || []).map((v: any, i: number) => ({
       id: v.id,
       title: v.title,
       type: "short",
-      url: v.videoUrl || v.url,
+      url: v.url || v.videoUrl,
+      videoUrl: v.videoUrl || v.url,
       thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
       aspectRatio: "9/16",
       category: "Reels & Shorts",
-      views: dummyViews[(i + 3) % dummyViews.length]
+      views: v.views || dummyViews[(i + 3) % dummyViews.length],
+      author: v.author,
+      handle: v.handle
     })),
     ...(dbData?.homepage?.longVideos || []).map((v: any, i: number) => ({
       id: v.id,
       title: v.title,
       type: "long_video",
-      url: v.videoUrl || v.url,
+      url: v.url || v.videoUrl,
+      videoUrl: v.videoUrl || v.url,
       thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
       aspectRatio: "16/9",
       category: "Long Videos",
-      views: dummyViews[(i + 6) % dummyViews.length]
+      views: v.views || dummyViews[(i + 6) % dummyViews.length],
+      author: v.author,
+      handle: v.handle
     }))
   ];
   const activeVideos = dynamicVideos.length > 0 ? dynamicVideos : [];
@@ -283,8 +292,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             transition={{ duration: 1.0, delay: 0.4, ease: "easeOut" }}
             className="typo-h1 mb-8 text-reveal"
           >
-            {homeData?.heroMainHeading?.headingLine1 || "Orchestrating"} <br />
-            <span className="text-gold">{homeData?.heroMainHeading?.highlightedHeading || "Immersive Tech"}</span> {homeData?.heroMainHeading?.headingLine3 || "Education."}
+            Transform Your Business <br />
+            <span className="text-white">with </span>
+            <span className="text-gold">TECH MASTER</span>
+            <span className="text-white"> Innovation,</span> <br />
+            <span className="text-white">Technology & Growth</span>
           </motion.h1>
 
           <motion.div
