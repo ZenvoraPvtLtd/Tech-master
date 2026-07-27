@@ -22,7 +22,7 @@ const ScrollCounter = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       let scrollPercent = docHeight > 0 ? Math.max(0, Math.min(1, scrollY / docHeight)) : 0;
       if (scrollPercent > 0.98) scrollPercent = 1;
-      setViewsCount(Math.floor(scrollPercent * 20000000000));
+      setViewsCount(Math.floor(scrollPercent * 25000000000));
     };
     
     window.addEventListener("scroll", handleScroll, { passive: true });

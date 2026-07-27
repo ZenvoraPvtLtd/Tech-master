@@ -9,7 +9,7 @@ import { ArrowDown } from "lucide-react";
 gsap.registerPlugin(ScrollTrigger);
 
 export const Journey: React.FC = () => {
-  const { journeyData, journeyHero } = useData();
+  const { journeyHero } = useData();
   useEffect(() => {
     // 1. Line drawing animation
     gsap.fromTo(
@@ -48,43 +48,6 @@ export const Journey: React.FC = () => {
         }
       );
 
-      // Highlight Year text
-      gsap.to(item.querySelectorAll(".timeline-year-text"), {
-        color: "#D4AF37",
-        scale: 1.1,
-        opacity: 1,
-        textShadow: "0 0 20px rgba(212,175,55,0.5)",
-        duration: 0.3,
-        scrollTrigger: {
-          trigger: item,
-          start: "top 60%",
-          end: "bottom 40%",
-          toggleActions: "play reverse play reverse",
-        },
-      });
-
-      // Highlight Node dot
-      gsap.to(item.querySelectorAll(".timeline-node-outer"), {
-        borderColor: "#D4AF37",
-        duration: 0.3,
-        scrollTrigger: {
-          trigger: item,
-          start: "top 60%",
-          end: "bottom 40%",
-          toggleActions: "play reverse play reverse",
-        },
-      });
-      gsap.to(item.querySelectorAll(".timeline-node-inner"), {
-        backgroundColor: "#D4AF37",
-        boxShadow: "0 0 10px rgba(212,175,55,0.8)",
-        duration: 0.3,
-        scrollTrigger: {
-          trigger: item,
-          start: "top 60%",
-          end: "bottom 40%",
-          toggleActions: "play reverse play reverse",
-        },
-      });
     });
 
     // 3. Roadmap container fade-in on scroll
@@ -112,6 +75,59 @@ export const Journey: React.FC = () => {
     };
   }, []);
 
+  const newMilestones = [
+    {
+      year: "2019",
+      subtitle: "The First Upload",
+      title: "The First Upload",
+      description: "One video. No audience, no plan, no studio. Just one person from a small town who thought tech deserved better storytelling than it was getting."
+    },
+    {
+      year: "2020",
+      subtitle: "The Silver Play Button",
+      title: "The Silver Play Button",
+      description: "The first sign this wasn't a phase. One creator, one growing channel — and an audience that kept coming back."
+    },
+    {
+      year: "2021",
+      subtitle: "Two New Channels. One New Hire.",
+      title: "Two New Channels. One New Hire.",
+      description: "What was a one-person project became three. Two new channels launched, and Tech Master brought on its very first employee — the exact moment \"someone's channel\" started becoming a company."
+    },
+    {
+      year: "2022",
+      subtitle: "First Brand Deal. First Studio.",
+      title: "First Brand Deal. First Studio.",
+      description: "A brand trusted us before we were \"big enough\" to matter. That trust funded our first real studio — the day content stopped being made out of a bedroom."
+    },
+    {
+      year: "2023",
+      subtitle: "10 Million and Counting",
+      title: "10 Million and Counting",
+      description: "Tech Master Shorts crossed 10 million subscribers. An experiment had become a category of its own."
+    },
+    {
+      year: "2024",
+      subtitle: "25+ People. Seven Play Buttons.",
+      title: "25+ People. Seven Play Buttons.",
+      description: "Twenty-five people, one mission, seven Play Buttons on the wall. Proof this stopped being one person's story a long time ago."
+    },
+    {
+      year: "2025",
+      subtitle: "The Most-Subscribed Tech Creator on the Planet",
+      title: "The Most-Subscribed Tech Creator on the Planet",
+      description: "Every all-nighter, every idea that almost got cut, every video that didn't work until it did — it all built to this. Tech Master became the most-subscribed tech creator in the world."
+    },
+    {
+      year: "2026",
+      subtitle: "20 Billion Views. No One Else Has Done This.",
+      title: "20 Billion Views. No One Else Has Done This.",
+      description: "The first tech creator in the world to cross 20 billion views on a single channel. The most-followed tech creator on Instagram, in the same year. Some milestones take a lifetime. We're just getting started."
+    }
+  ];
+
+  const milestonesToDisplay = newMilestones;
+
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background radial glows */}
@@ -126,7 +142,7 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="typo-badge mb-4"
         >
-          {journeyHero?.badgeText}
+          WELCOME TO TECH MASTER'S JOURNEY
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
@@ -134,8 +150,7 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="typo-h2 mb-6"
         >
-          {journeyHero?.heading} <br />
-          <span className="text-gold italic font-bold">{journeyHero?.highlightWord}</span>
+          Stories that <span className="text-gold italic font-bold">Stay with You</span>
         </motion.h1>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -143,12 +158,12 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-300 text-sm sm:text-base font-light max-w-2xl mx-auto leading-relaxed p-6 rounded-2xl border border-gold bg-black/40 backdrop-blur-md shadow-[0_0_15px_rgba(212,175,55,0.15)] mt-4"
         >
-          {journeyHero?.description}
+          {journeyHero?.description || "Tracing the evolution from a single video in 2019 to the world's most-subscribed tech creator with over 20 billion views."}
         </motion.div>
 
         {/* Scroll Indicator */}
         <div className="flex flex-col items-center gap-2 mt-12 opacity-55">
-          <span className="text-[9px] uppercase tracking-[3px]">{journeyHero?.scrollIndicatorText}</span>
+          <span className="text-[9px] uppercase tracking-[3px]">{journeyHero?.scrollIndicatorText || "Explore timeline"}</span>
           <ArrowDown className="w-4 h-4 text-gold animate-bounce" />
         </div>
       </div>
@@ -163,7 +178,7 @@ export const Journey: React.FC = () => {
         />
 
         <div className="flex flex-col gap-16 relative">
-          {journeyData.map((item, index) => {
+          {milestonesToDisplay.map((item: any, index: number) => {
             const isEven = index % 2 === 0;
             return (
               <div
@@ -171,17 +186,35 @@ export const Journey: React.FC = () => {
                 className="timeline-item flex flex-col sm:flex-row relative w-full items-start sm:justify-between"
               >
                 {/* Timeline connector circle node */}
-                <div className="timeline-node-outer absolute left-4 sm:left-1/2 w-4 h-4 rounded-full border border-white/20 bg-black -translate-x-1/2 top-1.5 z-20 flex items-center justify-center transition-colors duration-300">
-                  <div className="timeline-node-inner w-1.5 h-1.5 rounded-full bg-white/20 transition-colors duration-300" />
-                </div>
+                <motion.div 
+                  initial={{ borderColor: "rgba(255,255,255,0.2)", boxShadow: "0 0 0px rgba(212,175,55,0)" }}
+                  whileInView={{ borderColor: "#D4AF37", boxShadow: "0 0 18px rgba(212,175,55,0.9)" }}
+                  viewport={{ amount: 0.5 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute left-4 sm:left-1/2 w-4 h-4 rounded-full border bg-black -translate-x-1/2 top-1.5 z-20 flex items-center justify-center"
+                >
+                  <motion.div 
+                    initial={{ backgroundColor: "rgba(255,255,255,0.2)", scale: 1, boxShadow: "0 0 0px rgba(212,175,55,0)" }}
+                    whileInView={{ backgroundColor: "#D4AF37", scale: 1.5, boxShadow: "0 0 12px rgba(212,175,55,1)" }}
+                    viewport={{ amount: 0.5 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-1.5 h-1.5 rounded-full" 
+                  />
+                </motion.div>
 
                 {/* Left space (empty on small, used on larger displays) */}
                 <div className={`hidden sm:block w-[45%] ${isEven ? "order-1 text-right" : "order-2"}`}>
                   {isEven && (
                     <div className="timeline-reveal pr-8 pt-1">
-                      <span className="timeline-year-text font-serif text-5xl font-black text-white/20 block mb-1 origin-right inline-block transition-transform">
+                      <motion.span 
+                        initial={{ color: "rgba(255,255,255,0.2)", scale: 1 }}
+                        whileInView={{ color: "#D4AF37", scale: 1.1, textShadow: "0 0 20px rgba(212,175,55,0.6)" }}
+                        viewport={{ amount: 0.5 }}
+                        transition={{ duration: 0.3 }}
+                        className="font-serif text-5xl font-black block mb-1 origin-right inline-block"
+                      >
                         {item.year}
-                      </span>
+                      </motion.span>
                       <span className="text-gray-400 text-xs uppercase tracking-[2px] font-mono block">
                         {item.subtitle}
                       </span>
@@ -193,9 +226,15 @@ export const Journey: React.FC = () => {
                 <div className={`w-[90%] sm:w-[45%] pl-10 sm:pl-0 ${isEven ? "order-2 sm:order-2" : "order-2 sm:order-1 text-left sm:text-right"}`}>
                   {!isEven && (
                     <div className="timeline-reveal hidden sm:block pl-8 pb-4 pt-1">
-                      <span className="timeline-year-text font-serif text-5xl font-black text-white/20 block mb-1 origin-left inline-block transition-transform">
+                      <motion.span 
+                        initial={{ color: "rgba(255,255,255,0.2)", scale: 1 }}
+                        whileInView={{ color: "#D4AF37", scale: 1.1, textShadow: "0 0 20px rgba(212,175,55,0.6)" }}
+                        viewport={{ amount: 0.5 }}
+                        transition={{ duration: 0.3 }}
+                        className="font-serif text-5xl font-black block mb-1 origin-left inline-block"
+                      >
                         {item.year}
-                      </span>
+                      </motion.span>
                       <span className="text-gray-400 text-xs uppercase tracking-[2px] font-mono block">
                         {item.subtitle}
                       </span>
@@ -204,9 +243,15 @@ export const Journey: React.FC = () => {
 
                   {/* Timeline mobile-specific header display */}
                   <div className="sm:hidden timeline-reveal mb-2">
-                    <span className="timeline-year-text font-serif text-3xl font-black text-white/20 block origin-left inline-block transition-transform">
+                    <motion.span 
+                      initial={{ color: "rgba(255,255,255,0.2)", scale: 1 }}
+                      whileInView={{ color: "#D4AF37", scale: 1.1 }}
+                      viewport={{ amount: 0.5 }}
+                      transition={{ duration: 0.3 }}
+                      className="font-serif text-3xl font-black block origin-left inline-block"
+                    >
                       {item.year}
-                    </span>
+                    </motion.span>
                     <span className="text-gray-400 text-xs uppercase tracking-[1px] font-mono">
                       {item.subtitle}
                     </span>
@@ -217,11 +262,6 @@ export const Journey: React.FC = () => {
                     className="timeline-reveal"
                     index={index}
                   >
-                    <div className="flex items-center gap-2 mb-4 text-gold">
-                      <span className="font-mono text-xs uppercase tracking-[2px]">
-                        Epoch {item.year}
-                      </span>
-                    </div>
                     <h3 className="font-serif text-xl md:text-2xl text-white font-medium mb-3">
                       {item.title}
                     </h3>
@@ -271,14 +311,12 @@ export const Journey: React.FC = () => {
             {[1, 2].map((loopGroup) => (
               <div key={loopGroup} className="flex gap-8">
                 {[
-                  { title: "Childhood", desc: "Early fascination with computers, dismantling old radios and writing basic HTML on a Windows 95 machine." },
-                  { title: "Career Beginning", desc: "Started as a junior developer in a local agency, learning the ropes of production-level code and client management." },
-                  { title: "First Brand Collab", desc: "Partnering with a major tech hardware brand to produce a series of educational videos, marking the first sponsorship." },
-                  { title: "Social Media Journey", desc: "From 0 to 2.5 Million subscribers, navigating algorithm changes, burnout, and discovering a unique educational voice." },
-                  { title: "Major Milestones", desc: "Reaching 100K subscribers, speaking at TEDx, and launching the first independent tech bootcamp." },
-                  { title: "Biggest Challenges", desc: "Balancing a demanding senior architect role while growing a YouTube channel, and overcoming imposter syndrome." },
-                  { title: "Success Stories", desc: "Helping thousands of students land roles at Fortune 500 companies through free content and accessible courses." },
-                  { title: "Future Vision", desc: "Building a decentralized, globally accessible university-grade tech education platform for the next generation." }
+                  { title: "2021 — New Beginnings", desc: "What was a one-person project became three. Two new channels launched and our first employee joined." },
+                  { title: "2022 — First Studio", desc: "A brand trusted us before we were big enough to matter. Content stopped being made in a bedroom." },
+                  { title: "2023 — 10M Subscribers", desc: "Tech Master Shorts crossed 10 million subscribers. An experiment became a category of its own." },
+                  { title: "2024 — Seven Play Buttons", desc: "Twenty-five people, one mission, seven Play Buttons on the wall." },
+                  { title: "2025 — #1 Tech Creator", desc: "Every all-nighter built to this: Tech Master became the most-subscribed tech creator in the world." },
+                  { title: "2026 — 20 Billion Views", desc: "The first tech creator in the world to cross 20 billion views on a single channel." }
                 ].map((item, idx) => {
                   const isCardOnTop = idx % 2 === 0;
                   return (

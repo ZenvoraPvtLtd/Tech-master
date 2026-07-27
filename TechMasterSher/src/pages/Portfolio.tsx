@@ -10,11 +10,6 @@ export const Portfolio: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState("All");
 
   const portfolioList = dbData?.portfolio && dbData.portfolio.length > 0 ? dbData.portfolio : [];
-  const portfolioHero = dbData?.portfolioHero || {
-    smallHeading: "CURATED SHOWCASES",
-    mainHeadingLine1: "Product Engineering &",
-    highlightText: "Student Collaborations"
-  };
 
   const filters = dbData?.portfolioFilters && dbData.portfolioFilters.length > 0
     ? ["All", ...dbData.portfolioFilters.map((f: any) => f.name || f)]
@@ -40,20 +35,108 @@ export const Portfolio: React.FC = () => {
       <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
 
       {/* Hero Header */}
-      <section className="max-w-7xl mx-auto text-left mb-16 relative z-10">
+      <section className="max-w-7xl mx-auto text-left mb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="typo-badge mb-4"
+          className="typo-badge mb-4 text-gold"
         >
-          {portfolioHero.smallHeading}
+          CREATIVE ECOSYSTEM
         </motion.div>
         
-        <h1 className="typo-h1">
-          {portfolioHero.mainHeadingLine1} <br />
-          <span className="text-gold italic font-bold">{portfolioHero.highlightText}</span>.
+        <h1 className="typo-h1 mb-6">
+          The <span className="text-gold italic font-bold">Multiverse</span>
         </h1>
+        <p className="text-gray-300 text-base md:text-lg font-light max-w-2xl leading-relaxed">
+          Masterpieces. In Motion — Our portfolio of 5 high-scale content channels spanning technology, automotive, podcasts, and viral entertainment.
+        </p>
+      </section>
+
+      {/* The Multiverse Channel Grid */}
+      <section className="max-w-7xl mx-auto mb-16 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            {
+              name: "1. Tech Master",
+              desc: "High-scale technology breakdowns, hardware reviews, and cinematic teardowns.",
+              stats: ["33M Subs on YT", "5.8M Followers on IG"],
+              popular: "195M (Short) • 219M (Reel)",
+              link: "https://www.youtube.com/@techmasterhq",
+              accent: "#D4AF37"
+            },
+            {
+              name: "2. Next Univerz",
+              desc: "Engineering insights, software masterclasses, and digital transformation.",
+              stats: ["5.5M Subs on YT"],
+              popular: "88M (Shorts) • 4.6M (Long)",
+              link: "https://www.youtube.com/@NextUniverz",
+              accent: "#00E5FF"
+            },
+            {
+              name: "3. Master Wheels",
+              desc: "Supercar testing, EV innovations, and automotive engineering marvels.",
+              stats: ["4.6M Subs on YT", "1.2M Followers on IG"],
+              popular: "1.7M (Long) • 148M (Short) • 70M (Reel)",
+              link: "https://www.youtube.com/@MasterWheelsAK",
+              accent: "#FF3366"
+            },
+            {
+              name: "4. Full Circle",
+              desc: "Deep-dive conversations, creator podcasts, and behind-the-scenes stories.",
+              stats: ["300K Subs on YT"],
+              popular: "2M (Short)",
+              link: "https://www.youtube.com/@fullcircle_in",
+              accent: "#AA3BFF"
+            },
+            {
+              name: "5. Trendz Talk",
+              desc: "Viral tech trends, short-form pop tech, and culture storytelling.",
+              stats: ["15K Followers on IG"],
+              popular: "4.8M (Reel)",
+              link: "https://www.instagram.com/techmasterco/",
+              accent: "#00FF66"
+            }
+          ].map((channel, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              className="glass-panel p-6 rounded-3xl border border-white/10 hover:border-gold/40 transition-all duration-300 flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-serif text-xl font-bold text-white">{channel.name}</h3>
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: channel.accent }} />
+                </div>
+                <p className="text-gray-400 text-xs sm:text-sm font-light leading-relaxed mb-4">
+                  {channel.desc}
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {channel.stats.map((st, i) => (
+                    <span key={i} className="px-3 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs font-mono font-semibold">
+                      {st}
+                    </span>
+                  ))}
+                </div>
+                <div className="text-[11px] font-mono text-gray-400 bg-black/40 p-3 rounded-xl border border-white/5 mb-4">
+                  <span className="text-gray-500 uppercase tracking-wider block text-[9px] mb-1">Most Popular:</span>
+                  <span className="text-white font-medium">{channel.popular}</span>
+                </div>
+              </div>
+
+              <a
+                href={channel.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1.5 text-gold hover:text-white transition-colors text-xs font-mono uppercase tracking-wider font-bold"
+              >
+                Visit Channel <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+            </motion.div>
+          ))}
+        </div>
       </section>
 
       {/* Filter Tabs */}

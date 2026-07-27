@@ -25,7 +25,17 @@ import samsungLogo from "../assets/samsung.jpeg";
 import vivoLogo from "../assets/Vivo.jpeg";
 import amazonLogo from "../assets/amazon.jpeg";
 import iqooLogo from "../assets/iQOO.jpeg";
-
+import cashifyLogo from "../assets/Cashify.jpeg";
+import nothingLogo from "../assets/Nothing.jpeg";
+import blinkitLogo from "../assets/blinkit.jpeg";
+import lenskartLogo from "../assets/lenskart.jpeg";
+import sleepCompanyLogo from "../assets/Thesleepcompany.jpeg";
+import fireboltLogo from "../assets/firebolt.jpeg";
+import ultravioletteLogo from "../assets/ultraviolette.jpeg";
+import teslaLogo from "../assets/Tesla.jpeg";
+import tataLogo from "../assets/TATA.jpeg";
+import hyundaiLogo from "../assets/Hyundai.jpeg";
+import kiaLogo from "../assets/KIA.jpeg";
 gsap.registerPlugin(ScrollTrigger);
 
 interface HomeProps {
@@ -262,7 +272,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       
       {/* 1. Hero Section */}
       <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-28 pb-0 text-center">
-        {/* The 2 Badges directly below Navbar */}
+        {/* Badges directly below Navbar */}
         <div className="flex flex-col items-center gap-3 relative z-20 mb-4 sm:mb-6">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             TECH MASTER
@@ -272,12 +282,12 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="typo-badge border border-gold/25 px-4 py-1.5 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2"
+            className="typo-badge border border-gold/25 px-4 py-1.5 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2 text-gold"
           >
             <svg className="w-3.5 h-3.5 fill-current text-gold" viewBox="0 0 24 24">
               <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
-            {homeData?.heroMainHeading?.smallBadge || "INDIA'S LEADING DIGITAL & TECHNICAL SOLUTION"}
+            India's most-watched media production house
           </motion.div>
         </div>
 
@@ -285,27 +295,28 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="h-80 sm:h-96 md:h-[420px] w-full pointer-events-none" />
 
         <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-4 sm:mt-8">
-          {/* Headline with split reveal effect */}
+          {/* Main Title: TECH MASTER */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.4, ease: "easeOut" }}
-            className="typo-h1 mb-8 text-reveal"
+            className="font-serif text-5xl sm:text-7xl md:text-8xl font-black mb-6 tracking-tight"
           >
-            Transform Your Business <br />
-            <span className="text-white">with </span>
-            <span className="text-gold">TECH MASTER</span>
-            <span className="text-white"> Innovation,</span> <br />
-            <span className="text-white">Technology & Growth</span>
+            <span className="text-white">TECH </span>
+            <span className="text-gold">MASTER</span>
           </motion.h1>
 
+          {/* Tagline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.6 }}
-            className="text-gray-400 text-sm md:text-lg font-light max-w-2xl leading-relaxed mb-6 md:mb-12 p-4 md:p-8 rounded-2xl border border-gold bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
+            className="text-gray-300 text-base sm:text-xl md:text-2xl font-serif italic max-w-3xl leading-relaxed mb-6 md:mb-10 p-6 md:p-8 rounded-2xl border border-gold/30 bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
           >
-            {homeData?.heroMainHeading?.description || "We design structured curricula, virtual sandbox playgrounds, and live cohort workshops, transforming traditional programming paths into cinematic student success pipelines."}
+            "Nothing We Make Is Forgettable. Unskippable. Unforgettable."
+            <span className="block text-xs font-mono font-normal text-gold/80 not-italic uppercase tracking-[2px] mt-3">
+              Attention and Influence — At Scale
+            </span>
           </motion.div>
 
           <motion.div
@@ -314,7 +325,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             transition={{ duration: 1.0, delay: 0.8 }}
             className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center relative z-20 mb-0"
           >
-            {/* Scroll Indicator */}
             <div className="flex flex-col items-center gap-1 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300 mt-2 sm:mt-0">
               <span className="text-[9px] uppercase tracking-[3px] text-gold font-bold">Scroll down</span>
               <motion.div
@@ -328,91 +338,88 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
       </section>
 
-      {/* Personal Introduction */}
-      <section className="scroll-section pt-0 pb-16 relative z-10 text-center mt-4 md:mt-6">
-        <div className="flex justify-center mb-6 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.founderBio?.tag || "FOUNDER BIOGRAPHY"}</span>
+      {/* Intro & The Vision Grid */}
+      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Intro Card */}
+          <div className="glass-panel p-8 sm:p-10 rounded-3xl border border-white/10 hover:border-gold/30 transition-all duration-300">
+            <span className="typo-badge mb-4 block text-gold">INTRO</span>
+            <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-4">
+              Building High-Scale Media Channels
+            </h2>
+            <p className="text-gray-300 text-sm sm:text-base font-light leading-relaxed">
+              Tech Master Digital Pvt Ltd builds and runs a portfolio of high-scale content channels across tech, automobiles, and entertainment. We take complex subjects and make them impossible to scroll past. Combining editorial rigor with production value that stands out.
+            </p>
+          </div>
+
+          {/* The Vision Card */}
+          <div className="glass-panel p-8 sm:p-10 rounded-3xl border border-gold/30 bg-gold/5 hover:border-gold transition-all duration-300">
+            <span className="typo-badge mb-4 block text-gold">THE VISION</span>
+            <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-4">
+              Complexity Made Simple & Unforgettable
+            </h2>
+            <p className="text-gray-300 text-sm sm:text-base font-light leading-relaxed">
+              Tech Master exists to make complexity feel simple, and simplicity feel unforgettable. We tell stories that inform without lecturing, entertain without diluting, and connect without pretending. The result: content built to travel across platforms, across formats, across the world.
+            </p>
+          </div>
         </div>
-        <h2 className="typo-h2 mb-6 fade-up">
-          {homeData?.founderBio?.title || "Hello, I'm Aman."}
-        </h2>
-        <p className="typo-body max-w-3xl mx-auto fade-up">
-          {homeData?.founderBio?.paragraph || "I am a software engineer..."}
-        </p>
       </section>
 
-      {/* 2. Brand Partner Logos Ticker */}
-      <section className="py-2 md:py-2.5 bg-black/40 border-y border-white/5 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-1.5">
-        <div className="flex justify-center relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-3 py-0.5 rounded-full bg-black/40 font-mono font-semibold text-[9px]">
-            OFFICIAL CHANNELS & PARTNERS
+      {/* About the CEO / Founder */}
+      <section className="scroll-section py-12 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-gold/30 bg-black/60 backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.08)]">
+          <span className="typo-badge text-gold/80 border border-gold/30 px-4 py-1.5 rounded-full bg-black/40 font-mono font-semibold text-xs inline-block mb-6">
+            ABOUT THE CEO / FOUNDER
           </span>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-bold mb-6">
+            Arvind Kharra <span className="text-gold italic">aka Tech Master</span>
+          </h2>
+          <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed max-w-4xl">
+            An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions.
+          </p>
         </div>
+      </section>
+
+      {/* 2. Channels Ticker Section */}
+      <section className="py-8 bg-black/60 border-y border-white/10 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-3">
+        <div className="flex flex-col items-center gap-1 relative z-20 max-w-3xl px-6">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            Different audiences. <span className="text-gold italic font-bold">Same Obsession.</span>
+          </h2>
+          <p className="text-gray-400 text-xs sm:text-sm font-mono tracking-wider uppercase mt-1">
+            We're just getting started / Five channels today. A Media Empire in Motion.
+          </p>
+        </div>
+
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
-          transition={{ ease: "linear", duration: 35, repeat: Infinity }}
+          transition={{ ease: "linear", duration: 25, repeat: Infinity }}
           style={{ willChange: "transform" }}
-          className="flex w-max items-center justify-center"
+          className="flex w-max items-center justify-center mt-4"
         >
           {[1, 2, 3, 4].map((groupIndex) => {
             const defaultBrandChannels = [
-              {
-                brandName: "Tech Master",
-                youtubeUrl: "https://www.youtube.com/@techmasterhq",
-                instagramUrl: "https://www.instagram.com/techmasterco/?hl=en",
-                showYouTube: true,
-                showInstagram: true
-              },
-              {
-                brandName: "Next Univerz",
-                youtubeUrl: "https://www.youtube.com/@NextUniverz",
-                instagramUrl: "https://www.instagram.com/NextUniverz/",
-                showYouTube: true,
-                showInstagram: true
-              },
-              {
-                brandName: "Master Wheels",
-                youtubeUrl: "https://www.youtube.com/@MasterWheelsAK",
-                instagramUrl: "https://www.instagram.com/masterwheel1/",
-                showYouTube: true,
-                showInstagram: true
-              },
-              {
-                brandName: "Full Circle",
-                youtubeUrl: "https://www.youtube.com/@fullcircle_in",
-                instagramUrl: "https://www.instagram.com/fullcircle_in/",
-                showYouTube: true,
-                showInstagram: true
-              }
+              { brandName: "Tech Master" },
+              { brandName: "Next Univerz" },
+              { brandName: "Master Wheels" },
+              { brandName: "Full Circle" },
+              { brandName: "Trendz Talk" }
             ];
-
-            const activePartners = (homeData?.brandPartners && homeData.brandPartners.length > 0)
-              ? homeData.brandPartners.filter((b: any) => b.status === "Active" || b.status === true || b.status === undefined)
-              : defaultBrandChannels;
-
-            const displayPartners = activePartners.length > 0
-              ? [...activePartners].sort((a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0))
-              : defaultBrandChannels;
 
             return (
               <div key={groupIndex} className="flex items-center">
-                {displayPartners.map((brand: any, idx: number) => {
+                {defaultBrandChannels.map((brand: any, idx: number) => {
                   return (
                     <div
                       key={`${brand.brandName}-${idx}-${groupIndex}`}
                       onClick={() => handleNavClick("portfolio")}
                       data-cursor="CLICK"
-                      className="group/brand relative inline-flex flex-col items-center justify-center px-8 sm:px-14 py-0.5 transition-all duration-300 cursor-pointer select-none"
+                      className="group/brand relative inline-flex items-center justify-center px-10 sm:px-16 py-2 transition-all duration-300 cursor-pointer select-none"
                     >
-                      {/* Clean Brand Title */}
-                      <span className="font-serif text-base sm:text-lg font-bold text-gold tracking-[2.5px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300 relative z-10">
+                      <span className="font-serif text-xl sm:text-2xl font-bold text-gold tracking-[3px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300">
                         {brand.brandName}
                       </span>
-
-                      {/* Yellow Click Here Quick Link with Angled Arrow */}
-                      <span className="text-yellow-400 group-hover/brand:text-yellow-300 text-[11px] font-mono font-semibold tracking-wider flex items-center gap-1 transition-colors duration-300 relative z-10">
-                        <span className="underline underline-offset-2">Click Here</span> ↗
-                      </span>
+                      <span className="text-white/20 mx-8">•</span>
                     </div>
                   );
                 })}
@@ -422,42 +429,63 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </motion.div>
       </section>
 
-      {/* 3. Core Values Grid Section */}
+      {/* 3. Core Values Section */}
       <section className="scroll-section section-padding relative z-10 text-left">
         <div className="flex justify-center mb-12 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            CORE VALUES
+            HOW WE MOVE
           </span>
         </div>
-        <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {homeData?.coreValues?.filter((val: any) => 
-            val.valueName !== "DIGITAL LUXURY & BRAND INNOVATION" && val.title !== "Luxury Standard"
-          ).map((val: any, idx: number) => (
-            <div key={idx} className="value-card glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300 opacity-0">
-              <h3 className="value-card-heading typo-h4 mb-2">{splitText(val.title)}</h3>
-              <p className="value-card-content text-gray-400 text-xs sm:text-sm font-light leading-relaxed opacity-0">{val.description}</p>
+        <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {[
+            {
+              title: "Fearless Energy",
+              desc: "Pushing creative boundaries with unyielding momentum and passion."
+            },
+            {
+              title: "Creative Storytelling",
+              desc: "Crafting narratives that resonate, inform, and inspire millions."
+            },
+            {
+              title: "Community First",
+              desc: "Building genuine connections and putting our audience at the heart of everything we create."
+            }
+          ].map((val: any, idx: number) => (
+            <div key={idx} className="glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300">
+              <h3 className="typo-h4 mb-3 text-white font-serif">{val.title}</h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">{val.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 5. Statistics Callout */}
-      <section className="scroll-section py-12 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-center">
-        <div className="flex justify-center mb-10 relative z-20">
+      {/* 5. Global Reach & Statistics */}
+      <section className="scroll-section py-16 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-center">
+        <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
             GLOBAL REACH & STATISTICS
           </span>
         </div>
         <div className="max-w-7xl mx-auto">
-          <p className="typo-badge mb-12">INFLUENCE & REACH</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {(homeData?.statistics || homeData?.statisticsCounters)?.map((stat: any, idx: number) => (
-              <div key={idx} className="fade-up">
+          <h2 className="typo-h2 mb-12">
+            Influence & <span className="text-gold italic font-bold">Impact</span>
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+            {[
+              { number: "40M+", label: "Subscribers" },
+              { number: "7M+", label: "IG Followers" },
+              { number: "1B+", label: "Monthly Views" },
+              { number: "2500+", label: "Videos Published" },
+              { number: "500K+", label: "FB Followers" },
+              { number: "25B", label: "Lifetime Views on YT" },
+              { number: "50+", label: "Global Brand Collaborations" }
+            ].map((stat: any, idx: number) => (
+              <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
                 <AnimatedCounter 
-                  value={`${stat.prefix || ""}${stat.counterNumber ?? stat.number}${stat.suffix || ""}`} 
-                  className="typo-stat block mb-2" 
+                  value={stat.number} 
+                  className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-2" 
                 />
-                <span className="typo-stat-desc">{stat.counterLabel ?? stat.label}</span>
+                <span className="text-gray-400 text-xs font-mono uppercase tracking-wider">{stat.label}</span>
               </div>
             ))}
           </div>
@@ -476,7 +504,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           <div>
             <p className="typo-badge mb-4">OUR WORK</p>
             <h2 className="typo-h2">
-              Cinematic <span className="text-gold italic font-bold">Video Streams</span>
+              Craft <span className="text-gold italic font-bold">In Motion</span>
             </h2>
           </div>
 
@@ -522,6 +550,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
         {/* Luxury Brand Wall (16 Exact Image 1 Brands - Transparent Pure White Vector Marks, Zero Background Rectangle) */}
         {(() => {
+          const lenskartSvgStr = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90"><g fill="none" stroke="white" stroke-width="7"><circle cx="35" cy="45" r="20"/><circle cx="75" cy="45" r="20"/></g><text x="110" y="56" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="42" fill="white">lenskart</text></svg>';
+          const lenskartLogoB64 = `data:image/svg+xml;base64,${btoa(lenskartSvgStr)}`;
+
           const brandVectorMap: Record<string, { icon: string; fallback: any }> = {
             amazon: { icon: "https://cdn.simpleicons.org/amazon/white", fallback: amazonLogo },
             asus: { icon: "https://cdn.simpleicons.org/asus/white", fallback: asusLogo },
@@ -541,18 +572,43 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             poco: { icon: pocoLogo, fallback: pocoLogo },
             realme: { icon: realmeLogo, fallback: realmeLogo },
             samsung: { icon: "https://cdn.simpleicons.org/samsung/white", fallback: samsungLogo },
-            vivo: { icon: "https://cdn.simpleicons.org/vivo/white", fallback: vivoLogo }
+            vivo: { icon: "https://cdn.simpleicons.org/vivo/white", fallback: vivoLogo },
+            cashify: { icon: cashifyLogo, fallback: cashifyLogo },
+            noise: { icon: "TEXT_FALLBACK", fallback: "TEXT_FALLBACK" },
+            nothing: { icon: "https://cdn.simpleicons.org/nothing/white", fallback: nothingLogo },
+            blinkit: { icon: "https://cdn.simpleicons.org/blinkit/white", fallback: blinkitLogo },
+            lenskart: { icon: lenskartLogoB64, fallback: lenskartLogoB64 },
+            "the sleep company": { icon: "https://cdn.simpleicons.org/thesleepcompany/white", fallback: sleepCompanyLogo },
+            "fire-boltt": { icon: "https://cdn.simpleicons.org/fireboltt/white", fallback: fireboltLogo },
+            ultraviolette: { icon: "https://cdn.simpleicons.org/ultraviolette/white", fallback: ultravioletteLogo },
+            tesla: { icon: "https://cdn.simpleicons.org/tesla/white", fallback: teslaLogo },
+            tata: { icon: "https://cdn.simpleicons.org/tata/white", fallback: tataLogo },
+            hyundai: { icon: "https://cdn.simpleicons.org/hyundai/white", fallback: hyundaiLogo },
+            kia: { icon: "https://cdn.simpleicons.org/kia/white", fallback: kiaLogo }
           };
 
-          const defaultBrandCollabs = [
+          const oldBrands = [
             "Amazon", "Asus", "Dell", "Flipkart", "Huawei", "IQOO", "Marshall", "Xiaomi",
             "Motorola", "OnePlus", "Oppo", "Google Pixel", "Poco", "Realme", "Samsung", "Vivo"
-          ].map((name) => {
+          ];
+          const newBrands = [
+            "boAt", "Cashify", "Sony", "Nothing", "Blinkit", "Lenskart", 
+            "The Sleep Company", "Noise", "Fire-Boltt", "Tesla", "Tata", 
+            "Hyundai", "Kia", "Ultraviolette"
+          ];
+          const requestedBrands = [...oldBrands, ...newBrands];
+
+          const defaultBrandCollabs = requestedBrands.map((name) => {
             const clean = name.toLowerCase();
+            const cleanAlphanumeric = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+            const mappedInfo = brandVectorMap[clean];
+            
+            const generatedFallback = 'TEXT_FALLBACK';
+            
             return {
               brandName: name,
-              logo: brandVectorMap[clean]?.icon,
-              fallbackLogo: brandVectorMap[clean]?.fallback
+              logo: mappedInfo ? mappedInfo.icon : `https://cdn.simpleicons.org/${cleanAlphanumeric}/white`,
+              fallbackLogo: mappedInfo ? mappedInfo.fallback : generatedFallback
             };
           });
 
@@ -564,15 +620,20 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             ? [...activeCollabs].map((b: any) => {
                 const bName = b.brandName || b.name || "";
                 const cleanName = bName.toLowerCase().trim();
+                const cleanAlphanumeric = bName.toLowerCase().replace(/[^a-z0-9]/g, "");
+                
+                const generatedFallback = 'TEXT_FALLBACK';
+                
                 const vInfo = brandVectorMap[cleanName] || { 
-                  icon: `https://cdn.simpleicons.org/${cleanName.replace(/[^a-z0-9]/g, "")}/white`, 
-                  fallback: b.logo || b.brandLogo
+                  icon: `https://cdn.simpleicons.org/${cleanAlphanumeric}/white`, 
+                  fallback: b.logo || b.brandLogo || generatedFallback
                 };
                 return {
                   brandName: bName,
                   logo: vInfo.icon,
-                  fallbackLogo: vInfo.fallback || b.logo || b.brandLogo,
+                  fallbackLogo: vInfo.fallback || b.logo || b.brandLogo || generatedFallback,
                   order: Number(b.order) || 0
+
                 };
               }).sort((a: any, b: any) => a.order - b.order)
             : defaultBrandCollabs;
@@ -595,10 +656,23 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                       transition: { staggerChildren: 0.04 }
                     }
                   }}
-                  className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full items-center justify-items-center"
+                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 w-full items-center justify-items-center"
                 >
                   {displayCollabs.map((brand: any, idx: number) => {
                     const bName = brand.brandName;
+                    const isUltra = bName.toLowerCase() === "ultraviolette";
+                    const isCashify = bName.toLowerCase() === "cashify";
+                    const isLenskart = bName.toLowerCase() === "lenskart";
+
+                    const imgClasses = (isUltra || isCashify || isLenskart)
+                      ? "h-7 sm:h-9 md:h-11 w-auto max-w-[120px] sm:max-w-[160px] md:max-w-[200px]"
+                      : "h-12 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[240px] md:max-w-[280px]";
+
+                    const logoFilter = isUltra 
+                      ? "brightness(10) contrast(50) grayscale(1)" 
+                      : isCashify
+                        ? "brightness(2.8) contrast(150%) grayscale(1)"
+                        : "grayscale(1) brightness(1.2)";
 
                     return (
                       <motion.div
@@ -620,12 +694,24 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                           loading="eager"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            if (brand.fallbackLogo && target.src !== brand.fallbackLogo) {
+                            if (brand.fallbackLogo === 'TEXT_FALLBACK') {
+                              target.style.display = 'none';
+                              if (target.nextElementSibling) {
+                                (target.nextElementSibling as HTMLElement).style.display = 'block';
+                              }
+                            } else if (brand.fallbackLogo && target.src !== brand.fallbackLogo) {
                               target.src = brand.fallbackLogo;
                             }
                           }}
-                          className="h-12 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[240px] md:max-w-[280px] object-contain transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10"
+                          className={`${imgClasses} object-contain transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10 mix-blend-screen`}
+                          style={{ filter: logoFilter }}
                         />
+                        <span 
+                          className="text-white font-sans font-bold text-lg sm:text-2xl tracking-[4px] uppercase text-center transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10"
+                          style={{ display: 'none' }}
+                        >
+                          {bName}
+                        </span>
                       </motion.div>
                     );
                   })}
