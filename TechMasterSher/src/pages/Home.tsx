@@ -28,7 +28,6 @@ import iqooLogo from "../assets/iQOO.jpeg";
 import cashifyLogo from "../assets/Cashify.jpeg";
 import nothingLogo from "../assets/Nothing.jpeg";
 import blinkitLogo from "../assets/blinkit.jpeg";
-import lenskartLogo from "../assets/lenskart.jpeg";
 import sleepCompanyLogo from "../assets/Thesleepcompany.jpeg";
 import fireboltLogo from "../assets/firebolt.jpeg";
 import ultravioletteLogo from "../assets/ultraviolette.jpeg";
@@ -41,14 +40,6 @@ gsap.registerPlugin(ScrollTrigger);
 interface HomeProps {
   onChangePage: (page: string) => void;
 }
-
-const splitText = (text: string) => {
-  return text.split("").map((char, idx) => (
-    <span key={idx} className="char inline-block opacity-0">
-      {char === " " ? "\u00A0" : char}
-    </span>
-  ));
-};
 
 
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
