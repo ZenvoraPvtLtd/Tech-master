@@ -35,6 +35,7 @@ import teslaLogo from "../assets/Tesla.jpeg";
 import tataLogo from "../assets/TATA.jpeg";
 import hyundaiLogo from "../assets/Hyundai.jpeg";
 import kiaLogo from "../assets/KIA.jpeg";
+import circleImg from "../assets/First circle.jpg (1).jpeg";
 gsap.registerPlugin(ScrollTrigger);
 
 interface HomeProps {
@@ -407,10 +408,20 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                       data-cursor="CLICK"
                       className="group/brand relative inline-flex items-center justify-center px-10 sm:px-16 py-2 transition-all duration-300 cursor-pointer select-none"
                     >
-                      <span className="font-serif text-xl sm:text-2xl font-bold text-gold tracking-[3px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300">
-                        {brand.brandName}
-                      </span>
-                      <span className="text-white/20 mx-8">•</span>
+                      <div className="flex flex-col items-center">
+                        {/* Professional Channel Circle Image above the name */}
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border border-gold/40 group-hover/brand:border-gold transition-all duration-300 mb-3 shadow-[0_0_12px_rgba(212,175,55,0.15)] group-hover/brand:shadow-[0_0_20px_rgba(212,175,55,0.35)] relative bg-black/60 flex items-center justify-center">
+                          <img
+                            src={circleImg}
+                            alt={`${brand.brandName} Circle Icon`}
+                            className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover/brand:scale-110"
+                          />
+                        </div>
+                        <span className="font-serif text-xl sm:text-2xl font-bold text-gold tracking-[3px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300">
+                          {brand.brandName}
+                        </span>
+                      </div>
+                      <span className="text-white/20 mx-8 self-center select-none">•</span>
                     </div>
                   );
                 })}
@@ -504,7 +515,26 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         {/* Video Cards Grid */}
         <div className="flex flex-col gap-16 md:gap-20 w-full max-w-7xl mx-auto video-showcase-grid-container">
             {(() => {
-              const reels = filteredVideos.filter((v) => v.type === "reel" || v.type === "short");
+              let reels = filteredVideos.filter((v) => v.type === "reel" || v.type === "short");
+              if (reels.length >= 3) {
+                const v0 = reels[0];
+                const v1 = reels[1];
+                const v2 = reels[2];
+                const rest = reels.slice(3);
+                
+                const newReels = [v1, v2];
+                if (rest.length > 0) {
+                  newReels.push(rest[0]); // 3rd position
+                  newReels.push(v0);      // 4th position
+                  if (rest.length > 1) {
+                    newReels.push(...rest.slice(1));
+                  }
+                } else {
+                  newReels.push(v0);      // Fallback if exactly 3 reels
+                }
+                reels = newReels;
+              }
+
               const cmsFeaturedVideos = (homeData?.featuredVideos && homeData.featuredVideos.length > 0)
                 ? homeData.featuredVideos.filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
                 : null;
