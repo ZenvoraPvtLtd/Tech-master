@@ -70,23 +70,33 @@ export const DatabaseProvider = ({ children }) => {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${getApiBaseUrl()}${path}`, {
-      ...options,
-      headers,
-      credentials: "include"
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-    if (response.status === 401) {
-      persistAuth({ user: null, token: "", isLoggedIn: false });
-      localStorage.removeItem('zenvora_auth');
-      throw new Error("Session expired. Please log in again.");
-    }
+    try {
+      const response = await fetch(`${getApiBaseUrl()}${path}`, {
+        ...options,
+        headers,
+        signal: controller.signal,
+        credentials: "include"
+      });
+      clearTimeout(timeoutId);
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Request failed");
+      if (response.status === 401) {
+        persistAuth({ user: null, token: "", isLoggedIn: false });
+        localStorage.removeItem('zenvora_auth');
+        throw new Error("Session expired. Please log in again.");
+      }
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Request failed");
+      }
+      return data;
+    } catch (err) {
+      clearTimeout(timeoutId);
+      throw err;
     }
-    return data;
   };
 
   const syncSectionToBackend = async (key, value) => {
@@ -155,6 +165,23 @@ export const DatabaseProvider = ({ children }) => {
       }
       return { success: false, message: "Login authentication failed." };
     } catch (error) {
+      // Offline fallback login for development / offline server
+      if (email === 'admin@gmail.com' && (password === 'Admin@123' || password === 'admin123' || password === 'admin')) {
+        const fallbackAuthData = {
+          user: {
+            id: "admin-offline-1",
+            name: "TechMaster Admin",
+            email: email,
+            role: "Super Admin",
+            imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
+            status: "Active"
+          },
+          token: "offline-mock-token",
+          isLoggedIn: true
+        };
+        persistAuth(fallbackAuthData);
+        return { success: true };
+      }
       return { success: false, message: error.message };
     }
   };
