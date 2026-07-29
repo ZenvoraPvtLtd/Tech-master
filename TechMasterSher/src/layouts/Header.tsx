@@ -13,11 +13,8 @@ interface HeaderProps {
   onChangePage: (page: string) => void;
 }
 
-const ScrollCounter: React.FC<{ viewsCounterConfig?: any }> = ({ viewsCounterConfig }) => {
+const ScrollCounter = () => {
   const [viewsCount, setViewsCount] = useState(0);
-  const cap = viewsCounterConfig?.counterValue || 25000000000;
-  const label = viewsCounterConfig?.label || "VIEWS";
-  const suffix = viewsCounterConfig?.suffix || "+";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,31 +22,29 @@ const ScrollCounter: React.FC<{ viewsCounterConfig?: any }> = ({ viewsCounterCon
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       let scrollPercent = docHeight > 0 ? Math.max(0, Math.min(1, scrollY / docHeight)) : 0;
       if (scrollPercent > 0.98) scrollPercent = 1;
-      setViewsCount(Math.floor(scrollPercent * cap));
+      setViewsCount(Math.floor(scrollPercent * 25000000000));
     };
     
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [cap]);
-
-  if (viewsCounterConfig?.enabled === false) return null;
+  }, []);
 
   return (
     <div className="h-7 px-3.5 rounded-full border border-gold/30 bg-[#0a0a0a]/95 backdrop-blur-xl flex items-center justify-center gap-1.5 shadow-sm pointer-events-auto select-none">
       <span className="font-mono text-[9.5px] text-gray-400 tracking-[1.5px] uppercase font-semibold leading-none self-center translate-y-[0.5px]">
-        {label}
+        VIEWS
       </span>
       <span className="font-mono font-bold text-gold text-[10px] tracking-wider tabular-nums leading-none self-center">
-        {viewsCount.toLocaleString()}{suffix}
+        {viewsCount.toLocaleString()}+
       </span>
     </div>
   );
 };
 
 export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
-  const { dbData, websiteSettings, navbarData, termsPolicyData, privacyPolicyData, legalSettingsData } = useData();
+  const { dbData, websiteSettings, termsPolicyData, privacyPolicyData, legalSettingsData } = useData();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
@@ -58,8 +53,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      const threshold = navbarData?.scrollSettings?.scrollThreshold || 50;
-      setIsScrolled(scrollY > threshold);
+      setIsScrolled(scrollY > 50);
     };
     
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -74,49 +68,33 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
       window.removeEventListener("open-terms-modal", handleOpenTerms);
       window.removeEventListener("open-privacy-modal", handleOpenPrivacy);
     };
-  }, [navbarData?.scrollSettings?.scrollThreshold]);
+  }, []);
 
-  const identityItems = (navbarData?.menus?.identityItems && navbarData.menus.identityItems.length > 0)
-    ? navbarData.menus.identityItems.filter((m: any) => m.visibility !== false).map((m: any) => ({ name: m.name, id: m.pageUrl || m.slug || m.id }))
-    : (dbData?.navigation?.identityItems || [
-        { name: "Home", id: "home" },
-        { name: "About Founder", id: "about" },
-        { name: "Founder's Journey", id: "journey" },
-        { name: "Mission & Vision", id: "mission" },
-        { name: "What We Do", id: "what-we-do" },
-      ]);
+  const identityItems = dbData?.navigation?.identityItems || [
+    { name: "Home", id: "home" },
+    { name: "About Founder", id: "about" },
+    { name: "Founder's Journey", id: "journey" },
+    { name: "Mission & Vision", id: "mission" },
+    { name: "What We Do", id: "what-we-do" },
+  ];
 
-  const engagementItems = (navbarData?.menus?.engagementItems && navbarData.menus.engagementItems.length > 0)
-    ? navbarData.menus.engagementItems.filter((m: any) => m.visibility !== false).map((m: any) => ({ name: m.name, id: m.pageUrl || m.slug || m.id }))
-    : (dbData?.navigation?.engagementItems || [
-        { name: "Brand Collabs", id: "collaborations" },
-        { name: "Campaigns", id: "campaigns" },
-        { name: "Product Launches", id: "product-launches" },
-        { name: "Events & Talks", id: "events" },
-        { name: "Our Work", id: "portfolio" },
-        { name: "Careers", id: "career" },
-      ]);
+  const engagementItems = dbData?.navigation?.engagementItems || [
+    { name: "Brand Collabs", id: "collaborations" },
+    { name: "Campaigns", id: "campaigns" },
+    { name: "Product Launches", id: "product-launches" },
+    { name: "Events & Talks", id: "events" },
+    { name: "Our Work", id: "portfolio" },
+    { name: "Careers", id: "career" },
+  ];
 
-  const quickLinksItems = (navbarData?.menus?.quickLinksItems && navbarData.menus.quickLinksItems.length > 0)
-    ? navbarData.menus.quickLinksItems.filter((m: any) => m.visibility !== false).map((m: any) => ({ name: m.name, id: m.pageUrl || m.slug || m.id }))
-    : (dbData?.navigation?.quickLinksItems || [
-        { name: "Core Services", id: "services" },
-        { name: "Testimonials", id: "testimonials" },
-        { name: "FAQ Portal", id: "faq" },
-        { name: "Contact Page", id: "contact" },
-        { name: "Privacy Policy", id: "privacy" },
-        { name: "Terms of Service", id: "terms" },
-      ]);
-
-  const desktopLinks = (navbarData?.menus?.desktopLinks && navbarData.menus.desktopLinks.length > 0)
-    ? navbarData.menus.desktopLinks.filter((m: any) => m.visibility !== false).map((m: any) => ({ name: m.name, id: m.pageUrl || m.slug || m.id, target: m.target }))
-    : (dbData?.navigation?.desktopLinks || [
-        { name: "Home", id: "home" },
-        { name: "About", id: "about" },
-        { name: "Journey", id: "journey" },
-        { name: "Our Work", id: "portfolio" },
-        { name: "Careers", id: "career" },
-      ]);
+  const quickLinksItems = dbData?.navigation?.quickLinksItems || [
+    { name: "Core Services", id: "services" },
+    { name: "Testimonials", id: "testimonials" },
+    { name: "FAQ Portal", id: "faq" },
+    { name: "Contact Page", id: "contact" },
+    { name: "Privacy Policy", id: "privacy" },
+    { name: "Terms of Service", id: "terms" },
+  ];
 
   const handleNavClick = (pageId: string) => {
     if (pageId === "privacy") {
@@ -151,24 +129,20 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
     }
   }, [isMenuOpen]);
 
-  const logoSrc = mediaUrl(navbarData?.logo?.primaryLogo) || mediaUrl(websiteSettings?.companyLogo) || logo1;
-  const logoAlt = navbarData?.logo?.altText || "Tech Master Logo";
-  const letsTalkBtnConfig = navbarData?.letsTalkButton;
-
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-[999] py-1 md:py-2 px-4 md:px-12 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
-        style={{
-          filter: isScrolled ? 'none' : `
-            drop-shadow(0 2px 4px rgba(212, 175, 55, 0.7))
-            drop-shadow(0 4px 10px rgba(212, 175, 55, 0.3))
-          `,
-          background: isScrolled ? 'transparent' : 'black',
-          borderBottom: `1px solid ${isScrolled ? 'transparent' : 'rgba(255,255,255,0.1)'}`,
-          pointerEvents: isScrolled ? 'none' : 'auto'
-        }}
-      >
+  className={`fixed top-0 left-0 w-full z-[999] py-1 md:py-2 px-4 md:px-12 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
+  style={{
+    filter: isScrolled ? 'none' : `
+      drop-shadow(0 2px 4px rgba(212, 175, 55, 0.7))
+      drop-shadow(0 4px 10px rgba(212, 175, 55, 0.3))
+    `,
+    background: isScrolled ? 'transparent' : 'black',
+    borderBottom: `1px solid ${isScrolled ? 'transparent' : 'rgba(255,255,255,0.1)'}`,
+    pointerEvents: isScrolled ? 'none' : 'auto'
+  }}
+>
         {/* Brand Logo */}
         <div 
           onClick={() => handleNavClick("home")} 
@@ -177,8 +151,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           style={{ pointerEvents: isScrolled ? 'none' : 'auto' }}
         >
           <img
-            src={logoSrc}
-            alt={logoAlt}
+            src={mediaUrl(websiteSettings?.companyLogo) || logo1}
+            alt="Tech Master Logo"
             className="h-10 sm:h-14 lg:h-20 w-auto object-contain -my-2 sm:-my-4 lg:-my-5"
             style={{
               imageRendering: "-webkit-optimize-contrast",
@@ -192,7 +166,13 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
 
         {/* Desktop Navigation Link Cluster */}
         <nav className={`hidden lg:flex items-center gap-5 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-          {desktopLinks.map((item: any) => (
+          {(dbData?.navigation?.desktopLinks || [
+            { name: "Home", id: "home" },
+            { name: "About", id: "about" },
+            { name: "Journey", id: "journey" },
+            { name: "Our Work", id: "portfolio" },
+            { name: "Careers", id: "career" },
+          ]).map((item: any) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
@@ -211,21 +191,21 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         {/* Action Button & Hamburger Toggle */}
         <div className="flex items-center gap-4 sm:gap-6">
           <div className="flex items-center justify-center pointer-events-auto">
-            <ScrollCounter viewsCounterConfig={navbarData?.viewsCounter} />
+            <ScrollCounter />
           </div>
-          {letsTalkBtnConfig?.enabled !== false && (
-            <div className={`hidden sm:block transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-              <Magnetic strength={0.3}>
-                <button
-                  onClick={() => handleNavClick(letsTalkBtnConfig?.buttonUrl || "contact")}
-                  className="light-sweep h-7 px-3.5 rounded-full border border-gold/30 hover:border-gold hover:text-black hover:bg-gold transition-all duration-500 text-[10px] font-black uppercase tracking-[1.5px] text-gold flex items-center justify-center gap-1.5 shadow-sm"
-                >
-                  {letsTalkBtnConfig?.buttonText || "Let's Talk"}
-                  <ArrowUpRight className="w-3 h-3" />
-                </button>
-              </Magnetic>
-            </div>
-          )}
+          <div className={`hidden sm:block transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            <Magnetic strength={0.3}>
+              <button
+                onClick={() => handleNavClick("contact")}
+                className="light-sweep h-7 px-3.5 rounded-full border border-gold/30 hover:border-gold hover:text-black hover:bg-gold transition-all duration-500 text-[10px] font-black uppercase tracking-[1.5px] text-gold flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                Let's Talk
+                <ArrowUpRight className="w-3 h-3" />
+              </button>
+            </Magnetic>
+          </div>
+
+
         </div>
       </header>
       {/* Fullscreen Overlay Menu */}

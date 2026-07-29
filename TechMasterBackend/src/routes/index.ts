@@ -42,7 +42,6 @@ import { TermsPolicy } from "../models/TermsPolicy";
 import { PrivacyPolicy } from "../models/PrivacyPolicy";
 import { CookiePolicy } from "../models/CookiePolicy";
 import { LegalSettings } from "../models/LegalSettings";
-import { Navbar } from "../models/Navbar";
 
 import {
   serviceRepository,
@@ -64,7 +63,6 @@ import {
   privacyPolicyRepository,
   cookiePolicyRepository,
   legalSettingsRepository,
-  navbarRepository,
 } from "../repositories";
 
 const router = Router();
@@ -153,7 +151,6 @@ router.get("/", async (req, res, next) => {
       privacyPolicy,
       cookiePolicy,
       legalSettings,
-      navbar,
     ] = await Promise.all([
       serviceRepository.find(),
       blogRepository.find(),
@@ -174,7 +171,6 @@ router.get("/", async (req, res, next) => {
       privacyPolicyRepository.find(),
       cookiePolicyRepository.find(),
       legalSettingsRepository.find(),
-      navbarRepository.find(),
     ]);
 
     // 3. Construct aggregated CMS state
@@ -198,7 +194,6 @@ router.get("/", async (req, res, next) => {
       privacyPolicy: privacyPolicy[0] || null,
       cookiePolicy: cookiePolicy[0] || null,
       legalSettings: legalSettings[0] || null,
-      navbar: navbar[0] || null,
       ...cmsDataMap, // Dynamically override and inject any updated flat keys
     };
 
@@ -243,7 +238,6 @@ router.post("/update", authenticate as any, async (req: any, res: any, next: any
       privacyPolicy: PrivacyPolicy,
       cookiePolicy: CookiePolicy,
       legalSettings: LegalSettings,
-      navbar: Navbar,
     };
 
     if (ModelMap[key]) {

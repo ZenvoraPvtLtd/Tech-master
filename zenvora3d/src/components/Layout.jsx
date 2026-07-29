@@ -7,7 +7,7 @@ import {
   Handshake, Megaphone, Calendar, FolderHeart, Newspaper, 
   Award, FileSpreadsheet, FileText, MessageSquare, Globe, 
   Users, Settings, Menu, LogOut, Bell, X, ChevronDown, 
-  ChevronRight, ShieldAlert, Layers, ExternalLink, PhoneCall, Scale, Navigation 
+  ChevronRight, ShieldAlert, Layers, ExternalLink, PhoneCall, Scale 
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -83,8 +83,6 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
     { id: "contact", label: "Contact Page", icon: PhoneCall },
     { id: "testimonials", label: "Testimonials", icon: Award },
     { id: "legal-cms", label: "Legal CMS", icon: Scale },
-    { id: "navbar-management", label: "Navbar CMS", icon: Navigation },
-    { id: "footer-cms", label: "Footer CMS", icon: Layout },
     { id: "seo-management", label: "SEO Management", icon: Globe },
     { id: "user-management", label: "User Management", icon: Users },
     { id: "website-settings", label: "Website Settings", icon: Settings }
