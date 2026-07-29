@@ -1,701 +1,486 @@
-import React, { useState } from 'react';
-import { useDatabase } from '../../context/DatabaseContext';
-import { useMediaManager } from '../../context/MediaContext';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Switch } from '../../components/ui/Switch';
-import { Input } from '../../components/ui/Input';
+import React, { useState, useEffect } from 'react';
 import { 
-  Sparkles, Home, Layers, Plus, 
-  BarChart, Mail, ChevronDown, ChevronRight,
-  Briefcase, History, Edit3, Trash2, 
-  RefreshCw, Save, ArrowUp, ArrowDown, 
-  UploadCloud, AlertCircle, Play, Film, Video, Handshake,
-  Calendar, Target, Star, Download, Search, User
+  Home, Video, Film, Sparkles, Award, Users, Share2, Mail, Save, Plus, 
+  Trash2, Eye, EyeOff, Edit2, Check, AlertCircle, RefreshCw, Upload, Image, Navigation, Star
 } from 'lucide-react';
+import { useDatabase } from '../../context/DatabaseContext';
 
 export const Homepage = () => {
   const { db, updateSection } = useDatabase();
-  const homepageData = db?.homepage || {};
+  const [activeTab, setActiveTab] = useState('hero');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const [expandedCards, setExpandedCards] = useState({
-    heroMainHeading: true, brandPartners: false, hero: true, founderBio: false, stats: false, coreValues: false, youtubePromo: false, events: false, newsletter: false, contactPreview: false, eventHighlights: false, featuredCampaigns: false,
-    heroSlides: false, videoSlider: false, reels: false, shorts: false, longVideos: false,
-    projects: false, services: false, logos: false, whyChooseUs: false, gallery: false, customSections: true
+  const defaultHomepage = {
+    hero: {
+      title: "TECH MASTER",
+      subtitle: "WHERE INFLUENCE MEETS INDUSTRY",
+      tagline: "India's Premier Tech & Media Powerhouse",
+      videoUrl: "",
+      primaryCtaText: "Explore Work",
+      primaryCtaUrl: "portfolio",
+      secondaryCtaText: "Let's Collaborate",
+      secondaryCtaUrl: "contact",
+      heroImage: ""
+    },
+    channelTicker: {
+      subtitle: "We're just getting started / Five channels today. A Media Empire in Motion.",
+      channels: [
+        { id: "ch-1", brandName: "Tech Master", stats: "33M Subs on YT | 5.8M Followers on IG", popular: "195M (Short), 219M (Reel)", logo: "" },
+        { id: "ch-2", brandName: "Next Univerz", stats: "5.5M Subs on YT", popular: "88M (Shorts), 4.6M (Long)", logo: "" },
+        { id: "ch-3", brandName: "Master Wheels", stats: "4.6M Subs on YT | 1.2M Followers on IG", popular: "1.7M (Long), 148M (Short)", logo: "" },
+        { id: "ch-4", brandName: "Full Circle", stats: "300K Subs", popular: "2M (Short)", logo: "" },
+        { id: "ch-5", brandName: "Trendz Talk", stats: "15K Followers", popular: "4.8M (Reel)", logo: "" }
+      ]
+    },
+    coreValues: [
+      { id: "cv-1", title: "Fearless Energy", description: "Pushing creative boundaries with unyielding momentum and passion.", icon: "Zap" },
+      { id: "cv-2", title: "Obsessive Craft", description: "Meticulous attention to storytelling, visual fidelity, and audio precision.", icon: "Sparkles" },
+      { id: "cv-3", title: "Cultural Shift", description: "Defining consumer trends and shaping the future of digital tech media.", icon: "Globe" }
+    ],
+    founder: {
+      tag: "FOUNDER & CREATIVE DIRECTOR",
+      name: "Abhishek Sher",
+      title: "Tech Master",
+      quote: "Creating digital media empires that inspire millions across the globe.",
+      bio: "Pioneering high-impact technology storytelling, automotive reviews, and luxury lifestyle content.",
+      image: ""
+    },
+    statistics: [
+      { id: "st-1", number: 45, suffix: "M+", label: "SUBSCRIBERS & FOLLOWERS", prefix: "" },
+      { id: "st-2", number: 12, suffix: "B+", label: "TOTAL ORGANIC VIEWS", prefix: "" },
+      { id: "st-3", number: 50, suffix: "+", label: "GLOBAL BRAND PARTNERS", prefix: "" },
+      { id: "st-4", number: 5, suffix: "", label: "PROPRIETARY CHANNELS", prefix: "" }
+    ],
+    reelsCarousel: [
+      { id: "reel-1", title: "ASUS ROG Beast Unboxing", views: "195M Views", videoUrl: "", thumbnail: "", category: "Unboxing" },
+      { id: "reel-2", title: "Tesla Supercharging Reality", views: "219M Views", videoUrl: "", thumbnail: "", category: "Automotive" },
+      { id: "reel-3", title: "iPhone Ultra Secret Prototype", views: "88M Views", videoUrl: "", thumbnail: "", category: "Tech" }
+    ],
+    longVideosCarousel: [
+      { id: "vid-1", title: "Building an Empire from Scratch", channel: "Tech Master", views: "4.6M Views", duration: "18:42", videoUrl: "", thumbnail: "" },
+      { id: "vid-2", title: "Master Wheels Bugatti Supercar Drive", channel: "Master Wheels", views: "1.7M Views", duration: "24:15", videoUrl: "", thumbnail: "" }
+    ],
+    brandCollaborations: [
+      { id: "brand-1", name: "ASUS", logo: "" },
+      { id: "brand-2", name: "DELL", logo: "" },
+      { id: "brand-3", name: "Flipkart", logo: "" },
+      { id: "brand-4", name: "OnePlus", logo: "" },
+      { id: "brand-5", name: "Samsung", logo: "" }
+    ],
+    newsletter: {
+      badge: "STAY IN THE LOOP",
+      title: "Join the Media Revolution",
+      description: "Receive exclusive insights, brand collaboration opportunities, and tech updates straight to your inbox.",
+      buttonText: "Subscribe Now"
+    }
+  };
+
+  const [homepageState, setHomepageState] = useState(() => {
+    return db?.homepage ? { ...defaultHomepage, ...db.homepage } : defaultHomepage;
   });
 
-  const toggleCard = (cardId) => {
-    setExpandedCards(prev => ({ ...prev, [cardId]: !prev[cardId] }));
+  useEffect(() => {
+    if (db?.homepage) {
+      setHomepageState((prev) => ({ ...defaultHomepage, ...db.homepage }));
+    }
+  }, [db?.homepage]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setErrorMsg('');
+    try {
+      await updateSection('homepage', homepageState);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to save homepage');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  
-  const [heroMainHeadingForm, setHeroMainHeadingForm] = useState(homepageData?.heroMainHeading || {});
-  const [heroForm, setHeroForm] = useState(homepageData?.hero || {});
-  const [founderBioForm, setFounderBioForm] = useState(homepageData?.founderBio || {});
-  const [youtubePromoForm, setYoutubePromoForm] = useState(homepageData?.youtubePromo || {});
-  const [newsletterForm, setNewsletterForm] = useState(homepageData?.newsletter || {});
-  const [contactPreviewForm, setContactPreviewForm] = useState(homepageData?.contactPreview || {});
-  const [eventsForm, setEventsForm] = useState(homepageData?.events || {});
-  const [eventHighlightsForm, setEventHighlightsForm] = useState(homepageData?.eventHighlights || {});
-  const [featuredCampaignsForm, setFeaturedCampaignsForm] = useState(homepageData?.featuredCampaigns || {});
-  const [subscriberSearch, setSubscriberSearch] = useState('');
-
-  const [activeEditorSection, setActiveEditorSection] = useState(null);
-  const [editingItemId, setEditingItemId] = useState(null);
-  const [draftItem, setDraftItem] = useState({});
-
-  const [uploadingField, setUploadingField] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-
-  const { openMediaManager } = useMediaManager();
-  const simulateMediaUpload = (targetKey, isObjectForm = false, objectSetter = null) => {
-    openMediaManager({
-      onSelect: (url) => {
-        if (activeEditorSection) {
-          setDraftItem(prev => ({ ...prev, [targetKey]: url }));
-        } else {
-          if (targetKey in heroForm || ['desktopImageUrl', 'mobileImageUrl', 'videoUrl'].includes(targetKey)) setHeroForm(prev => ({ ...prev, [targetKey]: url }));
-          if (targetKey in newsletterForm || ['backgroundImage', 'backgroundVideo', 'leftIllustration', 'rightIllustration'].includes(targetKey)) setNewsletterForm(prev => ({ ...prev, [targetKey]: url }));
-          if (targetKey in eventHighlightsForm || ['backgroundImage', 'backgroundVideo'].includes(targetKey)) setEventHighlightsForm(prev => ({ ...prev, [targetKey]: url }));
-          if (targetKey in featuredCampaignsForm || ['backgroundImage', 'backgroundVideo'].includes(targetKey)) setFeaturedCampaignsForm(prev => ({ ...prev, [targetKey]: url }));
-        }
+  const updateField = (path, value) => {
+    setHomepageState((prev) => {
+      const keys = path.split('.');
+      const updated = { ...prev };
+      let current = updated;
+      for (let i = 0; i < keys.length - 1; i++) {
+        current[keys[i]] = { ...current[keys[i]] };
+        current = current[keys[i]];
       }
+      current[keys[keys.length - 1]] = value;
+      return updated;
     });
   };
 
-
-  const handleSingleSave = (sectionKey, data) => {
-    updateSection('homepage', { [sectionKey]: data });
-    showToast(`${sectionKey.toUpperCase()} saved successfully.`);
-  };
-
-  const handleExportCSV = () => {
-    const subscribers = homepageData?.newsletter?.subscribers || [];
-    if (subscribers.length === 0) return showToast("No subscribers to export", "error");
-    
-    const headers = ["Name,Email,Subscription Date,Status"];
-    const rows = subscribers.map(s => `${s.name},${s.email},${s.subscriptionDate},${s.status}`);
-    const csvContent = "data:text/csv;charset=utf-8," + headers.concat(rows).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "subscribers.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast("CSV Exported Successfully.");
-  };
-
-  const handleDeleteSubscriber = (id) => {
-    if(window.confirm("Delete this subscriber?")) {
-      const nextSubs = (homepageData?.newsletter?.subscribers || []).filter(s => s.id !== id);
-      updateSection('homepage', { newsletter: { ...homepageData.newsletter, subscribers: nextSubs }});
-      showToast("Subscriber deleted.");
-    }
-  };
-  
-  const handleBulkDeleteSubscribers = () => {
-    if(window.confirm("Delete ALL subscribers? This cannot be undone.")) {
-      updateSection('homepage', { newsletter: { ...homepageData.newsletter, subscribers: [] }});
-      showToast("Bulk delete completed.");
-    }
-  };
-
-  const renderListManager = ({ sectionKey, fields = [], displayColumns = [], innerListKey = null, maxItems = null }) => {
-    let listData = [];
-    if (innerListKey) {
-       listData = homepageData[sectionKey]?.[innerListKey] || [];
-    } else {
-       listData = homepageData[sectionKey] || [];
-    }
-    
-    if (!Array.isArray(listData)) {
-      listData = Object.values(listData || {});
-    }
-
-    const isEditing = activeEditorSection === (innerListKey ? `${sectionKey}_${innerListKey}` : sectionKey);
-
-    const handleSaveItem = () => {
-      let nextList = [];
-      if (editingItemId) {
-        nextList = listData.map(item => item.id === editingItemId ? { ...item, ...draftItem } : item);
-        showToast("Item updated.");
-      } else {
-        const newItem = { ...draftItem, id: `item-${Date.now()}`, status: draftItem.status || 'Active', order: listData.length + 1 };
-        nextList = [...listData, newItem];
-        showToast("Item created.");
-      }
-      
-      if (innerListKey) {
-        const parentObj = homepageData[sectionKey] || {};
-        updateSection('homepage', { [sectionKey]: { ...parentObj, [innerListKey]: nextList } });
-      } else {
-        updateSection('homepage', { [sectionKey]: nextList });
-      }
-      setActiveEditorSection(null); setEditingItemId(null); setDraftItem({});
-    };
-
-    const handleDeleteItem = (id) => {
-      if (window.confirm("Delete this item?")) {
-        const nextList = listData.filter(item => item.id !== id);
-        if (innerListKey) {
-          const parentObj = homepageData[sectionKey] || {};
-          updateSection('homepage', { [sectionKey]: { ...parentObj, [innerListKey]: nextList } });
-        } else {
-          updateSection('homepage', { [sectionKey]: nextList });
-        }
-        showToast("Deleted.");
-      }
-    };
-
-    return (
-      <div className="flex flex-col gap-4">
-        {!isEditing && (
-          <div className="flex flex-col gap-3">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-zinc-900 text-zinc-500 font-mono uppercase text-[9px] tracking-wider">
-                    {displayColumns.map(col => <th key={col.key} className="py-2 px-3">{col.label}</th>)}
-                    <th className="py-2 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listData.map((item, idx) => (
-                    <tr key={item.id || idx} className="border-b border-zinc-900/60 hover:bg-zinc-900/10 text-zinc-300">
-                      {displayColumns.map(col => (
-                        <td key={col.key} className="py-2.5 px-3 truncate">
-                          {col.type === 'image' || col.type === 'video' || col.type === 'gallery' ? (
-                            item[col.key] ? <div className="w-8 h-8 rounded border border-zinc-800 bg-zinc-950 flex items-center justify-center overflow-hidden"><img src={typeof item[col.key] === 'string' ? item[col.key].split(',')[0] : item[col.key]} className="w-full h-full object-cover" /></div> : '-'
-                          ) : col.type === 'switch' ? (
-                            <Switch checked={item[col.key] === true || item[col.key] === 'Active'} onChange={() => {}} />
-                          ) : item[col.key] || '-'}
-                        </td>
-                      ))}
-                      <td className="py-2.5 px-3 text-right flex items-center justify-end gap-1.5">
-                        <button onClick={() => { setActiveEditorSection(innerListKey ? `${sectionKey}_${innerListKey}` : sectionKey); setEditingItemId(item.id); setDraftItem({ ...item }); }} className="p-1 hover:bg-zinc-900 rounded text-amber-500"><Edit3 className="w-3 h-3" /></button>
-                        <button onClick={() => handleDeleteItem(item.id)} className="p-1 hover:bg-zinc-900 rounded text-rose-500"><Trash2 className="w-3 h-3" /></button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div>
-              {maxItems && listData.length >= maxItems ? (
-                <span className="text-xs text-rose-500 italic px-2">Maximum limit of {maxItems} reached. Cannot add more.</span>
-              ) : (
-                <Button onClick={() => { setActiveEditorSection(innerListKey ? `${sectionKey}_${innerListKey}` : sectionKey); setEditingItemId(null); setDraftItem({}); }} variant="secondary" size="sm" className="gap-1 text-xs border border-zinc-800 text-luxury-gold"><Plus className="w-3.5 h-3.5" /> <span>Add Row</span></Button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {isEditing && (
-          <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-3">
-            <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Editor</span>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {fields.map(field => {
-                if (field.type === 'textarea') return <div key={field.key} className="md:col-span-2"><Input label={field.label} textarea rows={2} value={draftItem[field.key] || ''} onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} /></div>;
-                if (field.type === 'upload' || field.type === 'video' || field.type === 'gallery' || field.type === 'reel') return <div key={field.key} className="border border-zinc-900 p-3 rounded bg-zinc-950/40 flex flex-col gap-2"><span className="text-[9px] font-mono text-zinc-550 block uppercase">{field.label}</span>{draftItem[field.key] ? <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={draftItem[field.key].split(',')[0]} className="w-full h-full object-cover" /><button onClick={() => setDraftItem({ ...draftItem, [field.key]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div> : <div onClick={() => simulateMediaUpload(field.key)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>}</div>;
-                if (field.type === 'switch') return <div key={field.key} className="flex items-center justify-between border border-zinc-900 p-3 rounded bg-zinc-950/40"><span className="text-[10px] font-bold text-zinc-400 uppercase">{field.label}</span><Switch checked={draftItem[field.key] === true || draftItem[field.key] === 'Active'} onChange={v => setDraftItem({ ...draftItem, [field.key]: v })} /></div>;
-                if (field.type === 'select') return <div key={field.key} className="flex flex-col gap-1"><label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{field.label}</label><select className="bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-zinc-200" value={draftItem[field.key] || field.options[0]} onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })}>{field.options.map(o => <option key={o} value={o}>{o}</option>)}</select></div>;
-                return <Input key={field.key} label={field.label} type={field.type || 'text'} value={draftItem[field.key] || ''} onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} />;
-              })}
-            </div>
-            <div className="flex justify-end gap-2 pt-2.5">
-              <button onClick={() => { setActiveEditorSection(null); setEditingItemId(null); setDraftItem({}); }} className="px-3 py-1 text-xs text-zinc-550 hover:text-white">Cancel</button>
-              <button onClick={handleSaveItem} className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded">Save Record</button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
+  const tabs = [
+    { id: 'hero', label: '1. Hero Section', icon: Home },
+    { id: 'ticker', label: '2. Channel Ticker', icon: Share2 },
+    { id: 'values', label: '3. Core Values', icon: Sparkles },
+    { id: 'founder', label: '4. Founder Section', icon: Award },
+    { id: 'stats', label: '5. Statistics', icon: Users },
+    { id: 'reels', label: '6. Short Videos (Reels)', icon: Film },
+    { id: 'longVids', label: '7. Long Videos', icon: Video },
+    { id: 'brands', label: '8. Brand Collaborations', icon: Star },
+    { id: 'newsletter', label: '9. Newsletter', icon: Mail }
+  ];
 
   return (
-    <div className="flex flex-col gap-6 text-left relative pb-20">
-      
-      {toast && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-full shadow-gold-glow border flex items-center gap-2.5 bg-zinc-950 border-luxury-gold/50 text-luxury-gold font-sans">
-          <AlertCircle className="w-4 h-4" />
-          <span className="text-xs font-semibold">{toast.message}</span>
-        </div>
-      )}
-
-      <div className="border-b border-zinc-800/80 pb-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+    <div className="p-6 max-w-7xl mx-auto space-y-6 text-white font-sans">
+      {/* Top Header Controls */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-zinc-900/90 border border-zinc-800 p-6 rounded-2xl backdrop-blur-xl shadow-2xl">
         <div>
-          <h1 className="font-serif text-2xl font-medium tracking-wide text-zinc-100 flex items-center gap-2">
-            <Home className="w-5 h-5 text-luxury-gold" />
-            Homepage Dynamic CMS
-          </h1>
-          <p className="text-xs text-zinc-500 mt-1">Reorganized to map perfectly with Visitor Website naming and structures.</p>
+          <div className="flex items-center gap-3 mb-1">
+            <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400">
+              <Home className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-bold font-serif text-amber-400">Homepage CMS Control Center</h1>
+          </div>
+          <p className="text-zinc-400 text-xs font-mono">
+            Direct 1:1 Editor for every section visible on the TechMaster Homepage
+          </p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => { setExpandedCards(prev => ({...prev, customSections: true})); setActiveEditorSection('customSections'); setEditingItemId(null); setDraftItem({}); document.getElementById('customSections')?.scrollIntoView(); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
-             <Plus className="w-4 h-4 mr-1.5" /> Add Section
-          </Button>
-          <Button onClick={() => { setHeroForm(homepageData?.hero || {}); setNewsletterForm(homepageData?.newsletter || {}); setEventsForm(homepageData?.events || {}); setEventHighlightsForm(homepageData?.eventHighlights || {}); setFeaturedCampaignsForm(homepageData?.featuredCampaigns || {}); showToast("Forms reset to original database state.", "info"); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
-             <RefreshCw className="w-4 h-4 mr-1.5" /> Reset
-          </Button>
-          <Button onClick={() => showToast("Draft saved locally.", "success")} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
-             <Save className="w-4 h-4 mr-1.5" /> Save Draft
-          </Button>
-          <Button onClick={() => showToast("🚀 Public production server updated successfully. Page is Live!")} variant="primary" size="sm" className="bg-gradient-to-r from-luxury-gold to-luxury-darkgold text-black font-bold shadow-gold-glow ml-2">
-             Publish Live
-          </Button>
+
+        <div className="flex items-center gap-3">
+          {saveSuccess && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl text-xs font-semibold">
+              <Check className="w-4 h-4" /> Published to Website
+            </div>
+          )}
+          {errorMsg && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl text-xs">
+              <AlertCircle className="w-4 h-4" /> {errorMsg}
+            </div>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold rounded-xl text-xs uppercase tracking-wider transition-all duration-300 shadow-lg shadow-amber-500/20 disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" />
+            {isSaving ? "Publishing..." : "Save Homepage Changes"}
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 max-w-5xl">
-        
-        
-        {/* 0.5 HERO MAIN HEADING SECTION */}
-        <Card title={<div onClick={() => toggleCard('heroMainHeading')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Sparkles className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Hero Main Heading</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.heroMainHeading && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Small Badge" value={heroMainHeadingForm.smallBadge || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, smallBadge: e.target.value })} />
-                <Input label="Heading Line 1" value={heroMainHeadingForm.headingLine1 || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, headingLine1: e.target.value })} />
-                <Input label="Highlighted Heading" value={heroMainHeadingForm.highlightedHeading || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, highlightedHeading: e.target.value })} />
-                <Input label="Heading Line 3" value={heroMainHeadingForm.headingLine3 || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, headingLine3: e.target.value })} />
-                <Input label="Primary Button Text" value={heroMainHeadingForm.primaryButton || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, primaryButton: e.target.value })} />
-                <Input label="Secondary Button Text" value={heroMainHeadingForm.secondaryButton || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, secondaryButton: e.target.value })} />
-                
-                <div className="md:col-span-2">
-                  <Input label="Description" textarea rows={3} value={heroMainHeadingForm.description || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, description: e.target.value })} />
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-zinc-800 pb-3">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all duration-200 border ${
+                isActive
+                  ? 'bg-amber-500/10 border-amber-500 text-amber-400 shadow-md shadow-amber-500/10'
+                  : 'bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Tab Panels */}
+      <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-6">
+
+        {/* TAB 1: HERO */}
+        {activeTab === 'hero' && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-bold text-amber-400 font-serif flex items-center gap-2">
+              <Home className="w-5 h-5" /> HERO SECTION CMS
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <label className="text-xs font-mono uppercase text-zinc-400 block">Main Hero Title</label>
+                <input
+                  type="text"
+                  value={homepageState.hero?.title || ""}
+                  onChange={(e) => updateField('hero.title', e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-serif text-lg"
+                />
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-xs font-mono uppercase text-zinc-400 block">Subtitle / Highlight Tagline</label>
+                <input
+                  type="text"
+                  value={homepageState.hero?.subtitle || ""}
+                  onChange={(e) => updateField('hero.subtitle', e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-xs text-amber-400 focus:outline-none focus:border-amber-500 font-mono"
+                />
+              </div>
+
+              <div className="space-y-3 md:col-span-2">
+                <label className="text-xs font-mono uppercase text-zinc-400 block">Hero Tagline Description</label>
+                <textarea
+                  rows={3}
+                  value={homepageState.hero?.tagline || homepageState.hero?.description || ""}
+                  onChange={(e) => updateField('hero.tagline', e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-xs text-zinc-200 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-xs font-mono uppercase text-zinc-400 block">Background Video URL (MP4)</label>
+                <input
+                  type="text"
+                  value={homepageState.hero?.videoUrl || ""}
+                  onChange={(e) => updateField('hero.videoUrl', e.target.value)}
+                  placeholder="https://res.cloudinary.com/... or gradient.mp4"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-xs text-amber-300 font-mono"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Primary CTA Text</label>
+                  <input
+                    type="text"
+                    value={homepageState.hero?.primaryCtaText || "Explore Work"}
+                    onChange={(e) => updateField('hero.primaryCtaText', e.target.value)}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Primary CTA Link</label>
+                  <input
+                    type="text"
+                    value={homepageState.hero?.primaryCtaUrl || "portfolio"}
+                    onChange={(e) => updateField('hero.primaryCtaUrl', e.target.value)}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-amber-400 font-mono"
+                  />
                 </div>
               </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('heroMainHeading', heroMainHeadingForm)}>Save Hero Heading</Button></div>
             </div>
-          )}
-        </Card>
+          </div>
+        )}
 
-        {/* 1. HERO SECTION */}
-        <Card title={<div onClick={() => toggleCard('hero')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Sparkles className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Hero Overview</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.hero && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Animated Tag Line" value={heroForm.tag || ''} onChange={e => setHeroForm({ ...heroForm, tag: e.target.value })} />
-                <Input label="Primary Button CTA Text" value={heroForm.ctaPrimary || ''} onChange={e => setHeroForm({ ...heroForm, ctaPrimary: e.target.value })} />
-                <Input label="Secondary Button CTA Text" value={heroForm.ctaSecondary || ''} onChange={e => setHeroForm({ ...heroForm, ctaSecondary: e.target.value })} />
-                
-                <div className="md:col-span-2">
-                  <Input label="Hero Intro Description paragraph" textarea rows={3} value={heroForm.paragraph || ''} onChange={e => setHeroForm({ ...heroForm, paragraph: e.target.value })} />
-                </div>
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('hero', heroForm)}>Save Hero Overview</Button></div>
+        {/* TAB 2: CHANNEL TICKER */}
+        {activeTab === 'ticker' && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-bold text-amber-400 font-serif flex items-center gap-2">
+              <Share2 className="w-5 h-5" /> MOVING CHANNEL TICKER CMS (5 CHANNELS)
+            </h2>
+
+            <div className="space-y-3">
+              <label className="text-xs font-mono uppercase text-zinc-400 block">Ticker Subtitle Tagline</label>
+              <input
+                type="text"
+                value={homepageState.channelTicker?.subtitle || ""}
+                onChange={(e) => updateField('channelTicker.subtitle', e.target.value)}
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-xs text-amber-400 font-mono"
+              />
             </div>
-          )}
-        </Card>
 
-        {/* 1.5. FOUNDER BIOGRAPHY SECTION */}
-        <Card title={<div onClick={() => toggleCard('founderBio')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><User className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Founder Biography</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.founderBio && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Section Title Tag (e.g. Founder Biography)" value={founderBioForm.tag || ''} onChange={e => setFounderBioForm({ ...founderBioForm, tag: e.target.value })} />
-                <Input label="Headline Greeting" value={founderBioForm.title || ''} onChange={e => setFounderBioForm({ ...founderBioForm, title: e.target.value })} />
-                <div className="md:col-span-2">
-                  <Input label="Detailed Bio Paragraph" textarea rows={3} value={founderBioForm.paragraph || ''} onChange={e => setFounderBioForm({ ...founderBioForm, paragraph: e.target.value })} />
-                </div>
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('founderBio', founderBioForm)}>Save Founder Bio</Button></div>
-            </div>
-          )}
-        </Card>
-
-        
-        {/* OFFICIAL CHANNELS & PARTNERS SECTION */}
-        <Card title={<div onClick={() => toggleCard('brandPartners')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Official Channels & Partners</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.brandPartners && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'brandPartners',
-                displayColumns: [
-                  { key: 'brandName', label: 'Brand Name' }, 
-                  { key: 'youtubeUrl', label: 'YouTube' }, 
-                  { key: 'instagramUrl', label: 'Instagram' }, 
-                  { key: 'status', label: 'Status' }
-                ],
-                fields: [
-                  { key: 'brandName', label: 'Brand Name' }, 
-                  { key: 'youtubeUrl', label: 'YouTube Channel URL' }, 
-                  { key: 'instagramUrl', label: 'Instagram Profile URL' }, 
-                  { key: 'showYouTube', label: 'Show YouTube Button', type: 'switch' }, 
-                  { key: 'showInstagram', label: 'Show Instagram Button', type: 'switch' }, 
-                  { key: 'brandLogo', label: 'Brand Logo URL' }, 
-                  { key: 'themeColor', label: 'Theme / Accent Color (e.g. #D4AF37)' }, 
-                  { key: 'status', label: 'Status (Active/Inactive)' },
-                  { key: 'order', label: 'Display Order', type: 'number' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* BRAND COLLABORATIONS CAROUSEL CMS MODULE */}
-        <Card title={<div onClick={() => toggleCard('brandCollaborationsList')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Layers className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Brand Collaborations Showcase</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.brandCollaborationsList && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'brandCollaborationsList',
-                displayColumns: [
-                  { key: 'brandName', label: 'Brand Name' },
-                  { key: 'logo', label: 'Logo', type: 'image' },
-                  { key: 'status', label: 'Status' }
-                ],
-                fields: [
-                  { key: 'brandName', label: 'Brand Name (e.g. Samsung, Xiaomi, Dell)' },
-                  { key: 'logo', label: 'Brand Logo URL', type: 'upload' },
-                  { key: 'status', label: 'Active Status (Active/Inactive)' },
-                  { key: 'order', label: 'Display Order', type: 'number' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* FEATURED VIDEOS (YOUTUBE) CMS MODULE */}
-        <Card title={<div onClick={() => toggleCard('featuredVideos')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Video className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Featured Videos (YouTube)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.featuredVideos && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'featuredVideos',
-                displayColumns: [
-                  { key: 'youtubeUrl', label: 'YouTube URL' },
-                  { key: 'videoId', label: 'Video ID' },
-                  { key: 'startTime', label: 'Start Time' },
-                  { key: 'endTime', label: 'End Time' },
-                  { key: 'status', label: 'Status' }
-                ],
-                fields: [
-                  { key: 'youtubeUrl', label: 'YouTube Video URL (e.g. https://www.youtube.com/watch?v=8H272rF60dc)' },
-                  { key: 'videoId', label: 'YouTube Video ID (e.g. 8H272rF60dc)' },
-                  { key: 'startTime', label: 'Start Time (e.g. 0:20 or seconds)' },
-                  { key: 'endTime', label: 'End Time (e.g. 6:33 or seconds - optional)' },
-                  { key: 'status', label: 'Active Status (Active/Inactive)' },
-                  { key: 'order', label: 'Display Order', type: 'number' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* 2. STATISTICS SECTION */}
-        <Card title={<div onClick={() => toggleCard('stats')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><BarChart className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Global Impact Statistics</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.stats && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'statistics',
-                displayColumns: [{ key: 'counterNumber', label: 'Counter' }, { key: 'counterLabel', label: 'Label' }, { key: 'activeToggle', label: 'Active', type: 'switch' }],
-                fields: [
-                  { key: 'counterNumber', label: 'Counter Number' }, { key: 'counterLabel', label: 'Counter Label' }, 
-                  { key: 'icon', label: 'Icon String' }, { key: 'order', label: 'Display Order', type: 'number' },
-                  { key: 'animationToggle', label: 'Enable Animation', type: 'switch' }, { key: 'activeToggle', label: 'Active Status', type: 'switch' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* 3. CORE VALUES SECTION */}
-        <Card title={<div onClick={() => toggleCard('coreValues')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Foundational Core Values</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.coreValues && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'coreValues',
-                displayColumns: [{ key: 'valueName', label: 'Value Name' }, { key: 'image', label: 'Image', type: 'image' }, { key: 'status', label: 'Status' }],
-                fields: [
-                  { key: 'title', label: 'Title' }, { key: 'subtitle', label: 'Subtitle' }, { key: 'valueName', label: 'Value Name' },
-                  { key: 'description', label: 'Short Description', type: 'textarea' }, { key: 'longDescription', label: 'Long Description', type: 'textarea' }, 
-                  { key: 'icon', label: 'Icon String' }, { key: 'image', label: 'Main Image', type: 'upload' },
-                  { key: 'order', label: 'Display Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* 3.5. YOUTUBE INITIATIVE PROMO SECTION */}
-        <Card title={<div onClick={() => toggleCard('youtubePromo')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Play className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">YouTube Initiative Promo</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.youtubePromo && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Promo Badge Tag (e.g. YOUTUBE INITIATIVE)" value={youtubePromoForm.tag || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, tag: e.target.value })} />
-                <Input label="Main Heading Headline" value={youtubePromoForm.title || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, title: e.target.value })} />
-                <Input label="CTA Button Text" value={youtubePromoForm.ctaText || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, ctaText: e.target.value })} />
-                <Input label="CTA Redirect URL link" value={youtubePromoForm.ctaUrl || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, ctaUrl: e.target.value })} />
-                <div className="md:col-span-2">
-                  <Input label="Detailed Info Paragraph" textarea rows={3} value={youtubePromoForm.paragraph || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, paragraph: e.target.value })} />
-                </div>
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('youtubePromo', youtubePromoForm)}>Save YouTube Initiative Promo</Button></div>
-            </div>
-          )}
-        </Card>
-
-        {/* 3.7. FEATURED CAMPAIGNS SECTION */}
-        <Card title={<div onClick={() => toggleCard('featuredCampaigns')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Featured Campaigns</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.featuredCampaigns && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Featured Campaigns Settings</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <Switch label="Enable Featured Campaigns Section" checked={featuredCampaignsForm.enableSection !== false} onChange={v => setFeaturedCampaignsForm({...featuredCampaignsForm, enableSection: v})} />
-                <Input label="Section Tag (e.g. OUR IMPACT)" value={featuredCampaignsForm.sectionTag || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, sectionTag: e.target.value })} />
-                <Input label="Small Heading" value={featuredCampaignsForm.smallHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, smallHeading: e.target.value })} />
-                <Input label="Main Heading" value={featuredCampaignsForm.mainHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, mainHeading: e.target.value })} />
-                <Input label="Highlight Heading" value={featuredCampaignsForm.highlightHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, highlightHeading: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={featuredCampaignsForm.description || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, description: e.target.value })} /></div>
-                
-                {['backgroundImage', 'backgroundVideo'].map(k => (
-                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
-                    {featuredCampaignsForm[k] ? (
-                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={featuredCampaignsForm[k]} className="w-full h-full object-cover" /><button onClick={() => setFeaturedCampaignsForm({ ...featuredCampaignsForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
-                    ) : (
-                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
-                    )}
+            <div className="space-y-4 pt-3">
+              {homepageState.channelTicker?.channels?.map((ch, idx) => (
+                <div key={ch.id || idx} className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Channel Name</label>
+                    <input
+                      type="text"
+                      value={ch.brandName}
+                      onChange={(e) => {
+                        const updated = [...homepageState.channelTicker.channels];
+                        updated[idx].brandName = e.target.value;
+                        updateField('channelTicker.channels', updated);
+                      }}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-amber-400 font-bold"
+                    />
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('featuredCampaigns', featuredCampaignsForm)}>Save Settings</Button></div>
-              
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Campaign Cards Management</span>
-              {renderListManager({
-                sectionKey: 'featuredCampaigns',
-                innerListKey: 'list',
-                displayColumns: [{ key: 'title', label: 'Campaign Title' }, { key: 'coverImage', label: 'Cover Image', type: 'image' }, { key: 'active', label: 'Active', type: 'switch' }],
-                fields: [
-                  { key: 'title', label: 'Campaign Title' }, { key: 'description', label: 'Campaign Description', type: 'textarea' },
-                  { key: 'coverImage', label: 'Cover Image', type: 'upload' },
-                  { key: 'video', label: 'Campaign Video', type: 'video' },
-                  { key: 'ctaText', label: 'CTA Button Text' }, { key: 'ctaUrl', label: 'CTA Button URL' },
-                  { key: 'order', label: 'Display Order', type: 'number' },
-                  { key: 'featured', label: 'Featured Toggle', type: 'switch' }, { key: 'active', label: 'Active Toggle', type: 'switch' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
 
-        {/* 3.8. EVENT HIGHLIGHTS SECTION */}
-        <Card title={<div onClick={() => toggleCard('eventHighlights')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Calendar className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Event Highlights</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.eventHighlights && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Event Highlights Settings</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <Switch label="Enable Event Highlights Section" checked={eventHighlightsForm.enableSection !== false} onChange={v => setEventHighlightsForm({...eventHighlightsForm, enableSection: v})} />
-                <Input label="Section Tag (e.g. COMMUNITY)" value={eventHighlightsForm.sectionTag || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, sectionTag: e.target.value })} />
-                <Input label="Small Heading" value={eventHighlightsForm.smallHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, smallHeading: e.target.value })} />
-                <Input label="Main Heading" value={eventHighlightsForm.mainHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, mainHeading: e.target.value })} />
-                <Input label="Highlight Heading" value={eventHighlightsForm.highlightHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, highlightHeading: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={eventHighlightsForm.description || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, description: e.target.value })} /></div>
-                
-                {['backgroundImage', 'backgroundVideo'].map(k => (
-                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
-                    {eventHighlightsForm[k] ? (
-                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={eventHighlightsForm[k]} className="w-full h-full object-cover" /><button onClick={() => setEventHighlightsForm({ ...eventHighlightsForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
-                    ) : (
-                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
-                    )}
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Subscriber / Follower Stats</label>
+                    <input
+                      type="text"
+                      value={ch.stats}
+                      onChange={(e) => {
+                        const updated = [...homepageState.channelTicker.channels];
+                        updated[idx].stats = e.target.value;
+                        updateField('channelTicker.channels', updated);
+                      }}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200"
+                    />
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('eventHighlights', eventHighlightsForm)}>Save Settings</Button></div>
-              
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Event Cards Management</span>
-              {renderListManager({
-                sectionKey: 'eventHighlights',
-                innerListKey: 'list',
-                displayColumns: [{ key: 'title', label: 'Event Title' }, { key: 'date', label: 'Date' }, { key: 'image', label: 'Image', type: 'image' }, { key: 'active', label: 'Active', type: 'switch' }],
-                fields: [
-                  { key: 'title', label: 'Event Title' }, { key: 'date', label: 'Event Date' },
-                  { key: 'description', label: 'Event Description', type: 'textarea' },
-                  { key: 'time', label: 'Event Time' }, { key: 'location', label: 'Location' },
-                  { key: 'category', label: 'Category' },
-                  { key: 'image', label: 'Event Image', type: 'upload' },
-                  { key: 'banner', label: 'Event Banner', type: 'upload' },
-                  { key: 'thumbnail', label: 'Event Thumbnail', type: 'upload' },
-                  { key: 'video', label: 'Event Video', type: 'video' },
-                  { key: 'reel', label: 'Event Reel', type: 'reel' },
-                  { key: 'ctaText', label: 'CTA Button Text' }, { key: 'ctaUrl', label: 'CTA Button URL' },
-                  { key: 'order', label: 'Display Order', type: 'number' },
-                  { key: 'featured', label: 'Featured Toggle', type: 'switch' }, { key: 'active', label: 'Active Toggle', type: 'switch' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
 
-        {/* 4. NEWSLETTER SECTION */}
-        <Card title={<div onClick={() => toggleCard('newsletter')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Mail className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Exclusive Newsletter Hub</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.newsletter && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Newsletter Layout Settings</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Switch label="Enable Newsletter Section" checked={newsletterForm.enableNewsletter !== false} onChange={v => setNewsletterForm({...newsletterForm, enableNewsletter: v})} />
-                <Switch label="Enable Email Validation" checked={newsletterForm.enableEmailValidation !== false} onChange={v => setNewsletterForm({...newsletterForm, enableEmailValidation: v})} />
-                <Switch label="Enable Form Animations" checked={newsletterForm.enableAnimation !== false} onChange={v => setNewsletterForm({...newsletterForm, enableAnimation: v})} />
-                <Switch label="Enable Auto Response" checked={newsletterForm.enableAutoResponse !== false} onChange={v => setNewsletterForm({...newsletterForm, enableAutoResponse: v})} />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <Input label="Small Heading" value={newsletterForm.smallHeading || ''} onChange={e => setNewsletterForm({ ...newsletterForm, smallHeading: e.target.value })} />
-                <Input label="Main Heading" value={newsletterForm.mainHeading || ''} onChange={e => setNewsletterForm({ ...newsletterForm, mainHeading: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={newsletterForm.description || ''} onChange={e => setNewsletterForm({ ...newsletterForm, description: e.target.value })} /></div>
-                <Input label="Email Placeholder" value={newsletterForm.placeholderText || ''} onChange={e => setNewsletterForm({ ...newsletterForm, placeholderText: e.target.value })} />
-                <Input label="Subscribe Button Text" value={newsletterForm.buttonText || ''} onChange={e => setNewsletterForm({ ...newsletterForm, buttonText: e.target.value })} />
-                <Input label="Success Message" value={newsletterForm.successMessage || ''} onChange={e => setNewsletterForm({ ...newsletterForm, successMessage: e.target.value })} />
-                <Input label="Error Message" value={newsletterForm.errorMessage || ''} onChange={e => setNewsletterForm({ ...newsletterForm, errorMessage: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Privacy Text" value={newsletterForm.privacyText || ''} onChange={e => setNewsletterForm({ ...newsletterForm, privacyText: e.target.value })} /></div>
-                
-                {['backgroundImage', 'backgroundVideo', 'leftIllustration', 'rightIllustration'].map(k => (
-                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
-                    {newsletterForm[k] ? (
-                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={newsletterForm[k]} className="w-full h-full object-cover" /><button onClick={() => setNewsletterForm({ ...newsletterForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
-                    ) : (
-                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
-                    )}
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Most Popular Record</label>
+                    <input
+                      type="text"
+                      value={ch.popular}
+                      onChange={(e) => {
+                        const updated = [...homepageState.channelTicker.channels];
+                        updated[idx].popular = e.target.value;
+                        updateField('channelTicker.channels', updated);
+                      }}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-300 font-mono"
+                    />
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('newsletter', newsletterForm)}>Save Newsletter Layout</Button></div>
-              
-              {/* SUBSCRIBERS TABLE */}
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Subscriber Management</span>
-              <div className="flex justify-between items-center bg-zinc-950 p-2 rounded border border-zinc-900">
-                <div className="flex items-center gap-2 px-3">
-                   <Search className="w-4 h-4 text-zinc-500" />
-                   <input type="text" placeholder="Search subscribers..." value={subscriberSearch} onChange={(e)=>setSubscriberSearch(e.target.value)} className="bg-transparent border-none outline-none text-xs text-zinc-200 w-48" />
                 </div>
-                <div className="flex gap-2">
-                   <Button onClick={handleExportCSV} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-luxury-gold"><Download className="w-3.5 h-3.5" /> CSV Export</Button>
-                   <Button onClick={handleBulkDeleteSubscribers} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-rose-500"><Trash2 className="w-3.5 h-3.5" /> Bulk Delete</Button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: CORE VALUES */}
+        {activeTab === 'values' && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-bold text-amber-400 font-serif flex items-center gap-2">
+              <Sparkles className="w-5 h-5" /> CORE VALUES ("HOW WE MOVE") CMS
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {homepageState.coreValues?.map((val, idx) => (
+                <div key={val.id || idx} className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 space-y-3">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Value Title</label>
+                    <input
+                      type="text"
+                      value={val.title}
+                      onChange={(e) => {
+                        const updated = [...homepageState.coreValues];
+                        updated[idx].title = e.target.value;
+                        updateField('coreValues', updated);
+                      }}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-amber-400 font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Description</label>
+                    <textarea
+                      rows={3}
+                      value={val.description}
+                      onChange={(e) => {
+                        const updated = [...homepageState.coreValues];
+                        updated[idx].description = e.target.value;
+                        updateField('coreValues', updated);
+                      }}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-3 text-xs text-zinc-300"
+                    />
+                  </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: FOUNDER SECTION */}
+        {activeTab === 'founder' && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-bold text-amber-400 font-serif flex items-center gap-2">
+              <Award className="w-5 h-5" /> FOUNDER SPOTLIGHT CMS
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <label className="text-xs font-mono uppercase text-zinc-400 block">Founder Name</label>
+                <input
+                  type="text"
+                  value={homepageState.founder?.name || "Abhishek Sher"}
+                  onChange={(e) => updateField('founder.name', e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-xs text-white font-serif text-lg"
+                />
               </div>
-              <table className="w-full text-xs text-left border-collapse mt-2">
-                <thead>
-                  <tr className="border-b border-zinc-900 text-zinc-500 font-mono uppercase text-[9px] tracking-wider">
-                    <th className="py-2 px-3">Name</th><th className="py-2 px-3">Email</th><th className="py-2 px-3">Date</th><th className="py-2 px-3">Status</th><th className="py-2 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(homepageData?.newsletter?.subscribers || []).filter(s => s.name.toLowerCase().includes(subscriberSearch.toLowerCase()) || s.email.toLowerCase().includes(subscriberSearch.toLowerCase())).map(sub => (
-                    <tr key={sub.id} className="border-b border-zinc-900/60 text-zinc-300">
-                      <td className="py-2.5 px-3">{sub.name}</td><td className="py-2.5 px-3">{sub.email}</td><td className="py-2.5 px-3 font-mono text-[10px]">{sub.subscriptionDate}</td>
-                      <td className="py-2.5 px-3 text-luxury-gold">{sub.status}</td>
-                      <td className="py-2.5 px-3 text-right"><button onClick={() => handleDeleteSubscriber(sub.id)} className="p-1 hover:bg-zinc-900 rounded text-rose-500"><Trash2 className="w-3 h-3" /></button></td>
-                    </tr>
-                  ))}
-                  {(homepageData?.newsletter?.subscribers || []).length === 0 && <tr><td colSpan={5} className="text-center py-6 text-zinc-600 font-mono italic">No active subscribers found.</td></tr>}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
 
-        {/* 5. EVENT SECTION */}
-        <Card title={<div onClick={() => toggleCard('events')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Calendar className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Corporate Events Manager</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.events && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-5 border-b border-zinc-900">
-                 <Input label="Section Title" value={eventsForm.sectionTitle || ''} onChange={e => setEventsForm({...eventsForm, sectionTitle: e.target.value})} />
-                 <Input label="Subtitle" value={eventsForm.subtitle || ''} onChange={e => setEventsForm({...eventsForm, subtitle: e.target.value})} />
-                 <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={eventsForm.description || ''} onChange={e => setEventsForm({...eventsForm, description: e.target.value})} /></div>
-                 <div className="md:col-span-2 flex justify-end"><Button onClick={() => handleSingleSave('events', eventsForm)}>Save Event Headers</Button></div>
+              <div className="space-y-3">
+                <label className="text-xs font-mono uppercase text-zinc-400 block">Tag / Title</label>
+                <input
+                  type="text"
+                  value={homepageState.founder?.tag || "FOUNDER & CREATIVE DIRECTOR"}
+                  onChange={(e) => updateField('founder.tag', e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-xs text-amber-400 font-mono"
+                />
               </div>
-              {renderListManager({
-                sectionKey: 'events',
-                innerListKey: 'list',
-                displayColumns: [{ key: 'eventName', label: 'Event Name' }, { key: 'eventDate', label: 'Date' }, { key: 'eventBanner', label: 'Banner', type: 'image' }],
-                fields: [
-                  { key: 'eventName', label: 'Event Name' }, { key: 'eventCategory', label: 'Category' }, 
-                  { key: 'eventDate', label: 'Date' }, { key: 'eventTime', label: 'Time' },
-                  { key: 'eventLocation', label: 'Venue Location' }, { key: 'speaker', label: 'Speaker' }, 
-                  { key: 'shortDescription', label: 'Short Description', type: 'textarea' }, { key: 'fullDescription', label: 'Full Description', type: 'textarea' },
-                  { key: 'registrationButtonText', label: 'Registration CTA' }, { key: 'registrationUrl', label: 'Registration URL' },
-                  { key: 'eventBanner', label: 'Event Banner', type: 'upload' }, { key: 'eventThumbnail', label: 'Event Thumbnail', type: 'upload' },
-                  { key: 'eventGalleryImages', label: 'Gallery Images (CSV)', type: 'gallery' }, { key: 'eventVideo', label: 'Event Video', type: 'video' },
-                  { key: 'eventReel', label: 'Event Reel', type: 'reel' },
-                  { key: 'featuredToggle', label: 'Featured Event', type: 'switch' }, { key: 'activeToggle', label: 'Active', type: 'switch' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
 
-        {/* 5.5. CONTACT COLLABORATION PREVIEW SECTION */}
-        <Card title={<div onClick={() => toggleCard('contactPreview')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Mail className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Contact / Collab Preview</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.contactPreview && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Section Tag (e.g. COLLABORATION INQUIRY)" value={contactPreviewForm.tag || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, tag: e.target.value })} />
-                <Input label="Main Heading Headline" value={contactPreviewForm.title || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, title: e.target.value })} />
-                <Input label="CTA Button Text" value={contactPreviewForm.ctaText || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, ctaText: e.target.value })} />
+              <div className="space-y-3 md:col-span-2">
+                <label className="text-xs font-mono uppercase text-zinc-400 block">Featured Quote</label>
+                <textarea
+                  rows={2}
+                  value={homepageState.founder?.quote || ""}
+                  onChange={(e) => updateField('founder.quote', e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-xs text-amber-300 font-serif"
+                />
               </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('contactPreview', contactPreviewForm)}>Save Collab Preview</Button></div>
-            </div>
-          )}
-        </Card>
 
-        {/* 6. DYNAMIC CUSTOM SECTIONS */}
-        <Card id="customSections" title={<div onClick={() => toggleCard('customSections')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-luxury-gold/10 border-b border-luxury-gold/20"><div className="flex items-center gap-3"><Plus className="w-5 h-5 text-luxury-gold" /><span className="font-serif text-sm font-bold uppercase tracking-wider text-luxury-gold">Dynamic Custom Sections Builder</span></div><ChevronDown className="w-4 h-4 text-luxury-gold" /></div>} className="p-0 border-luxury-gold/30 bg-zinc-950/20 shadow-gold-glow-sm">
-          {expandedCards.customSections && (
-            <div className="p-5 flex flex-col gap-5">
-              <div className="text-sm text-zinc-400 mb-2">Build completely custom layout sections that will render dynamically on your homepage. Select the layout type and populate the media using the Media Hub.</div>
-              {renderListManager({
-                sectionKey: 'customSections',
-                displayColumns: [{ key: 'sectionTitle', label: 'Title' }, { key: 'layoutType', label: 'Layout Type' }, { key: 'primaryMediaUrl', label: 'Media', type: 'image' }],
-                fields: [
-                  { key: 'sectionTitle', label: 'Section Title' },
-                  { key: 'subtitle', label: 'Subtitle' },
-                  { key: 'layoutType', label: 'Layout Type', type: 'select', options: ['Full Width Hero', 'Split Image & Text', 'Video Background', 'Feature Grid', 'Call to Action Block'] },
-                  { key: 'description', label: 'Content Paragraph', type: 'textarea' },
-                  { key: 'primaryMediaUrl', label: 'Primary Media', type: 'upload' },
-                  { key: 'ctaText', label: 'Button Text' },
-                  { key: 'ctaLink', label: 'Button Link' },
-                  { key: 'order', label: 'Display Order', type: 'number' },
-                  { key: 'status', label: 'Visibility Status', type: 'select', options: ['Active', 'Hidden', 'Draft'] }
-                ]
-              })}
+              <div className="space-y-3 md:col-span-2">
+                <label className="text-xs font-mono uppercase text-zinc-400 block">Founder Biography</label>
+                <textarea
+                  rows={3}
+                  value={homepageState.founder?.bio || ""}
+                  onChange={(e) => updateField('founder.bio', e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-xs text-zinc-300"
+                />
+              </div>
             </div>
-          )}
-        </Card>
+          </div>
+        )}
 
-        {/* LEGACY SECTIONS (Restored untouched) */}
-        <Card title={<div onClick={() => toggleCard('heroSlides')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Layers className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Hero Slides (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.heroSlides && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'heroSlides', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'mediaUrl', label: 'Media', type: 'image' }], fields: [{ key: 'title', label: 'Slide Title' }, { key: 'subtitle', label: 'Subtitle' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'mediaType', label: 'Media Type', type: 'select', options: ['image', 'video'] }, { key: 'mediaUrl', label: 'Media File', type: 'upload' }, { key: 'buttonText', label: 'Button Text' }, { key: 'buttonUrl', label: 'Button URL' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('projects')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Projects (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.projects && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'featuredProjects', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'thumbnailUrl', label: 'Thumbnail', type: 'image' }], fields: [{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'thumbnailUrl', label: 'Thumbnail', type: 'upload' }, { key: 'previewImageUrl', label: 'Preview Image', type: 'upload' }, { key: 'previewVideoUrl', label: 'Preview Video', type: 'video' }, { key: 'redirectLink', label: 'Redirect Link' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('videoSlider')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Play className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Video Slider (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.videoSlider && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'videoSlider', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'videoUrl', label: 'Video', type: 'video' }], fields: [{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'videoUrl', label: 'Upload Video', type: 'video' }, { key: 'thumbnailUrl', label: 'Upload Thumbnail', type: 'upload' }, { key: 'redirectUrl', label: 'Redirect Link' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('reels')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Film className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Reels (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.reels && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'reels', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'videoUrl', label: 'Reel Video', type: 'reel' }], fields: [{ key: 'title', label: 'Title' }, { key: 'category', label: 'Category' }, { key: 'duration', label: 'Duration' }, { key: 'videoUrl', label: 'Upload Reel', type: 'reel' }, { key: 'thumbnailUrl', label: 'Upload Thumbnail', type: 'upload' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('shorts')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Video className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Shorts (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.shorts && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'shorts', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'videoUrl', label: 'Short Video', type: 'video' }], fields: [{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'videoUrl', label: 'Upload Short', type: 'video' }, { key: 'thumbnailUrl', label: 'Upload Thumbnail', type: 'upload' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('longVideos')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Film className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Long Videos (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.longVideos && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'longVideos', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'videoUrl', label: 'Long Video', type: 'video' }], fields: [{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'videoUrl', label: 'Upload Long Video', type: 'video' }, { key: 'thumbnailUrl', label: 'Upload Thumbnail', type: 'upload' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('services')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Services Preview (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.services && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'servicesPreview', displayColumns: [{ key: 'name', label: 'Service Name' }, { key: 'iconUrl', label: 'Icon', type: 'image' }], fields: [{ key: 'name', label: 'Name' }, { key: 'iconUrl', label: 'Icon Upload', type: 'upload' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'redirectLink', label: 'Link URL' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('logos')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Handshake className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Client Logos (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.logos && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'clientLogos', displayColumns: [{ key: 'clientName', label: 'Client' }, { key: 'logoUrl', label: 'Logo', type: 'image' }], fields: [{ key: 'clientName', label: 'Client Name' }, { key: 'logoUrl', label: 'Client Logo', type: 'upload' }, { key: 'websiteLink', label: 'Website URL' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
+        {/* TAB 5: STATISTICS COUNTER */}
+        {activeTab === 'stats' && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-bold text-amber-400 font-serif flex items-center gap-2">
+              <Users className="w-5 h-5" /> STATISTICS COUNTER CMS
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {homepageState.statistics?.map((st, idx) => (
+                <div key={st.id || idx} className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Label</label>
+                    <input
+                      type="text"
+                      value={st.label}
+                      onChange={(e) => {
+                        const updated = [...homepageState.statistics];
+                        updated[idx].label = e.target.value;
+                        updateField('statistics', updated);
+                      }}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-white uppercase font-mono"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Number</label>
+                      <input
+                        type="number"
+                        value={st.number}
+                        onChange={(e) => {
+                          const updated = [...homepageState.statistics];
+                          updated[idx].number = Number(e.target.value);
+                          updateField('statistics', updated);
+                        }}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-amber-400 font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Suffix</label>
+                      <input
+                        type="text"
+                        value={st.suffix}
+                        onChange={(e) => {
+                          const updated = [...homepageState.statistics];
+                          updated[idx].suffix = e.target.value;
+                          updateField('statistics', updated);
+                        }}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-300 font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

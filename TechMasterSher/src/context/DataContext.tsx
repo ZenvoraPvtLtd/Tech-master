@@ -41,6 +41,7 @@ interface DataContextType {
   dbData: any;
   websiteSettings: any;
   coreServicesConfig: any;
+  navbarData: any;
   refreshData: () => Promise<void>;
 }
 
@@ -74,6 +75,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [launchesData, setLaunchesData] = useState<any>(null);
   const [websiteSettings, setWebsiteSettings] = useState<any>(null);
   const [coreServicesConfig, setCoreServicesConfig] = useState<any>(null);
+  const [navbarData, setNavbarData] = useState<any>(null);
 
   // Blog CMS Additional States
   const [blogHeroData, setBlogHeroData] = useState<any>(null);
@@ -98,6 +100,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsBackendConnected(true);
 
     if (db.homepage) setHomeData(db.homepage);
+    if (db.navbar) setNavbarData(db.navbar);
     if (db.about) setAboutData(db.about);
     if (db.founderJourney) {
       setJourneyData(db.founderJourney.milestones || []);
@@ -264,6 +267,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dbData,
         websiteSettings,
         coreServicesConfig,
+        navbarData,
         refreshData,
         // Blog CMS Properties
         blogHeroData,

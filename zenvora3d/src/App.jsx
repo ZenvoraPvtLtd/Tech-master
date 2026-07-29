@@ -27,9 +27,10 @@ import { WhatWeDo } from './pages/Modules/WhatWeDo';
 import { Testimonials } from './pages/Modules/Testimonials';
 import { Portfolio } from './pages/Modules/Portfolio';
 import Events from './pages/Modules/Events';
-import { FAQ } from './pages/Modules/FAQ';
 import { Contact } from './pages/Modules/Contact';
 import { LegalCMS } from './pages/Modules/LegalCMS';
+import { NavbarManagement } from './pages/Modules/NavbarManagement';
+import { FooterCMS } from './pages/Modules/FooterCMS';
 
 import { schemas } from './utils/schemas';
 import Services from './pages/Modules/Services';
@@ -129,6 +130,12 @@ case 'events':
         
       case 'legal-cms':
         return <LegalCMS />;
+        
+      case 'navbar-management':
+        return <NavbarManagement />;
+
+      case 'footer-cms':
+        return <FooterCMS />;
         
 
       case 'blog':

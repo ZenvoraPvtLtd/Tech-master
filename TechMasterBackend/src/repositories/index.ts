@@ -22,6 +22,7 @@ import { TermsPolicy, ITermsPolicy } from "../models/TermsPolicy";
 import { PrivacyPolicy, IPrivacyPolicy } from "../models/PrivacyPolicy";
 import { CookiePolicy, ICookiePolicy } from "../models/CookiePolicy";
 import { LegalSettings, ILegalSettings } from "../models/LegalSettings";
+import { Navbar, INavbar } from "../models/Navbar";
 
 export const homepageRepository = new BaseRepository<IHomepage>(Homepage);
 export const aboutRepository = new BaseRepository<IAbout>(About);
@@ -46,3 +47,4 @@ export const termsPolicyRepository = new BaseRepository<ITermsPolicy>(TermsPolic
 export const privacyPolicyRepository = new BaseRepository<IPrivacyPolicy>(PrivacyPolicy);
 export const cookiePolicyRepository = new BaseRepository<ICookiePolicy>(CookiePolicy);
 export const legalSettingsRepository = new BaseRepository<ILegalSettings>(LegalSettings);
+export const navbarRepository = new BaseRepository<INavbar>(Navbar);
