@@ -169,6 +169,7 @@ function App() {
 
       {/* 6. Smooth Scroll Chassis & Content Layout */}
       {!isLoading && (
+
         <SmoothScroll>
           <div 
             className="relative min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-gold selection:text-black"
@@ -176,8 +177,7 @@ function App() {
           >
             
             {/* Header Sticky Navigation */}
-            <Header activePage={activePage} onChangePage={navigatePage}
-            />
+            <Header activePage={activePage} onChangePage={navigatePage} />
 
             {/* Dynamic Page Views */}
             <main className="flex-grow z-10">
@@ -185,9 +185,7 @@ function App() {
             </main>
 
             {/* Premium Multi-column Footer */}
-            {activePage !== "contact" && (
-              <Footer onChangePage={navigatePage} />
-            )}
+            <Footer onChangePage={navigatePage} />
           </div>
         </SmoothScroll>
       )}

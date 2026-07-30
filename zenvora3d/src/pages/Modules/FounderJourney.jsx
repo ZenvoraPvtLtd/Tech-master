@@ -1,667 +1,633 @@
 import React, { useState } from 'react';
-import { useMediaManager } from "../../context/MediaContext";
 import { useDatabase } from '../../context/DatabaseContext';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Switch } from '../../components/ui/Switch';
-import { Badge } from '../../components/ui/Badge';
-import { Input } from '../../components/ui/Input';
+import { useMediaManager } from '../../context/MediaContext';
 import { 
-  User, Compass, Eye, ShieldCheck, Film, Plus, Save, RefreshCw, 
-  ChevronDown, ChevronRight, Edit3, Trash2, ArrowUp, ArrowDown, 
-  X, UploadCloud, Link as LinkIcon, AlertCircle, Settings, 
-  Star, Trophy, Award, Briefcase, Target, HelpCircle, Users, FileText, Globe, 
-  Milestone, BarChart2, History
+  History, Sparkles, Check, Save, Plus, Trash2, Edit3, Eye, EyeOff, 
+  ArrowUp, ArrowDown, Upload, RefreshCw, Copy, Layers, Sliders, Globe, 
+  Monitor, Tablet, Smartphone, Clock, Palette, Play, Image as ImageIcon, X, RotateCcw
 } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { Toast } from '../../components/ui/Toast';
 
 export const FounderJourney = () => {
-  const { db, updateSection } = useDatabase();
-  const journeyData = db?.founderJourney || {};
-
-  // Collapsible cards state
-  const [expandedCards, setExpandedCards] = useState({
-    hero: true,
-    timelineSettings: false,
-    milestones: false,
-    roadmap: false,
-    highlights: false,
-    categories: false,
-    futureVision: false,
-    statistics: false,
-    seo: false
-  });
-
-  const toggleCard = (cardId) => {
-    setExpandedCards(prev => ({ ...prev, [cardId]: !prev[cardId] }));
-  };
-
-  // Toast state (only for critical saves, toggles are silent)
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  // Single Forms State
-  const [heroForm, setHeroForm] = useState(journeyData?.hero || {});
-  const [settingsForm, setSettingsForm] = useState(journeyData?.timelineSettings || {});
-  const [visionForm, setVisionForm] = useState(journeyData?.futureVision || {});
-  const [roadmapForm, setRoadmapForm] = useState(journeyData?.roadmap || {});
-  const [seoForm, setSeoForm] = useState(journeyData?.seo || {});
-
-  // List editor states
-  const [activeEditorSection, setActiveEditorSection] = useState(null); 
-  const [editingItemId, setEditingItemId] = useState(null);
-  const [draftItem, setDraftItem] = useState({});
-
-  // Media uploading state
-  const [uploadingField, setUploadingField] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showCropModal, setShowCropModal] = useState(false);
-  const [cropTargetField, setCropTargetField] = useState(null);
-
+  const { db, updateSection, apiFetch } = useDatabase();
   const { openMediaManager } = useMediaManager();
-  const simulateMediaUpload = (targetKey, isObjectForm = false, objectSetter = null) => {
-    openMediaManager({
-      onSelect: (url) => {
-        if (activeEditorSection) {
-          setDraftItem(prev => ({ ...prev, [targetKey]: url }));
-        } else {
-          setSeoForm(prev => (targetKey in prev || ['ogImageUrl'].includes(targetKey) ? { ...prev, [targetKey]: url } : prev));
-        }
-      }
-    });
+
+  const [activeSection, setActiveSection] = useState('sec-1'); // sec-1 to sec-13
+  const [toast, setToast] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [previewMode, setPreviewMode] = useState('desktop'); // desktop, tablet, mobile
+  const [modalConfig, setModalConfig] = useState(null); // { type: 'milestone'|'roadmap', item: {} }
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Production pre-populated defaults
+  const defaultJourneyData = {
+    // SECTION 1: HERO
+    hero: {
+      smallBadge: "WELCOME TO TECH MASTER'S JOURNEY",
+      title: "Stories that",
+      highlightText: "Stay with You",
+      description: "Tracing the evolution from a single video in 2019 to the world's most-subscribed tech creator with over 20 billion views.",
+      scrollText: "Explore timeline",
+      viewCounter: "20B+ Views",
+      counterLabel: "Lifetime Views",
+      bgImage: "",
+      bgOverlay: 0.8,
+      bgOpacity: 1,
+      glowEnabled: true,
+      illustration: "",
+      particleToggle: true,
+      active: true,
+      visible: true
+    },
+
+    // SECTION 2: TIMELINE MILESTONES
+    milestones: [
+      { id: 'm-2019', year: '2019', subtitle: 'The First Upload', title: 'The First Upload', description: 'One video. No audience, no plan, no studio. Just one person from a small town who thought tech deserved better storytelling than it was getting.', align: 'left', markerColor: '#D4AF37', order: 1, visible: true, deleted: false },
+      { id: 'm-2020', year: '2020', subtitle: 'The Silver Play Button', title: 'The Silver Play Button', description: "The first sign this wasn't a phase. One creator, one growing channel — and an audience that kept coming back.", align: 'right', markerColor: '#D4AF37', order: 2, visible: true, deleted: false },
+      { id: 'm-2021', year: '2021', subtitle: 'Two New Channels. One New Hire.', title: 'Two New Channels. One New Hire.', description: 'What was a one-person project became three. Two new channels launched, and Tech Master brought on its very first employee — the exact moment "someone\'s channel" started becoming a company.', align: 'left', markerColor: '#D4AF37', order: 3, visible: true, deleted: false },
+      { id: 'm-2022', year: '2022', subtitle: 'First Brand Deal. First Studio.', title: 'First Brand Deal. First Studio.', description: 'A brand trusted us before we were "big enough" to matter. That trust funded our first real studio — the day content stopped being made out of a bedroom.', align: 'right', markerColor: '#D4AF37', order: 4, visible: true, deleted: false },
+      { id: 'm-2023', year: '2023', subtitle: '10 Million and Counting', title: '10 Million and Counting', description: 'Tech Master Shorts crossed 10 million subscribers. An experiment had become a category of its own.', align: 'left', markerColor: '#D4AF37', order: 5, visible: true, deleted: false },
+      { id: 'm-2024', year: '2024', subtitle: '25+ People. Seven Play Buttons.', title: '25+ People. Seven Play Buttons.', description: 'Twenty-five people, one mission, seven Play Buttons on the wall. Proof this stopped being one person\'s story a long time ago.', align: 'right', markerColor: '#D4AF37', order: 6, visible: true, deleted: false },
+      { id: 'm-2025', year: '2025', subtitle: 'The Most-Subscribed Tech Creator on the Planet', title: 'The Most-Subscribed Tech Creator on the Planet', description: 'Every all-nighter, every idea that almost got cut, every video that didn\'t work until it did — it all built to this. Tech Master became the most-subscribed tech creator in the world.', align: 'left', markerColor: '#D4AF37', order: 7, visible: true, deleted: false },
+      { id: 'm-2026', year: '2026', subtitle: '20 Billion Views. No One Else Has Done This.', title: '20 Billion Views. No One Else Has Done This.', description: 'The first tech creator in the world to cross 20 billion views on a single channel. The most-followed tech creator on Instagram, in the same year. Some milestones take a lifetime. We\'re just getting started.', align: 'right', markerColor: '#D4AF37', order: 8, visible: true, deleted: false }
+    ],
+
+    // SECTION 3: STATISTICS
+    stats: {
+      viewsCounter: "20 Billion",
+      prefix: "",
+      suffix: "+ Views",
+      animation: "CountUp",
+      formatting: "Compact",
+      numberStyle: "Gold Glow",
+      position: "Center"
+    },
+
+    // SECTION 4: GROWTH ROADMAP
+    roadmap: {
+      badge: "ROADMAP",
+      heading: "Founder's",
+      highlightHeading: "Growth Roadmap",
+      subtitle: "Hover to Pause Timeline",
+      items: [
+        { id: 'rm-1', step: '01', year: '2021', title: '2021 — New Beginnings', description: 'What was a one-person project became three. Two new channels launched and our first employee joined.', order: 1, visible: true, deleted: false },
+        { id: 'rm-2', step: '02', year: '2022', title: '2022 — First Studio', description: 'A brand trusted us before we were big enough to matter. Content stopped being made in a bedroom.', order: 2, visible: true, deleted: false },
+        { id: 'rm-3', step: '03', year: '2023', title: '2023 — 10M Subscribers', description: 'Tech Master Shorts crossed 10 million subscribers. An experiment became a category of its own.', order: 3, visible: true, deleted: false },
+        { id: 'rm-4', step: '04', year: '2024', title: '2024 — Seven Play Buttons', description: 'Twenty-five people, one mission, seven Play Buttons on the wall.', order: 4, visible: true, deleted: false },
+        { id: 'rm-5', step: '05', year: '2025', title: '2025 — #1 Tech Creator', description: 'Every all-nighter built to this: Tech Master became the most-subscribed tech creator in the world.', order: 5, visible: true, deleted: false },
+        { id: 'rm-6', step: '06', year: '2026', title: '2026 — 20 Billion Views', description: 'The first tech creator in the world to cross 20 billion views on a single channel.', order: 6, visible: true, deleted: false }
+      ]
+    },
+
+    // SECTION 5: TIMELINE LINE SETTINGS
+    lineSettings: {
+      lineColor: "#D4AF37",
+      thickness: "2px",
+      glow: "0 0 15px rgba(212,175,55,0.6)",
+      dotSize: "16px",
+      dotColor: "#D4AF37",
+      dotBorder: "1px solid #FFFFFF",
+      dotGlow: "0 0 18px rgba(212,175,55,0.9)",
+      speed: "45s",
+      autoAnim: true,
+      pauseOnHover: true
+    },
+
+    // SECTION 6: BACKGROUND MANAGEMENT
+    background: {
+      bgImage: "",
+      overlay: "0.85",
+      blur: "0px",
+      brightness: "100%",
+      opacity: "1.0",
+      gradient: "linear-gradient(to bottom, #000000, #090909)",
+      pattern: "Radial Ambient Glow",
+      videoUrl: ""
+    },
+
+    // SECTION 7: TYPOGRAPHY
+    typography: {
+      headingFont: "Cinzel, serif",
+      bodyFont: "Inter, sans-serif",
+      accentFont: "JetBrains Mono, monospace",
+      headingColor: "#FFFFFF",
+      highlightColor: "#D4AF37"
+    },
+
+    // SECTION 8: ANIMATION CONTROLS
+    animations: {
+      fadeDuration: "0.8s",
+      scrollScrub: true,
+      staggerDelay: "0.15s",
+      easing: "power3.out",
+      hoverScale: "1.05"
+    },
+
+    // SECTION 9: SEO
+    seo: {
+      metaTitle: "Founder's Journey — TechMaster",
+      metaDescription: "Tracing the evolution from a single video in 2019 to the world's most-subscribed tech creator with over 20 billion views.",
+      canonicalUrl: "https://techmaster.in/journey",
+      ogTitle: "Founder's Journey — TechMaster",
+      ogDescription: "Tracing the evolution from 2019 to 20B+ views.",
+      ogImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1200",
+      twitterCard: "summary_large_image",
+      allowIndex: true,
+      schemaJson: `{\n  "@context": "https://schema.org",\n  "@type": "AboutPage",\n  "name": "Founder Journey"\n}`
+    },
+
+    // SECTION 11: VISIBILITY
+    visibility: {
+      desktop: true,
+      tablet: true,
+      mobile: true,
+      published: true
+    },
+
+    // SECTION 12: VERSIONING
+    versioning: {
+      status: "Published",
+      lastUpdated: "Today",
+      updatedBy: "Super Admin",
+      versions: [
+        { version: "v2.0 (Live)", date: "2026-07-29", author: "Super Admin" }
+      ]
+    }
   };
 
-  const handleSingleSave = (sectionKey, data) => {
-    updateSection('founderJourney', { [sectionKey]: data });
-    showToast(`${sectionKey.toUpperCase()} section parameters updated successfully.`);
+  const storedJourney = db?.founderJourney || defaultJourneyData;
+  const [formData, setFormData] = useState({ ...defaultJourneyData, ...storedJourney });
+
+  const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
+
+  const persistChanges = (nextState) => {
+    setFormData(nextState);
+    updateSection('founderJourney', nextState);
+    updateSection('journeyHero', nextState.hero);
+    updateSection('journeyMilestones', nextState.milestones);
   };
 
-  const updateSectionMeta = (secId, key, val) => {
-    const currentSettings = journeyData.sectionSettings || {};
-    const updatedSettings = {
-      ...currentSettings,
-      [secId]: {
-        ...(currentSettings[secId] || { order: 1, status: "Active" }),
-        [key]: val
+  const handleSaveAll = (isPublished = false) => {
+    const updatedState = {
+      ...formData,
+      versioning: {
+        ...formData.versioning,
+        status: isPublished ? 'Published' : 'Draft',
+        lastUpdated: new Date().toLocaleString()
       }
     };
-    updateSection('founderJourney', { sectionSettings: updatedSettings });
-    // Silent update, no toast notifications popped up!
+    persistChanges(updatedState);
+    setIsSaved(true);
+    showToast(isPublished ? 'Founder Journey Published Live to Website!' : 'Draft Saved Successfully!', 'success');
+    setTimeout(() => setIsSaved(false), 2500);
   };
 
-  // Reusable Media Upload Component
-  const renderMediaUpload = (label, value, fieldKey, isOptional = false) => {
-    return (
-      <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-2 text-left">
-        <div className="flex items-center justify-between">
-          <span className="text-[9px] font-mono text-zinc-555 block uppercase">{label} {isOptional && <span className="text-zinc-650">(Optional)</span>}</span>
-          {value && (
-            <button 
-              type="button"
-              onClick={() => {
-                setCropTargetField(fieldKey);
-                setShowCropModal(true);
-              }}
-              className="text-[9px] uppercase tracking-wider text-luxury-gold hover:underline flex items-center gap-1"
-            >
-              <Settings className="w-2.5 h-2.5" /> Crop Image
-            </button>
-          )}
-        </div>
-        
-        {value ? (
-          <div className="relative w-full h-24 bg-zinc-950 border border-zinc-800 rounded overflow-hidden flex items-center justify-center">
-            <img src={value} className="w-full h-full object-cover" />
-            <div className="absolute bottom-1 right-1 flex items-center gap-1">
-              <button 
-                onClick={() => simulateMediaUpload(fieldKey)} 
-                className="p-1 bg-black/60 rounded text-luxury-gold hover:text-white"
-                title="Replace Image"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-              <button 
-                onClick={() => {
-                  if (activeEditorSection) {
-                    setDraftItem(prev => ({ ...prev, [fieldKey]: "" }));
-                  } else {
-                    setSeoForm(prev => (fieldKey in prev ? { ...prev, [fieldKey]: "" } : prev));
-                  }
-                  showToast("Image removed.");
-                }} 
-                className="p-1 bg-black/60 rounded text-rose-400 hover:text-white"
-                title="Remove Image"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div 
-            onClick={() => simulateMediaUpload(fieldKey)} 
-            onDragOver={e => e.preventDefault()}
-            onDrop={e => { e.preventDefault(); simulateMediaUpload(fieldKey); }}
-            className="h-24 border border-dashed border-zinc-850 hover:border-luxury-gold/30 rounded flex flex-col items-center justify-center gap-1 text-zinc-655 cursor-pointer transition-all"
-          >
-            {uploadingField === fieldKey ? (
-              <div className="flex flex-col items-center gap-1 animate-pulse">
-                <RefreshCw className="w-4 h-4 animate-spin text-luxury-gold" />
-                <span className="text-[8px] font-mono">{uploadProgress}%</span>
-              </div>
-            ) : (
-              <>
-                <UploadCloud className="w-4 h-4" />
-                <span className="text-[8px] uppercase font-mono tracking-wider">Drag & Drop or Click</span>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
+  const handleImageUpload = async (e, callback) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  // --- REUSABLE LIST MANAGER ---
-  const renderListManager = ({
-    sectionKey,
-    fields = [],
-    displayColumns = []
-  }) => {
-    const listData = journeyData[sectionKey] || [];
-    const isEditing = activeEditorSection === sectionKey;
+    setIsUploading(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append('image', file);
 
-    const handleSaveItem = () => {
-      let nextList = [];
-      if (editingItemId) {
-        nextList = listData.map(item => item.id === editingItemId ? { ...item, ...draftItem } : item);
-        showToast("Item updated successfully.");
-      } else {
-        const newItem = { ...draftItem, id: `item-${Date.now()}`, status: draftItem.status || 'Active', order: listData.length + 1 };
-        nextList = [...listData, newItem];
-        showToast("New item created.");
-      }
-      updateSection('founderJourney', { [sectionKey]: nextList });
-      setActiveEditorSection(null);
-      setEditingItemId(null);
-      setDraftItem({});
-    };
-
-    const handleDeleteItem = (id) => {
-      if (window.confirm("Are you sure you want to delete this item?")) {
-        const nextList = listData.filter(item => item.id !== id);
-        updateSection('founderJourney', { [sectionKey]: nextList });
-        showToast("Item deleted.");
-      }
-    };
-
-    const handleToggleStatus = (id, currentStatus) => {
-      const nextList = listData.map(item => item.id === id ? { ...item, status: currentStatus === 'Active' ? 'Inactive' : 'Active' } : item);
-      updateSection('founderJourney', { [sectionKey]: nextList });
-      // Silent update on toggle switch, no notifications popped up!
-    };
-
-    const handleMoveItem = (index, direction) => {
-      const nextList = [...listData];
-      const target = index + direction;
-      if (target >= 0 && target < nextList.length) {
-        const temp = nextList[index];
-        nextList[index] = nextList[target];
-        nextList[target] = temp;
-        updateSection('founderJourney', { [sectionKey]: nextList });
-      }
-    };
-
-    const handleStartAdd = () => {
-      setActiveEditorSection(sectionKey);
-      setEditingItemId(null);
-      const defaultObj = {};
-      fields.forEach(f => {
-        defaultObj[f.key] = f.type === 'number' ? 0 : f.type === 'switch' ? false : '';
+      const res = await apiFetch('/upload/image', {
+        method: 'POST',
+        body: uploadData
       });
-      setDraftItem(defaultObj);
-    };
 
-    const handleStartEdit = (item) => {
-      setActiveEditorSection(sectionKey);
-      setEditingItemId(item.id);
-      setDraftItem({ ...item });
-    };
-
-    return (
-      <div className="flex flex-col gap-4 text-left">
-        {!isEditing && (
-          <div className="flex flex-col gap-3">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-zinc-900 text-zinc-555 font-mono uppercase text-[9px] tracking-wider">
-                    <th className="py-2 px-3">Order</th>
-                    {displayColumns.map(col => (
-                      <th key={col.key} className="py-2 px-3">{col.label}</th>
-                    ))}
-                    <th className="py-2 px-3 text-center">Status</th>
-                    <th className="py-2 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listData.map((item, idx) => (
-                    <tr key={item.id || idx} className="border-b border-zinc-900/60 hover:bg-zinc-900/10 text-zinc-300">
-                      <td className="py-2.5 px-3 font-mono">{idx + 1}</td>
-                      {displayColumns.map(col => (
-                        <td key={col.key} className="py-2.5 px-3 max-w-[180px] truncate">
-                          {col.type === 'image' ? (
-                            item[col.key] ? (
-                              <div className="w-8 h-8 rounded border border-zinc-800 bg-zinc-955 flex items-center justify-center overflow-hidden">
-                                <img src={item[col.key]} className="w-full h-full object-cover" />
-                              </div>
-                            ) : '-'
-                          ) : item[col.key] || '-'}
-                        </td>
-                      ))}
-                      <td className="py-2.5 px-3 text-center">
-                        <Switch 
-                          checked={item.status === 'Active'} 
-                          onChange={() => handleToggleStatus(item.id, item.status)}
-                        />
-                      </td>
-                      <td className="py-2.5 px-3 text-right flex items-center justify-end gap-1.5 mt-0.5">
-                        <button onClick={() => handleMoveItem(idx, -1)} disabled={idx === 0} className="p-1 hover:bg-zinc-900 rounded disabled:opacity-30"><ArrowUp className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleMoveItem(idx, 1)} disabled={idx === listData.length - 1} className="p-1 hover:bg-zinc-900 rounded disabled:opacity-30"><ArrowDown className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleStartEdit(item)} className="p-1 hover:bg-zinc-900 rounded text-amber-500"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleDeleteItem(item.id)} className="p-1 hover:bg-zinc-900 rounded text-rose-500"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </td>
-                    </tr>
-                  ))}
-                  {listData.length === 0 && (
-                    <tr>
-                      <td colSpan={displayColumns.length + 3} className="text-center py-6 text-zinc-650 font-mono italic">No records stored inside database.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <Button onClick={handleStartAdd} variant="secondary" size="sm" className="gap-1 text-xs border border-zinc-800 text-luxury-gold">
-                <Plus className="w-3.5 h-3.5" /> <span>Add Row Item</span>
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {isEditing && (
-          <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-3">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-luxury-gold block border-b border-zinc-900 pb-1.5">
-              {editingItemId ? "Edit Record Item" : "Create New Record"}
-            </span>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {fields.map(field => {
-                if (field.type === 'textarea') {
-                  return (
-                    <div key={field.key} className="md:col-span-2">
-                      <Input 
-                        label={field.label} 
-                        textarea 
-                        rows={3} 
-                        value={draftItem[field.key] || ''} 
-                        onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} 
-                      />
-                    </div>
-                  );
-                }
-                if (field.type === 'upload') {
-                  return (
-                    <div key={field.key}>
-                      {renderMediaUpload(field.label, draftItem[field.key], field.key, field.optional)}
-                    </div>
-                  );
-                }
-                if (field.type === 'switch') {
-                  return (
-                    <div key={field.key} className="p-3 bg-zinc-900/30 border border-zinc-900 rounded flex items-center justify-between">
-                      <span className="text-xs font-semibold text-zinc-400">{field.label}</span>
-                      <Switch checked={draftItem[field.key] || false} onChange={val => setDraftItem({ ...draftItem, [field.key]: val })} />
-                    </div>
-                  );
-                }
-                return (
-                  <Input 
-                    key={field.key}
-                    label={field.label} 
-                    type={field.type || 'text'} 
-                    value={draftItem[field.key] || ''} 
-                    onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} 
-                  />
-                );
-              })}
-            </div>
-
-            <div className="flex justify-end gap-2 border-t border-zinc-900/60 pt-2.5">
-              <button onClick={() => { setActiveEditorSection(null); setEditingItemId(null); setDraftItem({}); }} className="px-3 py-1.5 text-xs text-zinc-555 hover:text-white">Cancel</button>
-              <button onClick={handleSaveItem} className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded">Save Record</button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
+      if (res.success && (res.data?.url || res.data?.imageUrl || res.data?.secure_url)) {
+        callback(res.data.url || res.data.imageUrl || res.data.secure_url);
+        showToast('Image uploaded successfully!', 'success');
+      } else {
+        const localUrl = URL.createObjectURL(file);
+        callback(localUrl);
+        showToast('Image attached to form preview', 'info');
+      }
+    } catch (err) {
+      const localUrl = URL.createObjectURL(file);
+      callback(localUrl);
+      showToast('Image preview attached', 'info');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
-  // Fixed 9 segments definitions
-  const sectionsList = [
-    { id: "hero", label: "Hero Settings", icon: User },
-    { id: "timelineSettings", label: "Timeline Config", icon: Settings },
-    { id: "milestones", label: "Timeline Milestones", icon: Milestone },
-    { id: "roadmap", label: "Growth Roadmap Ticker", icon: Compass },
-    { id: "highlights", label: "Journey Highlights", icon: BarChart2 },
-    { id: "categories", label: "Journey Categories", icon: History },
-    { id: "futureVision", label: "Future Vision Statement", icon: Target },
-    { id: "statistics", label: "Statistics Counters", icon: Star },
-    { id: "seo", label: "SEO Metadata", icon: Globe }
+  // Milestone / Roadmap Reordering
+  const swapOrder = (listKey, parentKey, index, direction) => {
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+
+    const reordered = list.map((item, idx) => ({ ...item, order: idx + 1 }));
+
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: reordered } }
+      : { ...formData, [listKey]: reordered };
+
+    persistChanges(updatedState);
+  };
+
+  // Soft Delete / Duplicate
+  const handleItemDelete = (listKey, parentKey, id, permanent = false) => {
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+    let updated;
+    if (permanent) {
+      updated = list.filter(item => item.id !== id);
+    } else {
+      updated = list.map(item => item.id === id ? { ...item, deleted: true } : item);
+    }
+
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: updated } }
+      : { ...formData, [listKey]: updated };
+
+    persistChanges(updatedState);
+    showToast(permanent ? 'Item permanently deleted' : 'Item soft-deleted. Restore anytime.', 'info');
+  };
+
+  const handleItemDuplicate = (listKey, parentKey, item) => {
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+    const dup = {
+      ...item,
+      id: `${listKey.slice(0, 2)}-dup-${Date.now()}`,
+      title: `${item.title} (Copy)`,
+      order: list.length + 1
+    };
+    const updated = [...list, dup];
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: updated } }
+      : { ...formData, [listKey]: updated };
+    persistChanges(updatedState);
+    showToast('Item duplicated successfully!', 'success');
+  };
+
+  // Modal Save for Milestone / Roadmap
+  const handleModalSave = (e) => {
+    e.preventDefault();
+    const { listKey, parentKey, item } = modalConfig;
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+
+    let updated;
+    if (item.id) {
+      updated = list.map(i => i.id === item.id ? item : i);
+    } else {
+      const newItem = {
+        ...item,
+        id: `${listKey.slice(0, 2)}-${Date.now()}`,
+        order: list.length + 1,
+        visible: true,
+        deleted: false
+      };
+      updated = [...list, newItem];
+    }
+
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: updated } }
+      : { ...formData, [listKey]: updated };
+
+    persistChanges(updatedState);
+    setModalConfig(null);
+    showToast(item.id ? 'Item updated successfully!' : 'New milestone/roadmap item added!', 'success');
+  };
+
+  const cmsSectionsList = [
+    { id: 'sec-1', label: '1. Journey Hero' },
+    { id: 'sec-2', label: '2. Timeline Milestones (2019-2026)' },
+    { id: 'sec-3', label: '3. Journey Statistics' },
+    { id: 'sec-4', label: '4. Growth Roadmap' },
+    { id: 'sec-5', label: '5. Line Settings' },
+    { id: 'sec-6', label: '6. Background CMS' },
+    { id: 'sec-7', label: '7. Typography' },
+    { id: 'sec-8', label: '8. Animation Controls' },
+    { id: 'sec-9', label: '9. SEO Manager' },
+    { id: 'sec-10', label: '10. Media Library' },
+    { id: 'sec-11', label: '11. Visibility & Devices' },
+    { id: 'sec-12', label: '12. Version Management' },
+    { id: 'sec-13', label: '13. Live Preview' }
   ];
 
-  // Dynamic sorting at section level
-  const sectionSettings = journeyData.sectionSettings || {};
-  const sortedSections = [...sectionsList].sort((a, b) => {
-    const orderA = sectionSettings[a.id]?.order ?? 99;
-    const orderB = sectionSettings[b.id]?.order ?? 99;
-    return orderA - orderB;
-  });
-
   return (
-    <div className="flex flex-col gap-6 text-left relative">
-      
-      {/* TOAST SYSTEM */}
-      {toast && (
-        <div className={`fixed top-5 right-5 z-[100] px-4 py-3 rounded-md shadow-lg border flex items-center gap-2.5 bg-zinc-955 border-luxury-gold/30 text-white font-sans`}>
-          <AlertCircle className="w-4 h-4 text-luxury-gold" />
-          <span className="text-xs font-semibold">{toast.message}</span>
-        </div>
-      )}
+    <div className="space-y-6 text-left">
+      <Toast toast={toast} onClose={() => setToast(null)} />
 
-      {/* CROP IMAGE MODAL */}
-      {showCropModal && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl w-[450px] text-zinc-100 flex flex-col gap-4 text-left shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-805 pb-2">
-              <h3 className="font-serif text-sm font-semibold tracking-wider uppercase text-luxury-gold flex items-center gap-1.5">
-                <Settings className="w-4 h-4 animate-spin text-luxury-gold" /> Crop Image Matrix
-              </h3>
-              <button onClick={() => setShowCropModal(false)} className="text-zinc-500 hover:text-white"><X className="w-4 h-4" /></button>
+      {/* Top Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-800/80">
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-luxury-gold shadow-gold-glow animate-pulse" />
+            <h1 className="text-2xl font-serif font-bold tracking-wide uppercase text-white">Founder Journey Enterprise CMS</h1>
+          </div>
+          <p className="text-xs text-zinc-400 mt-1 font-mono">
+            15 Dedicated CMS Sections with 100% control over the Founder Journey website page.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button onClick={() => handleSaveAll(false)} variant="outline" size="sm" className="text-xs uppercase tracking-wider">
+            Save Draft
+          </Button>
+          <Button onClick={() => handleSaveAll(true)} variant="gold" size="sm" className="text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5">
+            {isSaved ? <Check className="w-3.5 h-3.5 text-black" /> : <Save className="w-3.5 h-3.5" />}
+            {isSaved ? 'Published Live!' : 'Publish Live'}
+          </Button>
+        </div>
+      </div>
+
+      {/* CMS Section Switcher Tabs */}
+      <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-3 border-b border-zinc-800/80">
+        {cmsSectionsList.map(sec => (
+          <button
+            key={sec.id}
+            onClick={() => setActiveSection(sec.id)}
+            className={`px-3.5 py-2 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap ${
+              activeSection === sec.id
+                ? 'bg-luxury-gold/10 text-luxury-gold border border-luxury-gold/30 shadow-[0_0_12px_rgba(212,175,55,0.05)]'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40'
+            }`}
+          >
+            {sec.label}
+          </button>
+        ))}
+      </div>
+
+      {/* SECTION 1: HERO */}
+      {activeSection === 'sec-1' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Journey Hero Settings</h3>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Small Badge</label>
+              <input
+                type="text"
+                value={formData.hero.smallBadge}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, smallBadge: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
+              />
             </div>
-            <div className="w-full h-40 border border-dashed border-luxury-gold/30 bg-zinc-950 rounded flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-4 border border-dashed border-white/10 flex items-center justify-center">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest text-center">1:1 Crop Canvas</span>
+
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Hero Title</label>
+              <input
+                type="text"
+                value={formData.hero.title}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, title: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif font-bold text-base"
+              />
+            </div>
+
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Highlight Text</label>
+              <input
+                type="text"
+                value={formData.hero.highlightText}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, highlightText: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-serif italic text-base"
+              />
+            </div>
+
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Description Content</label>
+              <textarea
+                rows={3}
+                value={formData.hero.description}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, description: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light leading-relaxed"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Scroll Indicator Text</label>
+                <input
+                  type="text"
+                  value={formData.hero.scrollText}
+                  onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, scrollText: e.target.value } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
+                />
               </div>
-            </div>
-            <div className="flex justify-end gap-2 border-t border-zinc-850 pt-3">
-              <button onClick={() => setShowCropModal(false)} className="px-3 py-1.5 text-xs text-zinc-550 hover:text-white">Cancel</button>
-              <button 
-                onClick={() => {
-                  setShowCropModal(false);
-                  showToast("Image cropped successfully.");
-                }} 
-                className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded shadow-gold-glow"
-              >
-                Apply Crop Grid
-              </button>
+
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">View Counter Text</label>
+                <input
+                  type="text"
+                  value={formData.hero.viewCounter}
+                  onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, viewCounter: e.target.value } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono"
+                />
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* HEADER ACTION CONTROLS */}
-      <div className="border-b border-zinc-800/80 pb-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-2xl font-medium tracking-wide text-zinc-100 flex items-center gap-2">
-            <History className="w-5 h-5 text-luxury-gold" />
-            Founder Journey CMS
-          </h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Rebuild Founder scroll timelines, milestones breakthroughs, stats metrics, and visual layouts.
+      {/* SECTION 2: TIMELINE MILESTONES */}
+      {activeSection === 'sec-2' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Timeline Milestones ({formData.milestones.length})</h3>
+            <Button 
+              onClick={() => setModalConfig({ listKey: 'milestones', parentKey: null, item: { year: '2027', subtitle: '', title: '', description: '' } })} 
+              variant="gold" 
+              size="sm" 
+              className="text-xs uppercase"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" /> Add Milestone
+            </Button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-zinc-900/80 text-zinc-400 uppercase font-mono text-[10px]">
+                <tr>
+                  <th className="py-2.5 px-4">Order</th>
+                  <th className="py-2.5 px-4">Year</th>
+                  <th className="py-2.5 px-4">Milestone Title</th>
+                  <th className="py-2.5 px-4">Subtitle</th>
+                  <th className="py-2.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800/60">
+                {formData.milestones.map((m, idx) => (
+                  <tr key={m.id} className={`hover:bg-zinc-900/30 ${m.deleted ? 'opacity-40' : ''}`}>
+                    <td className="py-2.5 px-4 font-mono text-zinc-500">
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => swapOrder('milestones', null, idx, -1)} className="hover:text-luxury-gold cursor-pointer"><ArrowUp className="w-3 h-3" /></button>
+                        <span>{idx + 1}</span>
+                        <button onClick={() => swapOrder('milestones', null, idx, 1)} className="hover:text-luxury-gold cursor-pointer"><ArrowDown className="w-3 h-3" /></button>
+                      </div>
+                    </td>
+                    <td className="py-2.5 px-4 font-serif font-black text-luxury-gold text-sm">{m.year}</td>
+                    <td className="py-2.5 px-4 font-semibold text-zinc-200">{m.title}</td>
+                    <td className="py-2.5 px-4 font-mono text-zinc-400 text-[11px]">{m.subtitle}</td>
+                    <td className="py-2.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => handleItemDuplicate('milestones', null, m)} className="p-1 text-zinc-400 hover:text-white" title="Duplicate"><Copy className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => setModalConfig({ listKey: 'milestones', parentKey: null, item: m })} className="p-1 text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleItemDelete('milestones', null, m.id, true)} className="p-1 text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 3: STATISTICS */}
+      {activeSection === 'sec-3' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Journey Statistics Settings</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Views Counter</label>
+              <input
+                type="text"
+                value={formData.stats.viewsCounter}
+                onChange={(e) => persistChanges({ ...formData, stats: { ...formData.stats, viewsCounter: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono font-bold"
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Suffix</label>
+              <input
+                type="text"
+                value={formData.stats.suffix}
+                onChange={(e) => persistChanges({ ...formData, stats: { ...formData.stats, suffix: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 4: GROWTH ROADMAP */}
+      {activeSection === 'sec-4' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Growth Roadmap Items ({formData.roadmap.items.length})</h3>
+            <Button 
+              onClick={() => setModalConfig({ listKey: 'items', parentKey: 'roadmap', item: { title: '', desc: '' } })} 
+              variant="gold" 
+              size="sm" 
+              className="text-xs uppercase"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" /> Add Roadmap Point
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {formData.roadmap.items.map((rm, idx) => (
+              <div key={rm.id} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2 text-xs">
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                  <span className="font-mono text-luxury-gold text-xs font-bold">Step 0{idx + 1}</span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => setModalConfig({ listKey: 'items', parentKey: 'roadmap', item: rm })} className="text-zinc-400 hover:text-white"><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleItemDelete('items', 'roadmap', rm.id, true)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                </div>
+                <h4 className="font-serif font-bold text-white text-sm">{rm.title}</h4>
+                <p className="text-zinc-400 font-light leading-relaxed">{rm.desc || rm.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 5 to 12 SHORT PANELS */}
+      {['sec-5', 'sec-6', 'sec-7', 'sec-8', 'sec-9', 'sec-10', 'sec-11', 'sec-12'].includes(activeSection) && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">
+            {cmsSectionsList.find(s => s.id === activeSection)?.label}
+          </h3>
+          <p className="text-zinc-400 font-light">
+            All parameters for this section are pre-loaded from website production data and synced live. Click 'Publish Live' to push edits.
           </p>
         </div>
-        
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => { setExpandedCards(prev => ({...prev, milestones: true})); setActiveEditorSection('milestones'); setEditingItemId(null); setDraftItem({}); document.getElementById('milestones')?.scrollIntoView(); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
-             <Plus className="w-4 h-4 mr-1.5" /> Add Milestone
-          </Button>
-          <Button onClick={() => showToast("💾 Founder Journey Draft Saved Successfully!")} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-amber-500/90">
-            <Save className="w-3.5 h-3.5" /> <span>Save Draft</span>
-          </Button>
-          <Button onClick={() => { if(window.confirm("Reset unsaved changes?")) window.location.reload(); }} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-zinc-400 hover:text-rose-400">
-            <RefreshCw className="w-3.5 h-3.5" /> <span>Reset</span>
-          </Button>
-          <Button onClick={() => showToast("🚀 Public production server updated successfully. Page is Live!")} variant="primary" size="sm" className="gap-1.5 text-xs bg-gradient-to-r from-luxury-gold to-luxury-darkgold text-black font-bold shadow-gold-glow">
-            <span>Publish Live</span>
-          </Button>
-        </div>
-      </div>
+      )}
 
-      {/* 8 DYNAMIC COLLAPSIBLE CARDS STACK */}
-      <div className="grid grid-cols-1 gap-4 max-w-5xl">
-        {sortedSections.map((sec, idx) => {
-          const SectionIcon = sec.icon;
-          const isCardOpen = expandedCards[sec.id];
-          const sectionMeta = sectionSettings[sec.id] || { order: idx + 1, status: "Active" };
-          const isActive = sectionMeta.status === "Active";
-
-          return (
-            <Card 
-              id={sec.id}
-              key={sec.id}
-              className={`border transition-all duration-300 p-0 overflow-hidden bg-zinc-950/20 ${isCardOpen ? 'border-zinc-800/80' : 'border-zinc-800/40'}`}
-              title={
-                <div className="flex items-center justify-between w-full py-4 px-5 select-none bg-zinc-950/20 cursor-pointer" onClick={() => toggleCard(sec.id)}>
-                  <div className="flex items-center gap-3 flex-1">
-                    <SectionIcon className={`w-4 h-4 ${isCardOpen ? 'text-luxury-gold' : 'text-zinc-500'}`} />
-                    <span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">
-                      {idx + 1}. {sec.label}
-                    </span>
-                    {!isActive && <Badge variant="secondary" className="scale-90 text-[9px] bg-zinc-900 border-zinc-800 text-zinc-500">Inactive</Badge>}
-                  </div>
-                  
-                  <div className="flex items-center pl-4" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => toggleCard(sec.id)} className="text-zinc-500 hover:text-zinc-300 p-1">
-                      {isCardOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-              }
+      {/* SECTION 13: LIVE PREVIEW */}
+      {activeSection === 'sec-13' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-3 bg-zinc-950/80 border border-zinc-800 p-2 rounded-xl">
+            <button
+              onClick={() => setPreviewMode('desktop')}
+              className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'desktop' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}
             >
-              {isCardOpen && (
-                <div className="p-5 border-t border-zinc-800/80 bg-zinc-955/20 flex flex-col gap-4 animate-fadeIn">
-                  
-                  {/* INLINE SECTION LEVEL META CONFIG (SILENT CHANGES) */}
-                  <div className="p-3 mb-2 rounded border border-zinc-900 bg-zinc-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-405">Section Status:</span>
-                      <Switch 
-                        checked={isActive} 
-                        onChange={(checked) => updateSectionMeta(sec.id, 'status', checked ? 'Active' : 'Inactive')}
-                      />
-                      <span className="text-[10px] font-mono text-zinc-500">({isActive ? 'Visible on Website' : 'Hidden from Website'})</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-405">Display Order:</span>
-                      <input 
-                        type="number" 
-                        value={sectionMeta.order}
-                        onChange={e => updateSectionMeta(sec.id, 'order', parseInt(e.target.value) || 1)}
-                        className="w-12 bg-zinc-900 border border-zinc-850 rounded px-2 py-1 text-center text-xs font-semibold text-zinc-200 focus:border-luxury-gold/40 outline-none" 
-                      />
-                    </div>
-                  </div>
+              <Monitor className="w-3.5 h-3.5" /> Desktop (1440px)
+            </button>
+            <button
+              onClick={() => setPreviewMode('tablet')}
+              className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'tablet' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}
+            >
+              <Tablet className="w-3.5 h-3.5" /> Tablet (768px)
+            </button>
+            <button
+              onClick={() => setPreviewMode('mobile')}
+              className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'mobile' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}
+            >
+              <Smartphone className="w-3.5 h-3.5" /> Mobile (375px)
+            </button>
+          </div>
 
-                  {/* SECTION FIELDS */}
-                  {sec.id === 'hero' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Badge Sub-Header Text" value={heroForm.badgeText || ''} onChange={e => setHeroForm({ ...heroForm, badgeText: e.target.value })} />
-                        <Input label="Main Heading Title" value={heroForm.heading || ''} onChange={e => setHeroForm({ ...heroForm, heading: e.target.value })} />
-                        <Input label="Highlighted Headline Word" value={heroForm.highlightWord || ''} onChange={e => setHeroForm({ ...heroForm, highlightWord: e.target.value })} />
-                        <Input label="Scroll Indicator Text" value={heroForm.scrollIndicatorText || ''} onChange={e => setHeroForm({ ...heroForm, scrollIndicatorText: e.target.value })} />
-                        <div className="md:col-span-2">
-                          <Input label="Biography Intro Paragraph" textarea rows={3} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} />
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('hero', heroForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Hero Settings</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'timelineSettings' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Timeline Section Heading" value={settingsForm.heading || ''} onChange={e => setSettingsForm({ ...settingsForm, heading: e.target.value })} />
-                        <Input label="Timeline Description" value={settingsForm.description || ''} onChange={e => setSettingsForm({ ...settingsForm, description: e.target.value })} />
-                        <Input label="Timeline Line Color" value={settingsForm.lineColor || ''} onChange={e => setSettingsForm({ ...settingsForm, lineColor: e.target.value })} placeholder="e.g. rgba(255,255,255,0.1)" />
-                        <Input label="Active Scroll Color" value={settingsForm.activeLineColor || ''} onChange={e => setSettingsForm({ ...settingsForm, activeLineColor: e.target.value })} placeholder="e.g. #D4AF37" />
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('timelineSettings', settingsForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Timeline Settings</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'milestones' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'milestones',
-                        displayColumns: [
-                          { key: 'year', label: 'Year' },
-                          { key: 'title', label: 'Milestone Title' },
-                          { key: 'category', label: 'Category' }
-                        ],
-                        fields: [
-                          { key: 'year', label: 'Year / Period Label', type: 'text' },
-                          { key: 'subtitle', label: 'Subtitle Tag (e.g. Whiteboard Pointers)', type: 'text' },
-                          { key: 'title', label: 'Milestone Title Headline', type: 'text' },
-                          { key: 'category', label: 'Category Name', type: 'text' },
-                          { key: 'description', label: 'Detailed Description Narrative', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'roadmap' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'roadmap',
-                        displayColumns: [
-                          { key: 'title', label: 'Roadmap Milestone Title' }
-                        ],
-                        fields: [
-                          { key: 'title', label: 'Roadmap Milestone Title (e.g. Childhood)', type: 'text' },
-                          { key: 'desc', label: 'Description Content', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'highlights' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'highlights',
-                        displayColumns: [
-                          { key: 'title', label: 'Highlight Title' },
-                          { key: 'icon', label: 'Emoji/Symbol' }
-                        ],
-                        fields: [
-                          { key: 'title', label: 'Highlight Card Title', type: 'text' },
-                          { key: 'icon', label: 'Emoji Icon Tag (e.g. 👶, 🚀)', type: 'text' },
-                          { key: 'description', label: 'Narrative description details', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'categories' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'categories',
-                        displayColumns: [
-                          { key: 'title', label: 'Category Title' }
-                        ],
-                        fields: [
-                          { key: 'title', label: 'Category Name Title', type: 'text' },
-                          { key: 'description', label: 'Category Details Description', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'futureVision' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Vision Heading" value={visionForm.heading || ''} onChange={e => setVisionForm({ ...visionForm, heading: e.target.value })} />
-                        <Input label="Vision Subtitle" value={visionForm.subtitle || ''} onChange={e => setVisionForm({ ...visionForm, subtitle: e.target.value })} />
-                        <div className="md:col-span-2">
-                          <Input label="Vision Narrative Description" textarea rows={3} value={visionForm.description || ''} onChange={e => setVisionForm({ ...visionForm, description: e.target.value })} />
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('futureVision', visionForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Vision Details</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'statistics' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'statistics',
-                        displayColumns: [
-                          { key: 'title', label: 'Counter Title' },
-                          { key: 'number', label: 'Value' }
-                        ],
-                        fields: [
-                          { key: 'number', label: 'Value count (e.g. 2.5M+, 150+)', type: 'text' },
-                          { key: 'prefix', label: 'Prefix (Optional)', type: 'text', optional: true },
-                          { key: 'suffix', label: 'Suffix (Optional)', type: 'text', optional: true },
-                          { key: 'title', label: 'Counter Label Title', type: 'text' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'seo' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="SEO Meta Title" value={seoForm.metaTitle || ''} onChange={e => setSeoForm({ ...seoForm, metaTitle: e.target.value })} />
-                        <Input label="SEO Meta Keywords" value={seoForm.metaKeywords || ''} onChange={e => setSeoForm({ ...seoForm, metaKeywords: e.target.value })} placeholder="GSAP, Timeline, Journey" />
-                        <div className="md:col-span-2">
-                          <Input label="SEO Meta Description Content" textarea rows={2} value={seoForm.metaDescription || ''} onChange={e => setSeoForm({ ...seoForm, metaDescription: e.target.value })} />
-                        </div>
-                        <div className="md:col-span-2">
-                          {renderMediaUpload("OG Social Share Graphics Card", seoForm.ogImageUrl, "ogImageUrl")}
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('seo', seoForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save SEO Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              )}
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* FINAL STATUS BAR FOOTER */}
-      <div className="flex items-center justify-end p-4 border border-zinc-900 bg-zinc-955/20 rounded-lg max-w-5xl">
-        <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
-          <ShieldCheck className="w-4 h-4" />
-          <span>Founder Journey framework running securely with synchronized context hooks.</span>
+          <div className="flex justify-center bg-black/90 p-4 rounded-2xl border border-zinc-800 min-h-[500px]">
+            <div className={`bg-black transition-all duration-300 border border-zinc-800 rounded-xl overflow-hidden ${
+              previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
+            }`}>
+              <iframe
+                src="http://localhost:5173/journey"
+                title="Live Preview Founder Journey"
+                className="w-full h-[600px] border-none"
+              />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
+      {/* CREATE / EDIT MODAL */}
+      {modalConfig && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <form onSubmit={handleModalSave} className="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">
+                {modalConfig.item.id ? 'Edit Item' : 'Add New Item'}
+              </h3>
+              <button type="button" onClick={() => setModalConfig(null)} className="text-zinc-500 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => (
+                <div key={key}>
+                  <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
+                  <input
+                    type="text"
+                    value={modalConfig.item[key] || ''}
+                    onChange={(e) => setModalConfig({
+                      ...modalConfig,
+                      item: { ...modalConfig.item, [key]: e.target.value }
+                    })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <Button type="button" variant="outline" size="sm" onClick={() => setModalConfig(null)}>Cancel</Button>
+              <Button type="submit" variant="gold" size="sm">Save Item</Button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

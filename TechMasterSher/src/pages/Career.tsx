@@ -6,23 +6,82 @@ import { mediaUrl } from "../utils/media";
 
 export const Career: React.FC = () => {
   const { careerData, dbData } = useData();
-  const careerList = careerData && careerData.length > 0 
-    ? careerData.filter((c: any) => c.active !== false && c.status !== false) 
-    : [];
+
+  let localDb: any = {};
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) localDb = JSON.parse(saved);
+  } catch (e) {}
+
+  const activeDb = { ...localDb, ...dbData };
+
+  const defaultJobs = [
+    {
+      id: "job-1",
+      title: "Senior Video Editor & Colorist",
+      department: "Production Suite",
+      team: "Production Suite",
+      type: "Full Time",
+      location: "Jaipur / Remote",
+      salary: "$18,000 - $25,000",
+      description: "Crafting high-octane 4K YouTube breakdowns, fast-paced shorts, and cinematic color grades.",
+      status: "Active",
+      visible: true
+    },
+    {
+      id: "job-2",
+      title: "Full-Stack Curriculum Architect",
+      department: "Next Univerz",
+      team: "Next Univerz",
+      type: "Full Time",
+      location: "Remote",
+      salary: "$30,000 - $45,000",
+      description: "Designing interactive web dev sandboxes, system design masterclasses, and coding challenges.",
+      status: "Active",
+      visible: true
+    }
+  ];
+
+  const rawJobs = (careerData && careerData.length > 0)
+    ? careerData
+    : (activeDb?.careers || activeDb?.careersCMS?.jobs || defaultJobs);
+
+  const careerList = rawJobs.filter((c: any) => c.active !== false && c.status !== false && c.visible !== false && !c.deleted);
   
-  const careerHero = dbData?.careerHero || {};
-  const careerCulture = dbData?.careerCulture || [
-    { title: "Remote First", description: "Work from anywhere in the world. We believe in output, not office hours." },
+  const careerHero = activeDb?.careerHero || activeDb?.careersCMS?.hero || {
+    badge: "JOIN THE TEAM",
+    titleLine1: "Join Aman's",
+    titleLine2: "Creator & Education Lab",
+    description: "We look for cinematic editors, curriculum writers, and developer advocates who want to construct the future of tech education."
+  };
+
+  const cultureHeader = activeDb?.cultureHeader || activeDb?.careersCMS?.cultureHeader || {
+    badge: "OUR DNA",
+    titleLine1: "Culture &",
+    titleLine2: "Benefits"
+  };
+
+  const defaultCulture = [
     { title: "Learning Budget", description: "$2,000 annual stipend for courses, books, and conference tickets." },
     { title: "Health & Wellness", description: "Premium global health coverage and mental wellness stipends." },
-    { title: "Creator Autonomy", description: "Own your projects. We cultivate leaders who can drive their own vision." }
+    { title: "Creator Autonomy", description: "Own your projects. We cultivate leaders who can drive their own vision." },
+    { title: "Remote First", description: "Work from anywhere in the world. We believe in output, not office hours." }
   ];
-  const careerProcess = dbData?.careerProcess || [
+  const careerCulture = (activeDb?.careerCulture || activeDb?.careersCMS?.culture || defaultCulture).filter((c: any) => c.visible !== false && !c.deleted);
+
+  const processHeader = activeDb?.processHeader || activeDb?.careersCMS?.processHeader || {
+    badge: "HOW WE HIRE",
+    titleLine1: "The",
+    titleLine2: "Process"
+  };
+
+  const defaultProcess = [
     { step: "01", title: "Application Review", description: "We review your portfolio, GitHub, and application answers." },
     { step: "02", title: "Intro Call", description: "A 30-minute culture and vibe check with our ops team." },
     { step: "03", title: "Technical Task", description: "A paid, asynchronous take-home project relevant to your role." },
     { step: "04", title: "Final Interview", description: "A conversation with Aman and the leads. No live whiteboarding." }
   ];
+  const careerProcess = (activeDb?.careerProcess || activeDb?.careersCMS?.process || defaultProcess).filter((p: any) => p.visible !== false && !p.deleted);
 
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,12 +115,12 @@ export const Career: React.FC = () => {
       dataPayload.append("email", formData.email);
       dataPayload.append("phone", formData.phone);
       dataPayload.append("jobTitle", formData.jobTitle || "General Application");
-      dataPayload.append("experience", formData.portfolioLink); // Map portfolio link to experience field
-      dataPayload.append("message", formData.whyJoin); // Map why join to message
-      dataPayload.append("coverLetter", formData.coverLetter); 
-      dataPayload.append("resume", formData.resumeFile); // Single file upload field name in backend is 'resume'
+      dataPayload.append("experience", formData.portfolioLink);
+      dataPayload.append("message", formData.whyJoin);
+      dataPayload.append("coverLetter", formData.coverLetter);
+      dataPayload.append("resume", formData.resumeFile);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"}` + "/cms/public/resume", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}` + "/cms/public/resume", {
         method: "POST",
         body: dataPayload
       });
@@ -276,7 +335,7 @@ export const Career: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 data-cursor="submit"
               >
                 {isSubmitting ? "Submitting Application..." : "Send Application"}
@@ -290,9 +349,9 @@ export const Career: React.FC = () => {
       {/* Culture & Benefits */}
       <section className="max-w-7xl mx-auto mt-16 mb-12 relative z-10 text-left">
         <div className="text-center mb-16">
-          <p className="typo-badge mb-4">OUR DNA</p>
+          <p className="typo-badge mb-4">{cultureHeader.badge || "OUR DNA"}</p>
           <h2 className="typo-h2 mb-6">
-            Culture & <span className="text-gold italic font-bold">Benefits</span>
+            {cultureHeader.titleLine1 || "Culture &"} <span className="text-gold italic font-bold">{cultureHeader.titleLine2 || "Benefits"}</span>
           </h2>
         </div>
         
@@ -309,9 +368,9 @@ export const Career: React.FC = () => {
       {/* Hiring Process */}
       <section className="max-w-5xl mx-auto mb-16 relative z-10">
         <div className="text-center mb-16">
-          <p className="typo-badge mb-4">HOW WE HIRE</p>
+          <p className="typo-badge mb-4">{processHeader.badge || "HOW WE HIRE"}</p>
           <h2 className="typo-h2 mb-6">
-            The <span className="text-gold italic font-bold">Process</span>
+            {processHeader.titleLine1 || "The"} <span className="text-gold italic font-bold">{processHeader.titleLine2 || "Process"}</span>
           </h2>
         </div>
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative before:absolute before:top-8 before:left-8 md:before:left-0 md:before:top-12 before:w-0.5 md:before:w-full before:h-full md:before:h-0.5 before:bg-white/10">

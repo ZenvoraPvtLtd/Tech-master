@@ -17,74 +17,90 @@ const iconMap: Record<string, React.ReactNode> = {
 export const WhatWeDo: React.FC = () => {
   const { whatWeDoData } = useData();
 
-  if (!whatWeDoData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#060606]">
-        <p className="text-gold font-mono uppercase tracking-[3px] text-xs">Loading Content...</p>
-      </div>
-    );
-  }
+  let localDb: any = {};
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) localDb = JSON.parse(saved);
+  } catch (e) {}
 
-
-  const hero = whatWeDoData?.hero || {
-    smallBadge: "CORE ACTIVITIES",
-    headline: "What We Do to",
-    highlightWord: "Reshape Learning",
-    description: "We build content, platforms, keynotes, and campaigns to bridge the gap between classroom syntax and global engineering workspaces."
+  const defaultPayload = {
+    hero: {
+      smallBadge: "CORE ACTIVITIES",
+      headline: "What We Do to",
+      highlightWord: "Reshape Learning",
+      description: "We build content, platforms, keynotes, and campaigns to bridge the gap between classroom syntax and global engineering workspaces."
+    },
+    operations: [
+      {
+        icon: "Video",
+        title: "YouTube Production",
+        subtitle: "Cinematic Coding Breakdowns",
+        description: "We scripting, record, and edit deep-dive developer tutorials that run like cinematic stories. Reaching over 2.5 million subscribers with weekly guides.",
+        accent: "#D4AF37",
+      },
+      {
+        icon: "Code",
+        title: "Interactive Syllabus Design",
+        subtitle: "Online MasterClasses",
+        description: "Drafting production-level courses that focus on Docker pipelines, testing arrays, and backend scale, complete with live browser containers.",
+        accent: "#00E5FF",
+      },
+      {
+        icon: "Presentation",
+        title: "Motivational Keynotes",
+        subtitle: "TEDx & Global Tech Talks",
+        description: "Aman travels worldwide delivering opening remarks on 'Democratizing Code' and soft skill strategies to help students bypass generic hiring cycles.",
+        accent: "#aa3bff",
+      },
+      {
+        icon: "MessageSquareCode",
+        title: "Community Hackathons",
+        subtitle: "Empowerment Cohorts",
+        description: "Hosting virtual/physical coding tournaments sponsored by Vercel and Google Cloud to give students direct placement links.",
+        accent: "#FF007F",
+      },
+    ],
+    servicesHeader: {
+      badge: "OUR EXPERTISE",
+      titleLine1: "Comprehensive",
+      titleLine2: "Services"
+    },
+    servicesList: [
+      "Content Creation", "Influencer Marketing", "Brand Promotions", "Brand Campaigns", 
+      "Product Launches", "Event Hosting", "Event Management", "Corporate Collaborations", 
+      "Digital Marketing", "Personal Branding", "Creative Consulting", "Social Media Strategy", 
+      "Creative Direction", "Public Speaking", "Workshop Sessions"
+    ],
+    quoteBanner: {
+      quoteText: "Education is not the learning of facts, but the training of the mind to think.",
+      authorName: "Aman (Tech Master)"
+    }
   };
 
-  const operations = whatWeDoData?.operations && whatWeDoData.operations.length > 0
-    ? whatWeDoData.operations.map((op: any) => ({
-        icon: iconMap[op.icon] || <Video className="w-6 h-6 text-gold" />,
-        title: op.title,
-        subtitle: op.subtitle,
-        description: op.description,
-        accent: op.accent || op.accentColor || "#D4AF37"
-      }))
-    : [
-        {
-          icon: <Video className="w-6 h-6 text-gold" />,
-          title: "YouTube Production",
-          subtitle: "Cinematic Coding Breakdowns",
-          description: "We scripting, record, and edit deep-dive developer tutorials that run like cinematic stories. Reaching over 2.5 million subscribers with weekly guides.",
-          accent: "#D4AF37",
-        },
-        {
-          icon: <Code className="w-6 h-6 text-electric-blue" />,
-          title: "Interactive Syllabus Design",
-          subtitle: "Online MasterClasses",
-          description: "Drafting production-level courses that focus on Docker pipelines, testing arrays, and backend scale, complete with live browser containers.",
-          accent: "#00E5FF",
-        },
-        {
-          icon: <Presentation className="w-6 h-6 text-royal-purple" />,
-          title: "Motivational Keynotes",
-          subtitle: "TEDx & Global Tech Talks",
-          description: "Aman travels worldwide delivering opening remarks on 'Democratizing Code' and soft skill strategies to help students bypass generic hiring cycles.",
-          accent: "#aa3bff",
-        },
-        {
-          icon: <MessageSquareCode className="w-6 h-6 text-pink-500" />,
-          title: "Community Hackathons",
-          subtitle: "Empowerment Cohorts",
-          description: "Hosting virtual/physical coding tournaments sponsored by Vercel and Google Cloud to give students direct placement links.",
-          accent: "#FF007F",
-        },
-      ];
+  const activeData = { ...defaultPayload, ...localDb?.whatWeDoData, ...whatWeDoData };
 
-  const servicesList = whatWeDoData?.servicesList && whatWeDoData.servicesList.length > 0
-    ? whatWeDoData.servicesList.map((s: any) => s.tag)
-    : [
-        "Content Creation", "Influencer Marketing", "Brand Promotions", "Brand Campaigns", 
-        "Product Launches", "Event Hosting", "Event Management", "Corporate Collaborations", 
-        "Digital Marketing", "Personal Branding", "Creative Consulting", "Social Media Strategy", 
-        "Creative Direction", "Public Speaking", "Workshop Sessions"
-      ];
+  const hero = activeData.hero || defaultPayload.hero;
 
-  const quoteBanner = whatWeDoData?.quoteBanner || {
-    quoteText: "Education is not the learning of facts, but the training of the mind to think.",
-    authorName: "Aman (Tech Master)"
-  };
+  const rawOperations = (activeData.operations && activeData.operations.length > 0)
+    ? activeData.operations
+    : defaultPayload.operations;
+
+  const operations = rawOperations.map((op: any) => ({
+    icon: iconMap[op.icon] || <Video className="w-6 h-6 text-gold" />,
+    title: op.title,
+    subtitle: op.subtitle,
+    description: op.description,
+    accent: op.accent || op.accentColor || "#D4AF37"
+  }));
+
+  const servicesHeader = activeData.servicesHeader || defaultPayload.servicesHeader;
+  const rawServices = (activeData.servicesList && activeData.servicesList.length > 0)
+    ? activeData.servicesList
+    : defaultPayload.servicesList;
+
+  const servicesList = rawServices.map((s: any) => typeof s === 'string' ? s : (s.tag || s.name || s));
+
+  const quoteBanner = activeData.quoteBanner || defaultPayload.quoteBanner;
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
@@ -98,7 +114,7 @@ export const WhatWeDo: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="typo-badge mb-4"
+          className="typo-badge mb-4 uppercase tracking-[2px]"
         >
           {hero.smallBadge || "CORE ACTIVITIES"}
         </motion.div>
@@ -134,7 +150,7 @@ export const WhatWeDo: React.FC = () => {
                   Operation 0{idx + 1}
                 </span>
               </div>
-              <div className="mb-4">
+              <div className="mb-4 text-left">
                 <h3 className="font-serif text-2xl text-white font-medium mb-1 group-hover:text-gold transition-colors duration-300">
                   {op.title}
                 </h3>
@@ -142,7 +158,7 @@ export const WhatWeDo: React.FC = () => {
                   {op.subtitle}
                 </span>
               </div>
-              <p className="text-gray-400 text-xs md:text-sm leading-relaxed font-light mt-4 pt-4 border-t border-white/5">
+              <p className="text-gray-400 text-xs md:text-sm leading-relaxed font-light mt-4 pt-4 border-t border-white/5 text-left">
                 {op.description}
               </p>
             </LuxuryCard>
@@ -152,9 +168,9 @@ export const WhatWeDo: React.FC = () => {
         {/* Comprehensive Services List */}
         <div className="mt-12 mb-12">
           <div className="text-center mb-12">
-            <p className="typo-badge mb-4">OUR EXPERTISE</p>
+            <p className="typo-badge mb-4">{servicesHeader.badge || "OUR EXPERTISE"}</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white font-light">
-              Comprehensive <span className="text-gold italic font-bold">Services</span>
+              {servicesHeader.titleLine1 || "Comprehensive"} <span className="text-gold italic font-bold">{servicesHeader.titleLine2 || "Services"}</span>
             </h2>
           </div>
           <div className="flex flex-wrap justify-center gap-4">

@@ -1,986 +1,511 @@
 import React, { useState } from 'react';
-import { useMediaManager } from "../../context/MediaContext";
 import { useDatabase } from '../../context/DatabaseContext';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Switch } from '../../components/ui/Switch';
-import { Badge } from '../../components/ui/Badge';
-import { Input } from '../../components/ui/Input';
+import { useMediaManager } from '../../context/MediaContext';
 import { 
-  Cpu, Layers, Box, Sparkles, Globe, ShieldCheck, ChevronDown, ChevronRight, 
-  Edit3, Trash2, ArrowUp, ArrowDown, X, UploadCloud, Plus, Save, 
-  RefreshCw, Eye, Search, AlertCircle, Settings
+  Briefcase, Check, Save, Plus, Trash2, Edit3, Eye, 
+  Layers, Globe, Monitor, Tablet, Smartphone, Clock, ImageIcon, X, Cpu, Box, Sparkles, ChevronDown, ListChecks, ArrowUpRight, Sliders
 } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { Toast } from '../../components/ui/Toast';
 
-// ==========================================
-// 1. REUSABLE LIST INPUT MANAGER (FOR DYNAMIC TEXT ARRAYS)
-// ==========================================
-const ListInputManager = ({ label, items = [], onChange }) => {
-  const [newItem, setNewItem] = useState('');
-
-  const handleAdd = () => {
-    if (!newItem.trim()) return;
-    onChange([...items, newItem.trim()]);
-    setNewItem('');
-  };
-
-  const handleDelete = (idxToDelete) => {
-    onChange(items.filter((_, idx) => idx !== idxToDelete));
-  };
-
-  const handleMove = (index, direction) => {
-    const nextItems = [...items];
-    const target = index + direction;
-    if (target >= 0 && target < nextItems.length) {
-      const temp = nextItems[index];
-      nextItems[index] = nextItems[target];
-      nextItems[target] = temp;
-      onChange(nextItems);
-    }
-  };
-
-  return (
-    <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-2 text-left">
-      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{label}</span>
-      <div className="flex gap-2">
-        <input 
-          type="text" 
-          value={newItem} 
-          onChange={e => setNewItem(e.target.value)} 
-          placeholder={`Add new ${label.toLowerCase()} item...`}
-          className="flex-1 bg-zinc-950 border border-zinc-850 rounded px-2.5 py-1.5 text-xs text-zinc-200 focus:border-luxury-gold/40 outline-none"
-        />
-        <button 
-          type="button" 
-          onClick={handleAdd}
-          className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 hover:border-luxury-gold/30 text-luxury-gold text-xs rounded font-bold"
-        >
-          Add
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-1.5 mt-2 max-h-32 overflow-y-auto pr-1">
-        {items.map((item, idx) => (
-          <div key={idx} className="p-2 bg-zinc-950 border border-zinc-900 rounded flex items-center justify-between gap-3">
-            <span className="text-xs text-zinc-300 font-sans truncate">{idx + 1}. {item}</span>
-            <div className="flex items-center gap-1">
-              <button type="button" onClick={() => handleMove(idx, -1)} disabled={idx === 0} className="p-1 text-zinc-500 hover:text-white disabled:opacity-20"><ArrowUp className="w-3 h-3" /></button>
-              <button type="button" onClick={() => handleMove(idx, 1)} disabled={idx === items.length - 1} className="p-1 text-zinc-500 hover:text-white disabled:opacity-20"><ArrowDown className="w-3 h-3" /></button>
-              <button type="button" onClick={() => handleDelete(idx)} className="p-1 text-zinc-550 hover:text-rose-400"><X className="w-3 h-3" /></button>
-            </div>
-          </div>
-        ))}
-        {items.length === 0 && (
-          <span className="text-[10px] text-zinc-650 italic">No list items added yet.</span>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// ==========================================
-// 2. REUSABLE GALLERY MANAGER (FOR MULTIPLE IMAGES)
-// ==========================================
-const GalleryManager = ({ label, images = [], onChange }) => {
-  const [uploading, setUploading] = useState(false);
-
-  const simulateUpload = () => {
-    setUploading(true);
-    setTimeout(() => {
-      const dummyUrls = [
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=400&q=80"
-      ];
-      const randomUrl = dummyUrls[Math.floor(Math.random() * dummyUrls.length)];
-      onChange([...images, { url: randomUrl, title: "Gallery Slide Image", alt: "Visual asset placeholder" }]);
-      setUploading(false);
-    }, 1000);
-  };
-
-  const handleDelete = (idxToDelete) => {
-    onChange(images.filter((_, idx) => idx !== idxToDelete));
-  };
-
-  const handleMove = (index, direction) => {
-    const nextImages = [...images];
-    const target = index + direction;
-    if (target >= 0 && target < nextImages.length) {
-      const temp = nextImages[index];
-      nextImages[index] = nextImages[target];
-      nextImages[target] = temp;
-      onChange(nextImages);
-    }
-  };
-
-  return (
-    <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-3 text-left">
-      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{label}</span>
-      
-      <div 
-        onClick={simulateUpload}
-        className="h-20 border border-dashed border-zinc-850 hover:border-luxury-gold/30 rounded flex flex-col items-center justify-center gap-1 text-zinc-655 cursor-pointer transition-colors"
-      >
-        {uploading ? (
-          <span className="text-[9px] uppercase tracking-widest font-mono animate-pulse">Uploading Media...</span>
-        ) : (
-          <>
-            <UploadCloud className="w-4 h-4" />
-            <span className="text-[9px] uppercase font-mono tracking-widest">Add Gallery Image</span>
-          </>
-        )}
-      </div>
-
-      <div className="grid grid-cols-3 gap-2 mt-2">
-        {images.map((img, idx) => (
-          <div key={idx} className="relative aspect-video rounded border border-zinc-900 bg-zinc-950 overflow-hidden group">
-            <img src={img.url} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1.5 transition-all">
-              <button type="button" onClick={() => handleMove(idx, -1)} disabled={idx === 0} className="p-1 bg-black/40 rounded text-zinc-450 hover:text-white disabled:opacity-20"><ArrowUp className="w-3 h-3" /></button>
-              <button type="button" onClick={() => handleMove(idx, 1)} disabled={idx === images.length - 1} className="p-1 bg-black/40 rounded text-zinc-450 hover:text-white disabled:opacity-20"><ArrowDown className="w-3 h-3" /></button>
-              <button type="button" onClick={() => handleDelete(idx)} className="p-1 bg-black/40 rounded text-rose-450 hover:text-white"><X className="w-3 h-3" /></button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// ==========================================
-// 3. MAIN SERVICES MODULE DEFINITION
-// ==========================================
-export default function Services() {
+export const Services = () => {
   const { db, updateSection } = useDatabase();
-  const servicesPage = db?.servicesPage || {};
-
-  // Collapsible cards state
-  const [expandedCards, setExpandedCards] = useState({
-    hero: true,
-    catalog: false,
-    statistics: false,
-    testimonials: false,
-    faqs: false,
-    cta: false,
-    seo: false
-  });
-
-  const toggleCard = (cardId) => {
-    setExpandedCards(prev => ({ ...prev, [cardId]: !prev[cardId] }));
-  };
-
-  // Toast state (only for critical saves, toggles are silent)
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  // Search & Filters State
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-
-  const [heroForm, setHeroForm] = useState(servicesPage?.hero || {});
-  const [ctaForm, setCtaForm] = useState(servicesPage?.cta || {});
-  const [seoForm, setSeoForm] = useState(servicesPage?.seo || {});
-
-  // List editor states
-  const [activeEditorSection, setActiveEditorSection] = useState(null); 
-  const [editingItemId, setEditingItemId] = useState(null);
-  const [draftItem, setDraftItem] = useState({});
-
-  // View modal state
-  const [viewingItem, setViewingItem] = useState(null);
-  const [viewingSection, setViewingSection] = useState(null);
-
-  // Delete modal state
-  const [deletingItemId, setDeletingItemId] = useState(null);
-  const [deletingSection, setDeletingSection] = useState(null);
-
-  // Media uploading state
-  const [uploadingField, setUploadingField] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showCropModal, setShowCropModal] = useState(false);
-  const [cropTargetField, setCropTargetField] = useState(null);
-
   const { openMediaManager } = useMediaManager();
-  const simulateMediaUpload = (targetKey, isObjectForm = false, objectSetter = null) => {
-    openMediaManager({
-      onSelect: (url) => {
-        if (activeEditorSection) {
-          setDraftItem(prev => ({ ...prev, [targetKey]: url }));
-        } else {
-          setSeoForm(prev => (targetKey in prev || ['ogImageUrl'].includes(targetKey) ? { ...prev, [targetKey]: url } : prev));
-        }
+
+  const [activeTab, setActiveTab] = useState('accordions'); // overview, accordions, content, media, seo, visibility, publish, preview
+  const [contentSubTab, setContentSubTab] = useState('hero'); // hero, solutions, cta
+  const [previewMode, setPreviewMode] = useState('desktop');
+  const [toast, setToast] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [modalConfig, setModalConfig] = useState(null);
+
+  // Default pre-populated production values
+  const defaultServicesCMS = {
+    servicesPageData: {
+      hero: {
+        badge: "CORE PORTALS",
+        title: "Services, Courses &",
+        highlightText: "Keynote Bookings.",
+        description: "Explore Aman's developer training tracks, speaking keynote requests, collaborative student hackathons, and brand sponsorships.",
+        visible: true
+      },
+      expertise: {
+        badge: "OUR EXPERTISE",
+        title: "Comprehensive",
+        highlightText: "Solutions"
+      },
+      cta: {
+        heading: "Ready to Transform Your Business?",
+        subtext: "Let's discuss how we can help you achieve your goals.",
+        buttonText: "Contact Us",
+        buttonUrl: "/contact",
+        visible: true
       }
-    });
+    },
+    servicesData: [
+      {
+        id: "srv-1",
+        icon: "Sparkles",
+        title: "Luxury Brand Strategy",
+        tagline: "High-End Positioning & Identity",
+        description: "Positioning luxury engineering and tech brands for ultra-high-net-worth market presence and authority.",
+        overview: "Complete identity blueprints, luxury visual systems, and high-convert audience positioning.",
+        benefits: ["Exclusive market positioning", "Premium brand perception", "High conversion equity"],
+        process: ["Market Audit & Positioning Blueprint", "Visual System Design", "Global Brand Launch"],
+        features: ["Brand Identity Blueprint", "Luxury Visual Assets", "Strategic Positioning"],
+        accentColor: "#D4AF37",
+        displayOrder: 1,
+        status: "Active"
+      },
+      {
+        id: "srv-2",
+        icon: "Cpu",
+        title: "High-End Influencer Campaign Execution",
+        tagline: "Multiverse Creator Syndication",
+        description: "Strategic partnerships across top technology key opinion leaders, tech YouTubers, and developer creators.",
+        overview: "End-to-end management of tier-1 tech influencer pushes reaching millions of engaged developers.",
+        benefits: ["Direct developer audience trust", "Guaranteed impression scale", "High ROI conversion tracking"],
+        process: ["Creator Vetting & Alignment", "Creative Scripting & Approval", "Multi-Channel Broadcast & Analytics"],
+        features: ["Creator Network Access", "Campaign Tracking Dashboard", "Dedicated Account Manager"],
+        accentColor: "#00E5FF",
+        displayOrder: 2,
+        status: "Active"
+      },
+      {
+        id: "srv-3",
+        icon: "Layers",
+        title: "Keynote & Public Speaking",
+        tagline: "Global Tech Summits & Seminars",
+        description: "Aman delivers mainstage keynotes, live coding demonstrations, and developer autonomy seminars globally.",
+        overview: "Engaging, inspirational keynotes translating complex software architecture into 3D visual stories.",
+        benefits: ["High-impact mainstage delivery", "Authentic audience engagement", "Full press kit & AV rider support"],
+        process: ["Event Scope & Keynote Alignment", "Custom Slide & Live Sandbox Setup", "Mainstage Delivery & Q&A"],
+        features: ["Mainstage Keynotes", "Live Sandbox Demos", "Q&A Cohort Sessions"],
+        accentColor: "#aa3bff",
+        displayOrder: 3,
+        status: "Active"
+      },
+      {
+        id: "srv-4",
+        icon: "Box",
+        title: "UGC & Commercial Content Production",
+        tagline: "Cinematic Product Spotlights",
+        description: "High-production UGC, cinematic product trailers, and commercial developer breakdowns.",
+        overview: "4K multi-cam production, 3D motion graphics, and high-retention commercial video assets.",
+        benefits: ["Cinematic 4K production quality", "Higher viewer retention rates", "Multi-format social exports"],
+        process: ["Concept & Storyboard Blueprint", "4K Multi-Cam Studio Filming", "3D Motion Graphics & Sound Design"],
+        features: ["4K Studio Filming", "3D Motion Graphics", "Multi-Format Exports"],
+        accentColor: "#FF007F",
+        displayOrder: 4,
+        status: "Active"
+      }
+    ],
+    seo: {
+      metaTitle: "Services & Solutions | TechMaster",
+      metaDescription: "Explore TechMaster's developer training tracks, media production, open-source CLI tools, and keynote speaking.",
+      canonicalUrl: "https://techmaster.in/services",
+      ogImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200"
+    },
+    visibility: {
+      desktop: true,
+      tablet: true,
+      mobile: true,
+      published: true
+    },
+    versioning: {
+      status: "Published",
+      lastUpdated: "Today",
+      updatedBy: "Super Admin"
+    }
   };
 
-  const handleSingleSave = (sectionKey, data) => {
-    updateSection('servicesPage', { [sectionKey]: data });
-    showToast(`${sectionKey.toUpperCase()} section parameters updated successfully.`);
-  };
+  const storedCMS = db?.servicesPageData || db?.servicesCMS || defaultServicesCMS;
 
-  const updateSectionMeta = (secId, key, val) => {
-    const currentSettings = servicesPage.sectionSettings || {};
-    const updatedSettings = {
-      ...currentSettings,
-      [secId]: {
-        ...(currentSettings[secId] || { order: 1, status: "Active" }),
-        [key]: val
-      }
-    };
-    updateSection('servicesPage', { sectionSettings: updatedSettings });
-    // Silent update, no toast notifications popped up!
-  };
-
-  // Reusable Media Upload Component
-  const renderMediaUpload = (label, value, fieldKey, isOptional = false) => {
-    return (
-      <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-2 text-left">
-        <div className="flex items-center justify-between">
-          <span className="text-[9px] font-mono text-zinc-555 block uppercase">{label} {isOptional && <span className="text-zinc-650">(Optional)</span>}</span>
-          {value && (
-            <button 
-              type="button"
-              onClick={() => {
-                setCropTargetField(fieldKey);
-                setShowCropModal(true);
-              }}
-              className="text-[9px] uppercase tracking-wider text-luxury-gold hover:underline flex items-center gap-1"
-            >
-              <Settings className="w-2.5 h-2.5" /> Crop Image
-            </button>
-          )}
-        </div>
-        
-        {value ? (
-          <div className="relative w-full h-24 bg-zinc-955 border border-zinc-800 rounded overflow-hidden flex items-center justify-center">
-            <img src={value} className="w-full h-full object-cover" />
-            <div className="absolute bottom-1 right-1 flex items-center gap-1">
-              <button 
-                onClick={() => simulateMediaUpload(fieldKey)} 
-                className="p-1 bg-black/60 rounded text-luxury-gold hover:text-white"
-                title="Replace Image"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-              <button 
-                onClick={() => {
-                  if (activeEditorSection) {
-                    setDraftItem(prev => ({ ...prev, [fieldKey]: "" }));
-                  } else {
-                    setSeoForm(prev => (fieldKey in prev ? { ...prev, [fieldKey]: "" } : prev));
-                  }
-                  showToast("Image removed.");
-                }} 
-                className="p-1 bg-black/60 rounded text-rose-400 hover:text-white"
-                title="Remove Image"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div 
-            onClick={() => simulateMediaUpload(fieldKey)} 
-            onDragOver={e => e.preventDefault()}
-            onDrop={e => { e.preventDefault(); simulateMediaUpload(fieldKey); }}
-            className="h-24 border border-dashed border-zinc-850 hover:border-luxury-gold/30 rounded flex flex-col items-center justify-center gap-1 text-zinc-655 cursor-pointer transition-all"
-          >
-            {uploadingField === fieldKey ? (
-              <div className="flex flex-col items-center gap-1 animate-pulse">
-                <RefreshCw className="w-4 h-4 animate-spin text-luxury-gold" />
-                <span className="text-[8px] font-mono">{uploadProgress}%</span>
-              </div>
-            ) : (
-              <>
-                <UploadCloud className="w-4 h-4" />
-                <span className="text-[8px] uppercase font-mono tracking-wider">Drag & Drop or Click</span>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // --- REUSABLE LIST MANAGER (WITH SEARCH & FILTERS & MODALS CONNECTED) ---
-  const renderListManager = ({
-    sectionKey,
-    rootKey = 'servicesPage',
-    fields = [],
-    displayColumns = []
-  }) => {
-    const listData = rootKey === 'servicesPage' ? (servicesPage[sectionKey] || []) : (db[sectionKey] || []);
-    
-    // Apply search filter
-    const filteredList = listData.filter(item => {
-      const query = searchQuery.toLowerCase();
-      const matchesSearch = displayColumns.some(col => 
-        String(item[col.key] || '').toLowerCase().includes(query)
-      );
-      const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    });
-
-    const isEditing = activeEditorSection === sectionKey;
-
-    const handleSaveItem = () => {
-      let nextList = [];
-      
-      // Clean up array fields for the database
-      const cleanDraftItem = { ...draftItem };
-      const arrayFields = ['features', 'benefits', 'process'];
-      arrayFields.forEach(field => {
-        if (typeof cleanDraftItem[field] === 'string') {
-          cleanDraftItem[field] = cleanDraftItem[field].split(',').map(s => s.trim()).filter(s => s);
-        }
-      });
-
-      if (editingItemId) {
-        nextList = listData.map(item => item.id === editingItemId ? { ...item, ...cleanDraftItem } : item);
-        showToast("Item updated successfully.");
-      } else {
-        const newItem = { 
-          ...cleanDraftItem, 
-          id: `item-${Date.now()}`, 
-          status: cleanDraftItem.status || 'Active', 
-          order: listData.length + 1 
-        };
-        nextList = [...listData, newItem];
-        showToast("New item created.");
-      }
-      if (rootKey === 'servicesPage') {
-        updateSection('servicesPage', { [sectionKey]: nextList });
-      } else {
-        updateSection(sectionKey, nextList);
-      }
-      setActiveEditorSection(null);
-      setEditingItemId(null);
-      setDraftItem({});
-    };
-
-    const handleToggleStatus = (id, currentStatus) => {
-      const nextList = listData.map(item => item.id === id ? { ...item, status: currentStatus === 'Active' ? 'Inactive' : 'Active' } : item);
-      if (rootKey === 'servicesPage') {
-        updateSection('servicesPage', { [sectionKey]: nextList });
-      } else {
-        updateSection(sectionKey, nextList);
-      }
-      // Silent update on toggle switch, no notifications popped up!
-    };
-
-    const handleMoveItem = (index, direction) => {
-      const nextList = [...listData];
-      const target = index + direction;
-      if (target >= 0 && target < nextList.length) {
-        const temp = nextList[index];
-        nextList[index] = nextList[target];
-        nextList[target] = temp;
-        if (rootKey === 'servicesPage') {
-          updateSection('servicesPage', { [sectionKey]: nextList });
-        } else {
-          updateSection(sectionKey, nextList);
-        }
-      }
-    };
-
-    const handleStartAdd = () => {
-      setActiveEditorSection(sectionKey);
-      setEditingItemId(null);
-      const defaultObj = {};
-      fields.forEach(f => {
-        defaultObj[f.key] = f.type === 'number' ? 0 : f.type === 'switch' ? false : f.type === 'list' || f.type === 'gallery' ? [] : '';
-      });
-      setDraftItem(defaultObj);
-    };
-
-    const handleStartEdit = (item) => {
-      setActiveEditorSection(sectionKey);
-      setEditingItemId(item.id);
-      
-      // Format array fields for the textarea editing
-      const formattedItem = { ...item };
-      const arrayFields = ['features', 'benefits', 'process'];
-      arrayFields.forEach(field => {
-        if (Array.isArray(formattedItem[field])) {
-          formattedItem[field] = formattedItem[field].join(', ');
-        }
-      });
-      
-      setDraftItem(formattedItem);
-    };
-
-    return (
-      <div className="flex flex-col gap-4 text-left">
-        {!isEditing && (
-          <div className="flex flex-col gap-3">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-zinc-900 text-zinc-555 font-mono uppercase text-[9px] tracking-wider">
-                    <th className="py-2 px-3">Order</th>
-                    {displayColumns.map(col => (
-                      <th key={col.key} className="py-2 px-3">{col.label}</th>
-                    ))}
-                    <th className="py-2 px-3 text-center">Status</th>
-                    <th className="py-2 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredList.map((item, idx) => (
-                    <tr key={item.id || idx} className="border-b border-zinc-900/60 hover:bg-zinc-900/10 text-zinc-300">
-                      <td className="py-2.5 px-3 font-mono">{idx + 1}</td>
-                      {displayColumns.map(col => (
-                        <td key={col.key} className="py-2.5 px-3 max-w-[180px] truncate">
-                          {col.type === 'image' ? (
-                            item[col.key] ? (
-                              <div className="w-8 h-8 rounded border border-zinc-800 bg-zinc-955 flex items-center justify-center overflow-hidden">
-                                <img src={item[col.key]} className="w-full h-full object-cover" />
-                              </div>
-                            ) : '-'
-                          ) : item[col.key] || '-'}
-                        </td>
-                      ))}
-                      <td className="py-2.5 px-3 text-center">
-                        <Switch 
-                          checked={item.status === 'Active'} 
-                          onChange={() => handleToggleStatus(item.id, item.status)}
-                        />
-                      </td>
-                      <td className="py-2.5 px-3 text-right flex items-center justify-end gap-1.5 mt-0.5">
-                        <button onClick={() => handleMoveItem(idx, -1)} disabled={idx === 0} className="p-1 hover:bg-zinc-900 rounded disabled:opacity-30"><ArrowUp className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleMoveItem(idx, 1)} disabled={idx === listData.length - 1} className="p-1 hover:bg-zinc-900 rounded disabled:opacity-30"><ArrowDown className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => { setViewingItem(item); setViewingSection(sectionKey); }} className="p-1 hover:bg-zinc-900 rounded text-luxury-gold" title="Preview"><Eye className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleStartEdit(item)} className="p-1 hover:bg-zinc-900 rounded text-amber-500" title="Edit"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => { setDeletingItemId(item.id); setDeletingSection(sectionKey); }} className="p-1 hover:bg-zinc-900 rounded text-rose-500" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredList.length === 0 && (
-                    <tr>
-                      <td colSpan={displayColumns.length + 3} className="text-center py-6 text-zinc-655 font-mono italic">No matching records found.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <Button onClick={handleStartAdd} variant="secondary" size="sm" className="gap-1 text-xs border border-zinc-800 text-luxury-gold">
-                <Plus className="w-3.5 h-3.5" /> <span>Add Row Item</span>
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {isEditing && (
-          <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-3">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-luxury-gold block border-b border-zinc-900 pb-1.5">
-              {editingItemId ? "Edit Record Item" : "Create New Record"}
-            </span>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {fields.map(field => {
-                if (field.type === 'textarea') {
-                  return (
-                    <div key={field.key} className="md:col-span-2">
-                      <Input 
-                        label={field.label} 
-                        textarea 
-                        rows={3} 
-                        value={draftItem[field.key] || ''} 
-                        onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} 
-                      />
-                    </div>
-                  );
-                }
-                if (field.type === 'list') {
-                  return (
-                    <div key={field.key} className="md:col-span-2">
-                      <ListInputManager 
-                        label={field.label}
-                        items={draftItem[field.key] || []}
-                        onChange={newVal => setDraftItem({ ...draftItem, [field.key]: newVal })}
-                      />
-                    </div>
-                  );
-                }
-                if (field.type === 'gallery') {
-                  return (
-                    <div key={field.key} className="md:col-span-2">
-                      <GalleryManager 
-                        label={field.label}
-                        images={draftItem[field.key] || []}
-                        onChange={newVal => setDraftItem({ ...draftItem, [field.key]: newVal })}
-                      />
-                    </div>
-                  );
-                }
-                if (field.type === 'upload') {
-                  return (
-                    <div key={field.key}>
-                      {renderMediaUpload(field.label, draftItem[field.key], field.key, field.optional)}
-                    </div>
-                  );
-                }
-                if (field.type === 'switch') {
-                  return (
-                    <div key={field.key} className="p-3 bg-zinc-900/30 border border-zinc-900 rounded flex items-center justify-between">
-                      <span className="text-xs font-semibold text-zinc-400">{field.label}</span>
-                      <Switch checked={draftItem[field.key] || false} onChange={val => setDraftItem({ ...draftItem, [field.key]: val })} />
-                    </div>
-                  );
-                }
-                return (
-                  <Input 
-                    key={field.key}
-                    label={field.label} 
-                    type={field.type || 'text'} 
-                    value={draftItem[field.key] || ''} 
-                    onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} 
-                  />
-                );
-              })}
-            </div>
-
-            <div className="flex justify-end gap-2 border-t border-zinc-900/60 pt-2.5">
-              <button onClick={() => { setActiveEditorSection(null); setEditingItemId(null); setDraftItem({}); }} className="px-3 py-1.5 text-xs text-zinc-555 hover:text-white">Cancel</button>
-              <button onClick={handleSaveItem} className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded">Save Record</button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const sectionsList = [
-    { id: "hero", label: "Hero Settings", icon: Cpu },
-    { id: "catalog", label: "Service Catalog (Database)", icon: Layers },
-    { id: "statistics", label: "Statistics Counters", icon: Box },
-    { id: "testimonials", label: "Client Testimonials", icon: Sparkles },
-    { id: "faqs", label: "Frequently Asked Questions", icon: Globe },
-    { id: "cta", label: "Global CTA Block", icon: Edit3 },
-    { id: "seo", label: "SEO Metadata", icon: Search }
-  ];
-
-  // Dynamic sorting at section level
-  const sectionSettings = servicesPage.sectionSettings || {};
-  const sortedSections = [...sectionsList].sort((a, b) => {
-    const orderA = sectionSettings[a.id]?.order ?? 99;
-    const orderB = sectionSettings[b.id]?.order ?? 99;
-    return orderA - orderB;
+  const [formData, setFormData] = useState({
+    ...defaultServicesCMS,
+    ...storedCMS,
+    servicesPageData: { ...defaultServicesCMS.servicesPageData, ...(storedCMS.servicesPageData || {}) },
+    servicesData: (db?.servicesData && db.servicesData.length > 0) ? db.servicesData : ((storedCMS.servicesData && storedCMS.servicesData.length > 0) ? storedCMS.servicesData : defaultServicesCMS.servicesData)
   });
+
+  const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
+
+  const persistChanges = (nextState) => {
+    setFormData(nextState);
+    updateSection('servicesPageData', nextState.servicesPageData);
+    updateSection('servicesCMS', nextState);
+    updateSection('servicesData', nextState.servicesData);
+  };
+
+  const handleSaveAll = (isPublished = false) => {
+    const updatedState = {
+      ...formData,
+      versioning: {
+        ...formData.versioning,
+        status: isPublished ? 'Published' : 'Draft',
+        lastUpdated: new Date().toLocaleString()
+      }
+    };
+    persistChanges(updatedState);
+    setIsSaved(true);
+    showToast(isPublished ? 'Services Catalog Published Live!' : 'Draft Saved Successfully!', 'success');
+    setTimeout(() => setIsSaved(false), 2500);
+  };
+
+  const handleItemDelete = (listKey, id) => {
+    const list = [...formData[listKey]];
+    const updated = list.filter(item => item.id !== id);
+    persistChanges({ ...formData, [listKey]: updated });
+    showToast('Item removed', 'info');
+  };
+
+  const handleModalSave = (e) => {
+    e.preventDefault();
+    const { listKey, item } = modalConfig;
+    const list = [...formData[listKey]];
+
+    let updated;
+    if (item.id) {
+      updated = list.map(i => i.id === item.id ? item : i);
+    } else {
+      const newItem = {
+        ...item,
+        id: `${listKey.slice(0, 3)}-${Date.now()}`,
+        displayOrder: list.length + 1,
+        status: 'Active',
+        benefits: item.benefits || ["Feature benefit 1", "Feature benefit 2"],
+        process: item.process || ["Step 1 Analysis", "Step 2 Implementation"],
+        features: item.features || ["Core Feature 1", "Core Feature 2"]
+      };
+      updated = [...list, newItem];
+    }
+
+    persistChanges({ ...formData, [listKey]: updated });
+    setModalConfig(null);
+    showToast(item.id ? 'Item updated successfully!' : 'New item added!', 'success');
+  };
 
   return (
-    <div className="flex flex-col gap-6 text-left relative">
-      
-      {/* TOAST SYSTEM */}
-      {toast && (
-        <div className={`fixed top-5 right-5 z-[100] px-4 py-3 rounded-md shadow-lg border flex items-center gap-2.5 bg-zinc-955 border-luxury-gold/30 text-white font-sans`}>
-          <AlertCircle className="w-4 h-4 text-luxury-gold" />
-          <span className="text-xs font-semibold">{toast.message}</span>
-        </div>
-      )}
+    <div className="space-y-6 text-left">
+      <Toast toast={toast} onClose={() => setToast(null)} />
 
-      {/* CROP IMAGE MODAL */}
-      {showCropModal && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl w-[450px] text-zinc-100 flex flex-col gap-4 text-left shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-              <h3 className="font-serif text-sm font-semibold tracking-wider uppercase text-luxury-gold flex items-center gap-1.5">
-                <Settings className="w-4 h-4 animate-spin text-luxury-gold" /> Crop Vector Bounds
-              </h3>
-              <button onClick={() => setShowCropModal(false)} className="text-zinc-500 hover:text-white"><X className="w-4 h-4" /></button>
-            </div>
-            <div className="w-full h-40 border border-dashed border-luxury-gold/30 bg-zinc-955 rounded flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-4 border border-dashed border-white/10 flex items-center justify-center">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest text-center">1:1 Crop Canvas</span>
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 border-t border-zinc-850 pt-3">
-              <button onClick={() => setShowCropModal(false)} className="px-3 py-1.5 text-xs text-zinc-555 hover:text-white">Cancel</button>
-              <button 
-                onClick={() => {
-                  setShowCropModal(false);
-                  showToast("Image cropped successfully.");
-                }} 
-                className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded shadow-gold-glow"
-              >
-                Apply Crop Grid
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* LUXURY DELETE CONFIRMATION MODAL */}
-      {deletingItemId && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-[100] animate-fadeIn">
-          <div className="bg-zinc-900 border border-zinc-850 p-6 rounded-xl w-[380px] text-zinc-100 flex flex-col gap-4 text-left shadow-2xl border-t-2 border-t-rose-500">
-            <div className="flex items-center gap-2 text-rose-400 border-b border-zinc-800 pb-2">
-              <Trash2 className="w-4.5 h-4.5" />
-              <h3 className="font-serif text-xs font-bold uppercase tracking-wider">Confirm Permanent Delete</h3>
-            </div>
-            <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-              Are you sure you want to delete this record? This action will permanently remove it from the CMS database and public interfaces.
-            </p>
-            <div className="flex justify-end gap-2 border-t border-zinc-850 pt-3 mt-1">
-              <button onClick={() => { setDeletingItemId(null); setDeletingSection(null); }} className="px-3 py-1.5 text-xs text-zinc-550 hover:text-white">Cancel</button>
-              <button 
-                onClick={() => {
-                  const listData = deletingSection === 'services' ? (db.services || []) : (servicesPage[deletingSection] || []);
-                  const nextList = listData.filter(item => item.id !== deletingItemId);
-                  if (deletingSection === 'services') {
-                    updateSection('services', nextList);
-                  } else {
-                    updateSection('servicesPage', { [deletingSection]: nextList });
-                  }
-                  setDeletingItemId(null);
-                  setDeletingSection(null);
-                  showToast("Record successfully deleted.");
-                }} 
-                className="px-4 py-1.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-xs font-bold rounded"
-              >
-                Delete Record
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW DETAILS PREVIEW MODAL */}
-      {viewingItem && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-[100] animate-fadeIn p-4">
-          <div className="bg-zinc-900 border border-zinc-850 rounded-xl w-full max-w-lg text-zinc-100 flex flex-col gap-4 text-left shadow-2xl max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-zinc-800 p-5 pb-3">
-              <h3 className="font-serif text-sm font-bold uppercase tracking-wider text-luxury-gold flex items-center gap-1.5">
-                <Eye className="w-4.5 h-4.5" /> Service Record Details
-              </h3>
-              <button onClick={() => { setViewingItem(null); setViewingSection(null); }} className="text-zinc-500 hover:text-white"><X className="w-4.5 h-4.5" /></button>
-            </div>
-            <div className="p-5 pt-0 space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-4 border-b border-zinc-900/60 pb-3">
-                <div>
-                  <span className="text-[10px] text-zinc-550 block uppercase font-mono">Title</span>
-                  <span className="text-zinc-200 font-bold">{viewingItem.title || '-'}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-zinc-555 block uppercase font-mono">Tagline</span>
-                  <span className="text-zinc-350">{viewingItem.tagline || '-'}</span>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-zinc-550 block uppercase font-mono">Description</span>
-                <p className="text-zinc-300 leading-relaxed bg-zinc-950 p-2.5 rounded border border-zinc-900 font-sans mt-1">{viewingItem.description || viewingItem.overview || '-'}</p>
-              </div>
-
-              {viewingItem.features && (
-                <div>
-                  <span className="text-[10px] text-zinc-550 block uppercase font-mono mb-1.5">Accordion Features List</span>
-                  <div className="flex flex-col gap-1">
-                    {String(viewingItem.features).split(',').map((feat, idx) => (
-                      <span key={idx} className="p-1.5 bg-zinc-950/40 border border-zinc-900/60 rounded text-zinc-400 font-mono text-[10px]">&bull; {feat.trim()}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {viewingItem.benefits && (
-                <div>
-                  <span className="text-[10px] text-zinc-555 block uppercase font-mono mb-1.5">Benefits Highlights</span>
-                  <div className="flex flex-col gap-1">
-                    {String(viewingItem.benefits).split(',').map((ben, idx) => (
-                      <span key={idx} className="p-1.5 bg-zinc-950/40 border border-zinc-900/60 rounded text-zinc-400 font-sans">&bull; {ben.trim()}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {viewingItem.process && (
-                <div>
-                  <span className="text-[10px] text-zinc-555 block uppercase font-mono mb-1.5">Strategic Process Steps</span>
-                  <div className="flex flex-col gap-1">
-                    {String(viewingItem.process).split(',').map((step, idx) => (
-                      <span key={idx} className="p-1.5 bg-zinc-950/40 border border-zinc-900/60 rounded text-zinc-400 font-sans">{idx + 1}. {step.trim()}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="flex justify-end p-5 pt-2 border-t border-zinc-850">
-              <button onClick={() => { setViewingItem(null); setViewingSection(null); }} className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded">Close Preview</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* HEADER ACTION CONTROLS */}
-      <div className="border-b border-zinc-800/80 pb-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+      {/* Top Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-800/80">
         <div>
-          <h1 className="font-serif text-2xl font-medium tracking-wide text-zinc-100 flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-luxury-gold" />
-            Services CMS
-          </h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Configure accordion services list, advanced tabs overview, benefits, process stages, and categories.
+          <div className="flex items-center gap-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-luxury-gold shadow-gold-glow animate-pulse" />
+            <h1 className="text-2xl font-serif font-bold tracking-wide uppercase text-white">Services & Solutions Enterprise CMS</h1>
+          </div>
+          <p className="text-xs text-zinc-400 mt-1 font-mono">
+            Control Service Accordions, Comprehensive Solutions, Process Steps, Benefits & CTA Banner.
           </p>
         </div>
-        
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => { setExpandedCards(prev => ({...prev, catalog: true})); setActiveEditorSection('services'); setEditingItemId(null); setDraftItem({}); document.getElementById('catalog')?.scrollIntoView(); }} variant="primary" size="sm" className="bg-luxury-gold border-luxury-gold text-black font-bold">
-             <Plus className="w-4 h-4 mr-1.5" /> Add Service
+
+        <div className="flex items-center gap-2">
+          <Button onClick={() => handleSaveAll(false)} variant="outline" size="sm" className="text-xs uppercase tracking-wider">
+            Save Draft
           </Button>
-          <Button onClick={() => showToast("💾 Services Draft Saved Successfully!")} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-amber-500/90">
-            <Save className="w-3.5 h-3.5" /> <span>Save Draft</span>
-          </Button>
-          <Button onClick={() => { if(window.confirm("Reset unsaved changes?")) window.location.reload(); }} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-zinc-400 hover:text-rose-400">
-            <RefreshCw className="w-3.5 h-3.5" /> <span>Reset</span>
-          </Button>
-          <Button onClick={() => showToast("🚀 Public production server updated successfully. Page is Live!")} variant="primary" size="sm" className="gap-1.5 text-xs bg-gradient-to-r from-luxury-gold to-luxury-darkgold text-black font-bold shadow-gold-glow">
-            <span>Publish Live</span>
+          <Button onClick={() => handleSaveAll(true)} variant="gold" size="sm" className="text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5">
+            {isSaved ? <Check className="w-3.5 h-3.5 text-black" /> : <Save className="w-3.5 h-3.5" />}
+            {isSaved ? 'Published Live!' : 'Publish Page'}
           </Button>
         </div>
       </div>
 
-      {/* TOP FILTERS TOOLBAR */}
-      <div className="p-4 rounded-xl border border-zinc-900 bg-zinc-950/20 flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-5xl">
-        <div className="relative flex-1 min-w-[280px]">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-2.5" />
-          <input 
-            type="text" 
-            placeholder="Search service title, tagline, description..." 
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-zinc-900/60 border border-zinc-850 rounded-md pl-9 pr-4 py-2 text-xs text-zinc-200 focus:border-luxury-gold/30 outline-none"
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-mono text-zinc-500 uppercase">Status:</span>
-            <select 
-              value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value)}
-              className="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-300 outline-none"
-            >
-              <option value="all">All</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-          {(searchQuery || statusFilter !== 'all') && (
-            <button 
-              onClick={() => { setSearchQuery(''); setStatusFilter('all'); }} 
-              className="px-2.5 py-1 text-xs bg-zinc-900 hover:bg-zinc-800 text-zinc-400 rounded"
-            >
-              Clear
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* 5 DYNAMIC COLLAPSIBLE CARDS STACK */}
-      <div className="grid grid-cols-1 gap-4 max-w-5xl">
-        {sortedSections.map((sec, idx) => {
-          const SectionIcon = sec.icon;
-          const isCardOpen = expandedCards[sec.id];
-          const sectionMeta = sectionSettings[sec.id] || { order: idx + 1, status: "Active" };
-          const isActive = sectionMeta.status === "Active";
-
+      {/* 7 Architectural Tabs */}
+      <div className="flex items-center gap-1.5 border-b border-zinc-800/80 pb-3 overflow-x-auto scrollbar-none">
+        {[
+          { id: 'accordions', label: '1. Service Accordions', icon: Briefcase },
+          { id: 'content', label: '2. Page Content CMS', icon: Layers },
+          { id: 'media', label: 'Media Library', icon: ImageIcon },
+          { id: 'seo', label: 'SEO & Search', icon: Globe },
+          { id: 'visibility', label: 'Visibility & Access', icon: Eye },
+          { id: 'publish', label: 'Publish Settings', icon: Clock },
+          { id: 'preview', label: 'Live Preview', icon: Monitor }
+        ].map(tab => {
+          const IconComp = tab.icon;
           return (
-            <Card 
-              id={sec.id}
-              key={sec.id}
-              className={`border transition-all duration-300 p-0 overflow-hidden bg-zinc-955/20 ${isCardOpen ? 'border-zinc-800/80' : 'border-zinc-800/40'}`}
-              title={
-                <div className="flex items-center justify-between w-full py-4 px-5 select-none bg-zinc-955/20 cursor-pointer" onClick={() => toggleCard(sec.id)}>
-                  <div className="flex items-center gap-3 flex-1">
-                    <SectionIcon className={`w-4 h-4 ${isCardOpen ? 'text-luxury-gold' : 'text-zinc-500'}`} />
-                    <span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">
-                      {idx + 1}. {sec.label}
-                    </span>
-                    {!isActive && <Badge variant="secondary" className="scale-90 text-[9px] bg-zinc-900 border-zinc-800 text-zinc-500">Inactive</Badge>}
-                  </div>
-                  
-                  <div className="flex items-center pl-4" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => toggleCard(sec.id)} className="text-zinc-500 hover:text-zinc-300 p-1">
-                      {isCardOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-              }
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3.5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'bg-luxury-gold/10 text-luxury-gold border border-luxury-gold/30 shadow-[0_0_12px_rgba(212,175,55,0.05)]'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40'
+              }`}
             >
-              {isCardOpen && (
-                <div className="p-5 border-t border-zinc-800/80 bg-zinc-955/20 flex flex-col gap-4 animate-fadeIn">
-                  
-                  {/* INLINE SECTION LEVEL META CONFIG (SILENT CHANGES) */}
-                  <div className="p-3 mb-2 rounded border border-zinc-900 bg-zinc-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-405">Section Status:</span>
-                      <Switch 
-                        checked={isActive} 
-                        onChange={(checked) => updateSectionMeta(sec.id, 'status', checked ? 'Active' : 'Inactive')}
-                      />
-                      <span className="text-[10px] font-mono text-zinc-500">({isActive ? 'Visible on Website' : 'Hidden from Website'})</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-405">Display Order:</span>
-                      <input 
-                        type="number" 
-                        value={sectionMeta.order}
-                        onChange={e => updateSectionMeta(sec.id, 'order', parseInt(e.target.value) || 1)}
-                        className="w-12 bg-zinc-900 border border-zinc-850 rounded px-2 py-1 text-center text-xs font-semibold text-zinc-200 focus:border-luxury-gold/40 outline-none" 
-                      />
-                    </div>
-                  </div>
-
-                  {/* SECTION FIELDS */}
-                  {sec.id === 'hero' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Small Badge Header" value={heroForm.smallBadge || ''} onChange={e => setHeroForm({ ...heroForm, smallBadge: e.target.value })} />
-                        <Input label="Main Heading Title" value={heroForm.headline || ''} onChange={e => setHeroForm({ ...heroForm, headline: e.target.value })} />
-                        <Input label="Highlighted Word Tag" value={heroForm.highlightWord || ''} onChange={e => setHeroForm({ ...heroForm, highlightWord: e.target.value })} />
-                        <Input label="Heading Line 2 Tag" value={heroForm.titleLine2 || ''} onChange={e => setHeroForm({ ...heroForm, titleLine2: e.target.value })} />
-                        
-                        <div className="md:col-span-2">
-                          <Input label="Detailed Hero Description subtext" textarea rows={3} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} />
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('hero', heroForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Hero Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'catalog' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'services',
-                        rootKey: 'db',
-                        displayColumns: [
-                          { key: 'title', label: 'Service Title' },
-                          { key: 'tagline', label: 'Tagline' }
-                        ],
-                        fields: [
-                          { key: 'title', label: 'Service Title', type: 'text' },
-                          { key: 'tagline', label: 'Subtitle Tagline', type: 'text' },
-                          { key: 'icon', label: 'Icon String (e.g. Cpu, Box)', type: 'text' },
-                          { key: 'accentColor', label: 'Accent Color (e.g. #D4AF37)', type: 'text' },
-                          { key: 'description', label: 'Short Description (Accordion)', type: 'textarea' },
-                          { key: 'features', label: 'Features Array (Comma separated string)', type: 'textarea' },
-                          { key: 'overview', label: 'Advanced Overview Paragraph', type: 'textarea' },
-                          { key: 'benefits', label: 'Advanced Benefits (Comma separated string)', type: 'textarea' },
-                          { key: 'process', label: 'Process Steps (Comma separated string)', type: 'textarea' },
-                          { key: 'gallery', label: 'Gallery Images', type: 'gallery' },
-                          { key: 'ctaText', label: 'CTA Button Text', type: 'text' },
-                          { key: 'ctaUrl', label: 'CTA Button URL', type: 'text' },
-                          { key: 'displayOrder', label: 'Sorting Order Number', type: 'number' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'statistics' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'statistics',
-                        displayColumns: [
-                          { key: 'label', label: 'Statistic Label' },
-                          { key: 'value', label: 'Value (e.g. 10M+)' }
-                        ],
-                        fields: [
-                          { key: 'label', label: 'Statistic Label (e.g. Students)', type: 'text' },
-                          { key: 'value', label: 'Statistic Value (e.g. 2M+)', type: 'text' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'testimonials' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'testimonials',
-                        displayColumns: [
-                          { key: 'author', label: 'Author Name' },
-                          { key: 'role', label: 'Designation' }
-                        ],
-                        fields: [
-                          { key: 'author', label: 'Author Name', type: 'text' },
-                          { key: 'role', label: 'Designation/Company', type: 'text' },
-                          { key: 'quote', label: 'Testimonial Quote', type: 'textarea' },
-                          { key: 'image', label: 'Profile Image', type: 'upload' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'faqs' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'faqs',
-                        displayColumns: [
-                          { key: 'question', label: 'Question' }
-                        ],
-                        fields: [
-                          { key: 'question', label: 'Question Text', type: 'text' },
-                          { key: 'answer', label: 'Answer Text', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'cta' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Heading" value={ctaForm.heading || ''} onChange={e => setCtaForm({ ...ctaForm, heading: e.target.value })} />
-                        <Input label="Subtext" value={ctaForm.subtext || ''} onChange={e => setCtaForm({ ...ctaForm, subtext: e.target.value })} />
-                        <Input label="Button Text" value={ctaForm.buttonText || ''} onChange={e => setCtaForm({ ...ctaForm, buttonText: e.target.value })} />
-                        <Input label="Button URL" value={ctaForm.buttonUrl || ''} onChange={e => setCtaForm({ ...ctaForm, buttonUrl: e.target.value })} />
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('cta', ctaForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save CTA Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'seo' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="SEO Meta Title" value={seoForm.metaTitle || ''} onChange={e => setSeoForm({ ...seoForm, metaTitle: e.target.value })} />
-                        <Input label="SEO Meta Keywords" value={seoForm.metaKeywords || ''} onChange={e => setSeoForm({ ...seoForm, metaKeywords: e.target.value })} placeholder="Services, keynotes, masterclasses" />
-                        <div className="md:col-span-2">
-                          <Input label="SEO Meta Description Content" textarea rows={2} value={seoForm.metaDescription || ''} onChange={e => setSeoForm({ ...seoForm, metaDescription: e.target.value })} />
-                        </div>
-                        <div className="md:col-span-2">
-                          {renderMediaUpload("OG Social Share Graphics Card", seoForm.ogImageUrl, "ogImageUrl")}
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('seo', seoForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save SEO Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              )}
-            </Card>
+              <IconComp className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
           );
         })}
       </div>
 
-      {/* FINAL STATUS BAR FOOTER */}
-      <div className="flex items-center justify-end p-4 border border-zinc-900 bg-zinc-955/20 rounded-lg max-w-5xl">
-        <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
-          <ShieldCheck className="w-4 h-4" />
-          <span>Services CMS dashboard framework running securely.</span>
-        </div>
-      </div>
+      {/* TAB 1: SERVICE ACCORDIONS */}
+      {activeTab === 'accordions' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Service Accordion Cards ({formData.servicesData.length})</h3>
+            <Button 
+              onClick={() => setModalConfig({ listKey: 'servicesData', item: { icon: 'Cpu', title: '', tagline: '', description: '', overview: '', accentColor: '#D4AF37' } })} 
+              variant="gold" 
+              size="sm" 
+              className="text-xs uppercase"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" /> Add Service Card
+            </Button>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {formData.servicesData.map((srv, idx) => (
+              <div key={srv.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-3">
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                  <span className="font-mono text-[10px] text-luxury-gold uppercase font-bold">Service 0{idx + 1}</span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => setModalConfig({ listKey: 'servicesData', item: srv })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleItemDelete('servicesData', srv.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                </div>
+
+                <h4 className="font-serif font-bold text-white text-base">{srv.title}</h4>
+                {srv.tagline && <span className="text-zinc-400 font-mono text-[10px] uppercase block">{srv.tagline}</span>}
+                <p className="text-zinc-400 font-light text-xs leading-relaxed">{srv.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: PAGE CONTENT */}
+      {activeTab === 'content' && (
+        <div className="space-y-6 text-xs">
+          {/* Sub-Navigation */}
+          <div className="flex items-center gap-2 bg-zinc-900/60 p-1.5 rounded-xl border border-zinc-800/80 w-fit overflow-x-auto">
+            {[
+              { id: 'hero', label: '1. Hero Header' },
+              { id: 'solutions', label: '2. Comprehensive Solutions Header' },
+              { id: 'cta', label: '3. CTA Section' }
+            ].map(sub => (
+              <button
+                key={sub.id}
+                onClick={() => setContentSubTab(sub.id)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  contentSubTab === sub.id
+                    ? 'bg-luxury-gold text-black font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)]'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
+
+          {/* SUB-TAB 1: HERO HEADER */}
+          {contentSubTab === 'hero' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Services Hero Banner</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+                  <input
+                    type="text"
+                    value={formData.servicesPageData.hero.badge}
+                    onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, hero: { ...formData.servicesPageData.hero, badge: e.target.value } } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Title Main Text</label>
+                    <input
+                      type="text"
+                      value={formData.servicesPageData.hero.title}
+                      onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, hero: { ...formData.servicesPageData.hero, title: e.target.value } } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Highlight Text (Gold Italic)</label>
+                    <input
+                      type="text"
+                      value={formData.servicesPageData.hero.highlightText}
+                      onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, hero: { ...formData.servicesPageData.hero, highlightText: e.target.value } } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-serif italic font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Description</label>
+                  <textarea
+                    rows={3}
+                    value={formData.servicesPageData.hero.description}
+                    onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, hero: { ...formData.servicesPageData.hero, description: e.target.value } } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 2: COMPREHENSIVE SOLUTIONS HEADER */}
+          {contentSubTab === 'solutions' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Comprehensive Solutions Header</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+                  <input
+                    type="text"
+                    value={formData.servicesPageData.expertise.badge}
+                    onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, expertise: { ...formData.servicesPageData.expertise, badge: e.target.value } } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Title Main Text</label>
+                  <input
+                    type="text"
+                    value={formData.servicesPageData.expertise.title}
+                    onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, expertise: { ...formData.servicesPageData.expertise, title: e.target.value } } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Highlight Word</label>
+                  <input
+                    type="text"
+                    value={formData.servicesPageData.expertise.highlightText}
+                    onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, expertise: { ...formData.servicesPageData.expertise, highlightText: e.target.value } } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-serif italic font-bold"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 3: CTA SECTION */}
+          {contentSubTab === 'cta' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">CTA Banner Section CMS</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Heading</label>
+                  <input
+                    type="text"
+                    value={formData.servicesPageData.cta.heading}
+                    onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, cta: { ...formData.servicesPageData.cta, heading: e.target.value } } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Subtext / Description</label>
+                  <textarea
+                    rows={2}
+                    value={formData.servicesPageData.cta.subtext}
+                    onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, cta: { ...formData.servicesPageData.cta, subtext: e.target.value } } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Button Text</label>
+                    <input
+                      type="text"
+                      value={formData.servicesPageData.cta.buttonText}
+                      onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, cta: { ...formData.servicesPageData.cta, buttonText: e.target.value } } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Button Link</label>
+                    <input
+                      type="text"
+                      value={formData.servicesPageData.cta.buttonUrl}
+                      onChange={(e) => persistChanges({ ...formData, servicesPageData: { ...formData.servicesPageData, cta: { ...formData.servicesPageData.cta, buttonUrl: e.target.value } } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: LIVE PREVIEW */}
+      {activeTab === 'preview' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-3 bg-zinc-950/80 border border-zinc-800 p-2 rounded-xl">
+            <button onClick={() => setPreviewMode('desktop')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'desktop' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Monitor className="w-3.5 h-3.5" /> Desktop (1440px)
+            </button>
+            <button onClick={() => setPreviewMode('tablet')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'tablet' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Tablet className="w-3.5 h-3.5" /> Tablet (768px)
+            </button>
+            <button onClick={() => setPreviewMode('mobile')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'mobile' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Smartphone className="w-3.5 h-3.5" /> Mobile (375px)
+            </button>
+          </div>
+
+          <div className="flex justify-center bg-black/90 p-4 rounded-2xl border border-zinc-800 min-h-[500px]">
+            <div className={`bg-black transition-all duration-300 border border-zinc-800 rounded-xl overflow-hidden ${
+              previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
+            }`}>
+              <iframe
+                src="http://localhost:5173/services"
+                title="Live Preview Services"
+                className="w-full h-[600px] border-none"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE / EDIT MODAL */}
+      {modalConfig && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <form onSubmit={handleModalSave} className="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">
+                {modalConfig.item.id ? 'Edit Item' : 'Add New Item'}
+              </h3>
+              <button type="button" onClick={() => setModalConfig(null)} className="text-zinc-500 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              {Object.keys(modalConfig.item).filter(k => !['id', 'displayOrder', 'status', 'deleted', 'benefits', 'process', 'features'].includes(k)).map(key => (
+                <div key={key}>
+                  <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
+                  <input
+                    type="text"
+                    value={modalConfig.item[key] || ''}
+                    onChange={(e) => setModalConfig({
+                      ...modalConfig,
+                      item: { ...modalConfig.item, [key]: e.target.value }
+                    })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <Button type="button" variant="outline" size="sm" onClick={() => setModalConfig(null)}>Cancel</Button>
+              <Button type="submit" variant="gold" size="sm">Save Item</Button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
-}
+};

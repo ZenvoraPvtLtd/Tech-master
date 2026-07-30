@@ -42,6 +42,7 @@ interface DataContextType {
   websiteSettings: any;
   coreServicesConfig: any;
   refreshData: () => Promise<void>;
+  updateSection?: (key: string, data: any) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -93,7 +94,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const CMS_API_URL = `${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}/cms`;
 
   const applyCmsDataToState = useCallback((db: any) => {
-    db = normalizeCmsMedia(db);
+    let localDb = {};
+    try {
+      const saved = localStorage.getItem('zenvora_db');
+      if (saved) localDb = JSON.parse(saved);
+    } catch (e) {}
+
+    const mergedDb = { ...localDb, ...db };
+    db = normalizeCmsMedia(mergedDb);
     setDbData(db);
     setIsBackendConnected(true);
 

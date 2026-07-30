@@ -11,18 +11,32 @@ export const Contact: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const emailVal = dbData?.contactInfoSetup?.email || "";
-  const phoneVal = dbData?.contactInfoSetup?.phone || "";
-  const addressVal = dbData?.contactInfoSetup?.address || dbData?.contactInfoSetup?.locationTitle || "";
-  const whatsappNumber = dbData?.contactWhatsAppSetup?.number || phoneVal.replace(/[^0-9+]/g, "");
+  let localDb: any = {};
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) localDb = JSON.parse(saved);
+  } catch (e) {}
 
-  const socialsList = dbData?.contactSocialLinksSetup && dbData.contactSocialLinksSetup.length > 0
-    ? dbData.contactSocialLinksSetup.filter((s: any) => s.status !== false)
-    : [];
+  const rawData = dbData?.contactPageData || localDb?.contactPageData || {};
 
-  const inquiryTypes = dbData?.contactCategoriesSetup && dbData.contactCategoriesSetup.length > 0
-    ? dbData.contactCategoriesSetup.filter((c: any) => c.status !== false).map((c: any) => ({ value: c.value, label: c.name }))
-    : [];
+  const contactHero = rawData.hero || { badge: "DIRECT PORTAL", heading: "Connect &", highlightHeading: "Launch Collaborations" };
+  const contactInfo = rawData.info || { email: "aman@techmaster.com", phone: "+91 98765 43210", whatsapp: "919876543210", address: "TechMaster HQ, Silicon Valley" };
+  const mapData = rawData.map || { url: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808580700d987b51%3A0xcb13e9a7e02e60f0!2sSilicon%20Valley!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus" };
+  
+  const emailVal = contactInfo.email;
+  const phoneVal = contactInfo.phone;
+  const addressVal = contactInfo.address;
+  const whatsappNumber = contactInfo.whatsapp;
+
+  const socialsList = rawData.socials || [
+    { platform: "Instagram", handle: "@aman_techmaster", url: "https://instagram.com" },
+    { platform: "LinkedIn", handle: "/in/aman-tech", url: "https://linkedin.com" }
+  ];
+
+  const inquiryTypes = rawData.categories || [
+    { label: "Business Inquiry", value: "business" },
+    { label: "Brand Collaboration", value: "collab" }
+  ];
 
   const [formData, setFormData] = useState({
     name: "",
@@ -71,12 +85,12 @@ export const Contact: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="typo-badge mb-4"
         >
-          DIRECT PORTAL
+          {contactHero.badge}
         </motion.div>
         
         <h1 className="typo-h1 mb-8">
-          Connect & <br />
-          <span className="text-gold italic font-bold">Launch Collaborations</span>.
+          {contactHero.heading} <br />
+          <span className="text-gold italic font-bold">{contactHero.highlightHeading}</span>.
         </h1>
       </section>
 
@@ -155,7 +169,7 @@ export const Contact: React.FC = () => {
             <h4 className="font-serif text-sm font-bold text-white mb-4 uppercase tracking-[2px]">Location Map</h4>
             <div className="relative rounded-2xl overflow-hidden border border-white/5 bg-white/[0.01] p-2">
               <iframe 
-                src={dbData?.contactMapSetupData?.url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808580700d987b51%3A0xcb13e9a7e02e60f0!2sSilicon%20Valley!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus"}
+                src={mapData.url}
                 width="100%" 
                 height="220" 
                 style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) grayscale(100%) contrast(90%)" }} 

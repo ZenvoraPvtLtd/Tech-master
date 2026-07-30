@@ -1,689 +1,722 @@
 import React, { useState } from 'react';
-import { useMediaManager } from "../../context/MediaContext";
 import { useDatabase } from '../../context/DatabaseContext';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Switch } from '../../components/ui/Switch';
-import { Badge } from '../../components/ui/Badge';
-import { Input } from '../../components/ui/Input';
+import { useMediaManager } from '../../context/MediaContext';
 import { 
-  Target, Eye, Save, RefreshCw, ChevronDown, ChevronRight, 
-  Edit3, Trash2, ArrowUp, ArrowDown, X, UploadCloud, 
-  Link as LinkIcon, AlertCircle, Settings, Plus, Milestone, 
-  Compass, Lightbulb, Globe, ShieldCheck
+  Target, Eye, Check, Save, Plus, Trash2, Edit3, EyeOff, 
+  Layers, Globe, Monitor, Tablet, Smartphone, Clock, ImageIcon, X, ShieldCheck, Sparkles, Compass, Award, Flag
 } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { Toast } from '../../components/ui/Toast';
 
 export const MissionVision = () => {
-  const { db, updateSection } = useDatabase();
-  const mvData = db?.missionVision || {};
-
-  // Collapsible cards state
-  const [expandedCards, setExpandedCards] = useState({
-    hero: true,
-    mission: false,
-    vision: false,
-    coreValues: false,
-    brandPillars: false,
-    roadmap: false,
-    cta: false,
-    seo: false
-  });
-
-  const toggleCard = (cardId) => {
-    setExpandedCards(prev => ({ ...prev, [cardId]: !prev[cardId] }));
-  };
-
-  // Toast state (only for critical saves, toggles are silent)
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  // Single Forms State
-  const [heroForm, setHeroForm] = useState(mvData?.hero || {});
-  const [missionForm, setMissionForm] = useState(mvData?.mission || {});
-  const [visionForm, setVisionForm] = useState(mvData?.vision || {});
-  const [ctaForm, setCtaForm] = useState(mvData?.cta || {});
-  const [seoForm, setSeoForm] = useState(mvData?.seo || {});
-
-  // List editor states
-  const [activeEditorSection, setActiveEditorSection] = useState(null); 
-  const [editingItemId, setEditingItemId] = useState(null);
-  const [draftItem, setDraftItem] = useState({});
-
-  // Media uploading state
-  const [uploadingField, setUploadingField] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showCropModal, setShowCropModal] = useState(false);
-  const [cropTargetField, setCropTargetField] = useState(null);
-
+  const { db, updateSection, apiFetch } = useDatabase();
   const { openMediaManager } = useMediaManager();
-  const simulateMediaUpload = (targetKey, isObjectForm = false, objectSetter = null) => {
-    openMediaManager({
-      onSelect: (url) => {
-        if (activeEditorSection) {
-          setDraftItem(prev => ({ ...prev, [targetKey]: url }));
-        } else {
-          setHeroForm(prev => (targetKey in prev ? { ...prev, [targetKey]: url } : prev));
-          setMissionForm(prev => (targetKey in prev ? { ...prev, [targetKey]: url } : prev));
-          setVisionForm(prev => (targetKey in prev ? { ...prev, [targetKey]: url } : prev));
-          setSeoForm(prev => (targetKey in prev || ['ogImageUrl'].includes(targetKey) ? { ...prev, [targetKey]: url } : prev));
-        }
-      }
-    });
+
+  const [activeTab, setActiveTab] = useState('content'); // overview, content, media, seo, visibility, publish, preview
+  const [contentSubTab, setContentSubTab] = useState('hero'); // hero, mission_vision, core_values, pillars, roadmap, cta
+  const [previewMode, setPreviewMode] = useState('desktop');
+  const [toast, setToast] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [modalConfig, setModalConfig] = useState(null);
+
+  // Default pre-populated production values
+  const defaultMissionVisionCMS = {
+    hero: {
+      badge: "OUR NORTH STAR",
+      headingLine1: "Democratizing",
+      highlightText: "Tech Literacy",
+      headingLine2: "Globally",
+      description: "We believe high-quality engineering curricula shouldn't be locked behind expensive student debts. Aman is building the tools to make code accessible to every curious mind on earth.",
+      bgImageUrl: "",
+      bgVideoUrl: "",
+      visible: true
+    },
+    mission: {
+      label: "THE MISSION STATEMENT",
+      title: "To inspire, educate, and place the next million full-stack developers.",
+      description: "Our target is to break down complex system design systems, database architectures, and compiler dynamics into engaging, cinematic formats. We enable students to transition seamlessly from beginners to self-sufficient contributors.",
+      accentColor: "#D4AF37",
+      visible: true
+    },
+    vision: {
+      label: "THE FUTURE VISION",
+      title: "Vision 2030: Bridging the global developer deficit.",
+      description: "Technology evolves at a rapid pace, yet university syllabi remain outdated. We are constructing an open, adaptive, cloud-native learning playground that responds directly to modern tech requirements.",
+      accentColor: "#00E5FF",
+      visible: true
+    },
+    coreValuesHeader: {
+      badge: "OUR FUNDAMENTAL PRINCIPLES",
+      titleLine1: "The Values that",
+      titleLine2: "Drive Us",
+      titleLine3: "Forward",
+      description: "The core philosophy that guides every tutorial, sandbox, and curriculum line."
+    },
+    coreValues: [
+      { id: "cv-1", title: "Cinematic Pedagogy", description: "Translating dry software engineering documentation into visual 3D storytelling.", accentColor: "#D4AF37", order: 1, status: "Active" },
+      { id: "cv-2", title: "Open Source Ethos", description: "Empowering developers to build in public and contribute to core frameworks.", accentColor: "#00E5FF", order: 2, status: "Active" },
+      { id: "cv-3", title: "Industry Alignment", description: "Curricula designed directly by senior principal engineers from tier-1 tech companies.", accentColor: "#aa3bff", order: 3, status: "Active" },
+      { id: "cv-4", title: "Self-Sustaining Autonomy", description: "Teaching problem-solving blueprints rather than just copy-pasting code snippets.", accentColor: "#FF007F", order: 4, status: "Active" }
+    ],
+    brandPillarsHeader: {
+      badge: "OUR PILLARS",
+      titleLine1: "The",
+      titleLine2: "Foundation",
+      titleLine3: "of Our Work"
+    },
+    brandPillars: [
+      { id: "pil-1", title: "Full-Stack Architecture", subtitle: "Next.js • Node.js • Distributed Systems", description: "Comprehensive coverage from browser rendering loops down to database sharding.", borderColor: "#D4AF37", order: 1, status: "Active" },
+      { id: "pil-2", title: "Interactive Sandboxes", subtitle: "Cloud-Native Playground", description: "Zero-config, browser-based container environments for instant code execution.", borderColor: "#00E5FF", order: 2, status: "Active" },
+      { id: "pil-3", title: "Career Placement Engine", subtitle: "Direct Partner Referrals", description: "Connecting top 1% graduates directly with high-growth venture-backed startups.", borderColor: "#aa3bff", order: 3, status: "Active" },
+      { id: "pil-4", title: "Creator Ecosystem", subtitle: "Multiverse Content Channels", description: "Syndicating short-form breakdowns and documentaries across 5 core channels.", borderColor: "#FF007F", order: 4, status: "Active" }
+    ],
+    roadmapHeader: {
+      badge: "STRATEGIC ROADMAP",
+      titleLine1: "Our",
+      titleLine2: "Roadmap to 2030",
+      description: "Hover to Pause Timeline"
+    },
+    roadmap: [
+      { id: "rm-1", year: "2024", quarter: "Q1", title: "Studio Suite Launch", goal: "JAIPUR HEADQUARTERS", description: "Established 4K multi-cam production suite & 3D render pipeline.", status: "Completed", accentColor: "#D4AF37", order: 1 },
+      { id: "rm-2", year: "2025", quarter: "Q2", title: "Next Univerz Sandbox", goal: "WEB DEV PLAYGROUND", description: "Launched browser-based interactive terminal & code compiler sandbox.", status: "Active", accentColor: "#00E5FF", order: 2 },
+      { id: "rm-3", year: "2026", quarter: "Q3", title: "Multiverse 5M Sub", goal: "GLOBAL AUDIENCE", description: "Expanding developer reach across 5 dedicated YouTube & IG channels.", status: "In Progress", accentColor: "#aa3bff", order: 3 },
+      { id: "rm-4", year: "2030", quarter: "Q4", title: "Open Tech University", goal: "DECENTRALIZED DEGREE", description: "Accredited open engineering diploma recognized by global tech giants.", status: "Planning", accentColor: "#FF007F", order: 4 }
+    ],
+    cta: {
+      heading: "Ready to Build Your Engineering Career?",
+      description: "Join thousands of developers in our interactive sandbox playgrounds and master production-ready code.",
+      primaryButtonText: "Get Started",
+      primaryButtonLink: "/signup",
+      secondaryButtonText: "Contact Admissions",
+      secondaryButtonLink: "/contact",
+      backgroundGradient: "linear-gradient(to right, #0a0a0a, #141414)",
+      visible: true
+    },
+    seo: {
+      metaTitle: "Mission & Vision | TechMaster",
+      metaDescription: "Explore TechMaster's core mission to democratize technology education globally by 2030.",
+      canonicalUrl: "https://techmaster.in/mission",
+      ogImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200"
+    },
+    visibility: {
+      desktop: true,
+      tablet: true,
+      mobile: true,
+      published: true
+    },
+    versioning: {
+      status: "Published",
+      lastUpdated: "Today",
+      updatedBy: "Super Admin"
+    }
   };
 
-  const handleSingleSave = (sectionKey, data) => {
-    updateSection('missionVision', { [sectionKey]: data });
-    showToast(`${sectionKey.toUpperCase()} section parameters updated successfully.`);
-  };
+  const storedCMS = db?.missionVisionData || db?.missionCMS || db?.mission_vision || defaultMissionVisionCMS;
 
-  const updateSectionMeta = (secId, key, val) => {
-    const currentSettings = mvData.sectionSettings || {};
-    const updatedSettings = {
-      ...currentSettings,
-      [secId]: {
-        ...(currentSettings[secId] || { order: 1, status: "Active" }),
-        [key]: val
-      }
-    };
-    updateSection('missionVision', { sectionSettings: updatedSettings });
-    // Silent update, no toast notifications popped up!
-  };
-
-  // Reusable Media Upload Component
-  const renderMediaUpload = (label, value, fieldKey, isOptional = false) => {
-    return (
-      <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-2 text-left">
-        <div className="flex items-center justify-between">
-          <span className="text-[9px] font-mono text-zinc-555 block uppercase">{label} {isOptional && <span className="text-zinc-650">(Optional)</span>}</span>
-          {value && (
-            <button 
-              type="button"
-              onClick={() => {
-                setCropTargetField(fieldKey);
-                setShowCropModal(true);
-              }}
-              className="text-[9px] uppercase tracking-wider text-luxury-gold hover:underline flex items-center gap-1"
-            >
-              <Settings className="w-2.5 h-2.5" /> Crop Image
-            </button>
-          )}
-        </div>
-        
-        {value ? (
-          <div className="relative w-full h-24 bg-zinc-955 border border-zinc-800 rounded overflow-hidden flex items-center justify-center">
-            <img src={value} className="w-full h-full object-cover" />
-            <div className="absolute bottom-1 right-1 flex items-center gap-1">
-              <button 
-                onClick={() => simulateMediaUpload(fieldKey)} 
-                className="p-1 bg-black/60 rounded text-luxury-gold hover:text-white"
-                title="Replace Image"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-              <button 
-                onClick={() => {
-                  if (activeEditorSection) {
-                    setDraftItem(prev => ({ ...prev, [fieldKey]: "" }));
-                  } else {
-                    setHeroForm(prev => (fieldKey in prev ? { ...prev, [fieldKey]: "" } : prev));
-                    setMissionForm(prev => (fieldKey in prev ? { ...prev, [fieldKey]: "" } : prev));
-                    setVisionForm(prev => (fieldKey in prev ? { ...prev, [fieldKey]: "" } : prev));
-                    setSeoForm(prev => (fieldKey in prev ? { ...prev, [fieldKey]: "" } : prev));
-                  }
-                  showToast("Image removed.");
-                }} 
-                className="p-1 bg-black/60 rounded text-rose-400 hover:text-white"
-                title="Remove Image"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div 
-            onClick={() => simulateMediaUpload(fieldKey)} 
-            onDragOver={e => e.preventDefault()}
-            onDrop={e => { e.preventDefault(); simulateMediaUpload(fieldKey); }}
-            className="h-24 border border-dashed border-zinc-850 hover:border-luxury-gold/30 rounded flex flex-col items-center justify-center gap-1 text-zinc-655 cursor-pointer transition-all"
-          >
-            {uploadingField === fieldKey ? (
-              <div className="flex flex-col items-center gap-1 animate-pulse">
-                <RefreshCw className="w-4 h-4 animate-spin text-luxury-gold" />
-                <span className="text-[8px] font-mono">{uploadProgress}%</span>
-              </div>
-            ) : (
-              <>
-                <UploadCloud className="w-4 h-4" />
-                <span className="text-[8px] uppercase font-mono tracking-wider">Drag & Drop or Click</span>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // --- REUSABLE LIST MANAGER ---
-  const renderListManager = ({
-    sectionKey,
-    fields = [],
-    displayColumns = [],
-    maxItems = 99
-  }) => {
-    const listData = mvData[sectionKey] || [];
-    const isEditing = activeEditorSection === sectionKey;
-
-    const handleSaveItem = () => {
-      let nextList = [];
-      if (editingItemId) {
-        nextList = listData.map(item => item.id === editingItemId ? { ...item, ...draftItem } : item);
-        showToast("Item updated successfully.");
-      } else {
-        if (listData.length >= maxItems) {
-          showToast(`Maximum limit of ${maxItems} items reached.`, 'error');
-          return;
-        }
-        const newItem = { ...draftItem, id: `item-${Date.now()}`, status: draftItem.status || 'Active', order: listData.length + 1 };
-        nextList = [...listData, newItem];
-        showToast("New item created.");
-      }
-      updateSection('missionVision', { [sectionKey]: nextList });
-      setActiveEditorSection(null);
-      setEditingItemId(null);
-      setDraftItem({});
-    };
-
-    const handleDeleteItem = (id) => {
-      if (window.confirm("Are you sure you want to delete this item?")) {
-        const nextList = listData.filter(item => item.id !== id);
-        updateSection('missionVision', { [sectionKey]: nextList });
-        showToast("Item deleted.");
-      }
-    };
-
-    const handleToggleStatus = (id, currentStatus) => {
-      const nextList = listData.map(item => item.id === id ? { ...item, status: currentStatus === 'Active' ? 'Inactive' : 'Active' } : item);
-      updateSection('missionVision', { [sectionKey]: nextList });
-      // Silent update on toggle switch, no notifications popped up!
-    };
-
-    const handleMoveItem = (index, direction) => {
-      const nextList = [...listData];
-      const target = index + direction;
-      if (target >= 0 && target < nextList.length) {
-        const temp = nextList[index];
-        nextList[index] = nextList[target];
-        nextList[target] = temp;
-        updateSection('missionVision', { [sectionKey]: nextList });
-      }
-    };
-
-    const handleStartAdd = () => {
-      setActiveEditorSection(sectionKey);
-      setEditingItemId(null);
-      const defaultObj = {};
-      fields.forEach(f => {
-        defaultObj[f.key] = f.type === 'number' ? 0 : f.type === 'switch' ? false : '';
-      });
-      setDraftItem(defaultObj);
-    };
-
-    const handleStartEdit = (item) => {
-      setActiveEditorSection(sectionKey);
-      setEditingItemId(item.id);
-      setDraftItem({ ...item });
-    };
-
-    return (
-      <div className="flex flex-col gap-4 text-left">
-        {!isEditing && (
-          <div className="flex flex-col gap-3">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-zinc-900 text-zinc-555 font-mono uppercase text-[9px] tracking-wider">
-                    <th className="py-2 px-3">Order</th>
-                    {displayColumns.map(col => (
-                      <th key={col.key} className="py-2 px-3">{col.label}</th>
-                    ))}
-                    <th className="py-2 px-3 text-center">Status</th>
-                    <th className="py-2 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listData.map((item, idx) => (
-                    <tr key={item.id || idx} className="border-b border-zinc-900/60 hover:bg-zinc-900/10 text-zinc-300">
-                      <td className="py-2.5 px-3 font-mono">{idx + 1}</td>
-                      {displayColumns.map(col => (
-                        <td key={col.key} className="py-2.5 px-3 max-w-[180px] truncate">
-                          {col.type === 'image' ? (
-                            item[col.key] ? (
-                              <div className="w-8 h-8 rounded border border-zinc-800 bg-zinc-955 flex items-center justify-center overflow-hidden">
-                                <img src={item[col.key]} className="w-full h-full object-cover" />
-                              </div>
-                            ) : '-'
-                          ) : item[col.key] || '-'}
-                        </td>
-                      ))}
-                      <td className="py-2.5 px-3 text-center">
-                        <Switch 
-                          checked={item.status === 'Active'} 
-                          onChange={() => handleToggleStatus(item.id, item.status)}
-                        />
-                      </td>
-                      <td className="py-2.5 px-3 text-right flex items-center justify-end gap-1.5 mt-0.5">
-                        <button onClick={() => handleMoveItem(idx, -1)} disabled={idx === 0} className="p-1 hover:bg-zinc-900 rounded disabled:opacity-30"><ArrowUp className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleMoveItem(idx, 1)} disabled={idx === listData.length - 1} className="p-1 hover:bg-zinc-900 rounded disabled:opacity-30"><ArrowDown className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleStartEdit(item)} className="p-1 hover:bg-zinc-900 rounded text-amber-500"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleDeleteItem(item.id)} className="p-1 hover:bg-zinc-900 rounded text-rose-500"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </td>
-                    </tr>
-                  ))}
-                  {listData.length === 0 && (
-                    <tr>
-                      <td colSpan={displayColumns.length + 3} className="text-center py-6 text-zinc-655 font-mono italic">No records stored inside database.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            {listData.length < maxItems && (
-              <div>
-                <Button onClick={handleStartAdd} variant="secondary" size="sm" className="gap-1 text-xs border border-zinc-800 text-luxury-gold">
-                  <Plus className="w-3.5 h-3.5" /> <span>Add Row Item</span>
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {isEditing && (
-          <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-3">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-luxury-gold block border-b border-zinc-900 pb-1.5">
-              {editingItemId ? "Edit Record Item" : "Create New Record"}
-            </span>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {fields.map(field => {
-                if (field.type === 'textarea') {
-                  return (
-                    <div key={field.key} className="md:col-span-2">
-                      <Input 
-                        label={field.label} 
-                        textarea 
-                        rows={3} 
-                        value={draftItem[field.key] || ''} 
-                        onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} 
-                      />
-                    </div>
-                  );
-                }
-                if (field.type === 'upload') {
-                  return (
-                    <div key={field.key}>
-                      {renderMediaUpload(field.label, draftItem[field.key], field.key, field.optional)}
-                    </div>
-                  );
-                }
-                if (field.type === 'switch') {
-                  return (
-                    <div key={field.key} className="p-3 bg-zinc-900/30 border border-zinc-900 rounded flex items-center justify-between">
-                      <span className="text-xs font-semibold text-zinc-400">{field.label}</span>
-                      <Switch checked={draftItem[field.key] || false} onChange={val => setDraftItem({ ...draftItem, [field.key]: val })} />
-                    </div>
-                  );
-                }
-                if (field.type === 'select') {
-                  return (
-                    <div key={field.key} className="flex flex-col gap-1.5 text-left">
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{field.label}</label>
-                      <select 
-                        className="bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-zinc-200 outline-none focus:border-luxury-gold/30" 
-                        value={draftItem[field.key] || field.options[0]} 
-                        onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })}
-                      >
-                        {field.options.map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                }
-                return (
-                  <Input 
-                    key={field.key}
-                    label={field.label} 
-                    type={field.type || 'text'} 
-                    value={draftItem[field.key] || ''} 
-                    onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} 
-                  />
-                );
-              })}
-            </div>
-
-            <div className="flex justify-end gap-2 border-t border-zinc-900/60 pt-2.5">
-              <button onClick={() => { setActiveEditorSection(null); setEditingItemId(null); setDraftItem({}); }} className="px-3 py-1.5 text-xs text-zinc-555 hover:text-white">Cancel</button>
-              <button onClick={handleSaveItem} className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded">Save Record</button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Fixed 8 segments definitions
-  const sectionsList = [
-    { id: "hero", label: "Hero Banner", icon: Target },
-    { id: "mission", label: "Mission Core", icon: Compass },
-    { id: "vision", label: "Vision Core", icon: Eye },
-    { id: "coreValues", label: "Core Values", icon: Lightbulb },
-    { id: "brandPillars", label: "Brand Pillars", icon: Milestone },
-    { id: "roadmap", label: "Strategic Roadmap", icon: Compass },
-    { id: "cta", label: "CTA Banner", icon: Target },
-    { id: "seo", label: "SEO Parameters", icon: Globe }
-  ];
-
-  // Dynamic sorting at section level
-  const sectionSettings = mvData.sectionSettings || {};
-  const sortedSections = [...sectionsList].sort((a, b) => {
-    const orderA = sectionSettings[a.id]?.order ?? 99;
-    const orderB = sectionSettings[b.id]?.order ?? 99;
-    return orderA - orderB;
+  const [formData, setFormData] = useState({
+    ...defaultMissionVisionCMS,
+    ...storedCMS,
+    hero: { ...defaultMissionVisionCMS.hero, ...(storedCMS.hero || {}) },
+    mission: { ...defaultMissionVisionCMS.mission, ...(storedCMS.mission || {}) },
+    vision: { ...defaultMissionVisionCMS.vision, ...(storedCMS.vision || {}) },
+    coreValuesHeader: { ...defaultMissionVisionCMS.coreValuesHeader, ...(storedCMS.coreValuesHeader || {}) },
+    coreValues: (storedCMS.coreValues && storedCMS.coreValues.length > 0) ? storedCMS.coreValues : defaultMissionVisionCMS.coreValues,
+    brandPillarsHeader: { ...defaultMissionVisionCMS.brandPillarsHeader, ...(storedCMS.brandPillarsHeader || {}) },
+    brandPillars: (storedCMS.brandPillars && storedCMS.brandPillars.length > 0) ? storedCMS.brandPillars : defaultMissionVisionCMS.brandPillars,
+    roadmapHeader: { ...defaultMissionVisionCMS.roadmapHeader, ...(storedCMS.roadmapHeader || {}) },
+    roadmap: (storedCMS.roadmap && storedCMS.roadmap.length > 0) ? storedCMS.roadmap : defaultMissionVisionCMS.roadmap,
+    cta: { ...defaultMissionVisionCMS.cta, ...(storedCMS.cta || {}) }
   });
+
+  const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
+
+  const persistChanges = (nextState) => {
+    setFormData(nextState);
+    updateSection('missionVisionData', nextState);
+    updateSection('missionCMS', nextState);
+    updateSection('mission_vision', nextState);
+  };
+
+  const handleSaveAll = (isPublished = false) => {
+    const updatedState = {
+      ...formData,
+      versioning: {
+        ...formData.versioning,
+        status: isPublished ? 'Published' : 'Draft',
+        lastUpdated: new Date().toLocaleString()
+      }
+    };
+    persistChanges(updatedState);
+    setIsSaved(true);
+    showToast(isPublished ? 'Mission & Vision Published Live!' : 'Draft Saved Successfully!', 'success');
+    setTimeout(() => setIsSaved(false), 2500);
+  };
+
+  const handleItemDelete = (listKey, id) => {
+    const list = [...formData[listKey]];
+    const updated = list.filter(item => item.id !== id);
+    persistChanges({ ...formData, [listKey]: updated });
+    showToast('Item removed', 'info');
+  };
+
+  const handleModalSave = (e) => {
+    e.preventDefault();
+    const { listKey, item } = modalConfig;
+    const list = [...formData[listKey]];
+
+    let updated;
+    if (item.id) {
+      updated = list.map(i => i.id === item.id ? item : i);
+    } else {
+      const newItem = {
+        ...item,
+        id: `${listKey.slice(0, 3)}-${Date.now()}`,
+        order: list.length + 1,
+        status: 'Active'
+      };
+      updated = [...list, newItem];
+    }
+
+    persistChanges({ ...formData, [listKey]: updated });
+    setModalConfig(null);
+    showToast(item.id ? 'Item updated successfully!' : 'New item added!', 'success');
+  };
 
   return (
-    <div className="flex flex-col gap-6 text-left relative">
-      
-      {/* TOAST SYSTEM */}
-      {toast && (
-        <div className={`fixed top-5 right-5 z-[100] px-4 py-3 rounded-md shadow-lg border flex items-center gap-2.5 bg-zinc-955 border-luxury-gold/30 text-white font-sans`}>
-          <AlertCircle className="w-4 h-4 text-luxury-gold" />
-          <span className="text-xs font-semibold">{toast.message}</span>
-        </div>
-      )}
+    <div className="space-y-6 text-left">
+      <Toast toast={toast} onClose={() => setToast(null)} />
 
-      {/* CROP IMAGE MODAL */}
-      {showCropModal && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-zinc-900 border border-zinc-805 p-6 rounded-xl w-[450px] text-zinc-100 flex flex-col gap-4 text-left shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-              <h3 className="font-serif text-sm font-semibold tracking-wider uppercase text-luxury-gold flex items-center gap-1.5">
-                <Settings className="w-4 h-4 animate-spin text-luxury-gold" /> Crop Vector Bounds
-              </h3>
-              <button onClick={() => setShowCropModal(false)} className="text-zinc-500 hover:text-white"><X className="w-4 h-4" /></button>
-            </div>
-            <div className="w-full h-40 border border-dashed border-luxury-gold/30 bg-zinc-950 rounded flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-4 border border-dashed border-white/10 flex items-center justify-center">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest text-center">1:1 Crop Canvas</span>
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 border-t border-zinc-850 pt-3">
-              <button onClick={() => setShowCropModal(false)} className="px-3 py-1.5 text-xs text-zinc-550 hover:text-white">Cancel</button>
-              <button 
-                onClick={() => {
-                  setShowCropModal(false);
-                  showToast("Image cropped successfully.");
-                }} 
-                className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded shadow-gold-glow"
-              >
-                Apply Crop Grid
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* HEADER ACTION CONTROLS */}
-      <div className="border-b border-zinc-800/80 pb-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+      {/* Top Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-800/80">
         <div>
-          <h1 className="font-serif text-2xl font-medium tracking-wide text-zinc-100 flex items-center gap-2">
-            <Target className="w-5 h-5 text-luxury-gold" />
-            Mission & Vision CMS
-          </h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Maintain fixed core philosophy blocks, brand pillars, and strategic milestone roadmap metrics.
+          <div className="flex items-center gap-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-luxury-gold shadow-gold-glow animate-pulse" />
+            <h1 className="text-2xl font-serif font-bold tracking-wide uppercase text-white">Mission & Vision Enterprise CMS</h1>
+          </div>
+          <p className="text-xs text-zinc-400 mt-1 font-mono">
+            Control Hero North Star, Mission Statement, Vision 2030, Core Values, Pillars & Strategic Roadmap.
           </p>
         </div>
-        
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => { setExpandedCards(prev => ({...prev, coreValues: true})); setActiveEditorSection('coreValues'); setEditingItemId(null); setDraftItem({}); document.getElementById('coreValues')?.scrollIntoView(); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
-             <Plus className="w-4 h-4 mr-1.5" /> Add Core Value
+
+        <div className="flex items-center gap-2">
+          <Button onClick={() => handleSaveAll(false)} variant="outline" size="sm" className="text-xs uppercase tracking-wider">
+            Save Draft
           </Button>
-          <Button onClick={() => showToast("💾 Mission & Vision Draft Saved Successfully!")} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-amber-500/90">
-            <Save className="w-3.5 h-3.5" /> <span>Save Draft</span>
-          </Button>
-          <Button onClick={() => { if(window.confirm("Reset unsaved changes?")) window.location.reload(); }} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-zinc-400 hover:text-rose-400">
-            <RefreshCw className="w-3.5 h-3.5" /> <span>Reset</span>
-          </Button>
-          <Button onClick={() => showToast("🚀 Public production server updated successfully. Page is Live!")} variant="primary" size="sm" className="gap-1.5 text-xs bg-gradient-to-r from-luxury-gold to-luxury-darkgold text-black font-bold shadow-gold-glow">
-            <span>Publish Live</span>
+          <Button onClick={() => handleSaveAll(true)} variant="gold" size="sm" className="text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5">
+            {isSaved ? <Check className="w-3.5 h-3.5 text-black" /> : <Save className="w-3.5 h-3.5" />}
+            {isSaved ? 'Published Live!' : 'Publish Page'}
           </Button>
         </div>
       </div>
 
-      {/* 8 DYNAMIC COLLAPSIBLE CARDS STACK */}
-      <div className="grid grid-cols-1 gap-4 max-w-5xl">
-        {sortedSections.map((sec, idx) => {
-          const SectionIcon = sec.icon;
-          const isCardOpen = expandedCards[sec.id];
-          const sectionMeta = sectionSettings[sec.id] || { order: idx + 1, status: "Active" };
-          const isActive = sectionMeta.status === "Active";
-
+      {/* 7 Architectural Tabs */}
+      <div className="flex items-center gap-1.5 border-b border-zinc-800/80 pb-3 overflow-x-auto scrollbar-none">
+        {[
+          { id: 'content', label: 'Page Content CMS', icon: Layers },
+          { id: 'overview', label: 'Overview & Sections', icon: Compass },
+          { id: 'media', label: 'Media Assets', icon: ImageIcon },
+          { id: 'seo', label: 'SEO & Search', icon: Globe },
+          { id: 'visibility', label: 'Visibility & Access', icon: Eye },
+          { id: 'publish', label: 'Publish Settings', icon: Clock },
+          { id: 'preview', label: 'Live Preview', icon: Monitor }
+        ].map(tab => {
+          const IconComp = tab.icon;
           return (
-            <Card 
-              id={sec.id}
-              key={sec.id}
-              className={`border transition-all duration-300 p-0 overflow-hidden bg-zinc-955/20 ${isCardOpen ? 'border-zinc-800/80' : 'border-zinc-800/40'}`}
-              title={
-                <div className="flex items-center justify-between w-full py-4 px-5 select-none bg-zinc-950/20 cursor-pointer" onClick={() => toggleCard(sec.id)}>
-                  <div className="flex items-center gap-3 flex-1">
-                    <SectionIcon className={`w-4 h-4 ${isCardOpen ? 'text-luxury-gold' : 'text-zinc-500'}`} />
-                    <span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">
-                      {idx + 1}. {sec.label}
-                    </span>
-                    {!isActive && <Badge variant="secondary" className="scale-90 text-[9px] bg-zinc-900 border-zinc-800 text-zinc-500">Inactive</Badge>}
-                  </div>
-                  
-                  <div className="flex items-center pl-4" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => toggleCard(sec.id)} className="text-zinc-500 hover:text-zinc-300 p-1">
-                      {isCardOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-              }
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3.5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'bg-luxury-gold/10 text-luxury-gold border border-luxury-gold/30 shadow-[0_0_12px_rgba(212,175,55,0.05)]'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40'
+              }`}
             >
-              {isCardOpen && (
-                <div className="p-5 border-t border-zinc-800/80 bg-zinc-955/20 flex flex-col gap-4 animate-fadeIn">
-                  
-                  {/* INLINE SECTION LEVEL META CONFIG (SILENT CHANGES) */}
-                  <div className="p-3 mb-2 rounded border border-zinc-900 bg-zinc-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-405">Section Status:</span>
-                      <Switch 
-                        checked={isActive} 
-                        onChange={(checked) => updateSectionMeta(sec.id, 'status', checked ? 'Active' : 'Inactive')}
-                      />
-                      <span className="text-[10px] font-mono text-zinc-500">({isActive ? 'Visible on Website' : 'Hidden from Website'})</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-405">Display Order:</span>
-                      <input 
-                        type="number" 
-                        value={sectionMeta.order}
-                        onChange={e => updateSectionMeta(sec.id, 'order', parseInt(e.target.value) || 1)}
-                        className="w-12 bg-zinc-900 border border-zinc-850 rounded px-2 py-1 text-center text-xs font-semibold text-zinc-200 focus:border-luxury-gold/40 outline-none" 
-                      />
-                    </div>
-                  </div>
-
-                  {/* SECTION FIELDS */}
-                  {sec.id === 'hero' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Badge Text (e.g. OUR NORTH STAR)" value={heroForm.badge || ''} onChange={e => setHeroForm({ ...heroForm, badge: e.target.value })} />
-                        <Input label="Heading Line 1" value={heroForm.headingLine1 || ''} onChange={e => setHeroForm({ ...heroForm, headingLine1: e.target.value })} />
-                        <Input label="Highlighted Text (Gold Italic)" value={heroForm.highlightText || ''} onChange={e => setHeroForm({ ...heroForm, highlightText: e.target.value })} />
-                        <Input label="Heading Line 2" value={heroForm.headingLine2 || ''} onChange={e => setHeroForm({ ...heroForm, headingLine2: e.target.value })} />
-                        <div className="md:col-span-2">
-                          <Input label="Detailed Hero Description" textarea rows={3} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} />
-                        </div>
-                      </div>
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('hero', heroForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Hero Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'mission' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Mission Statement Label" value={missionForm.label || ''} onChange={e => setMissionForm({ ...missionForm, label: e.target.value })} />
-                        <Input label="Mission Title" value={missionForm.title || ''} onChange={e => setMissionForm({ ...missionForm, title: e.target.value })} />
-                        <div className="md:col-span-2">
-                          <Input label="Mission Description Statement" textarea rows={3} value={missionForm.description || ''} onChange={e => setMissionForm({ ...missionForm, description: e.target.value })} />
-                        </div>
-                      </div>
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('mission', missionForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Mission Details</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'vision' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Vision Label" value={visionForm.label || ''} onChange={e => setVisionForm({ ...visionForm, label: e.target.value })} />
-                        <Input label="Vision Title" value={visionForm.title || ''} onChange={e => setVisionForm({ ...visionForm, title: e.target.value })} />
-                        <div className="md:col-span-2">
-                          <Input label="Vision Description Statement" textarea rows={3} value={visionForm.description || ''} onChange={e => setVisionForm({ ...visionForm, description: e.target.value })} />
-                        </div>
-                      </div>
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('vision', visionForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Vision Details</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'coreValues' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'coreValues',
-                        maxItems: 12,
-                        displayColumns: [
-                          { key: 'title', label: 'Value Title' },
-                          { key: 'icon', label: 'Icon Code' }
-                        ],
-                        fields: [
-                          { key: 'title', label: 'Value Pillar Title', type: 'text' },
-                          { key: 'icon', label: 'Icon Symbol Tag (e.g. Compass, Eye, ShieldCheck)', type: 'text' },
-                          { key: 'accentColor', label: 'Pillar Accent Color (e.g. #D4AF37)', type: 'text' },
-                          { key: 'description', label: 'Value Description Statement', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'brandPillars' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'brandPillars',
-                        displayColumns: [
-                          { key: 'title', label: 'Pillar Title' },
-                          { key: 'subtitle', label: 'Subtitle' }
-                        ],
-                        fields: [
-                          { key: 'title', label: 'Brand Pillar Title', type: 'text' },
-                          { key: 'subtitle', label: 'Card Subtitle Tagline', type: 'text' },
-                          { key: 'icon', label: 'Icon Code Symbol', type: 'text' },
-                          { key: 'borderColor', label: 'Border Color Code (e.g. #D4AF37)', type: 'text' },
-                          { key: 'hoverColor', label: 'Hover Glow Accent Tone', type: 'text' },
-                          { key: 'description', label: 'Detailed Description Narrative text', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'roadmap' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'roadmap',
-                        displayColumns: [
-                          { key: 'quarter', label: 'Quarter' },
-                          { key: 'year', label: 'Year' },
-                          { key: 'title', label: 'Goal Title' }
-                        ],
-                        fields: [
-                          { key: 'quarter', label: 'Quarter Name (e.g. Q3, Q4)', type: 'text' },
-                          { key: 'year', label: 'Year Period', type: 'text' },
-                          { key: 'title', label: 'Timeline Goal Title', type: 'text' },
-                          { key: 'goal', label: 'Long Goal Description', type: 'text' },
-                          { key: 'accentColor', label: 'Timeline Node Accent Tone', type: 'text' },
-                          { key: 'status', label: 'Progress Status', type: 'select', options: ['Planning', 'In Progress', 'Completed', 'Upcoming'] },
-                          { key: 'description', label: 'Strategic Milestone Narrative Description', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'cta' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="CTA Title Heading" value={ctaForm.heading || ''} onChange={e => setCtaForm({ ...ctaForm, heading: e.target.value })} />
-                        <Input label="Primary Button Text" value={ctaForm.primaryButtonText || ''} onChange={e => setCtaForm({ ...ctaForm, primaryButtonText: e.target.value })} />
-                        <Input label="Primary Button Redirect Link" value={ctaForm.primaryButtonLink || ''} onChange={e => setCtaForm({ ...ctaForm, primaryButtonLink: e.target.value })} />
-                        <Input label="Secondary Button Text" value={ctaForm.secondaryButtonText || ''} onChange={e => setCtaForm({ ...ctaForm, secondaryButtonText: e.target.value })} />
-                        
-                        <Input label="Secondary Button Redirect Link" value={ctaForm.secondaryButtonLink || ''} onChange={e => setCtaForm({ ...ctaForm, secondaryButtonLink: e.target.value })} />
-                        <Input label="Background Gradient Style" value={ctaForm.backgroundGradient || ''} onChange={e => setCtaForm({ ...ctaForm, backgroundGradient: e.target.value })} placeholder="e.g. linear-gradient(to right, #000, #111)" />
-
-                        <div className="md:col-span-2">
-                          <Input label="CTA Section Copywriting Subtext Description" textarea rows={3} value={ctaForm.description || ''} onChange={e => setCtaForm({ ...ctaForm, description: e.target.value })} />
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('cta', ctaForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save CTA Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'seo' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="SEO Meta Title" value={seoForm.metaTitle || ''} onChange={e => setSeoForm({ ...seoForm, metaTitle: e.target.value })} />
-                        <Input label="SEO Meta Keywords" value={seoForm.metaKeywords || ''} onChange={e => setSeoForm({ ...seoForm, metaKeywords: e.target.value })} placeholder="Mission, Vision, Roadmap" />
-                        <div className="md:col-span-2">
-                          <Input label="SEO Meta Description Content" textarea rows={2} value={seoForm.metaDescription || ''} onChange={e => setSeoForm({ ...seoForm, metaDescription: e.target.value })} />
-                        </div>
-                        <div className="md:col-span-2">
-                          {renderMediaUpload("OG Social Share Graphics Card", seoForm.ogImageUrl, "ogImageUrl")}
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('seo', seoForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save SEO Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              )}
-            </Card>
+              <IconComp className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
           );
         })}
       </div>
 
-      {/* FINAL STATUS BAR FOOTER */}
-      <div className="flex items-center justify-end p-4 border border-zinc-900 bg-zinc-955/20 rounded-lg max-w-5xl">
-        <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
-          <ShieldCheck className="w-4 h-4" />
-          <span>Mission & Vision CMS dashboard framework running securely.</span>
-        </div>
-      </div>
+      {/* TAB: CONTENT (Sub-Tabs) */}
+      {activeTab === 'content' && (
+        <div className="space-y-6">
+          {/* Sub-Navigation */}
+          <div className="flex items-center gap-2 bg-zinc-900/60 p-1.5 rounded-xl border border-zinc-800/80 w-fit overflow-x-auto">
+            {[
+              { id: 'hero', label: '1. Hero Banner' },
+              { id: 'mission_vision', label: '2. Mission & Vision Cards' },
+              { id: 'core_values', label: '3. Fundamental Principles' },
+              { id: 'pillars', label: '4. Foundation Pillars' },
+              { id: 'roadmap', label: '5. Strategic Roadmap' },
+              { id: 'cta', label: '6. CTA Banner' }
+            ].map(sub => (
+              <button
+                key={sub.id}
+                onClick={() => setContentSubTab(sub.id)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  contentSubTab === sub.id
+                    ? 'bg-luxury-gold text-black font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)]'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
 
+          {/* SUB-TAB 1: HERO BANNER */}
+          {contentSubTab === 'hero' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Hero Banner CMS</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Small Badge</label>
+                  <input
+                    type="text"
+                    value={formData.hero.badge}
+                    onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, badge: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Heading Line 1</label>
+                    <input
+                      type="text"
+                      value={formData.hero.headingLine1}
+                      onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, headingLine1: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Highlight Word (Gold Italic)</label>
+                    <input
+                      type="text"
+                      value={formData.hero.highlightText}
+                      onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, highlightText: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-serif italic font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Heading Line 2</label>
+                    <input
+                      type="text"
+                      value={formData.hero.headingLine2}
+                      onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, headingLine2: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Description Content</label>
+                  <textarea
+                    rows={3}
+                    value={formData.hero.description}
+                    onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, description: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 2: MISSION & VISION CARDS */}
+          {contentSubTab === 'mission_vision' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              {/* Mission Card */}
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+                  <Target className="w-4 h-4 text-luxury-gold" />
+                  <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Mission Statement Card</h3>
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+                  <input
+                    type="text"
+                    value={formData.mission.label}
+                    onChange={(e) => persistChanges({ ...formData, mission: { ...formData.mission, label: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Mission Title</label>
+                  <textarea
+                    rows={2}
+                    value={formData.mission.title}
+                    onChange={(e) => persistChanges({ ...formData, mission: { ...formData.mission, title: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Mission Description</label>
+                  <textarea
+                    rows={4}
+                    value={formData.mission.description}
+                    onChange={(e) => persistChanges({ ...formData, mission: { ...formData.mission, description: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
+                  />
+                </div>
+              </div>
+
+              {/* Vision Card */}
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+                  <Eye className="w-4 h-4 text-cyan-400" />
+                  <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Vision Statement Card</h3>
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+                  <input
+                    type="text"
+                    value={formData.vision.label}
+                    onChange={(e) => persistChanges({ ...formData, vision: { ...formData.vision, label: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-cyan-400 font-mono uppercase font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Vision Title</label>
+                  <textarea
+                    rows={2}
+                    value={formData.vision.title}
+                    onChange={(e) => persistChanges({ ...formData, vision: { ...formData.vision, title: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Vision Description</label>
+                  <textarea
+                    rows={4}
+                    value={formData.vision.description}
+                    onChange={(e) => persistChanges({ ...formData, vision: { ...formData.vision, description: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 3: FUNDAMENTAL PRINCIPLES (CORE VALUES) */}
+          {contentSubTab === 'core_values' && (
+            <div className="space-y-6 text-xs">
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Fundamental Principles Header CMS</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+                    <input
+                      type="text"
+                      value={formData.coreValuesHeader.badge}
+                      onChange={(e) => persistChanges({ ...formData, coreValuesHeader: { ...formData.coreValuesHeader, badge: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Section Title</label>
+                    <input
+                      type="text"
+                      value={formData.coreValuesHeader.titleLine1}
+                      onChange={(e) => persistChanges({ ...formData, coreValuesHeader: { ...formData.coreValuesHeader, titleLine1: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                  <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Principle Cards ({formData.coreValues.length})</h3>
+                  <Button 
+                    onClick={() => setModalConfig({ listKey: 'coreValues', item: { title: '', description: '', accentColor: '#D4AF37' } })} 
+                    variant="gold" 
+                    size="sm" 
+                    className="text-xs uppercase"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Principle Card
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {formData.coreValues.map((v, idx) => (
+                    <div key={v.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2">
+                          <span className="font-mono text-[10px] uppercase text-luxury-gold">Card #{idx + 1}</span>
+                          <div className="flex items-center gap-1">
+                            <button onClick={() => setModalConfig({ listKey: 'coreValues', item: v })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => handleItemDelete('coreValues', v.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                          </div>
+                        </div>
+                        <h4 className="font-serif font-bold text-white text-base mb-1">{v.title}</h4>
+                        <p className="text-zinc-400 font-light text-xs leading-relaxed">{v.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 4: FOUNDATION PILLARS */}
+          {contentSubTab === 'pillars' && (
+            <div className="space-y-6 text-xs">
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Foundation Pillars Header CMS</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+                    <input
+                      type="text"
+                      value={formData.brandPillarsHeader.badge}
+                      onChange={(e) => persistChanges({ ...formData, brandPillarsHeader: { ...formData.brandPillarsHeader, badge: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Section Title</label>
+                    <input
+                      type="text"
+                      value={formData.brandPillarsHeader.titleLine1}
+                      onChange={(e) => persistChanges({ ...formData, brandPillarsHeader: { ...formData.brandPillarsHeader, titleLine1: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                  <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Pillar Cards ({formData.brandPillars.length})</h3>
+                  <Button 
+                    onClick={() => setModalConfig({ listKey: 'brandPillars', item: { title: '', subtitle: '', description: '', borderColor: '#D4AF37' } })} 
+                    variant="gold" 
+                    size="sm" 
+                    className="text-xs uppercase"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Pillar Card
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {formData.brandPillars.map((p, idx) => (
+                    <div key={p.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <h4 className="font-serif font-bold text-white text-base">{p.title}</h4>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => setModalConfig({ listKey: 'brandPillars', item: p })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleItemDelete('brandPillars', p.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </div>
+                      {p.subtitle && <span className="text-luxury-gold font-mono text-[10px] uppercase block">{p.subtitle}</span>}
+                      <p className="text-zinc-400 font-light text-xs leading-relaxed">{p.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 5: STRATEGIC ROADMAP TIMELINE */}
+          {contentSubTab === 'roadmap' && (
+            <div className="space-y-6 text-xs">
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Roadmap Timeline Settings</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+                    <input
+                      type="text"
+                      value={formData.roadmapHeader.badge}
+                      onChange={(e) => persistChanges({ ...formData, roadmapHeader: { ...formData.roadmapHeader, badge: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={formData.roadmapHeader.titleLine2}
+                      onChange={(e) => persistChanges({ ...formData, roadmapHeader: { ...formData.roadmapHeader, titleLine2: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Hint Text</label>
+                    <input
+                      type="text"
+                      value={formData.roadmapHeader.description}
+                      onChange={(e) => persistChanges({ ...formData, roadmapHeader: { ...formData.roadmapHeader, description: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-400 font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                  <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Roadmap Milestones ({formData.roadmap.length})</h3>
+                  <Button 
+                    onClick={() => setModalConfig({ listKey: 'roadmap', item: { year: '2027', quarter: 'Q1', title: '', goal: '', description: '', status: 'Planning', accentColor: '#D4AF37' } })} 
+                    variant="gold" 
+                    size="sm" 
+                    className="text-xs uppercase"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Milestone
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {formData.roadmap.map((rm, idx) => (
+                    <div key={rm.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded bg-luxury-gold/10 text-luxury-gold font-mono font-bold">{rm.year} {rm.quarter}</span>
+                          <span className="text-[10px] font-mono uppercase text-emerald-400">{rm.status}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => setModalConfig({ listKey: 'roadmap', item: rm })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleItemDelete('roadmap', rm.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </div>
+                      <h4 className="font-serif font-bold text-white text-base">{rm.title}</h4>
+                      {rm.goal && <span className="text-zinc-400 font-mono text-[10px] uppercase block">{rm.goal}</span>}
+                      <p className="text-zinc-400 font-light text-xs leading-relaxed">{rm.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 6: CTA SECTION BANNER */}
+          {contentSubTab === 'cta' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">CTA Banner Section CMS</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Heading</label>
+                  <input
+                    type="text"
+                    value={formData.cta.heading}
+                    onChange={(e) => persistChanges({ ...formData, cta: { ...formData.cta, heading: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Description</label>
+                  <textarea
+                    rows={3}
+                    value={formData.cta.description}
+                    onChange={(e) => persistChanges({ ...formData, cta: { ...formData.cta, description: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Primary Button Text</label>
+                    <input
+                      type="text"
+                      value={formData.cta.primaryButtonText}
+                      onChange={(e) => persistChanges({ ...formData, cta: { ...formData.cta, primaryButtonText: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Primary Button Link</label>
+                    <input
+                      type="text"
+                      value={formData.cta.primaryButtonLink}
+                      onChange={(e) => persistChanges({ ...formData, cta: { ...formData.cta, primaryButtonLink: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: LIVE PREVIEW */}
+      {activeTab === 'preview' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-3 bg-zinc-950/80 border border-zinc-800 p-2 rounded-xl">
+            <button onClick={() => setPreviewMode('desktop')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'desktop' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Monitor className="w-3.5 h-3.5" /> Desktop (1440px)
+            </button>
+            <button onClick={() => setPreviewMode('tablet')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'tablet' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Tablet className="w-3.5 h-3.5" /> Tablet (768px)
+            </button>
+            <button onClick={() => setPreviewMode('mobile')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'mobile' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Smartphone className="w-3.5 h-3.5" /> Mobile (375px)
+            </button>
+          </div>
+
+          <div className="flex justify-center bg-black/90 p-4 rounded-2xl border border-zinc-800 min-h-[500px]">
+            <div className={`bg-black transition-all duration-300 border border-zinc-800 rounded-xl overflow-hidden ${
+              previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
+            }`}>
+              <iframe
+                src="http://localhost:5173/mission"
+                title="Live Preview Mission & Vision"
+                className="w-full h-[600px] border-none"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE / EDIT MODAL */}
+      {modalConfig && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <form onSubmit={handleModalSave} className="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">
+                {modalConfig.item.id ? 'Edit Item' : 'Add New Item'}
+              </h3>
+              <button type="button" onClick={() => setModalConfig(null)} className="text-zinc-500 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => (
+                <div key={key}>
+                  <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
+                  <input
+                    type="text"
+                    value={modalConfig.item[key] || ''}
+                    onChange={(e) => setModalConfig({
+                      ...modalConfig,
+                      item: { ...modalConfig.item, [key]: e.target.value }
+                    })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <Button type="button" variant="outline" size="sm" onClick={() => setModalConfig(null)}>Cancel</Button>
+              <Button type="submit" variant="gold" size="sm">Save Item</Button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

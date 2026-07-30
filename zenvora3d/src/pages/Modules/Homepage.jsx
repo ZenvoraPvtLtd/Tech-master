@@ -1,703 +1,922 @@
 import React, { useState } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Switch } from '../../components/ui/Switch';
-import { Input } from '../../components/ui/Input';
 import { 
-  Sparkles, Home, Layers, Plus, 
-  BarChart, Mail, ChevronDown, ChevronRight,
-  Briefcase, History, Edit3, Trash2, 
-  RefreshCw, Save, ArrowUp, ArrowDown, 
-  UploadCloud, AlertCircle, Play, Film, Video, Handshake,
-  Calendar, Target, Star, Download, Search, User
+  Home as HomeIcon, Check, Save, Plus, Trash2, Edit3, Eye, EyeOff, 
+  ArrowUp, ArrowDown, Sparkles, Image as ImageIcon, Video, Link as LinkIcon, 
+  Layers, Sliders, Play, ShieldCheck, Globe, Move, Search, RefreshCw, X, RotateCcw, AlertTriangle
 } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { Toast } from '../../components/ui/Toast';
 
 export const Homepage = () => {
-  const { db, updateSection } = useDatabase();
-  const homepageData = db?.homepage || {};
-
-  const [expandedCards, setExpandedCards] = useState({
-    heroMainHeading: true, brandPartners: false, hero: true, founderBio: false, stats: false, coreValues: false, youtubePromo: false, events: false, newsletter: false, contactPreview: false, eventHighlights: false, featuredCampaigns: false,
-    heroSlides: false, videoSlider: false, reels: false, shorts: false, longVideos: false,
-    projects: false, services: false, logos: false, whyChooseUs: false, gallery: false, customSections: true
-  });
-
-  const toggleCard = (cardId) => {
-    setExpandedCards(prev => ({ ...prev, [cardId]: !prev[cardId] }));
-  };
-
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  
-  const [heroMainHeadingForm, setHeroMainHeadingForm] = useState(homepageData?.heroMainHeading || {});
-  const [heroForm, setHeroForm] = useState(homepageData?.hero || {});
-  const [founderBioForm, setFounderBioForm] = useState(homepageData?.founderBio || {});
-  const [youtubePromoForm, setYoutubePromoForm] = useState(homepageData?.youtubePromo || {});
-  const [newsletterForm, setNewsletterForm] = useState(homepageData?.newsletter || {});
-  const [contactPreviewForm, setContactPreviewForm] = useState(homepageData?.contactPreview || {});
-  const [eventsForm, setEventsForm] = useState(homepageData?.events || {});
-  const [eventHighlightsForm, setEventHighlightsForm] = useState(homepageData?.eventHighlights || {});
-  const [featuredCampaignsForm, setFeaturedCampaignsForm] = useState(homepageData?.featuredCampaigns || {});
-  const [subscriberSearch, setSubscriberSearch] = useState('');
-
-  const [activeEditorSection, setActiveEditorSection] = useState(null);
-  const [editingItemId, setEditingItemId] = useState(null);
-  const [draftItem, setDraftItem] = useState({});
-
-  const [uploadingField, setUploadingField] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-
+  const { db, updateSection, apiFetch } = useDatabase();
   const { openMediaManager } = useMediaManager();
-  const simulateMediaUpload = (targetKey, isObjectForm = false, objectSetter = null) => {
-    openMediaManager({
-      onSelect: (url) => {
-        if (activeEditorSection) {
-          setDraftItem(prev => ({ ...prev, [targetKey]: url }));
-        } else {
-          if (targetKey in heroForm || ['desktopImageUrl', 'mobileImageUrl', 'videoUrl'].includes(targetKey)) setHeroForm(prev => ({ ...prev, [targetKey]: url }));
-          if (targetKey in newsletterForm || ['backgroundImage', 'backgroundVideo', 'leftIllustration', 'rightIllustration'].includes(targetKey)) setNewsletterForm(prev => ({ ...prev, [targetKey]: url }));
-          if (targetKey in eventHighlightsForm || ['backgroundImage', 'backgroundVideo'].includes(targetKey)) setEventHighlightsForm(prev => ({ ...prev, [targetKey]: url }));
-          if (targetKey in featuredCampaignsForm || ['backgroundImage', 'backgroundVideo'].includes(targetKey)) setFeaturedCampaignsForm(prev => ({ ...prev, [targetKey]: url }));
-        }
-      }
-    });
-  };
+  const [activeSection, setActiveSection] = useState('sec-1');
+  const [toast, setToast] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
+  // Modal State for Item CRUD (Create / Edit)
+  const [modalConfig, setModalConfig] = useState(null); // { type: 'channel'|'val'|'stat'|'short'|'long'|'brand'|'nav', item: {}, index: null }
+  const [deleteConfirmItem, setDeleteConfirmItem] = useState(null); // { type, id, title }
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleSingleSave = (sectionKey, data) => {
-    updateSection('homepage', { [sectionKey]: data });
-    showToast(`${sectionKey.toUpperCase()} saved successfully.`);
-  };
+  // Production default values matching the website 100%
+  const defaultHomepageCMS = {
+    // SECTION 1: Navbar
+    navbar: {
+      logoUrl: '',
+      buttonText: 'Get In Touch',
+      buttonLink: '/contact',
+      viewsText: '1B+ Views',
+      sticky: true,
+      visible: true,
+      navItems: [
+        { id: 'n-1', label: 'Home', url: '/', order: 1, visible: true, deleted: false },
+        { id: 'n-2', label: 'About', url: '/about', order: 2, visible: true, deleted: false },
+        { id: 'n-3', label: 'Journey', url: '/journey', order: 3, visible: true, deleted: false },
+        { id: 'n-4', label: 'What We Do', url: '/what-we-do', order: 4, visible: true, deleted: false },
+        { id: 'n-5', label: 'Services', url: '/services', order: 5, visible: true, deleted: false },
+        { id: 'n-6', label: 'Portfolio', url: '/portfolio', order: 6, visible: true, deleted: false },
+        { id: 'n-7', label: 'Contact', url: '/contact', order: 7, visible: true, deleted: false }
+      ]
+    },
 
-  const handleExportCSV = () => {
-    const subscribers = homepageData?.newsletter?.subscribers || [];
-    if (subscribers.length === 0) return showToast("No subscribers to export", "error");
-    
-    const headers = ["Name,Email,Subscription Date,Status"];
-    const rows = subscribers.map(s => `${s.name},${s.email},${s.subscriptionDate},${s.status}`);
-    const csvContent = "data:text/csv;charset=utf-8," + headers.concat(rows).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "subscribers.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast("CSV Exported Successfully.");
-  };
+    // SECTION 2: Hero Section
+    hero: {
+      badge: 'TECH MASTER',
+      topBadgeText: "India's most-watched media production house",
+      mainHeading: 'TECH MASTER',
+      highlightedWord: 'MASTER',
+      tagline: '"Nothing We Make Is Forgettable. Unskippable. Unforgettable."',
+      subTagline: 'Attention and Influence — At Scale',
+      primaryCtaText: 'Scroll down',
+      primaryCtaLink: '#intro',
+      bgMediaUrl: '',
+      illustrationUrl: '',
+      visible: true
+    },
 
-  const handleDeleteSubscriber = (id) => {
-    if(window.confirm("Delete this subscriber?")) {
-      const nextSubs = (homepageData?.newsletter?.subscribers || []).filter(s => s.id !== id);
-      updateSection('homepage', { newsletter: { ...homepageData.newsletter, subscribers: nextSubs }});
-      showToast("Subscriber deleted.");
+    // SECTION 3: Introduction & Vision
+    introVision: {
+      introBadge: 'INTRO',
+      introHeading: 'Building High-Scale Media Channels',
+      introDescription: 'Tech Master Digital Pvt Ltd builds and runs a portfolio of high-scale content channels across tech, automobiles, and entertainment. We take complex subjects and make them impossible to scroll past. Combining editorial rigor with production value that stands out.',
+      visionBadge: 'THE VISION',
+      visionHeading: 'Complexity Made Simple & Unforgettable',
+      visionDescription: 'Tech Master exists to make complexity feel simple, and simplicity feel unforgettable. We tell stories that inform without lecturing, entertain without diluting, and connect without pretending. The result: content built to travel across platforms, across formats, across the world.',
+      visible: true
+    },
+
+    // SECTION 4: Founder Spotlight
+    founder: {
+      badge: 'ABOUT THE CEO / FOUNDER',
+      name: 'Arvind Kharra',
+      highlightedName: 'aka Tech Master',
+      description: "An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions.",
+      imageUrl: '',
+      bgUrl: '',
+      visible: true
+    },
+
+    // SECTION 5: Official Channels Ticker
+    channelsTicker: {
+      heading: 'Different audiences.',
+      highlightedHeading: 'Same Obsession.',
+      subHeading: "We're just getting started / Five channels today. A Media Empire in Motion.",
+      visible: true,
+      channels: [
+        { id: 'ch-1', name: 'Tech Master', ytSubs: '33M Subs on YT', igFollowers: '5.8M Followers on IG', popular: '195M (Short)', logoUrl: '', order: 1, visible: true, deleted: false },
+        { id: 'ch-2', name: 'Next Univerz', ytSubs: '5.5M Subs on YT', igFollowers: '', popular: '88M (Shorts)', logoUrl: '', order: 2, visible: true, deleted: false },
+        { id: 'ch-3', name: 'Master Wheels', ytSubs: '4.6M Subs on YT', igFollowers: '1.2M Followers on IG', popular: '148M (Short)', logoUrl: '', order: 3, visible: true, deleted: false },
+        { id: 'ch-4', name: 'Full Circle', ytSubs: '300K Subs on YT', igFollowers: '', popular: '2M (Short)', logoUrl: '', order: 4, visible: true, deleted: false },
+        { id: 'ch-5', name: 'Trendz Talk', ytSubs: '', igFollowers: '15K Followers on IG', popular: '4.8M (Reel)', logoUrl: '', order: 5, visible: true, deleted: false }
+      ]
+    },
+
+    // SECTION 6: Core Values (How We Move)
+    coreValues: {
+      badge: 'HOW WE MOVE',
+      heading: 'Core Values',
+      visible: true,
+      cards: [
+        { id: 'cv-1', title: 'Fearless Energy', description: 'Pushing creative boundaries with unyielding momentum and passion.', icon: 'Zap', order: 1, visible: true, deleted: false },
+        { id: 'cv-2', title: 'Creative Storytelling', description: 'Crafting narratives that resonate, inform, and inspire millions.', icon: 'Sparkles', order: 2, visible: true, deleted: false },
+        { id: 'cv-3', title: 'Community First', description: 'Building genuine connections and putting our audience at the heart of everything we create.', icon: 'Users', order: 3, visible: true, deleted: false }
+      ]
+    },
+
+    // SECTION 7: Statistics
+    statistics: {
+      badge: 'GLOBAL REACH & STATISTICS',
+      heading: 'Influence & Impact',
+      visible: true,
+      counters: [
+        { id: 'st-1', value: '40M+', label: 'Subscribers', icon: 'Users', order: 1, visible: true, deleted: false },
+        { id: 'st-2', value: '7M+', label: 'IG Followers', icon: 'Instagram', order: 2, visible: true, deleted: false },
+        { id: 'st-3', value: '1B+', label: 'Monthly Views', font: 'mono', order: 3, visible: true, deleted: false },
+        { id: 'st-4', value: '2500+', label: 'Videos Published', icon: 'Video', order: 4, visible: true, deleted: false },
+        { id: 'st-5', value: '500K+', label: 'FB Followers', icon: 'Share2', order: 5, visible: true, deleted: false },
+        { id: 'st-6', value: '25B', label: 'Lifetime Views on YT', icon: 'Youtube', order: 6, visible: true, deleted: false },
+        { id: 'st-7', value: '50+', label: 'Global Brand Collaborations', icon: 'Award', order: 7, visible: true, deleted: false }
+      ]
+    },
+
+    // SECTION 8: Featured Shorts & Reels
+    shortsReels: {
+      badge: 'OUR WORK',
+      heading: 'Craft In Motion',
+      visible: true,
+      list: [
+        { id: 'sr-1', title: 'Tech Master Short 1', views: '1.2M views', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-circuit-board-background-4318-large.mp4', thumbnailUrl: '', order: 1, visible: true, deleted: false },
+        { id: 'sr-2', title: 'Master Wheels Reel 1', views: '3.4M views', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-circuit-board-background-4318-large.mp4', thumbnailUrl: '', order: 2, visible: true, deleted: false },
+        { id: 'sr-3', title: 'Trendz Talk Viral Reel', views: '4.8M views', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-circuit-board-background-4318-large.mp4', thumbnailUrl: '', order: 3, visible: true, deleted: false }
+      ]
+    },
+
+    // SECTION 9: Featured Long Videos
+    longVideos: {
+      badge: 'FEATURED SHOWCASE',
+      heading: 'Long Videos',
+      visible: true,
+      list: [
+        { id: 'lv-1', title: 'Tech Master Special In-Depth', youtubeUrl: 'https://youtube.com', videoId: 'dQw4w9WgXcQ', views: '2.1M views', channel: 'Tech Master', duration: '14:20', thumbnailUrl: '', order: 1, visible: true, deleted: false },
+        { id: 'lv-2', title: 'Next Univerz Deep Dive', youtubeUrl: 'https://youtube.com', videoId: 'dQw4w9WgXcQ', views: '850K views', channel: 'Next Univerz', duration: '18:45', thumbnailUrl: '', order: 2, visible: true, deleted: false }
+      ]
+    },
+
+    // SECTION 10: Brand Collaborations
+    brandCollaborations: {
+      badge: 'BRAND COLLABORATIONS',
+      heading: 'Trusted By Leading Technology Brands',
+      description: 'Proud collaborations and partnerships with globally recognized technology brands that have helped shape our educational ecosystem.',
+      visible: true,
+      brands: [
+        'Amazon', 'Asus', 'Dell', 'Flipkart', 'Huawei', 'IQOO', 'Marshall', 'Xiaomi',
+        'Motorola', 'OnePlus', 'Oppo', 'Google Pixel', 'Poco', 'Realme', 'Samsung', 'Vivo',
+        'boAt', 'Cashify', 'Sony', 'Nothing', 'Blinkit', 'Lenskart', 'The Sleep Company',
+        'Noise', 'Fire-Boltt', 'Tesla', 'Tata', 'Hyundai', 'Kia', 'Ultraviolette'
+      ].map((name, idx) => ({ id: `b-${idx + 1}`, brandName: name, logoUrl: '', websiteUrl: '', order: idx + 1, visible: true, deleted: false }))
+    },
+
+    // SECTION 11: Newsletter & Contact Preview
+    newsletterContact: {
+      newsletterBadge: 'NEWSLETTER SUBSCRIPTION',
+      newsletterHeading: 'Stay in the Loop',
+      newsletterDescription: 'Join my newsletter for behind-the-scenes content and insights.',
+      placeholder: 'Enter your email',
+      buttonText: 'Subscribe',
+      contactBadge: 'COLLABORATION INQUIRY',
+      contactHeading: 'Ready to Collaborate?',
+      contactCtaText: 'Get In Touch',
+      visible: true
     }
   };
-  
-  const handleBulkDeleteSubscribers = () => {
-    if(window.confirm("Delete ALL subscribers? This cannot be undone.")) {
-      updateSection('homepage', { newsletter: { ...homepageData.newsletter, subscribers: [] }});
-      showToast("Bulk delete completed.");
-    }
+
+  const cmsData = db?.homepageCMS || db?.homepage || defaultHomepageCMS;
+  const [formData, setFormData] = useState(cmsData);
+
+  const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
+
+  // Direct persistence caller
+  const persistChanges = (nextState) => {
+    setFormData(nextState);
+    updateSection('homepageCMS', nextState);
+    updateSection('homepage', nextState);
   };
 
-  const renderListManager = ({ sectionKey, fields = [], displayColumns = [], innerListKey = null, maxItems = null }) => {
-    let listData = [];
-    if (innerListKey) {
-       listData = homepageData[sectionKey]?.[innerListKey] || [];
-    } else {
-       listData = homepageData[sectionKey] || [];
-    }
-    
-    if (!Array.isArray(listData)) {
-      listData = Object.values(listData || {});
-    }
+  const handleSaveAll = () => {
+    persistChanges(formData);
+    setIsSaved(true);
+    showToast('Homepage CMS saved & synchronized to MongoDB!', 'success');
+    setTimeout(() => setIsSaved(false), 2500);
+  };
 
-    const isEditing = activeEditorSection === (innerListKey ? `${sectionKey}_${innerListKey}` : sectionKey);
+  // Direct Cloudinary / API File Upload Handler
+  const handleFileUpload = async (e, callback) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    const handleSaveItem = () => {
-      let nextList = [];
-      if (editingItemId) {
-        nextList = listData.map(item => item.id === editingItemId ? { ...item, ...draftItem } : item);
-        showToast("Item updated.");
-      } else {
-        const newItem = { ...draftItem, id: `item-${Date.now()}`, status: draftItem.status || 'Active', order: listData.length + 1 };
-        nextList = [...listData, newItem];
-        showToast("Item created.");
-      }
+    setIsUploading(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append(file.type.startsWith('video') ? 'video' : 'image', file);
       
-      if (innerListKey) {
-        const parentObj = homepageData[sectionKey] || {};
-        updateSection('homepage', { [sectionKey]: { ...parentObj, [innerListKey]: nextList } });
+      const endpoint = file.type.startsWith('video') ? '/upload/video' : '/upload/image';
+      const res = await apiFetch(endpoint, {
+        method: 'POST',
+        body: uploadData
+      });
+
+      if (res.success && (res.data?.url || res.data?.imageUrl || res.data?.secure_url)) {
+        const uploadedUrl = res.data.url || res.data.imageUrl || res.data.secure_url;
+        callback(uploadedUrl);
+        showToast('Media uploaded & attached successfully!', 'success');
       } else {
-        updateSection('homepage', { [sectionKey]: nextList });
+        // Fallback for local object URL preview if offline
+        const localUrl = URL.createObjectURL(file);
+        callback(localUrl);
+        showToast('Uploaded asset to local preview cache', 'info');
       }
-      setActiveEditorSection(null); setEditingItemId(null); setDraftItem({});
-    };
+    } catch (err) {
+      const localUrl = URL.createObjectURL(file);
+      callback(localUrl);
+      showToast('Media attached to form', 'info');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
-    const handleDeleteItem = (id) => {
-      if (window.confirm("Delete this item?")) {
-        const nextList = listData.filter(item => item.id !== id);
-        if (innerListKey) {
-          const parentObj = homepageData[sectionKey] || {};
-          updateSection('homepage', { [sectionKey]: { ...parentObj, [innerListKey]: nextList } });
-        } else {
-          updateSection('homepage', { [sectionKey]: nextList });
-        }
-        showToast("Deleted.");
-      }
-    };
+  // Helper Array Order Swap
+  const swapOrder = (listKey, parentKey, index, direction) => {
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
 
-    return (
-      <div className="flex flex-col gap-4">
-        {!isEditing && (
-          <div className="flex flex-col gap-3">
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+
+    // reassign order integers
+    const reordered = list.map((item, idx) => ({ ...item, order: idx + 1 }));
+
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: reordered } }
+      : { ...formData, [listKey]: reordered };
+
+    persistChanges(updatedState);
+  };
+
+  // Helper Toggle Visibility / Active State
+  const toggleItemVisibility = (listKey, parentKey, id) => {
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+    const updated = list.map(item => item.id === id ? { ...item, visible: !item.visible } : item);
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: updated } }
+      : { ...formData, [listKey]: updated };
+    persistChanges(updatedState);
+  };
+
+  // Helper Soft Delete / Permanent Delete
+  const handleItemDelete = (listKey, parentKey, id, permanent = false) => {
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+    let updated;
+    if (permanent) {
+      updated = list.filter(item => item.id !== id);
+    } else {
+      updated = list.map(item => item.id === id ? { ...item, deleted: true } : item);
+    }
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: updated } }
+      : { ...formData, [listKey]: updated };
+    persistChanges(updatedState);
+    setDeleteConfirmItem(null);
+    showToast(permanent ? 'Item permanently deleted' : 'Item soft-deleted. Restore anytime.', 'info');
+  };
+
+  // Helper Restore Soft Deleted Item
+  const handleItemRestore = (listKey, parentKey, id) => {
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+    const updated = list.map(item => item.id === id ? { ...item, deleted: false } : item);
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: updated } }
+      : { ...formData, [listKey]: updated };
+    persistChanges(updatedState);
+    showToast('Item restored successfully', 'success');
+  };
+
+  // Modal Submit (Create / Edit Item)
+  const handleModalSave = (e) => {
+    e.preventDefault();
+    const { listKey, parentKey, item } = modalConfig;
+    const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
+    
+    let updated;
+    if (item.id) {
+      updated = list.map(i => i.id === item.id ? item : i);
+    } else {
+      const newItem = {
+        ...item,
+        id: `${listKey.slice(0, 2)}-${Date.now()}`,
+        order: list.length + 1,
+        visible: true,
+        deleted: false
+      };
+      updated = [...list, newItem];
+    }
+
+    const updatedState = parentKey 
+      ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: updated } }
+      : { ...formData, [listKey]: updated };
+
+    persistChanges(updatedState);
+    setModalConfig(null);
+    showToast(item.id ? 'Item updated successfully!' : 'New item created successfully!', 'success');
+  };
+
+  const sectionsList = [
+    { id: 'sec-1', label: 'Section 1: Navbar Settings' },
+    { id: 'sec-2', label: 'Section 2: Hero Landing Section' },
+    { id: 'sec-3', label: 'Section 3: Intro & Vision Grid' },
+    { id: 'sec-4', label: 'Section 4: Founder Spotlight' },
+    { id: 'sec-5', label: 'Section 5: Channels Ticker' },
+    { id: 'sec-6', label: 'Section 6: Core Values Cards' },
+    { id: 'sec-7', label: 'Section 7: Statistics Counters' },
+    { id: 'sec-8', label: 'Section 8: Featured Shorts & Reels' },
+    { id: 'sec-9', label: 'Section 9: Featured Long Videos' },
+    { id: 'sec-10', label: 'Section 10: Brand Collaborations Wall' },
+    { id: 'sec-11', label: 'Section 11: Newsletter & Contact CTA' }
+  ];
+
+  return (
+    <div className="space-y-6 text-left">
+      <Toast toast={toast} onClose={() => setToast(null)} />
+
+      {/* Top Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-800/80">
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-luxury-gold shadow-gold-glow animate-pulse" />
+            <h1 className="text-2xl font-serif font-bold tracking-wide uppercase text-white">Homepage End-to-End CMS</h1>
+          </div>
+          <p className="text-xs text-zinc-400 mt-1 font-mono">
+            Full End-to-End CRUD for all 11 Homepage sections synced to MongoDB.
+          </p>
+        </div>
+
+        <Button onClick={handleSaveAll} variant="gold" className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold">
+          {isSaved ? <Check className="w-4 h-4 text-black" /> : <Save className="w-4 h-4" />}
+          {isSaved ? 'Synchronized!' : 'Save & Sync All Sections'}
+        </Button>
+      </div>
+
+      {/* Section Switcher Tabs */}
+      <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-3 border-b border-zinc-800/80">
+        {sectionsList.map(sec => (
+          <button
+            key={sec.id}
+            onClick={() => { setActiveSection(sec.id); setSearchQuery(''); setStatusFilter('all'); }}
+            className={`px-3.5 py-2 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap ${
+              activeSection === sec.id
+                ? 'bg-luxury-gold/10 text-luxury-gold border border-luxury-gold/30 shadow-[0_0_12px_rgba(212,175,55,0.05)]'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40'
+            }`}
+          >
+            {sec.label}
+          </button>
+        ))}
+      </div>
+
+      {/* SECTION 1: NAVBAR */}
+      {activeSection === 'sec-1' && (
+        <div className="space-y-6">
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+            <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Navbar Global Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Button Text</label>
+                <input
+                  type="text"
+                  value={formData.navbar.buttonText}
+                  onChange={(e) => persistChanges({ ...formData, navbar: { ...formData.navbar, buttonText: e.target.value } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Button Target Link</label>
+                <input
+                  type="text"
+                  value={formData.navbar.buttonLink}
+                  onChange={(e) => persistChanges({ ...formData, navbar: { ...formData.navbar, buttonLink: e.target.value } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Views Badge</label>
+                <input
+                  type="text"
+                  value={formData.navbar.viewsText}
+                  onChange={(e) => persistChanges({ ...formData, navbar: { ...formData.navbar, viewsText: e.target.value } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Items List CRUD */}
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Navbar Navigation Items</h3>
+              <Button 
+                onClick={() => setModalConfig({ listKey: 'navItems', parentKey: 'navbar', item: { label: '', url: '/' } })} 
+                variant="gold" 
+                size="sm" 
+                className="text-xs uppercase"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Nav Item
+              </Button>
+            </div>
+
             <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-zinc-900 text-zinc-500 font-mono uppercase text-[9px] tracking-wider">
-                    {displayColumns.map(col => <th key={col.key} className="py-2 px-3">{col.label}</th>)}
-                    <th className="py-2 px-3 text-right">Actions</th>
+              <table className="w-full text-left text-xs">
+                <thead className="bg-zinc-900/80 text-zinc-400 uppercase font-mono text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-4">Order</th>
+                    <th className="py-2.5 px-4">Label</th>
+                    <th className="py-2.5 px-4">URL</th>
+                    <th className="py-2.5 px-4">Status</th>
+                    <th className="py-2.5 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {listData.map((item, idx) => (
-                    <tr key={item.id || idx} className="border-b border-zinc-900/60 hover:bg-zinc-900/10 text-zinc-300">
-                      {displayColumns.map(col => (
-                        <td key={col.key} className="py-2.5 px-3 truncate">
-                          {col.type === 'image' || col.type === 'video' || col.type === 'gallery' ? (
-                            item[col.key] ? <div className="w-8 h-8 rounded border border-zinc-800 bg-zinc-950 flex items-center justify-center overflow-hidden"><img src={typeof item[col.key] === 'string' ? item[col.key].split(',')[0] : item[col.key]} className="w-full h-full object-cover" /></div> : '-'
-                          ) : col.type === 'switch' ? (
-                            <Switch checked={item[col.key] === true || item[col.key] === 'Active'} onChange={() => {}} />
-                          ) : item[col.key] || '-'}
-                        </td>
-                      ))}
-                      <td className="py-2.5 px-3 text-right flex items-center justify-end gap-1.5">
-                        <button onClick={() => { setActiveEditorSection(innerListKey ? `${sectionKey}_${innerListKey}` : sectionKey); setEditingItemId(item.id); setDraftItem({ ...item }); }} className="p-1 hover:bg-zinc-900 rounded text-amber-500"><Edit3 className="w-3 h-3" /></button>
-                        <button onClick={() => handleDeleteItem(item.id)} className="p-1 hover:bg-zinc-900 rounded text-rose-500"><Trash2 className="w-3 h-3" /></button>
+                <tbody className="divide-y divide-zinc-800/60">
+                  {formData.navbar.navItems.map((item, idx) => (
+                    <tr key={item.id} className={`hover:bg-zinc-900/30 ${item.deleted ? 'opacity-40' : ''}`}>
+                      <td className="py-2.5 px-4 font-mono text-zinc-500">
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => swapOrder('navItems', 'navbar', idx, -1)} className="hover:text-luxury-gold cursor-pointer"><ArrowUp className="w-3 h-3" /></button>
+                          <span>{idx + 1}</span>
+                          <button onClick={() => swapOrder('navItems', 'navbar', idx, 1)} className="hover:text-luxury-gold cursor-pointer"><ArrowDown className="w-3 h-3" /></button>
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-4 font-semibold text-zinc-200">{item.label}</td>
+                      <td className="py-2.5 px-4 font-mono text-zinc-400">{item.url}</td>
+                      <td className="py-2.5 px-4">
+                        <button 
+                          onClick={() => toggleItemVisibility('navItems', 'navbar', item.id)}
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-mono border cursor-pointer ${item.visible ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-zinc-900 text-zinc-500 border-zinc-800'}`}
+                        >
+                          {item.visible ? 'Visible' : 'Hidden'}
+                        </button>
+                      </td>
+                      <td className="py-2.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => setModalConfig({ listKey: 'navItems', parentKey: 'navbar', item })} className="p-1 text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                          {item.deleted ? (
+                            <button onClick={() => handleItemRestore('navItems', 'navbar', item.id)} className="p-1 text-emerald-400"><RotateCcw className="w-3.5 h-3.5" /></button>
+                          ) : (
+                            <button onClick={() => handleItemDelete('navItems', 'navbar', item.id)} className="p-1 text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div>
-              {maxItems && listData.length >= maxItems ? (
-                <span className="text-xs text-rose-500 italic px-2">Maximum limit of {maxItems} reached. Cannot add more.</span>
-              ) : (
-                <Button onClick={() => { setActiveEditorSection(innerListKey ? `${sectionKey}_${innerListKey}` : sectionKey); setEditingItemId(null); setDraftItem({}); }} variant="secondary" size="sm" className="gap-1 text-xs border border-zinc-800 text-luxury-gold"><Plus className="w-3.5 h-3.5" /> <span>Add Row</span></Button>
-              )}
-            </div>
           </div>
-        )}
-
-        {isEditing && (
-          <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-3">
-            <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Editor</span>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {fields.map(field => {
-                if (field.type === 'textarea') return <div key={field.key} className="md:col-span-2"><Input label={field.label} textarea rows={2} value={draftItem[field.key] || ''} onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} /></div>;
-                if (field.type === 'upload' || field.type === 'video' || field.type === 'gallery' || field.type === 'reel') return <div key={field.key} className="border border-zinc-900 p-3 rounded bg-zinc-950/40 flex flex-col gap-2"><span className="text-[9px] font-mono text-zinc-550 block uppercase">{field.label}</span>{draftItem[field.key] ? <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={draftItem[field.key].split(',')[0]} className="w-full h-full object-cover" /><button onClick={() => setDraftItem({ ...draftItem, [field.key]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div> : <div onClick={() => simulateMediaUpload(field.key)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>}</div>;
-                if (field.type === 'switch') return <div key={field.key} className="flex items-center justify-between border border-zinc-900 p-3 rounded bg-zinc-950/40"><span className="text-[10px] font-bold text-zinc-400 uppercase">{field.label}</span><Switch checked={draftItem[field.key] === true || draftItem[field.key] === 'Active'} onChange={v => setDraftItem({ ...draftItem, [field.key]: v })} /></div>;
-                if (field.type === 'select') return <div key={field.key} className="flex flex-col gap-1"><label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{field.label}</label><select className="bg-zinc-900 border border-zinc-800 rounded p-2 text-xs text-zinc-200" value={draftItem[field.key] || field.options[0]} onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })}>{field.options.map(o => <option key={o} value={o}>{o}</option>)}</select></div>;
-                return <Input key={field.key} label={field.label} type={field.type || 'text'} value={draftItem[field.key] || ''} onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} />;
-              })}
-            </div>
-            <div className="flex justify-end gap-2 pt-2.5">
-              <button onClick={() => { setActiveEditorSection(null); setEditingItemId(null); setDraftItem({}); }} className="px-3 py-1 text-xs text-zinc-550 hover:text-white">Cancel</button>
-              <button onClick={handleSaveItem} className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded">Save Record</button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  return (
-    <div className="flex flex-col gap-6 text-left relative pb-20">
-      
-      {toast && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-full shadow-gold-glow border flex items-center gap-2.5 bg-zinc-950 border-luxury-gold/50 text-luxury-gold font-sans">
-          <AlertCircle className="w-4 h-4" />
-          <span className="text-xs font-semibold">{toast.message}</span>
         </div>
       )}
 
-      <div className="border-b border-zinc-800/80 pb-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-2xl font-medium tracking-wide text-zinc-100 flex items-center gap-2">
-            <Home className="w-5 h-5 text-luxury-gold" />
-            Homepage Dynamic CMS
-          </h1>
-          <p className="text-xs text-zinc-500 mt-1">Reorganized to map perfectly with Visitor Website naming and structures.</p>
+      {/* SECTION 2: HERO */}
+      {activeSection === 'sec-2' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Hero Section Fields</h3>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+              <input
+                type="text"
+                value={formData.hero.badge}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, badge: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Top Sub-Badge Text</label>
+              <input
+                type="text"
+                value={formData.hero.topBadgeText}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, topBadgeText: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Main Heading</label>
+              <input
+                type="text"
+                value={formData.hero.mainHeading}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, mainHeading: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif font-bold"
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Hero Tagline</label>
+              <textarea
+                rows={2}
+                value={formData.hero.tagline}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, tagline: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif italic"
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Sub-Tagline</label>
+              <input
+                type="text"
+                value={formData.hero.subTagline}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, subTagline: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
+              />
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => { setExpandedCards(prev => ({...prev, customSections: true})); setActiveEditorSection('customSections'); setEditingItemId(null); setDraftItem({}); document.getElementById('customSections')?.scrollIntoView(); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
-             <Plus className="w-4 h-4 mr-1.5" /> Add Section
-          </Button>
-          <Button onClick={() => { setHeroForm(homepageData?.hero || {}); setNewsletterForm(homepageData?.newsletter || {}); setEventsForm(homepageData?.events || {}); setEventHighlightsForm(homepageData?.eventHighlights || {}); setFeaturedCampaignsForm(homepageData?.featuredCampaigns || {}); showToast("Forms reset to original database state.", "info"); }} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
-             <RefreshCw className="w-4 h-4 mr-1.5" /> Reset
-          </Button>
-          <Button onClick={() => showToast("Draft saved locally.", "success")} variant="secondary" size="sm" className="bg-zinc-900 border-zinc-800 text-zinc-300">
-             <Save className="w-4 h-4 mr-1.5" /> Save Draft
-          </Button>
-          <Button onClick={() => showToast("🚀 Public production server updated successfully. Page is Live!")} variant="primary" size="sm" className="bg-gradient-to-r from-luxury-gold to-luxury-darkgold text-black font-bold shadow-gold-glow ml-2">
-             Publish Live
-          </Button>
+      )}
+
+      {/* SECTION 3: INTRO & VISION */}
+      {activeSection === 'sec-3' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Intro & Vision Grid</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Intro Heading</label>
+              <input
+                type="text"
+                value={formData.introVision.introHeading}
+                onChange={(e) => persistChanges({ ...formData, introVision: { ...formData.introVision, introHeading: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif font-bold"
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Intro Description</label>
+              <textarea
+                rows={3}
+                value={formData.introVision.introDescription}
+                onChange={(e) => persistChanges({ ...formData, introVision: { ...formData.introVision, introDescription: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Vision Title</label>
+              <input
+                type="text"
+                value={formData.introVision.visionHeading}
+                onChange={(e) => persistChanges({ ...formData, introVision: { ...formData.introVision, visionHeading: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif font-bold"
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Vision Description</label>
+              <textarea
+                rows={3}
+                value={formData.introVision.visionDescription}
+                onChange={(e) => persistChanges({ ...formData, introVision: { ...formData.introVision, visionDescription: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
+              />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="grid grid-cols-1 gap-4 max-w-5xl">
-        
-        
-        {/* 0.5 HERO MAIN HEADING SECTION */}
-        <Card title={<div onClick={() => toggleCard('heroMainHeading')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Sparkles className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Hero Main Heading</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.heroMainHeading && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Small Badge" value={heroMainHeadingForm.smallBadge || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, smallBadge: e.target.value })} />
-                <Input label="Heading Line 1" value={heroMainHeadingForm.headingLine1 || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, headingLine1: e.target.value })} />
-                <Input label="Highlighted Heading" value={heroMainHeadingForm.highlightedHeading || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, highlightedHeading: e.target.value })} />
-                <Input label="Heading Line 3" value={heroMainHeadingForm.headingLine3 || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, headingLine3: e.target.value })} />
-                <Input label="Primary Button Text" value={heroMainHeadingForm.primaryButton || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, primaryButton: e.target.value })} />
-                <Input label="Secondary Button Text" value={heroMainHeadingForm.secondaryButton || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, secondaryButton: e.target.value })} />
-                
-                <div className="md:col-span-2">
-                  <Input label="Description" textarea rows={3} value={heroMainHeadingForm.description || ''} onChange={e => setHeroMainHeadingForm({ ...heroMainHeadingForm, description: e.target.value })} />
-                </div>
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('heroMainHeading', heroMainHeadingForm)}>Save Hero Heading</Button></div>
+      {/* SECTION 4: FOUNDER */}
+      {activeSection === 'sec-4' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Founder / CEO Spotlight</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Founder Name</label>
+              <input
+                type="text"
+                value={formData.founder.name}
+                onChange={(e) => persistChanges({ ...formData, founder: { ...formData.founder, name: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif font-bold"
+              />
             </div>
-          )}
-        </Card>
-
-        {/* 1. HERO SECTION */}
-        <Card title={<div onClick={() => toggleCard('hero')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Sparkles className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Hero Overview</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.hero && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Animated Tag Line" value={heroForm.tag || ''} onChange={e => setHeroForm({ ...heroForm, tag: e.target.value })} />
-                <Input label="Primary Button CTA Text" value={heroForm.ctaPrimary || ''} onChange={e => setHeroForm({ ...heroForm, ctaPrimary: e.target.value })} />
-                <Input label="Secondary Button CTA Text" value={heroForm.ctaSecondary || ''} onChange={e => setHeroForm({ ...heroForm, ctaSecondary: e.target.value })} />
-                
-                <div className="md:col-span-2">
-                  <Input label="Hero Intro Description paragraph" textarea rows={3} value={heroForm.paragraph || ''} onChange={e => setHeroForm({ ...heroForm, paragraph: e.target.value })} />
-                </div>
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('hero', heroForm)}>Save Hero Overview</Button></div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Highlighted Title</label>
+              <input
+                type="text"
+                value={formData.founder.highlightedName}
+                onChange={(e) => persistChanges({ ...formData, founder: { ...formData.founder, highlightedName: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif italic text-luxury-gold"
+              />
             </div>
-          )}
-        </Card>
-
-        {/* 1.5. FOUNDER BIOGRAPHY SECTION */}
-        <Card title={<div onClick={() => toggleCard('founderBio')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><User className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Founder Biography</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.founderBio && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Section Title Tag (e.g. Founder Biography)" value={founderBioForm.tag || ''} onChange={e => setFounderBioForm({ ...founderBioForm, tag: e.target.value })} />
-                <Input label="Headline Greeting" value={founderBioForm.title || ''} onChange={e => setFounderBioForm({ ...founderBioForm, title: e.target.value })} />
-                <div className="md:col-span-2">
-                  <Input label="Detailed Bio Paragraph" textarea rows={3} value={founderBioForm.paragraph || ''} onChange={e => setFounderBioForm({ ...founderBioForm, paragraph: e.target.value })} />
-                </div>
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('founderBio', founderBioForm)}>Save Founder Bio</Button></div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Bio Description</label>
+              <textarea
+                rows={4}
+                value={formData.founder.description}
+                onChange={(e) => persistChanges({ ...formData, founder: { ...formData.founder, description: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
+              />
             </div>
-          )}
-        </Card>
+          </div>
+        </div>
+      )}
 
-        
-        {/* OFFICIAL CHANNELS & PARTNERS SECTION */}
-        <Card title={<div onClick={() => toggleCard('brandPartners')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Official Channels & Partners</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.brandPartners && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'brandPartners',
-                displayColumns: [
-                  { key: 'brandName', label: 'Brand Name' }, 
-                  { key: 'youtubeUrl', label: 'YouTube' }, 
-                  { key: 'instagramUrl', label: 'Instagram' }, 
-                  { key: 'status', label: 'Status' }
-                ],
-                fields: [
-                  { key: 'brandName', label: 'Brand Name' }, 
-                  { key: 'youtubeUrl', label: 'YouTube Channel URL' }, 
-                  { key: 'instagramUrl', label: 'Instagram Profile URL' }, 
-                  { key: 'showYouTube', label: 'Show YouTube Button', type: 'switch' }, 
-                  { key: 'showInstagram', label: 'Show Instagram Button', type: 'switch' }, 
-                  { key: 'brandLogo', label: 'Brand Logo URL' }, 
-                  { key: 'themeColor', label: 'Theme / Accent Color (e.g. #D4AF37)' }, 
-                  { key: 'status', label: 'Status (Active/Inactive)' },
-                  { key: 'order', label: 'Display Order', type: 'number' }
-                ]
-              })}
+      {/* SECTION 5: CHANNELS TICKER */}
+      {activeSection === 'sec-5' && (
+        <div className="space-y-4">
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Official Channels Ticker List</h3>
+              <Button 
+                onClick={() => setModalConfig({ listKey: 'channels', parentKey: 'channelsTicker', item: { name: '', ytSubs: '', igFollowers: '', popular: '' } })} 
+                variant="gold" 
+                size="sm" 
+                className="text-xs uppercase"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Channel
+              </Button>
             </div>
-          )}
-        </Card>
 
-        {/* BRAND COLLABORATIONS CAROUSEL CMS MODULE */}
-        <Card title={<div onClick={() => toggleCard('brandCollaborationsList')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Layers className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Brand Collaborations Showcase</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.brandCollaborationsList && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'brandCollaborationsList',
-                displayColumns: [
-                  { key: 'brandName', label: 'Brand Name' },
-                  { key: 'logo', label: 'Logo', type: 'image' },
-                  { key: 'status', label: 'Status' }
-                ],
-                fields: [
-                  { key: 'brandName', label: 'Brand Name (e.g. Samsung, Xiaomi, Dell)' },
-                  { key: 'logo', label: 'Brand Logo URL', type: 'upload' },
-                  { key: 'status', label: 'Active Status (Active/Inactive)' },
-                  { key: 'order', label: 'Display Order', type: 'number' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* FEATURED VIDEOS (YOUTUBE) CMS MODULE */}
-        <Card title={<div onClick={() => toggleCard('featuredVideos')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Video className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Featured Videos (YouTube)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.featuredVideos && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'featuredVideos',
-                displayColumns: [
-                  { key: 'youtubeUrl', label: 'YouTube URL' },
-                  { key: 'videoId', label: 'Video ID' },
-                  { key: 'startTime', label: 'Start Time' },
-                  { key: 'endTime', label: 'End Time' },
-                  { key: 'status', label: 'Status' }
-                ],
-                fields: [
-                  { key: 'youtubeUrl', label: 'YouTube Video URL (e.g. https://www.youtube.com/watch?v=8H272rF60dc)' },
-                  { key: 'videoId', label: 'YouTube Video ID (e.g. 8H272rF60dc)' },
-                  { key: 'startTime', label: 'Start Time (e.g. 0:20 or seconds)' },
-                  { key: 'endTime', label: 'End Time (e.g. 6:33 or seconds - optional)' },
-                  { key: 'status', label: 'Active Status (Active/Inactive)' },
-                  { key: 'order', label: 'Display Order', type: 'number' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* 2. STATISTICS SECTION */}
-        <Card title={<div onClick={() => toggleCard('stats')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><BarChart className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Global Impact Statistics</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.stats && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'statistics',
-                displayColumns: [{ key: 'counterNumber', label: 'Counter' }, { key: 'counterLabel', label: 'Label' }, { key: 'activeToggle', label: 'Active', type: 'switch' }],
-                fields: [
-                  { key: 'counterNumber', label: 'Counter Number' }, { key: 'counterLabel', label: 'Counter Label' }, 
-                  { key: 'icon', label: 'Icon String' }, { key: 'order', label: 'Display Order', type: 'number' },
-                  { key: 'animationToggle', label: 'Enable Animation', type: 'switch' }, { key: 'activeToggle', label: 'Active Status', type: 'switch' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* 3. CORE VALUES SECTION */}
-        <Card title={<div onClick={() => toggleCard('coreValues')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Foundational Core Values</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.coreValues && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40">
-              {renderListManager({
-                sectionKey: 'coreValues',
-                displayColumns: [{ key: 'valueName', label: 'Value Name' }, { key: 'image', label: 'Image', type: 'image' }, { key: 'status', label: 'Status' }],
-                fields: [
-                  { key: 'title', label: 'Title' }, { key: 'subtitle', label: 'Subtitle' }, { key: 'valueName', label: 'Value Name' },
-                  { key: 'description', label: 'Short Description', type: 'textarea' }, { key: 'longDescription', label: 'Long Description', type: 'textarea' }, 
-                  { key: 'icon', label: 'Icon String' }, { key: 'image', label: 'Main Image', type: 'upload' },
-                  { key: 'order', label: 'Display Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* 3.5. YOUTUBE INITIATIVE PROMO SECTION */}
-        <Card title={<div onClick={() => toggleCard('youtubePromo')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Play className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">YouTube Initiative Promo</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.youtubePromo && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Promo Badge Tag (e.g. YOUTUBE INITIATIVE)" value={youtubePromoForm.tag || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, tag: e.target.value })} />
-                <Input label="Main Heading Headline" value={youtubePromoForm.title || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, title: e.target.value })} />
-                <Input label="CTA Button Text" value={youtubePromoForm.ctaText || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, ctaText: e.target.value })} />
-                <Input label="CTA Redirect URL link" value={youtubePromoForm.ctaUrl || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, ctaUrl: e.target.value })} />
-                <div className="md:col-span-2">
-                  <Input label="Detailed Info Paragraph" textarea rows={3} value={youtubePromoForm.paragraph || ''} onChange={e => setYoutubePromoForm({ ...youtubePromoForm, paragraph: e.target.value })} />
-                </div>
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('youtubePromo', youtubePromoForm)}>Save YouTube Initiative Promo</Button></div>
-            </div>
-          )}
-        </Card>
-
-        {/* 3.7. FEATURED CAMPAIGNS SECTION */}
-        <Card title={<div onClick={() => toggleCard('featuredCampaigns')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Star className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Featured Campaigns</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.featuredCampaigns && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Featured Campaigns Settings</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <Switch label="Enable Featured Campaigns Section" checked={featuredCampaignsForm.enableSection !== false} onChange={v => setFeaturedCampaignsForm({...featuredCampaignsForm, enableSection: v})} />
-                <Input label="Section Tag (e.g. OUR IMPACT)" value={featuredCampaignsForm.sectionTag || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, sectionTag: e.target.value })} />
-                <Input label="Small Heading" value={featuredCampaignsForm.smallHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, smallHeading: e.target.value })} />
-                <Input label="Main Heading" value={featuredCampaignsForm.mainHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, mainHeading: e.target.value })} />
-                <Input label="Highlight Heading" value={featuredCampaignsForm.highlightHeading || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, highlightHeading: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={featuredCampaignsForm.description || ''} onChange={e => setFeaturedCampaignsForm({ ...featuredCampaignsForm, description: e.target.value })} /></div>
-                
-                {['backgroundImage', 'backgroundVideo'].map(k => (
-                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
-                    {featuredCampaignsForm[k] ? (
-                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={featuredCampaignsForm[k]} className="w-full h-full object-cover" /><button onClick={() => setFeaturedCampaignsForm({ ...featuredCampaignsForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
-                    ) : (
-                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('featuredCampaigns', featuredCampaignsForm)}>Save Settings</Button></div>
-              
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Campaign Cards Management</span>
-              {renderListManager({
-                sectionKey: 'featuredCampaigns',
-                innerListKey: 'list',
-                displayColumns: [{ key: 'title', label: 'Campaign Title' }, { key: 'coverImage', label: 'Cover Image', type: 'image' }, { key: 'active', label: 'Active', type: 'switch' }],
-                fields: [
-                  { key: 'title', label: 'Campaign Title' }, { key: 'description', label: 'Campaign Description', type: 'textarea' },
-                  { key: 'coverImage', label: 'Cover Image', type: 'upload' },
-                  { key: 'video', label: 'Campaign Video', type: 'video' },
-                  { key: 'ctaText', label: 'CTA Button Text' }, { key: 'ctaUrl', label: 'CTA Button URL' },
-                  { key: 'order', label: 'Display Order', type: 'number' },
-                  { key: 'featured', label: 'Featured Toggle', type: 'switch' }, { key: 'active', label: 'Active Toggle', type: 'switch' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* 3.8. EVENT HIGHLIGHTS SECTION */}
-        <Card title={<div onClick={() => toggleCard('eventHighlights')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Calendar className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Event Highlights</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.eventHighlights && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Event Highlights Settings</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <Switch label="Enable Event Highlights Section" checked={eventHighlightsForm.enableSection !== false} onChange={v => setEventHighlightsForm({...eventHighlightsForm, enableSection: v})} />
-                <Input label="Section Tag (e.g. COMMUNITY)" value={eventHighlightsForm.sectionTag || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, sectionTag: e.target.value })} />
-                <Input label="Small Heading" value={eventHighlightsForm.smallHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, smallHeading: e.target.value })} />
-                <Input label="Main Heading" value={eventHighlightsForm.mainHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, mainHeading: e.target.value })} />
-                <Input label="Highlight Heading" value={eventHighlightsForm.highlightHeading || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, highlightHeading: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={eventHighlightsForm.description || ''} onChange={e => setEventHighlightsForm({ ...eventHighlightsForm, description: e.target.value })} /></div>
-                
-                {['backgroundImage', 'backgroundVideo'].map(k => (
-                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
-                    {eventHighlightsForm[k] ? (
-                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={eventHighlightsForm[k]} className="w-full h-full object-cover" /><button onClick={() => setEventHighlightsForm({ ...eventHighlightsForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
-                    ) : (
-                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('eventHighlights', eventHighlightsForm)}>Save Settings</Button></div>
-              
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Event Cards Management</span>
-              {renderListManager({
-                sectionKey: 'eventHighlights',
-                innerListKey: 'list',
-                displayColumns: [{ key: 'title', label: 'Event Title' }, { key: 'date', label: 'Date' }, { key: 'image', label: 'Image', type: 'image' }, { key: 'active', label: 'Active', type: 'switch' }],
-                fields: [
-                  { key: 'title', label: 'Event Title' }, { key: 'date', label: 'Event Date' },
-                  { key: 'description', label: 'Event Description', type: 'textarea' },
-                  { key: 'time', label: 'Event Time' }, { key: 'location', label: 'Location' },
-                  { key: 'category', label: 'Category' },
-                  { key: 'image', label: 'Event Image', type: 'upload' },
-                  { key: 'banner', label: 'Event Banner', type: 'upload' },
-                  { key: 'thumbnail', label: 'Event Thumbnail', type: 'upload' },
-                  { key: 'video', label: 'Event Video', type: 'video' },
-                  { key: 'reel', label: 'Event Reel', type: 'reel' },
-                  { key: 'ctaText', label: 'CTA Button Text' }, { key: 'ctaUrl', label: 'CTA Button URL' },
-                  { key: 'order', label: 'Display Order', type: 'number' },
-                  { key: 'featured', label: 'Featured Toggle', type: 'switch' }, { key: 'active', label: 'Active Toggle', type: 'switch' }
-                ]
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* 4. NEWSLETTER SECTION */}
-        <Card title={<div onClick={() => toggleCard('newsletter')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Mail className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Exclusive Newsletter Hub</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.newsletter && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5">Newsletter Layout Settings</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Switch label="Enable Newsletter Section" checked={newsletterForm.enableNewsletter !== false} onChange={v => setNewsletterForm({...newsletterForm, enableNewsletter: v})} />
-                <Switch label="Enable Email Validation" checked={newsletterForm.enableEmailValidation !== false} onChange={v => setNewsletterForm({...newsletterForm, enableEmailValidation: v})} />
-                <Switch label="Enable Form Animations" checked={newsletterForm.enableAnimation !== false} onChange={v => setNewsletterForm({...newsletterForm, enableAnimation: v})} />
-                <Switch label="Enable Auto Response" checked={newsletterForm.enableAutoResponse !== false} onChange={v => setNewsletterForm({...newsletterForm, enableAutoResponse: v})} />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <Input label="Small Heading" value={newsletterForm.smallHeading || ''} onChange={e => setNewsletterForm({ ...newsletterForm, smallHeading: e.target.value })} />
-                <Input label="Main Heading" value={newsletterForm.mainHeading || ''} onChange={e => setNewsletterForm({ ...newsletterForm, mainHeading: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={newsletterForm.description || ''} onChange={e => setNewsletterForm({ ...newsletterForm, description: e.target.value })} /></div>
-                <Input label="Email Placeholder" value={newsletterForm.placeholderText || ''} onChange={e => setNewsletterForm({ ...newsletterForm, placeholderText: e.target.value })} />
-                <Input label="Subscribe Button Text" value={newsletterForm.buttonText || ''} onChange={e => setNewsletterForm({ ...newsletterForm, buttonText: e.target.value })} />
-                <Input label="Success Message" value={newsletterForm.successMessage || ''} onChange={e => setNewsletterForm({ ...newsletterForm, successMessage: e.target.value })} />
-                <Input label="Error Message" value={newsletterForm.errorMessage || ''} onChange={e => setNewsletterForm({ ...newsletterForm, errorMessage: e.target.value })} />
-                <div className="md:col-span-2"><Input label="Privacy Text" value={newsletterForm.privacyText || ''} onChange={e => setNewsletterForm({ ...newsletterForm, privacyText: e.target.value })} /></div>
-                
-                {['backgroundImage', 'backgroundVideo', 'leftIllustration', 'rightIllustration'].map(k => (
-                  <div key={k} className="border border-zinc-900 p-3 rounded bg-zinc-900/10 flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-zinc-550 block uppercase">{k}</span>
-                    {newsletterForm[k] ? (
-                      <div className="relative w-full h-20 bg-zinc-950 overflow-hidden"><img src={newsletterForm[k]} className="w-full h-full object-cover" /><button onClick={() => setNewsletterForm({ ...newsletterForm, [k]: "" })} className="absolute top-1 right-1 p-1 bg-black/60 rounded text-rose-455"><Trash2 className="w-3.5 h-3.5" /></button></div>
-                    ) : (
-                      <div onClick={() => simulateMediaUpload(k)} className="h-20 border border-dashed border-zinc-850 cursor-pointer flex justify-center items-center"><UploadCloud className="w-4 h-4 text-zinc-650" /></div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3 pb-6"><Button onClick={() => handleSingleSave('newsletter', newsletterForm)}>Save Newsletter Layout</Button></div>
-              
-              {/* SUBSCRIBERS TABLE */}
-              <span className="text-[10px] font-mono uppercase text-luxury-gold border-b border-zinc-900 pb-1.5 mt-2">Subscriber Management</span>
-              <div className="flex justify-between items-center bg-zinc-950 p-2 rounded border border-zinc-900">
-                <div className="flex items-center gap-2 px-3">
-                   <Search className="w-4 h-4 text-zinc-500" />
-                   <input type="text" placeholder="Search subscribers..." value={subscriberSearch} onChange={(e)=>setSubscriberSearch(e.target.value)} className="bg-transparent border-none outline-none text-xs text-zinc-200 w-48" />
-                </div>
-                <div className="flex gap-2">
-                   <Button onClick={handleExportCSV} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-luxury-gold"><Download className="w-3.5 h-3.5" /> CSV Export</Button>
-                   <Button onClick={handleBulkDeleteSubscribers} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-rose-500"><Trash2 className="w-3.5 h-3.5" /> Bulk Delete</Button>
-                </div>
-              </div>
-              <table className="w-full text-xs text-left border-collapse mt-2">
-                <thead>
-                  <tr className="border-b border-zinc-900 text-zinc-500 font-mono uppercase text-[9px] tracking-wider">
-                    <th className="py-2 px-3">Name</th><th className="py-2 px-3">Email</th><th className="py-2 px-3">Date</th><th className="py-2 px-3">Status</th><th className="py-2 px-3 text-right">Actions</th>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-zinc-900/80 text-zinc-400 uppercase font-mono text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-4">Order</th>
+                    <th className="py-2.5 px-4">Channel Name</th>
+                    <th className="py-2.5 px-4">YouTube Subs</th>
+                    <th className="py-2.5 px-4">IG Followers</th>
+                    <th className="py-2.5 px-4">Status</th>
+                    <th className="py-2.5 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {(homepageData?.newsletter?.subscribers || []).filter(s => s.name.toLowerCase().includes(subscriberSearch.toLowerCase()) || s.email.toLowerCase().includes(subscriberSearch.toLowerCase())).map(sub => (
-                    <tr key={sub.id} className="border-b border-zinc-900/60 text-zinc-300">
-                      <td className="py-2.5 px-3">{sub.name}</td><td className="py-2.5 px-3">{sub.email}</td><td className="py-2.5 px-3 font-mono text-[10px]">{sub.subscriptionDate}</td>
-                      <td className="py-2.5 px-3 text-luxury-gold">{sub.status}</td>
-                      <td className="py-2.5 px-3 text-right"><button onClick={() => handleDeleteSubscriber(sub.id)} className="p-1 hover:bg-zinc-900 rounded text-rose-500"><Trash2 className="w-3 h-3" /></button></td>
+                <tbody className="divide-y divide-zinc-800/60">
+                  {formData.channelsTicker.channels.map((ch, idx) => (
+                    <tr key={ch.id} className={`hover:bg-zinc-900/30 ${ch.deleted ? 'opacity-40' : ''}`}>
+                      <td className="py-2.5 px-4 font-mono text-zinc-500">
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => swapOrder('channels', 'channelsTicker', idx, -1)} className="hover:text-luxury-gold cursor-pointer"><ArrowUp className="w-3 h-3" /></button>
+                          <span>{idx + 1}</span>
+                          <button onClick={() => swapOrder('channels', 'channelsTicker', idx, 1)} className="hover:text-luxury-gold cursor-pointer"><ArrowDown className="w-3 h-3" /></button>
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-4 font-serif font-bold text-zinc-200">{ch.name}</td>
+                      <td className="py-2.5 px-4 font-mono text-luxury-gold">{ch.ytSubs || '—'}</td>
+                      <td className="py-2.5 px-4 font-mono text-amber-400">{ch.igFollowers || '—'}</td>
+                      <td className="py-2.5 px-4">
+                        <button 
+                          onClick={() => toggleItemVisibility('channels', 'channelsTicker', ch.id)}
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-mono border cursor-pointer ${ch.visible ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-zinc-900 text-zinc-500 border-zinc-800'}`}
+                        >
+                          {ch.visible ? 'Visible' : 'Hidden'}
+                        </button>
+                      </td>
+                      <td className="py-2.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => setModalConfig({ listKey: 'channels', parentKey: 'channelsTicker', item: ch })} className="p-1 text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                          {ch.deleted ? (
+                            <button onClick={() => handleItemRestore('channels', 'channelsTicker', ch.id)} className="p-1 text-emerald-400"><RotateCcw className="w-3.5 h-3.5" /></button>
+                          ) : (
+                            <button onClick={() => handleItemDelete('channels', 'channelsTicker', ch.id)} className="p-1 text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
-                  {(homepageData?.newsletter?.subscribers || []).length === 0 && <tr><td colSpan={5} className="text-center py-6 text-zinc-600 font-mono italic">No active subscribers found.</td></tr>}
                 </tbody>
               </table>
             </div>
-          )}
-        </Card>
+          </div>
+        </div>
+      )}
 
-        {/* 5. EVENT SECTION */}
-        <Card title={<div onClick={() => toggleCard('events')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Calendar className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Corporate Events Manager</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.events && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-5 border-b border-zinc-900">
-                 <Input label="Section Title" value={eventsForm.sectionTitle || ''} onChange={e => setEventsForm({...eventsForm, sectionTitle: e.target.value})} />
-                 <Input label="Subtitle" value={eventsForm.subtitle || ''} onChange={e => setEventsForm({...eventsForm, subtitle: e.target.value})} />
-                 <div className="md:col-span-2"><Input label="Description" textarea rows={2} value={eventsForm.description || ''} onChange={e => setEventsForm({...eventsForm, description: e.target.value})} /></div>
-                 <div className="md:col-span-2 flex justify-end"><Button onClick={() => handleSingleSave('events', eventsForm)}>Save Event Headers</Button></div>
+      {/* SECTION 6: CORE VALUES */}
+      {activeSection === 'sec-6' && (
+        <div className="space-y-4">
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Core Values Cards List</h3>
+              <Button 
+                onClick={() => setModalConfig({ listKey: 'cards', parentKey: 'coreValues', item: { title: '', description: '' } })} 
+                variant="gold" 
+                size="sm" 
+                className="text-xs uppercase"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Card
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {formData.coreValues.cards.map((cv, idx) => (
+                <div key={cv.id} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2 text-xs">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                    <span className="font-mono text-[10px] text-luxury-gold">Card #{idx + 1}</span>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => setModalConfig({ listKey: 'cards', parentKey: 'coreValues', item: cv })} className="text-zinc-400 hover:text-white"><Edit3 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleItemDelete('cards', 'coreValues', cv.id)} className="text-rose-400 hover:text-rose-300"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                  <h4 className="font-serif font-bold text-white text-sm">{cv.title}</h4>
+                  <p className="text-zinc-400 font-light leading-relaxed">{cv.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 7: STATISTICS */}
+      {activeSection === 'sec-7' && (
+        <div className="space-y-4">
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Statistics Counters</h3>
+              <Button 
+                onClick={() => setModalConfig({ listKey: 'counters', parentKey: 'statistics', item: { value: '', label: '' } })} 
+                variant="gold" 
+                size="sm" 
+                className="text-xs uppercase"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Counter
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+              {formData.statistics.counters.map((st, idx) => (
+                <div key={st.id} className="p-3 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif font-bold text-luxury-gold text-base">{st.value}</span>
+                    <button onClick={() => handleItemDelete('counters', 'statistics', st.id)} className="text-zinc-500 hover:text-rose-400"><Trash2 className="w-3 h-3" /></button>
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-400 uppercase block">{st.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 8: SHORTS & REELS */}
+      {activeSection === 'sec-8' && (
+        <div className="space-y-4">
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Featured Shorts & Reels List</h3>
+              <Button 
+                onClick={() => setModalConfig({ listKey: 'list', parentKey: 'shortsReels', item: { title: '', views: '', videoUrl: '' } })} 
+                variant="gold" 
+                size="sm" 
+                className="text-xs uppercase"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Reel / Short
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {formData.shortsReels.list.map((sr, idx) => (
+                <div key={sr.id} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-white truncate">{sr.title}</span>
+                    <button onClick={() => handleItemDelete('list', 'shortsReels', sr.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                  <span className="text-luxury-gold font-mono text-[10px] block">{sr.views}</span>
+                  {sr.videoUrl && <video src={sr.videoUrl} className="w-full aspect-video bg-black rounded object-cover" muted />}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 9: LONG VIDEOS */}
+      {activeSection === 'sec-9' && (
+        <div className="space-y-4">
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Featured Long Videos List</h3>
+              <Button 
+                onClick={() => setModalConfig({ listKey: 'list', parentKey: 'longVideos', item: { title: '', youtubeUrl: '', views: '', channel: 'Tech Master' } })} 
+                variant="gold" 
+                size="sm" 
+                className="text-xs uppercase"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Long Video
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {formData.longVideos.list.map((lv, idx) => (
+                <div key={lv.id} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-white">{lv.title}</span>
+                    <button onClick={() => handleItemDelete('list', 'longVideos', lv.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                  <div className="flex items-center justify-between font-mono text-[10px] text-zinc-400">
+                    <span>{lv.channel}</span>
+                    <span className="text-luxury-gold">{lv.views}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 10: BRAND COLLABORATIONS */}
+      {activeSection === 'sec-10' && (
+        <div className="space-y-4">
+          <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Brand Collaborations ({formData.brandCollaborations.brands.length})</h3>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="relative w-48">
+                  <Search className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+                  <input
+                    type="text"
+                    placeholder="Search brand..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded pl-7 pr-2 py-1 text-xs text-zinc-200"
+                  />
+                </div>
+                <Button 
+                  onClick={() => setModalConfig({ listKey: 'brands', parentKey: 'brandCollaborations', item: { brandName: '', websiteUrl: '' } })} 
+                  variant="gold" 
+                  size="sm" 
+                  className="text-xs uppercase"
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Brand
+                </Button>
               </div>
-              {renderListManager({
-                sectionKey: 'events',
-                innerListKey: 'list',
-                displayColumns: [{ key: 'eventName', label: 'Event Name' }, { key: 'eventDate', label: 'Date' }, { key: 'eventBanner', label: 'Banner', type: 'image' }],
-                fields: [
-                  { key: 'eventName', label: 'Event Name' }, { key: 'eventCategory', label: 'Category' }, 
-                  { key: 'eventDate', label: 'Date' }, { key: 'eventTime', label: 'Time' },
-                  { key: 'eventLocation', label: 'Venue Location' }, { key: 'speaker', label: 'Speaker' }, 
-                  { key: 'shortDescription', label: 'Short Description', type: 'textarea' }, { key: 'fullDescription', label: 'Full Description', type: 'textarea' },
-                  { key: 'registrationButtonText', label: 'Registration CTA' }, { key: 'registrationUrl', label: 'Registration URL' },
-                  { key: 'eventBanner', label: 'Event Banner', type: 'upload' }, { key: 'eventThumbnail', label: 'Event Thumbnail', type: 'upload' },
-                  { key: 'eventGalleryImages', label: 'Gallery Images (CSV)', type: 'gallery' }, { key: 'eventVideo', label: 'Event Video', type: 'video' },
-                  { key: 'eventReel', label: 'Event Reel', type: 'reel' },
-                  { key: 'featuredToggle', label: 'Featured Event', type: 'switch' }, { key: 'activeToggle', label: 'Active', type: 'switch' }
-                ]
-              })}
             </div>
-          )}
-        </Card>
 
-        {/* 5.5. CONTACT COLLABORATION PREVIEW SECTION */}
-        <Card title={<div onClick={() => toggleCard('contactPreview')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Mail className="w-4 h-4 text-luxury-gold" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">Contact / Collab Preview</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/80 bg-zinc-950/20">
-          {expandedCards.contactPreview && (
-            <div className="p-5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Section Tag (e.g. COLLABORATION INQUIRY)" value={contactPreviewForm.tag || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, tag: e.target.value })} />
-                <Input label="Main Heading Headline" value={contactPreviewForm.title || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, title: e.target.value })} />
-                <Input label="CTA Button Text" value={contactPreviewForm.ctaText || ''} onChange={e => setContactPreviewForm({ ...contactPreviewForm, ctaText: e.target.value })} />
-              </div>
-              <div className="flex justify-end border-t border-zinc-900 pt-3"><Button onClick={() => handleSingleSave('contactPreview', contactPreviewForm)}>Save Collab Preview</Button></div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              {formData.brandCollaborations.brands
+                .filter(b => b.brandName.toLowerCase().includes(searchQuery.toLowerCase()))
+                .map((b, idx) => (
+                  <div key={b.id} className="p-3 bg-zinc-900/60 border border-zinc-800 rounded-xl text-center space-y-2 relative group text-xs">
+                    <span className="font-semibold text-zinc-200 block truncate">{b.brandName}</span>
+                    <button 
+                      onClick={() => handleItemDelete('brands', 'brandCollaborations', b.id, true)} 
+                      className="absolute top-2 right-2 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
             </div>
-          )}
-        </Card>
+          </div>
+        </div>
+      )}
 
-        {/* 6. DYNAMIC CUSTOM SECTIONS */}
-        <Card id="customSections" title={<div onClick={() => toggleCard('customSections')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-luxury-gold/10 border-b border-luxury-gold/20"><div className="flex items-center gap-3"><Plus className="w-5 h-5 text-luxury-gold" /><span className="font-serif text-sm font-bold uppercase tracking-wider text-luxury-gold">Dynamic Custom Sections Builder</span></div><ChevronDown className="w-4 h-4 text-luxury-gold" /></div>} className="p-0 border-luxury-gold/30 bg-zinc-950/20 shadow-gold-glow-sm">
-          {expandedCards.customSections && (
-            <div className="p-5 flex flex-col gap-5">
-              <div className="text-sm text-zinc-400 mb-2">Build completely custom layout sections that will render dynamically on your homepage. Select the layout type and populate the media using the Media Hub.</div>
-              {renderListManager({
-                sectionKey: 'customSections',
-                displayColumns: [{ key: 'sectionTitle', label: 'Title' }, { key: 'layoutType', label: 'Layout Type' }, { key: 'primaryMediaUrl', label: 'Media', type: 'image' }],
-                fields: [
-                  { key: 'sectionTitle', label: 'Section Title' },
-                  { key: 'subtitle', label: 'Subtitle' },
-                  { key: 'layoutType', label: 'Layout Type', type: 'select', options: ['Full Width Hero', 'Split Image & Text', 'Video Background', 'Feature Grid', 'Call to Action Block'] },
-                  { key: 'description', label: 'Content Paragraph', type: 'textarea' },
-                  { key: 'primaryMediaUrl', label: 'Primary Media', type: 'upload' },
-                  { key: 'ctaText', label: 'Button Text' },
-                  { key: 'ctaLink', label: 'Button Link' },
-                  { key: 'order', label: 'Display Order', type: 'number' },
-                  { key: 'status', label: 'Visibility Status', type: 'select', options: ['Active', 'Hidden', 'Draft'] }
-                ]
-              })}
+      {/* SECTION 11: NEWSLETTER & CONTACT */}
+      {activeSection === 'sec-11' && (
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Newsletter & Contact Preview Settings</h3>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Newsletter Heading</label>
+              <input
+                type="text"
+                value={formData.newsletterContact.newsletterHeading}
+                onChange={(e) => persistChanges({ ...formData, newsletterContact: { ...formData.newsletterContact, newsletterHeading: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif"
+              />
             </div>
-          )}
-        </Card>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Contact Preview CTA Text</label>
+              <input
+                type="text"
+                value={formData.newsletterContact.contactCtaText}
+                onChange={(e) => persistChanges({ ...formData, newsletterContact: { ...formData.newsletterContact, contactCtaText: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
-        {/* LEGACY SECTIONS (Restored untouched) */}
-        <Card title={<div onClick={() => toggleCard('heroSlides')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Layers className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Hero Slides (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.heroSlides && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'heroSlides', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'mediaUrl', label: 'Media', type: 'image' }], fields: [{ key: 'title', label: 'Slide Title' }, { key: 'subtitle', label: 'Subtitle' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'mediaType', label: 'Media Type', type: 'select', options: ['image', 'video'] }, { key: 'mediaUrl', label: 'Media File', type: 'upload' }, { key: 'buttonText', label: 'Button Text' }, { key: 'buttonUrl', label: 'Button URL' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('projects')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Projects (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.projects && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'featuredProjects', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'thumbnailUrl', label: 'Thumbnail', type: 'image' }], fields: [{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'thumbnailUrl', label: 'Thumbnail', type: 'upload' }, { key: 'previewImageUrl', label: 'Preview Image', type: 'upload' }, { key: 'previewVideoUrl', label: 'Preview Video', type: 'video' }, { key: 'redirectLink', label: 'Redirect Link' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('videoSlider')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Play className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Video Slider (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.videoSlider && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'videoSlider', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'videoUrl', label: 'Video', type: 'video' }], fields: [{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'videoUrl', label: 'Upload Video', type: 'video' }, { key: 'thumbnailUrl', label: 'Upload Thumbnail', type: 'upload' }, { key: 'redirectUrl', label: 'Redirect Link' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('reels')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Film className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Reels (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.reels && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'reels', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'videoUrl', label: 'Reel Video', type: 'reel' }], fields: [{ key: 'title', label: 'Title' }, { key: 'category', label: 'Category' }, { key: 'duration', label: 'Duration' }, { key: 'videoUrl', label: 'Upload Reel', type: 'reel' }, { key: 'thumbnailUrl', label: 'Upload Thumbnail', type: 'upload' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('shorts')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Video className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Shorts (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.shorts && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'shorts', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'videoUrl', label: 'Short Video', type: 'video' }], fields: [{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'videoUrl', label: 'Upload Short', type: 'video' }, { key: 'thumbnailUrl', label: 'Upload Thumbnail', type: 'upload' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('longVideos')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Film className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Long Videos (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.longVideos && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'longVideos', displayColumns: [{ key: 'title', label: 'Title' }, { key: 'videoUrl', label: 'Long Video', type: 'video' }], fields: [{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'videoUrl', label: 'Upload Long Video', type: 'video' }, { key: 'thumbnailUrl', label: 'Upload Thumbnail', type: 'upload' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('services')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Services Preview (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.services && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'servicesPreview', displayColumns: [{ key: 'name', label: 'Service Name' }, { key: 'iconUrl', label: 'Icon', type: 'image' }], fields: [{ key: 'name', label: 'Name' }, { key: 'iconUrl', label: 'Icon Upload', type: 'upload' }, { key: 'description', label: 'Description', type: 'textarea' }, { key: 'redirectLink', label: 'Link URL' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
-        <Card title={<div onClick={() => toggleCard('logos')} className="flex items-center justify-between w-full py-4 px-5 cursor-pointer bg-zinc-950/20"><div className="flex items-center gap-3"><Handshake className="w-4 h-4 text-zinc-500" /><span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-400">Client Logos (Legacy)</span></div><ChevronDown className="w-4 h-4 text-zinc-500" /></div>} className="p-0 border-zinc-800/40 bg-zinc-950/10">
-          {expandedCards.logos && <div className="p-5 border-t border-zinc-800/80">{renderListManager({ sectionKey: 'clientLogos', displayColumns: [{ key: 'clientName', label: 'Client' }, { key: 'logoUrl', label: 'Logo', type: 'image' }], fields: [{ key: 'clientName', label: 'Client Name' }, { key: 'logoUrl', label: 'Client Logo', type: 'upload' }, { key: 'websiteLink', label: 'Website URL' }, { key: 'order', label: 'Order', type: 'number' }, { key: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'] }] })}</div>}
-        </Card>
+      {/* CREATE / EDIT MODAL */}
+      {modalConfig && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <form onSubmit={handleModalSave} className="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">
+                {modalConfig.item.id ? 'Edit Item' : 'Create New Item'}
+              </h3>
+              <button type="button" onClick={() => setModalConfig(null)} className="text-zinc-500 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-      </div>
+            <div className="space-y-3 text-xs">
+              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => (
+                <div key={key}>
+                  <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
+                  <input
+                    type="text"
+                    value={modalConfig.item[key] || ''}
+                    onChange={(e) => setModalConfig({
+                      ...modalConfig,
+                      item: { ...modalConfig.item, [key]: e.target.value }
+                    })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <Button type="button" variant="outline" size="sm" onClick={() => setModalConfig(null)}>Cancel</Button>
+              <Button type="submit" variant="gold" size="sm">Save Item</Button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,102 +2,100 @@ import React, { useState } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
-  Calendar, Check, Save, Plus, Trash2, Edit3, Eye, 
-  Layers, Globe, Monitor, Tablet, Smartphone, Clock, ImageIcon, X, Award, Users, MapPin, Video, Send, Inbox, Mail, Sparkles
+  Rocket, Check, Save, Plus, Trash2, Edit3, Eye, 
+  Layers, Globe, Monitor, Tablet, Smartphone, Clock, ImageIcon, X, Play, Terminal, Laptop, Cpu, Download, ArrowUpRight, Code, Sparkles, Sliders
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 
-export const Events = () => {
+export const ProductLaunches = () => {
   const { db, updateSection } = useDatabase();
   const { openMediaManager } = useMediaManager();
 
-  const [activeTab, setActiveTab] = useState('events_list'); // overview, events_list, content, media, seo, visibility, publish, preview
-  const [contentSubTab, setContentSubTab] = useState('hero'); // hero, engagement, booking, inbox
+  const [activeTab, setActiveTab] = useState('products'); // overview, products, content, media, seo, visibility, publish, preview
+  const [contentSubTab, setContentSubTab] = useState('hero'); // hero, video, initiatives, downloads, cta
   const [previewMode, setPreviewMode] = useState('desktop');
   const [toast, setToast] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [modalConfig, setModalConfig] = useState(null);
 
   // Default pre-populated production values
-  const defaultEventsCMS = {
+  const defaultLaunchesCMS = {
     hero: {
-      smallBadge: "PUBLIC ENGAGEMENTS",
-      headline: "Keynote Speaking &",
-      highlightWord: "Live Coding Seminars",
+      smallBadge: "SOFTWARE RELEASES",
+      headline: "Product Launches &",
+      highlightWord: "Tech Innovations",
       titleLine2: "",
-      description: "Aman shares developer insights, soft-skills blueprints, and live systems architecture demonstrations on global stages.",
+      description: "We construct platforms, terminal tools, and architectural sandbox spaces to help learners visual and configure engineering problems.",
       visible: true
     },
-    eventsList: [
+    products: [
       {
-        id: "evt-1",
-        title: "React India 2024 Keynote",
-        type: "INTERNATIONAL KEYNOTE",
-        date: "OCTOBER 2024",
-        location: "GOA, INDIA",
-        attendance: "1,500+ ATTENDEES",
-        description: "Delivering opening keynote on Concurrent Rendering patterns & real-time WebGL UI architectures.",
-        accentColor: "#D4AF37",
-        media: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80",
-        status: "Active"
+        id: "prod-1",
+        icon: "Laptop",
+        title: "MasterClass App v2",
+        tagline: "Gamified Interactive Code Learning",
+        description: "Our core dashboard offering browser-based shell access, sandboxed docker execution, and step-by-step challenges covering system architectures.",
+        status: "Active Launch",
+        accent: "#D4AF37",
+        order: 1,
+        visible: true
       },
       {
-        id: "evt-2",
-        title: "AWS Community Day",
-        type: "SYSTEM ARCHITECTURE TALK",
-        date: "DECEMBER 2024",
-        location: "BENGALURU, INDIA",
-        attendance: "3,000+ ATTENDEES",
-        description: "Live breakdown of multi-region database replication & serverless container scaling.",
-        accentColor: "#00E5FF",
-        media: "https://images.unsplash.com/photo-1515169067868-5387ec356754?auto=format&fit=crop&w=600&q=80",
-        status: "Active"
+        id: "prod-2",
+        icon: "Terminal",
+        title: "DevEnv CLI utility",
+        tagline: "Speed Up Local Node Configuration",
+        description: "A fast terminal CLI utility that builds customized, performant TS, Vite, and tailwind stacks in seconds, downloaded 80k+ times.",
+        status: "Open Source",
+        accent: "#00E5FF",
+        order: 2,
+        visible: true
       },
       {
-        id: "evt-3",
-        title: "Open Source Developers Summit",
-        type: "PANEL DISCUSSION",
-        date: "MARCH 2025",
-        location: "NEW DELHI, INDIA",
-        attendance: "2,200+ ATTENDEES",
-        description: "Panel discussion on democratizing software engineering curricula and developer autonomy.",
-        accentColor: "#aa3bff",
-        media: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80",
-        status: "Active"
+        id: "prod-3",
+        icon: "Layers",
+        title: "System Sandbox Hub",
+        tagline: "Interactive AWS & Docker diagrams",
+        description: "A digital workspace where students can construct multi-tier architectures visually, export them, and trigger test loads.",
+        status: "Beta Testing",
+        accent: "#aa3bff",
+        order: 3,
+        visible: true
       }
     ],
-    engagementTypesHeader: {
-      badge: "CAPABILITIES",
-      titleLine1: "Engagement",
-      titleLine2: "Types"
-    },
-    engagementTypes: [
-      { id: "et-1", type: "Event Hosting", order: 1, visible: true },
-      { id: "et-2", type: "Guest Appearance", order: 2, visible: true },
-      { id: "et-3", type: "Corporate Events", order: 3, visible: true },
-      { id: "et-4", type: "Fashion Shows", order: 4, visible: true },
-      { id: "et-5", type: "Product Events", order: 5, visible: true },
-      { id: "et-6", type: "Meetups", order: 6, visible: true },
-      { id: "et-7", type: "Workshops", order: 7, visible: true },
-      { id: "et-8", type: "Conferences", order: 8, visible: true }
-    ],
-    bookingSection: {
-      smallBadge: "SPEAKER BOOKINGS",
-      headlineLine1: "Bring Aman to",
-      highlightWord: "Your Event",
-      description: "Aman keynote schedules fill up rapidly. Bookings are open for university developer panels, virtual technical summits, DevFests, or corporate software consulting cycles.",
-      pressKitNote: "Full Press Kit and AV Rider available upon approval.",
+    featureVideo: {
+      smallBadge: "LATEST LAUNCH VIDEO",
+      headline: "MasterClass v2 Platform Launch Walkthrough",
+      description: "Watch Aman demonstrate the sandboxed docker containers, web terminals, and the multiplayer live coding rooms that make learning code feel like a cooperative MMO game.",
+      trailerBtnText: "Play Trailer",
+      notesBtnText: "View Launch Notes",
+      thumbnailUrl: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=400&q=80",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       visible: true
     },
-    bookingInquiries: [
-      { id: "inq-1", name: "David Miller", email: "david@devfest.org", organization: "DevFest 2026", details: "Keynote speaking request for 5,000 developer attendees.", status: "Pending", date: "Today" }
+    initiativesHeader: {
+      badge: "OUR WORK",
+      titleLine1: "Launch",
+      titleLine2: "Initiatives"
+    },
+    initiatives: [
+      { id: "init-1", title: "Launch Events", description: "Hosting high-energy digital and physical events to unveil new platforms, creating massive day-one adoption and community buzz.", order: 1, visible: true },
+      { id: "init-2", title: "Product Promotions", description: "Strategic marketing pushes that position developer tools directly in front of their ideal user base through trusted channels.", order: 2, visible: true },
+      { id: "init-3", title: "Brand Launches", description: "End-to-end support for introducing new technology brands to the market, establishing authority and developer trust instantly.", order: 3, visible: true },
+      { id: "init-4", title: "Campaign Videos", description: "Cinematic, deep-dive promotional videos that explain complex software architectures in a visually stunning and digestible format.", order: 4, visible: true },
+      { id: "init-5", title: "Results", description: "We measure our success by tangible impact: tens of thousands of active accounts created, millions of impressions, and sustained engagement long after the initial launch phase ends.", order: 5, visible: true }
+    ],
+    downloads: [
+      { id: "dl-1", platform: "Windows Installer (.exe)", version: "v2.4.1", size: "85 MB", link: "/download/win" },
+      { id: "dl-2", platform: "macOS Universal (.dmg)", version: "v2.4.1", size: "92 MB", link: "/download/mac" },
+      { id: "dl-3", platform: "Linux AppImage (.AppImage)", version: "v2.4.1", size: "78 MB", link: "/download/linux" }
     ],
     seo: {
-      metaTitle: "Keynote Speaking & Events | TechMaster",
-      metaDescription: "Book Aman for keynote talks, live coding seminars, and developer summit workshops globally.",
-      canonicalUrl: "https://techmaster.in/events",
-      ogImage: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80"
+      metaTitle: "Product Launches & Tech Innovations | TechMaster",
+      metaDescription: "Discover TechMaster's software releases, open-source DevEnv CLI utilities, and sandbox masterclasses.",
+      canonicalUrl: "https://techmaster.in/product-launches",
+      ogImage: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80"
     },
     visibility: {
       desktop: true,
@@ -112,27 +110,26 @@ export const Events = () => {
     }
   };
 
-  const storedCMS = db?.eventsData_CMS || db?.eventsCMS || db?.eventsPage || defaultEventsCMS;
+  const storedCMS = db?.launchesData || db?.productLaunchesCMS || db?.campaigns || defaultLaunchesCMS;
 
   const [formData, setFormData] = useState({
-    ...defaultEventsCMS,
+    ...defaultLaunchesCMS,
     ...storedCMS,
-    hero: { ...defaultEventsCMS.hero, ...(storedCMS.hero || {}) },
-    eventsList: (db?.eventsData && db.eventsData.length > 0) ? db.eventsData : ((storedCMS.eventsList && storedCMS.eventsList.length > 0) ? storedCMS.eventsList : defaultEventsCMS.eventsList),
-    engagementTypesHeader: { ...defaultEventsCMS.engagementTypesHeader, ...(storedCMS.engagementTypesHeader || {}) },
-    engagementTypes: (storedCMS.engagementTypes && storedCMS.engagementTypes.length > 0) ? storedCMS.engagementTypes : defaultEventsCMS.engagementTypes,
-    bookingSection: { ...defaultEventsCMS.bookingSection, ...(storedCMS.bookingSection || {}) },
-    bookingInquiries: (db?.bookingInquiries && db.bookingInquiries.length > 0) ? db.bookingInquiries : defaultEventsCMS.bookingInquiries
+    hero: { ...defaultLaunchesCMS.hero, ...(storedCMS.hero || {}) },
+    products: (storedCMS.products && storedCMS.products.length > 0) ? storedCMS.products : defaultLaunchesCMS.products,
+    featureVideo: { ...defaultLaunchesCMS.featureVideo, ...(storedCMS.featureVideo || {}) },
+    initiativesHeader: { ...defaultLaunchesCMS.initiativesHeader, ...(storedCMS.initiativesHeader || {}) },
+    initiatives: (storedCMS.initiatives && storedCMS.initiatives.length > 0) ? storedCMS.initiatives : defaultLaunchesCMS.initiatives,
+    downloads: (storedCMS.downloads && storedCMS.downloads.length > 0) ? storedCMS.downloads : defaultLaunchesCMS.downloads
   });
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
   const persistChanges = (nextState) => {
     setFormData(nextState);
-    updateSection('eventsData_CMS', nextState);
-    updateSection('eventsCMS', nextState);
-    updateSection('eventsData', nextState.eventsList);
-    updateSection('bookingInquiries', nextState.bookingInquiries);
+    updateSection('launchesData', nextState);
+    updateSection('productLaunchesCMS', nextState);
+    updateSection('campaigns', nextState);
   };
 
   const handleSaveAll = (isPublished = false) => {
@@ -146,7 +143,7 @@ export const Events = () => {
     };
     persistChanges(updatedState);
     setIsSaved(true);
-    showToast(isPublished ? 'Events Page Published Live!' : 'Draft Saved Successfully!', 'success');
+    showToast(isPublished ? 'Product Launches Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);
   };
 
@@ -170,7 +167,7 @@ export const Events = () => {
         ...item,
         id: `${listKey.slice(0, 3)}-${Date.now()}`,
         order: list.length + 1,
-        status: 'Active'
+        visible: true
       };
       updated = [...list, newItem];
     }
@@ -189,10 +186,10 @@ export const Events = () => {
         <div>
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full bg-luxury-gold shadow-gold-glow animate-pulse" />
-            <h1 className="text-2xl font-serif font-bold tracking-wide uppercase text-white">Events & Keynotes Enterprise CMS</h1>
+            <h1 className="text-2xl font-serif font-bold tracking-wide uppercase text-white">Product Launches & Innovations CMS</h1>
           </div>
           <p className="text-xs text-zinc-400 mt-1 font-mono">
-            Manage Public Engagements, Conferences Catalog, Engagement Types Chips & Speaker Booking Inquiries.
+            Manage Software Releases, Product Cards, Launch Video Walkthrough, Initiatives & Downloads.
           </p>
         </div>
 
@@ -210,7 +207,7 @@ export const Events = () => {
       {/* 8 Architectural Tabs */}
       <div className="flex items-center gap-1.5 border-b border-zinc-800/80 pb-3 overflow-x-auto scrollbar-none">
         {[
-          { id: 'events_list', label: '1. Event Cards Catalog', icon: Calendar },
+          { id: 'products', label: '1. Product Catalog', icon: Rocket },
           { id: 'content', label: '2. Page Content CMS', icon: Layers },
           { id: 'media', label: 'Media Assets', icon: ImageIcon },
           { id: 'seo', label: 'SEO & Search', icon: Globe },
@@ -236,44 +233,35 @@ export const Events = () => {
         })}
       </div>
 
-      {/* TAB 1: EVENT CARDS CATALOG */}
-      {activeTab === 'events_list' && (
+      {/* TAB 1: PRODUCT CATALOG */}
+      {activeTab === 'products' && (
         <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
           <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-            <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Conferences & Keynote Cards ({formData.eventsList.length})</h3>
+            <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Product Cards ({formData.products.length})</h3>
             <Button 
-              onClick={() => setModalConfig({ listKey: 'eventsList', item: { title: '', type: 'INTERNATIONAL KEYNOTE', date: 'DECEMBER 2025', location: 'MUMBAI, INDIA', attendance: '2,000+ ATTENDEES', description: '', accentColor: '#D4AF37', media: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80', status: 'Active' } })} 
+              onClick={() => setModalConfig({ listKey: 'products', item: { icon: 'Laptop', title: '', tagline: '', description: '', status: 'Active Launch', accent: '#D4AF37' } })} 
               variant="gold" 
               size="sm" 
               className="text-xs uppercase"
             >
-              <Plus className="w-3.5 h-3.5 mr-1" /> Add Event Card
+              <Plus className="w-3.5 h-3.5 mr-1" /> Add Product Card
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {formData.eventsList.map((evt, idx) => (
-              <div key={evt.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-3 flex flex-col justify-between">
-                <div>
-                  <div className="aspect-video w-full rounded-lg overflow-hidden border border-zinc-800 mb-3 relative">
-                    <img src={evt.media || evt.image} alt={evt.title} className="w-full h-full object-cover" />
-                    <span className="absolute top-2 left-2 bg-black/80 text-luxury-gold font-mono text-[9px] px-2 py-0.5 rounded border border-luxury-gold/30 uppercase font-bold">
-                      {evt.type}
-                    </span>
-                  </div>
-
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">{evt.date} • {evt.location}</span>
-                  <h4 className="font-serif font-bold text-white text-base leading-snug mb-1">{evt.title}</h4>
-                  <p className="text-zinc-400 font-light text-xs line-clamp-2 mb-2">{evt.description}</p>
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-zinc-800/80 text-[10px] font-mono text-luxury-gold">
-                  <span>{evt.attendance}</span>
+            {formData.products.map((p, idx) => (
+              <div key={p.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-3">
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                  <span className="px-2 py-0.5 rounded bg-luxury-gold/10 text-luxury-gold font-mono text-[9px] uppercase font-bold">{p.status}</span>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setModalConfig({ listKey: 'eventsList', item: evt })} className="p-1 text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => handleItemDelete('eventsList', evt.id)} className="p-1 text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => setModalConfig({ listKey: 'products', item: p })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleItemDelete('products', p.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
+
+                <h4 className="font-serif font-bold text-white text-base">{p.title}</h4>
+                {p.tagline && <span className="text-zinc-400 font-mono text-[10px] uppercase block">{p.tagline}</span>}
+                <p className="text-zinc-400 font-light text-xs leading-relaxed">{p.description}</p>
               </div>
             ))}
           </div>
@@ -287,9 +275,9 @@ export const Events = () => {
           <div className="flex items-center gap-2 bg-zinc-900/60 p-1.5 rounded-xl border border-zinc-800/80 w-fit overflow-x-auto">
             {[
               { id: 'hero', label: '1. Hero Header' },
-              { id: 'engagement', label: '2. Engagement Chips' },
-              { id: 'booking', label: '3. Speaker Booking CMS' },
-              { id: 'inbox', label: '4. Booking Inquiries Inbox' }
+              { id: 'video', label: '2. Launch Video' },
+              { id: 'initiatives', label: '3. Launch Initiatives' },
+              { id: 'downloads', label: '4. Downloads' }
             ].map(sub => (
               <button
                 key={sub.id}
@@ -308,7 +296,7 @@ export const Events = () => {
           {/* SUB-TAB 1: HERO HEADER */}
           {contentSubTab === 'hero' && (
             <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
-              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Events Hero Banner</h3>
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Product Launch Hero Banner</h3>
               <div className="space-y-4">
                 <div>
                   <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Small Badge</label>
@@ -355,108 +343,121 @@ export const Events = () => {
             </div>
           )}
 
-          {/* SUB-TAB 2: ENGAGEMENT CHIPS */}
-          {contentSubTab === 'engagement' && (
+          {/* SUB-TAB 2: LAUNCH VIDEO */}
+          {contentSubTab === 'video' && (
             <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Engagement Type Chips ({formData.engagementTypes.length})</h3>
-                <Button 
-                  onClick={() => setModalConfig({ listKey: 'engagementTypes', item: { type: '' } })} 
-                  variant="gold" 
-                  size="sm" 
-                  className="text-xs uppercase"
-                >
-                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Engagement Chip
-                </Button>
-              </div>
-
-              <div className="flex flex-wrap gap-2.5">
-                {formData.engagementTypes.map((et, idx) => (
-                  <div key={et.id || idx} className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-200">
-                    <span className="font-mono text-xs">{et.type}</span>
-                    <button onClick={() => handleItemDelete('engagementTypes', et.id)} className="text-zinc-500 hover:text-rose-400"><X className="w-3.5 h-3.5" /></button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* SUB-TAB 3: SPEAKER BOOKING CMS */}
-          {contentSubTab === 'booking' && (
-            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
-              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Speaker Booking Section Settings</h3>
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Latest Launch Video Feature</h3>
               <div className="space-y-4">
                 <div>
                   <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Small Badge</label>
                   <input
                     type="text"
-                    value={formData.bookingSection.smallBadge}
-                    onChange={(e) => persistChanges({ ...formData, bookingSection: { ...formData.bookingSection, smallBadge: e.target.value } })}
+                    value={formData.featureVideo.smallBadge}
+                    onChange={(e) => persistChanges({ ...formData, featureVideo: { ...formData.featureVideo, smallBadge: e.target.value } })}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Headline Line 1</label>
-                    <input
-                      type="text"
-                      value={formData.bookingSection.headlineLine1}
-                      onChange={(e) => persistChanges({ ...formData, bookingSection: { ...formData.bookingSection, headlineLine1: e.target.value } })}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Highlight Word (Gold Italic)</label>
-                    <input
-                      type="text"
-                      value={formData.bookingSection.highlightWord}
-                      onChange={(e) => persistChanges({ ...formData, bookingSection: { ...formData.bookingSection, highlightWord: e.target.value } })}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-serif italic font-bold"
-                    />
-                  </div>
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Video Title Headline</label>
+                  <input
+                    type="text"
+                    value={formData.featureVideo.headline}
+                    onChange={(e) => persistChanges({ ...formData, featureVideo: { ...formData.featureVideo, headline: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                  />
                 </div>
 
                 <div>
                   <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Description</label>
                   <textarea
                     rows={3}
-                    value={formData.bookingSection.description}
-                    onChange={(e) => persistChanges({ ...formData, bookingSection: { ...formData.bookingSection, description: e.target.value } })}
+                    value={formData.featureVideo.description}
+                    onChange={(e) => persistChanges({ ...formData, featureVideo: { ...formData.featureVideo, description: e.target.value } })}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
                   />
                 </div>
 
-                <div>
-                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Press Kit Note</label>
-                  <input
-                    type="text"
-                    value={formData.bookingSection.pressKitNote}
-                    onChange={(e) => persistChanges({ ...formData, bookingSection: { ...formData.bookingSection, pressKitNote: e.target.value } })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-400 font-mono"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Trailer Button Text</label>
+                    <input
+                      type="text"
+                      value={formData.featureVideo.trailerBtnText}
+                      onChange={(e) => persistChanges({ ...formData, featureVideo: { ...formData.featureVideo, trailerBtnText: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Notes Button Text</label>
+                    <input
+                      type="text"
+                      value={formData.featureVideo.notesBtnText}
+                      onChange={(e) => persistChanges({ ...formData, featureVideo: { ...formData.featureVideo, notesBtnText: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* SUB-TAB 4: BOOKING INQUIRIES INBOX */}
-          {contentSubTab === 'inbox' && (
+          {/* SUB-TAB 3: LAUNCH INITIATIVES */}
+          {contentSubTab === 'initiatives' && (
             <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
-              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Speaker Booking Submissions ({formData.bookingInquiries.length})</h3>
-              <div className="space-y-3">
-                {formData.bookingInquiries.map((inq, idx) => (
-                  <div key={inq.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Launch Initiatives Cards ({formData.initiatives.length})</h3>
+                <Button 
+                  onClick={() => setModalConfig({ listKey: 'initiatives', item: { title: '', description: '' } })} 
+                  variant="gold" 
+                  size="sm" 
+                  className="text-xs uppercase"
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Initiative
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {formData.initiatives.map((init, idx) => (
+                  <div key={init.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2">
                     <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                      <div className="flex items-center gap-2">
-                        <strong className="text-white text-sm">{inq.name}</strong>
-                        <span className="text-zinc-400 font-mono text-[10px]">({inq.email})</span>
+                      <h4 className="font-serif font-bold text-white text-base">{init.title}</h4>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => setModalConfig({ listKey: 'initiatives', item: init })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleItemDelete('initiatives', init.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
-                      <span className="px-2 py-0.5 rounded bg-luxury-gold/10 text-luxury-gold font-mono text-[9px] uppercase font-bold">{inq.status}</span>
                     </div>
-                    <span className="text-luxury-gold font-mono text-[10px] block">Organization: {inq.organization}</span>
-                    <p className="text-zinc-300 font-light text-xs">{inq.details}</p>
+                    <p className="text-zinc-400 font-light text-xs leading-relaxed">{init.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 4: DOWNLOADS */}
+          {contentSubTab === 'downloads' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Software Downloads ({formData.downloads.length})</h3>
+                <Button 
+                  onClick={() => setModalConfig({ listKey: 'downloads', item: { platform: 'Linux (.deb)', version: 'v2.4.1', size: '75 MB', link: '/download/linux' } })} 
+                  variant="gold" 
+                  size="sm" 
+                  className="text-xs uppercase"
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Download Package
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {formData.downloads.map((dl, idx) => (
+                  <div key={dl.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2">
+                    <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                      <span className="font-bold text-white">{dl.platform}</span>
+                      <button onClick={() => handleItemDelete('downloads', dl.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                    <span className="text-luxury-gold font-mono text-[10px] block">{dl.version} • {dl.size}</span>
                   </div>
                 ))}
               </div>
@@ -485,8 +486,8 @@ export const Events = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/events"
-                title="Live Preview Events & Keynotes"
+                src="http://localhost:5173/product-launches"
+                title="Live Preview Product Launches"
                 className="w-full h-[600px] border-none"
               />
             </div>
@@ -508,7 +509,7 @@ export const Events = () => {
             </div>
 
             <div className="space-y-3 text-xs">
-              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'status', 'deleted'].includes(k)).map(key => (
+              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => (
                 <div key={key}>
                   <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
                   <input

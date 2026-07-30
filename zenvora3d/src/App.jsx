@@ -5,43 +5,48 @@ import { Layout } from './components/Layout';
 import { AuthContainer } from './pages/Auth/AuthContainer';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 
-// Modules
+// Website Management Modules
 import { Homepage } from './pages/Modules/Homepage';
 import { About } from './pages/Modules/About';
 import { FounderJourney } from './pages/Modules/FounderJourney';
 import { MissionVision } from './pages/Modules/MissionVision';
-import { CoreServices } from './pages/Modules/CoreServices';
-import { Careers } from './pages/Modules/Careers';
-import { FAQContact } from './pages/Modules/FAQContact';
-import { Analytics } from './pages/Modules/Analytics';
-import { WebsiteSettings } from './pages/Modules/WebsiteSettings';
-import { GenericCRUD } from './pages/Modules/GenericCRUD';
-import Collaborations from './pages/Modules/Collaborations';
-import { Campaigns } from './pages/Modules/Campaigns';
-import { MediaCoverage } from './pages/Modules/MediaCoverage';
-import { Blogs } from './pages/Modules/Blogs';
-import { SEOManagement } from './pages/Modules/SEOManagement';
-import { UserManagement } from './pages/Modules/UserManagement';
-import { AdminProfile } from './pages/Modules/AdminProfile';
 import { WhatWeDo } from './pages/Modules/WhatWeDo';
-import { Testimonials } from './pages/Modules/Testimonials';
+import { CoreServices } from './pages/Modules/CoreServices';
+import { Services } from './pages/Modules/Services';
+import { Collaborations } from './pages/Modules/Collaborations';
+import { Campaigns } from './pages/Modules/Campaigns';
+import { ProductLaunches } from './pages/Modules/ProductLaunches';
 import { Portfolio } from './pages/Modules/Portfolio';
-import Events from './pages/Modules/Events';
+import { MediaGallery } from './pages/Modules/MediaGallery';
+import { Testimonials } from './pages/Modules/Testimonials';
+import { Events } from './pages/Modules/Events';
+import { Blogs } from './pages/Modules/Blogs';
+import { Careers } from './pages/Modules/Careers';
 import { FAQ } from './pages/Modules/FAQ';
 import { Contact } from './pages/Modules/Contact';
-import { LegalCMS } from './pages/Modules/LegalCMS';
+import { PrivacyPolicy } from './pages/Modules/PrivacyPolicy';
+import { TermsConditions } from './pages/Modules/TermsConditions';
+import { FooterCMS } from './pages/Modules/FooterCMS';
 
-import { schemas } from './utils/schemas';
-import Services from './pages/Modules/Services';
+// Global & Enterprise Management Modules
+import { MediaLibrary } from './pages/Modules/MediaLibrary';
+import { NavigationManager } from './pages/Modules/NavigationManager';
+import { PagesManager } from './pages/Modules/PagesManager';
+import { SEOManager } from './pages/Modules/SEOManager';
+import { NewsletterManager } from './pages/Modules/NewsletterManager';
+import { ContactsManager } from './pages/Modules/ContactsManager';
+import { Analytics } from './pages/Modules/Analytics';
+import { UserManagement } from './pages/Modules/UserManagement';
+import { RolesPermissionsManager } from './pages/Modules/RolesPermissionsManager';
+import { WebsiteSettings } from './pages/Modules/WebsiteSettings';
+import { AdminProfile } from './pages/Modules/AdminProfile';
 
 function AppContent() {
   const context = useDatabase();
-  const { auth, db } = context || { auth: { isLoggedIn: false }, db: {} }; // avoid crashes if provider is missing
+  const { auth } = context || { auth: { isLoggedIn: false } };
 
   const [currentView, setCurrentView] = useState('dashboard');
   const isAuthenticated = Boolean(auth?.isLoggedIn || JSON.parse(localStorage.getItem('zenvora_auth') || '{}')?.isLoggedIn);
-
-
 
   if (!isAuthenticated) {
     return <AuthContainer onAuthSuccess={() => setCurrentView('dashboard')} />;
@@ -49,122 +54,95 @@ function AppContent() {
 
   const renderView = () => {
     switch (currentView) {
-
       case 'dashboard':
         return <Dashboard setCurrentView={setCurrentView} />;
 
+      // Website Management Pages
       case 'homepage':
-        return <Homepage setCurrentView={setCurrentView} />;
-
+        return <Homepage />;
       case 'about':
         return <About />;
-
       case 'founder-journey':
         return <FounderJourney />;
-
       case 'mission-vision':
         return <MissionVision />;
-
       case 'what-we-do':
         return <WhatWeDo />;
-
       case 'core-services':
         return <CoreServices />;
-
       case 'services':
         return <Services />;
-
-   // App.jsx mein ye case add karein
-case 'career': 
-case 'job-openings':
-case 'resume-management':
-  return <Careers/>; // Agar aapne Careers component banaya hai toh <Careers /> likhein
-
-      case 'enquiries':
-      case 'faq-contact':
-        return <FAQContact setCurrentView={setCurrentView} />;
-
-      case 'faq':
-        return <FAQ />;
-
-      case 'contact':
-        return <Contact />;
-
-      case 'analytics':
-        return <Analytics />;
-
-      case 'settings':
-      case 'website-settings':
-        return <WebsiteSettings setCurrentView={setCurrentView} />;
-
-      // ✅ FIXED COLLABORATIONS
       case 'brand-collaborations':
         return <Collaborations />;
-
-      // ❌ FIXED TYPO (Campaigns)
-      case 'campaign-product':
+      case 'campaigns':
         return <Campaigns />;
-
       case 'product-launches':
-        return (
-          <GenericCRUD
-            collection="launches"
-            title="Product Launches"
-            schema={schemas.launches}
-          />
-        );
-
-case 'events':
-  return <Events />;
-
+        return <ProductLaunches />;
       case 'portfolio':
-              return <Portfolio />;
-
-
-      case 'media-coverage':
-        return <MediaCoverage />;
-
+        return <Portfolio />;
+      case 'media-gallery':
+        return <MediaGallery />;
       case 'testimonials':
         return <Testimonials />;
-        
-      case 'legal-cms':
-        return <LegalCMS />;
-        
-
-      case 'blog':
+      case 'events':
+        return <Events />;
+      case 'faq':
+        return <FAQ />;
+      case 'contact':
+      case 'contact-cms':
+        return <Contact />;
+      case 'blogs':
         return <Blogs />;
+      case 'careers':
+      case 'job-openings':
+      case 'resume-management':
+        return <Careers />;
+      case 'privacy-policy':
+        return <PrivacyPolicy />;
+      case 'terms-conditions':
+      case 'legal-cms':
+        return <TermsConditions />;
+      case 'footer':
+        return <FooterCMS />;
 
+      // Global & Enterprise Management Modules
+      case 'media-library':
+        return <MediaLibrary />;
+      case 'navigation-manager':
+        return <NavigationManager />;
+      case 'pages':
+        return <PagesManager setCurrentView={setCurrentView} />;
+      case 'seo-manager':
       case 'seo':
-      case 'seo-management':
-        return <SEOManagement />;
-
+        return <SEOManager />;
+      case 'newsletter':
+        return <NewsletterManager />;
+      case 'contacts':
+      case 'enquiries':
+      case 'faq-contact':
+        return <ContactsManager />;
+      case 'analytics':
+        return <Analytics />;
       case 'users':
       case 'user-management':
         return <UserManagement />;
-
+      case 'roles-permissions':
+        return <RolesPermissionsManager />;
+      case 'settings':
+      case 'website-settings':
+        return <WebsiteSettings setCurrentView={setCurrentView} />;
       case 'profile':
         return <AdminProfile />;
 
       default:
-        return (
-          <div className="text-center p-12">
-            <h2 className="text-xl font-serif text-zinc-400">
-              Module Under Construction
-            </h2>
-            <p className="text-xs text-zinc-500 mt-2">
-              The selected administrative module is loading shortly.
-            </p>
-          </div>
-        );
+        return <Dashboard setCurrentView={setCurrentView} />;
     }
   };
 
   return (
-    <>
-      <Layout currentView={currentView} setCurrentView={setCurrentView}>
-        {renderView()}
-      </Layout>
-    </>
+    <Layout currentView={currentView} setCurrentView={setCurrentView}>
+      {renderView()}
+    </Layout>
   );
 }
 

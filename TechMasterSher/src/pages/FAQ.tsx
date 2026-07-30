@@ -4,14 +4,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
 
 export const FAQ: React.FC = () => {
-  const { faqData, dbData } = useData();
+  const { dbData } = useData();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const faqSettings = dbData?.faqSettings || {
+  let localDb: any = {};
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) localDb = JSON.parse(saved);
+  } catch (e) {}
+
+  const rawData = dbData?.faqPageData || localDb?.faqPageData || {};
+
+  const faqSettings = rawData.settings || {
     badge: "INFORMATION ARCHIVE",
     heading: "Answers &",
     highlightHeading: "Frequently Asked Questions"
   };
+
+  const faqsList = rawData.faqs || [
+    { id: '1', question: "What is your main service?", answer: "We provide enterprise tech solutions.", category: "General", order: 1 }
+  ];
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
@@ -38,7 +50,7 @@ export const FAQ: React.FC = () => {
 
       {/* FAQ Accordion Grid */}
       <section className="max-w-4xl mx-auto text-left flex flex-col gap-5 relative z-10">
-        {faqData.map((faq) => {
+        {faqsList.map((faq) => {
           const isExpanded = expandedId === faq.id;
 
           return (

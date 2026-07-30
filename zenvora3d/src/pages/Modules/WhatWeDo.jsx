@@ -1,589 +1,513 @@
 import React, { useState } from 'react';
-import { useMediaManager } from "../../context/MediaContext";
 import { useDatabase } from '../../context/DatabaseContext';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Switch } from '../../components/ui/Switch';
-import { Badge } from '../../components/ui/Badge';
-import { Input } from '../../components/ui/Input';
+import { useMediaManager } from '../../context/MediaContext';
 import { 
-  Layers, Video, Code, Presentation, MessageSquareCode, Save, RefreshCw, 
-  ChevronDown, ChevronRight, Edit3, Trash2, ArrowUp, ArrowDown, 
-  X, UploadCloud, Link as LinkIcon, AlertCircle, Settings, Plus, 
-  Milestone, Compass, Lightbulb, Globe, ShieldCheck
+  Briefcase, Check, Save, Plus, Trash2, Edit3, Eye, 
+  Layers, Globe, Monitor, Tablet, Smartphone, Clock, ImageIcon, X, Award, Sparkles, Video, Code, Presentation, MessageSquareCode, Sliders
 } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { Toast } from '../../components/ui/Toast';
 
 export const WhatWeDo = () => {
   const { db, updateSection } = useDatabase();
-  const wwdData = db?.whatWeDo || {};
-
-  // Collapsible cards state
-  const [expandedCards, setExpandedCards] = useState({
-    hero: true,
-    operations: false,
-    servicesList: false,
-    quoteBanner: false,
-    seo: false
-  });
-
-  const toggleCard = (cardId) => {
-    setExpandedCards(prev => ({ ...prev, [cardId]: !prev[cardId] }));
-  };
-
-  // Toast state (only for critical saves, toggles are silent)
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  // Single Forms State
-  const [heroForm, setHeroForm] = useState(wwdData?.hero || {});
-  const [quoteForm, setQuoteForm] = useState(wwdData?.quoteBanner || {});
-  const [seoForm, setSeoForm] = useState(wwdData?.seo || {});
-
-  // List editor states
-  const [activeEditorSection, setActiveEditorSection] = useState(null); 
-  const [editingItemId, setEditingItemId] = useState(null);
-  const [draftItem, setDraftItem] = useState({});
-
-  // Media uploading state
-  const [uploadingField, setUploadingField] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showCropModal, setShowCropModal] = useState(false);
-  const [cropTargetField, setCropTargetField] = useState(null);
-
   const { openMediaManager } = useMediaManager();
-  const simulateMediaUpload = (targetKey, isObjectForm = false, objectSetter = null) => {
-    openMediaManager({
-      onSelect: (url) => {
-        if (activeEditorSection) {
-            setDraftItem(prev => ({ ...prev, [targetKey]: url }));
-          } else {
-            setSeoForm(prev => (targetKey in prev || ['ogImageUrl'].includes(targetKey) ? { ...prev, [targetKey]: url } : prev));
-          }
+
+  const [activeTab, setActiveTab] = useState('content'); // overview, content, media, seo, visibility, publish, preview
+  const [contentSubTab, setContentSubTab] = useState('hero'); // hero, operations, services, quote
+  const [previewMode, setPreviewMode] = useState('desktop');
+  const [toast, setToast] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [modalConfig, setModalConfig] = useState(null);
+
+  // Default pre-populated production values
+  const defaultWhatWeDoCMS = {
+    hero: {
+      smallBadge: "CORE ACTIVITIES",
+      headline: "What We Do to",
+      highlightWord: "Reshape Learning",
+      titleLine2: "",
+      description: "We build content, platforms, keynotes, and campaigns to bridge the gap between classroom syntax and global engineering workspaces.",
+      bgImageUrl: "",
+      bgVideoUrl: "",
+      visible: true
+    },
+    operations: [
+      {
+        id: "op-1",
+        icon: "Video",
+        opNumber: "01",
+        title: "YouTube Production",
+        subtitle: "Cinematic Coding Breakdowns",
+        description: "We scripting, record, and edit deep-dive developer tutorials that run like cinematic stories. Reaching over 2.5 million subscribers with weekly guides.",
+        accent: "#D4AF37",
+        order: 1,
+        visible: true
+      },
+      {
+        id: "op-2",
+        icon: "Code",
+        opNumber: "02",
+        title: "Interactive Syllabus Design",
+        subtitle: "Online MasterClasses",
+        description: "Drafting production-level courses that focus on Docker pipelines, testing arrays, and backend scale, complete with live browser containers.",
+        accent: "#00E5FF",
+        order: 2,
+        visible: true
+      },
+      {
+        id: "op-3",
+        icon: "Presentation",
+        opNumber: "03",
+        title: "Motivational Keynotes",
+        subtitle: "TEDx & Global Tech Talks",
+        description: "Aman travels worldwide delivering opening remarks on 'Democratizing Code' and soft skill strategies to help students bypass generic hiring cycles.",
+        accent: "#aa3bff",
+        order: 3,
+        visible: true
+      },
+      {
+        id: "op-4",
+        icon: "MessageSquareCode",
+        opNumber: "04",
+        title: "Community Hackathons",
+        subtitle: "Empowerment Cohorts",
+        description: "Hosting virtual/physical coding tournaments sponsored by Vercel and Google Cloud to give students direct placement links.",
+        accent: "#FF007F",
+        order: 4,
+        visible: true
       }
-    });
+    ],
+    servicesHeader: {
+      badge: "OUR EXPERTISE",
+      titleLine1: "Comprehensive",
+      titleLine2: "Services"
+    },
+    servicesList: [
+      { id: "srv-1", tag: "Content Creation", order: 1, visible: true },
+      { id: "srv-2", tag: "Influencer Marketing", order: 2, visible: true },
+      { id: "srv-3", tag: "Brand Promotions", order: 3, visible: true },
+      { id: "srv-4", tag: "Brand Campaigns", order: 4, visible: true },
+      { id: "srv-5", tag: "Product Launches", order: 5, visible: true },
+      { id: "srv-6", tag: "Event Hosting", order: 6, visible: true },
+      { id: "srv-7", tag: "Event Management", order: 7, visible: true },
+      { id: "srv-8", tag: "Corporate Collaborations", order: 8, visible: true },
+      { id: "srv-9", tag: "Digital Marketing", order: 9, visible: true },
+      { id: "srv-10", tag: "Personal Branding", order: 10, visible: true },
+      { id: "srv-11", tag: "Creative Consulting", order: 11, visible: true },
+      { id: "srv-12", tag: "Social Media Strategy", order: 12, visible: true },
+      { id: "srv-13", tag: "Creative Direction", order: 13, visible: true },
+      { id: "srv-14", tag: "Public Speaking", order: 14, visible: true },
+      { id: "srv-15", tag: "Workshop Sessions", order: 15, visible: true }
+    ],
+    quoteBanner: {
+      quoteText: "Education is not the learning of facts, but the training of the mind to think.",
+      authorName: "Aman (Tech Master)",
+      accentColor: "#D4AF37",
+      visible: true
+    },
+    seo: {
+      metaTitle: "What We Do | TechMaster",
+      metaDescription: "Discover how TechMaster reshapes technology education through cinematic YouTube guidebooks, keynotes, and masterclasses.",
+      canonicalUrl: "https://techmaster.in/what-we-do",
+      ogImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1200"
+    },
+    visibility: {
+      desktop: true,
+      tablet: true,
+      mobile: true,
+      published: true
+    },
+    versioning: {
+      status: "Published",
+      lastUpdated: "Today",
+      updatedBy: "Super Admin"
+    }
   };
 
-  const handleSingleSave = (sectionKey, data) => {
-    updateSection('whatWeDo', { [sectionKey]: data });
-    showToast(`${sectionKey.toUpperCase()} section parameters updated successfully.`);
-  };
+  const storedCMS = db?.whatWeDoData || db?.what_we_do || defaultWhatWeDoCMS;
 
-  const updateSectionMeta = (secId, key, val) => {
-    const currentSettings = wwdData.sectionSettings || {};
-    const updatedSettings = {
-      ...currentSettings,
-      [secId]: {
-        ...(currentSettings[secId] || { order: 1, status: "Active" }),
-        [key]: val
-      }
-    };
-    updateSection('whatWeDo', { sectionSettings: updatedSettings });
-    // Silent update, no toast notifications popped up!
-  };
-
-  // Reusable Media Upload Component
-  const renderMediaUpload = (label, value, fieldKey, isOptional = false) => {
-    return (
-      <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-2 text-left">
-        <div className="flex items-center justify-between">
-          <span className="text-[9px] font-mono text-zinc-555 block uppercase">{label} {isOptional && <span className="text-zinc-650">(Optional)</span>}</span>
-          {value && (
-            <button 
-              type="button"
-              onClick={() => {
-                setCropTargetField(fieldKey);
-                setShowCropModal(true);
-              }}
-              className="text-[9px] uppercase tracking-wider text-luxury-gold hover:underline flex items-center gap-1"
-            >
-              <Settings className="w-2.5 h-2.5" /> Crop Image
-            </button>
-          )}
-        </div>
-        
-        {value ? (
-          <div className="relative w-full h-24 bg-zinc-955 border border-zinc-800 rounded overflow-hidden flex items-center justify-center">
-            <img src={value} className="w-full h-full object-cover" />
-            <div className="absolute bottom-1 right-1 flex items-center gap-1">
-              <button 
-                onClick={() => simulateMediaUpload(fieldKey)} 
-                className="p-1 bg-black/60 rounded text-luxury-gold hover:text-white"
-                title="Replace Image"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-              <button 
-                onClick={() => {
-                  if (activeEditorSection) {
-                    setDraftItem(prev => ({ ...prev, [fieldKey]: "" }));
-                  } else {
-                    setSeoForm(prev => (fieldKey in prev ? { ...prev, [fieldKey]: "" } : prev));
-                  }
-                  showToast("Image removed.");
-                }} 
-                className="p-1 bg-black/60 rounded text-rose-400 hover:text-white"
-                title="Remove Image"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div 
-            onClick={() => simulateMediaUpload(fieldKey)} 
-            onDragOver={e => e.preventDefault()}
-            onDrop={e => { e.preventDefault(); simulateMediaUpload(fieldKey); }}
-            className="h-24 border border-dashed border-zinc-850 hover:border-luxury-gold/30 rounded flex flex-col items-center justify-center gap-1 text-zinc-655 cursor-pointer transition-all"
-          >
-            {uploadingField === fieldKey ? (
-              <div className="flex flex-col items-center gap-1 animate-pulse">
-                <RefreshCw className="w-4 h-4 animate-spin text-luxury-gold" />
-                <span className="text-[8px] font-mono">{uploadProgress}%</span>
-              </div>
-            ) : (
-              <>
-                <UploadCloud className="w-4 h-4" />
-                <span className="text-[8px] uppercase font-mono tracking-wider">Drag & Drop or Click</span>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // --- REUSABLE LIST MANAGER ---
-  const renderListManager = ({
-    sectionKey,
-    fields = [],
-    displayColumns = []
-  }) => {
-    const listData = wwdData[sectionKey] || [];
-    const isEditing = activeEditorSection === sectionKey;
-
-    const handleSaveItem = () => {
-      let nextList = [];
-      if (editingItemId) {
-        nextList = listData.map(item => item.id === editingItemId ? { ...item, ...draftItem } : item);
-        showToast("Item updated successfully.");
-      } else {
-        const newItem = { ...draftItem, id: `item-${Date.now()}`, status: draftItem.status || 'Active', order: listData.length + 1 };
-        nextList = [...listData, newItem];
-        showToast("New item created.");
-      }
-      updateSection('whatWeDo', { [sectionKey]: nextList });
-      setActiveEditorSection(null);
-      setEditingItemId(null);
-      setDraftItem({});
-    };
-
-    const handleDeleteItem = (id) => {
-      if (window.confirm("Are you sure you want to delete this item?")) {
-        const nextList = listData.filter(item => item.id !== id);
-        updateSection('whatWeDo', { [sectionKey]: nextList });
-        showToast("Item deleted.");
-      }
-    };
-
-    const handleToggleStatus = (id, currentStatus) => {
-      const nextList = listData.map(item => item.id === id ? { ...item, status: currentStatus === 'Active' ? 'Inactive' : 'Active' } : item);
-      updateSection('whatWeDo', { [sectionKey]: nextList });
-      // Silent update on toggle switch, no notifications popped up!
-    };
-
-    const handleMoveItem = (index, direction) => {
-      const nextList = [...listData];
-      const target = index + direction;
-      if (target >= 0 && target < nextList.length) {
-        const temp = nextList[index];
-        nextList[index] = nextList[target];
-        nextList[target] = temp;
-        updateSection('whatWeDo', { [sectionKey]: nextList });
-      }
-    };
-
-    const handleStartAdd = () => {
-      setActiveEditorSection(sectionKey);
-      setEditingItemId(null);
-      const defaultObj = {};
-      fields.forEach(f => {
-        defaultObj[f.key] = f.type === 'number' ? 0 : f.type === 'switch' ? false : '';
-      });
-      setDraftItem(defaultObj);
-    };
-
-    const handleStartEdit = (item) => {
-      setActiveEditorSection(sectionKey);
-      setEditingItemId(item.id);
-      setDraftItem({ ...item });
-    };
-
-    return (
-      <div className="flex flex-col gap-4 text-left">
-        {!isEditing && (
-          <div className="flex flex-col gap-3">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-zinc-900 text-zinc-555 font-mono uppercase text-[9px] tracking-wider">
-                    <th className="py-2 px-3">Order</th>
-                    {displayColumns.map(col => (
-                      <th key={col.key} className="py-2 px-3">{col.label}</th>
-                    ))}
-                    <th className="py-2 px-3 text-center">Status</th>
-                    <th className="py-2 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listData.map((item, idx) => (
-                    <tr key={item.id || idx} className="border-b border-zinc-900/60 hover:bg-zinc-900/10 text-zinc-300">
-                      <td className="py-2.5 px-3 font-mono">{idx + 1}</td>
-                      {displayColumns.map(col => (
-                        <td key={col.key} className="py-2.5 px-3 max-w-[180px] truncate">
-                          {col.type === 'image' ? (
-                            item[col.key] ? (
-                              <div className="w-8 h-8 rounded border border-zinc-800 bg-zinc-955 flex items-center justify-center overflow-hidden">
-                                <img src={item[col.key]} className="w-full h-full object-cover" />
-                              </div>
-                            ) : '-'
-                          ) : item[col.key] || '-'}
-                        </td>
-                      ))}
-                      <td className="py-2.5 px-3 text-center">
-                        <Switch 
-                          checked={item.status === 'Active'} 
-                          onChange={() => handleToggleStatus(item.id, item.status)}
-                        />
-                      </td>
-                      <td className="py-2.5 px-3 text-right flex items-center justify-end gap-1.5 mt-0.5">
-                        <button onClick={() => handleMoveItem(idx, -1)} disabled={idx === 0} className="p-1 hover:bg-zinc-900 rounded disabled:opacity-30"><ArrowUp className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleMoveItem(idx, 1)} disabled={idx === listData.length - 1} className="p-1 hover:bg-zinc-900 rounded disabled:opacity-30"><ArrowDown className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleStartEdit(item)} className="p-1 hover:bg-zinc-900 rounded text-amber-500"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleDeleteItem(item.id)} className="p-1 hover:bg-zinc-900 rounded text-rose-500"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </td>
-                    </tr>
-                  ))}
-                  {listData.length === 0 && (
-                    <tr>
-                      <td colSpan={displayColumns.length + 3} className="text-center py-6 text-zinc-655 font-mono italic">No records stored inside database.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <Button onClick={handleStartAdd} variant="secondary" size="sm" className="gap-1 text-xs border border-zinc-800 text-luxury-gold">
-                <Plus className="w-3.5 h-3.5" /> <span>Add Row Item</span>
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {isEditing && (
-          <div className="border border-zinc-900 p-4 rounded bg-zinc-900/10 flex flex-col gap-3">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-luxury-gold block border-b border-zinc-900 pb-1.5">
-              {editingItemId ? "Edit Record Item" : "Create New Record"}
-            </span>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {fields.map(field => {
-                if (field.type === 'textarea') {
-                  return (
-                    <div key={field.key} className="md:col-span-2">
-                      <Input 
-                        label={field.label} 
-                        textarea 
-                        rows={3} 
-                        value={draftItem[field.key] || ''} 
-                        onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} 
-                      />
-                    </div>
-                  );
-                }
-                if (field.type === 'upload') {
-                  return (
-                    <div key={field.key}>
-                      {renderMediaUpload(field.label, draftItem[field.key], field.key, field.optional)}
-                    </div>
-                  );
-                }
-                if (field.type === 'switch') {
-                  return (
-                    <div key={field.key} className="p-3 bg-zinc-900/30 border border-zinc-900 rounded flex items-center justify-between">
-                      <span className="text-xs font-semibold text-zinc-400">{field.label}</span>
-                      <Switch checked={draftItem[field.key] || false} onChange={val => setDraftItem({ ...draftItem, [field.key]: val })} />
-                    </div>
-                  );
-                }
-                return (
-                  <Input 
-                    key={field.key}
-                    label={field.label} 
-                    type={field.type || 'text'} 
-                    value={draftItem[field.key] || ''} 
-                    onChange={e => setDraftItem({ ...draftItem, [field.key]: e.target.value })} 
-                  />
-                );
-              })}
-            </div>
-
-            <div className="flex justify-end gap-2 border-t border-zinc-900/60 pt-2.5">
-              <button onClick={() => { setActiveEditorSection(null); setEditingItemId(null); setDraftItem({}); }} className="px-3 py-1.5 text-xs text-zinc-555 hover:text-white">Cancel</button>
-              <button onClick={handleSaveItem} className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded">Save Record</button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Fixed 5 segments definitions
-  const sectionsList = [
-    { id: "hero", label: "Hero Settings", icon: Layers },
-    { id: "operations", label: "Operations Grid", icon: Code },
-    { id: "servicesList", label: "Expertise Tags", icon: Milestone },
-    { id: "quoteBanner", label: "Quote Banner", icon: Presentation },
-    { id: "seo", label: "SEO Metadata", icon: Globe }
-  ];
-
-  // Dynamic sorting at section level
-  const sectionSettings = wwdData.sectionSettings || {};
-  const sortedSections = [...sectionsList].sort((a, b) => {
-    const orderA = sectionSettings[a.id]?.order ?? 99;
-    const orderB = sectionSettings[b.id]?.order ?? 99;
-    return orderA - orderB;
+  const [formData, setFormData] = useState({
+    ...defaultWhatWeDoCMS,
+    ...storedCMS,
+    hero: { ...defaultWhatWeDoCMS.hero, ...(storedCMS.hero || {}) },
+    operations: (storedCMS.operations && storedCMS.operations.length > 0) ? storedCMS.operations : defaultWhatWeDoCMS.operations,
+    servicesHeader: { ...defaultWhatWeDoCMS.servicesHeader, ...(storedCMS.servicesHeader || {}) },
+    servicesList: (storedCMS.servicesList && storedCMS.servicesList.length > 0) ? storedCMS.servicesList : defaultWhatWeDoCMS.servicesList,
+    quoteBanner: { ...defaultWhatWeDoCMS.quoteBanner, ...(storedCMS.quoteBanner || {}) }
   });
+
+  const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
+
+  const persistChanges = (nextState) => {
+    setFormData(nextState);
+    updateSection('whatWeDoData', nextState);
+    updateSection('what_we_do', nextState);
+  };
+
+  const handleSaveAll = (isPublished = false) => {
+    const updatedState = {
+      ...formData,
+      versioning: {
+        ...formData.versioning,
+        status: isPublished ? 'Published' : 'Draft',
+        lastUpdated: new Date().toLocaleString()
+      }
+    };
+    persistChanges(updatedState);
+    setIsSaved(true);
+    showToast(isPublished ? 'What We Do Page Published Live!' : 'Draft Saved Successfully!', 'success');
+    setTimeout(() => setIsSaved(false), 2500);
+  };
+
+  const handleItemDelete = (listKey, id) => {
+    const list = [...formData[listKey]];
+    const updated = list.filter(item => item.id !== id);
+    persistChanges({ ...formData, [listKey]: updated });
+    showToast('Item removed', 'info');
+  };
+
+  const handleModalSave = (e) => {
+    e.preventDefault();
+    const { listKey, item } = modalConfig;
+    const list = [...formData[listKey]];
+
+    let updated;
+    if (item.id) {
+      updated = list.map(i => i.id === item.id ? item : i);
+    } else {
+      const newItem = {
+        ...item,
+        id: `${listKey.slice(0, 3)}-${Date.now()}`,
+        order: list.length + 1,
+        visible: true
+      };
+      updated = [...list, newItem];
+    }
+
+    persistChanges({ ...formData, [listKey]: updated });
+    setModalConfig(null);
+    showToast(item.id ? 'Item updated successfully!' : 'New item added!', 'success');
+  };
 
   return (
-    <div className="flex flex-col gap-6 text-left relative">
-      
-      {/* TOAST SYSTEM */}
-      {toast && (
-        <div className={`fixed top-5 right-5 z-[100] px-4 py-3 rounded-md shadow-lg border flex items-center gap-2.5 bg-zinc-955 border-luxury-gold/30 text-white font-sans`}>
-          <AlertCircle className="w-4 h-4 text-luxury-gold" />
-          <span className="text-xs font-semibold">{toast.message}</span>
-        </div>
-      )}
+    <div className="space-y-6 text-left">
+      <Toast toast={toast} onClose={() => setToast(null)} />
 
-      {/* CROP IMAGE MODAL */}
-      {showCropModal && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl w-[450px] text-zinc-100 flex flex-col gap-4 text-left shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-              <h3 className="font-serif text-sm font-semibold tracking-wider uppercase text-luxury-gold flex items-center gap-1.5">
-                <Settings className="w-4 h-4 animate-spin text-luxury-gold" /> Crop Vector Bounds
-              </h3>
-              <button onClick={() => setShowCropModal(false)} className="text-zinc-500 hover:text-white"><X className="w-4 h-4" /></button>
-            </div>
-            <div className="w-full h-40 border border-dashed border-luxury-gold/30 bg-zinc-955 rounded flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-4 border border-dashed border-white/10 flex items-center justify-center">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest text-center">1:1 Crop Canvas</span>
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 border-t border-zinc-850 pt-3">
-              <button onClick={() => setShowCropModal(false)} className="px-3 py-1.5 text-xs text-zinc-550 hover:text-white">Cancel</button>
-              <button 
-                onClick={() => {
-                  setShowCropModal(false);
-                  showToast("Image cropped successfully.");
-                }} 
-                className="px-4 py-1.5 bg-luxury-gold text-black font-bold text-xs rounded shadow-gold-glow"
-              >
-                Apply Crop Grid
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* HEADER ACTION CONTROLS */}
-      <div className="border-b border-zinc-800/80 pb-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+      {/* Top Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-800/80">
         <div>
-          <h1 className="font-serif text-2xl font-medium tracking-wide text-zinc-100 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-luxury-gold" />
-            What We Do CMS
-          </h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Configure operations grid blocks representing content creation, workshops, keynotes, and services list.
+          <div className="flex items-center gap-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-luxury-gold shadow-gold-glow animate-pulse" />
+            <h1 className="text-2xl font-serif font-bold tracking-wide uppercase text-white">What We Do Enterprise CMS</h1>
+          </div>
+          <p className="text-xs text-zinc-400 mt-1 font-mono">
+            Manage Core Operations, Category Service Pills, Hero Banner & Quote Philosophy Card.
           </p>
         </div>
-        
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => { setExpandedCards(prev => ({...prev, servicesList: true})); setActiveEditorSection('servicesList'); setEditingItemId(null); setDraftItem({}); document.getElementById('servicesList')?.scrollIntoView(); }} variant="primary" size="sm" className="bg-luxury-gold border-luxury-gold text-black font-bold">
-             <Plus className="w-4 h-4 mr-1.5" /> Add Services
+
+        <div className="flex items-center gap-2">
+          <Button onClick={() => handleSaveAll(false)} variant="outline" size="sm" className="text-xs uppercase tracking-wider">
+            Save Draft
           </Button>
-          <Button onClick={() => showToast("💾 What We Do Draft Saved Successfully!")} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-amber-500/90">
-            <Save className="w-3.5 h-3.5" /> <span>Save Draft</span>
-          </Button>
-          <Button onClick={() => { if(window.confirm("Reset unsaved changes?")) window.location.reload(); }} variant="secondary" size="sm" className="gap-1.5 text-xs border border-zinc-800 text-zinc-400 hover:text-rose-400">
-            <RefreshCw className="w-3.5 h-3.5" /> <span>Reset</span>
-          </Button>
-          <Button onClick={() => showToast("🚀 Public production server updated successfully. Page is Live!")} variant="primary" size="sm" className="gap-1.5 text-xs bg-gradient-to-r from-luxury-gold to-luxury-darkgold text-black font-bold shadow-gold-glow">
-            <span>Publish Live</span>
+          <Button onClick={() => handleSaveAll(true)} variant="gold" size="sm" className="text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5">
+            {isSaved ? <Check className="w-3.5 h-3.5 text-black" /> : <Save className="w-3.5 h-3.5" />}
+            {isSaved ? 'Published Live!' : 'Publish Page'}
           </Button>
         </div>
       </div>
 
-      {/* 5 DYNAMIC COLLAPSIBLE CARDS STACK */}
-      <div className="grid grid-cols-1 gap-4 max-w-5xl">
-        {sortedSections.map((sec, idx) => {
-          const SectionIcon = sec.icon;
-          const isCardOpen = expandedCards[sec.id];
-          const sectionMeta = sectionSettings[sec.id] || { order: idx + 1, status: "Active" };
-          const isActive = sectionMeta.status === "Active";
-
+      {/* 7 Architectural Tabs */}
+      <div className="flex items-center gap-1.5 border-b border-zinc-800/80 pb-3 overflow-x-auto scrollbar-none">
+        {[
+          { id: 'content', label: 'Page Content CMS', icon: Layers },
+          { id: 'overview', label: 'Overview & Stats', icon: Briefcase },
+          { id: 'media', label: 'Media Assets', icon: ImageIcon },
+          { id: 'seo', label: 'SEO & Search', icon: Globe },
+          { id: 'visibility', label: 'Visibility & Access', icon: Eye },
+          { id: 'publish', label: 'Publish Settings', icon: Clock },
+          { id: 'preview', label: 'Live Preview', icon: Monitor }
+        ].map(tab => {
+          const IconComp = tab.icon;
           return (
-            <Card 
-              id={sec.id}
-              key={sec.id}
-              className={`border transition-all duration-300 p-0 overflow-hidden bg-zinc-950/20 ${isCardOpen ? 'border-zinc-800/80' : 'border-zinc-800/40'}`}
-              title={
-                <div className="flex items-center justify-between w-full py-4 px-5 select-none bg-zinc-950/20 cursor-pointer" onClick={() => toggleCard(sec.id)}>
-                  <div className="flex items-center gap-3 flex-1">
-                    <SectionIcon className={`w-4 h-4 ${isCardOpen ? 'text-luxury-gold' : 'text-zinc-500'}`} />
-                    <span className="font-serif text-xs font-bold uppercase tracking-wider text-zinc-200">
-                      {idx + 1}. {sec.label}
-                    </span>
-                    {!isActive && <Badge variant="secondary" className="scale-90 text-[9px] bg-zinc-900 border-zinc-800 text-zinc-500">Inactive</Badge>}
-                  </div>
-                  
-                  <div className="flex items-center pl-4" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => toggleCard(sec.id)} className="text-zinc-500 hover:text-zinc-300 p-1">
-                      {isCardOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-              }
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3.5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'bg-luxury-gold/10 text-luxury-gold border border-luxury-gold/30 shadow-[0_0_12px_rgba(212,175,55,0.05)]'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40'
+              }`}
             >
-              {isCardOpen && (
-                <div className="p-5 border-t border-zinc-800/80 bg-zinc-955/20 flex flex-col gap-4 animate-fadeIn">
-                  
-                  {/* INLINE SECTION LEVEL META CONFIG (SILENT CHANGES) */}
-                  <div className="p-3 mb-2 rounded border border-zinc-900 bg-zinc-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-405">Section Status:</span>
-                      <Switch 
-                        checked={isActive} 
-                        onChange={(checked) => updateSectionMeta(sec.id, 'status', checked ? 'Active' : 'Inactive')}
-                      />
-                      <span className="text-[10px] font-mono text-zinc-500">({isActive ? 'Visible on Website' : 'Hidden from Website'})</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-405">Display Order:</span>
-                      <input 
-                        type="number" 
-                        value={sectionMeta.order}
-                        onChange={e => updateSectionMeta(sec.id, 'order', parseInt(e.target.value) || 1)}
-                        className="w-12 bg-zinc-900 border border-zinc-850 rounded px-2 py-1 text-center text-xs font-semibold text-zinc-200 focus:border-luxury-gold/40 outline-none" 
-                      />
-                    </div>
-                  </div>
-
-                  {/* SECTION FIELDS */}
-                  {sec.id === 'hero' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Small Badge Header" value={heroForm.smallBadge || ''} onChange={e => setHeroForm({ ...heroForm, smallBadge: e.target.value })} />
-                        <Input label="Main Heading Title" value={heroForm.headline || ''} onChange={e => setHeroForm({ ...heroForm, headline: e.target.value })} />
-                        <Input label="Highlighted Word Tag" value={heroForm.highlightWord || ''} onChange={e => setHeroForm({ ...heroForm, highlightWord: e.target.value })} />
-                        <Input label="Main Heading Title Line 2" value={heroForm.titleLine2 || ''} onChange={e => setHeroForm({ ...heroForm, titleLine2: e.target.value })} />
-                        
-                        <div className="md:col-span-2">
-                          <Input label="Detailed Hero Description subtext" textarea rows={3} value={heroForm.description || ''} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} />
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('hero', heroForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Hero Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'operations' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'operations',
-                        displayColumns: [
-                          { key: 'title', label: 'Operation Title' },
-                          { key: 'subtitle', label: 'Subtitle' }
-                        ],
-                        fields: [
-                          { key: 'title', label: 'Operation Card Title', type: 'text' },
-                          { key: 'subtitle', label: 'Card Subtitle Label', type: 'text' },
-                          { key: 'icon', label: 'Icon Symbol Tag (e.g. Video, Code, Presentation, MessageSquareCode)', type: 'text' },
-                          { key: 'accent', label: 'Accent Glow Color (e.g. #D4AF37)', type: 'text' },
-                          { key: 'description', label: 'Detailed Description Narrative text', type: 'textarea' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'servicesList' && (
-                    <div>
-                      {renderListManager({
-                        sectionKey: 'servicesList',
-                        displayColumns: [
-                          { key: 'tag', label: 'Service Tag' }
-                        ],
-                        fields: [
-                          { key: 'tag', label: 'Expertise Service Tag name', type: 'text' }
-                        ]
-                      })}
-                    </div>
-                  )}
-
-                  {sec.id === 'quoteBanner' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Author Name Conferred" value={quoteForm.authorName || ''} onChange={e => setQuoteForm({ ...quoteForm, authorName: e.target.value })} />
-                        <div className="md:col-span-2">
-                          <Input label="Quotable Statement Copy text" textarea rows={3} value={quoteForm.quoteText || ''} onChange={e => setQuoteForm({ ...quoteForm, quoteText: e.target.value })} />
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('quoteBanner', quoteForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save Quote Details</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {sec.id === 'seo' && (
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="SEO Meta Title" value={seoForm.metaTitle || ''} onChange={e => setSeoForm({ ...seoForm, metaTitle: e.target.value })} />
-                        <Input label="SEO Meta Keywords" value={seoForm.metaKeywords || ''} onChange={e => setSeoForm({ ...seoForm, metaKeywords: e.target.value })} placeholder="Services, keynotes, masterclasses" />
-                        <div className="md:col-span-2">
-                          <Input label="SEO Meta Description Content" textarea rows={2} value={seoForm.metaDescription || ''} onChange={e => setSeoForm({ ...seoForm, metaDescription: e.target.value })} />
-                        </div>
-                        <div className="md:col-span-2">
-                          {renderMediaUpload("OG Social Share Graphics Card", seoForm.ogImageUrl, "ogImageUrl")}
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end border-t border-zinc-900 pt-3">
-                        <Button onClick={() => handleSingleSave('seo', seoForm)} variant="primary" size="sm" className="bg-luxury-gold text-black font-bold">Save SEO Parameters</Button>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              )}
-            </Card>
+              <IconComp className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
           );
         })}
       </div>
 
-      {/* FINAL STATUS BAR FOOTER */}
-      <div className="flex items-center justify-end p-4 border border-zinc-900 bg-zinc-955/20 rounded-lg max-w-5xl">
-        <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
-          <ShieldCheck className="w-4 h-4" />
-          <span>What We Do CMS dashboard framework running securely.</span>
-        </div>
-      </div>
+      {/* TAB: CONTENT (Sub-Tabs) */}
+      {activeTab === 'content' && (
+        <div className="space-y-6">
+          {/* Sub-Navigation */}
+          <div className="flex items-center gap-2 bg-zinc-900/60 p-1.5 rounded-xl border border-zinc-800/80 w-fit overflow-x-auto">
+            {[
+              { id: 'hero', label: '1. Hero Header' },
+              { id: 'operations', label: '2. Activity Cards' },
+              { id: 'services', label: '3. Service Categories' },
+              { id: 'quote', label: '4. Quote Philosophy' }
+            ].map(sub => (
+              <button
+                key={sub.id}
+                onClick={() => setContentSubTab(sub.id)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  contentSubTab === sub.id
+                    ? 'bg-luxury-gold text-black font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)]'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
 
+          {/* SUB-TAB 1: HERO HEADER */}
+          {contentSubTab === 'hero' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Hero Section CMS</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Small Badge Tag</label>
+                  <input
+                    type="text"
+                    value={formData.hero.smallBadge}
+                    onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, smallBadge: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Headline Main Text</label>
+                    <input
+                      type="text"
+                      value={formData.hero.headline}
+                      onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, headline: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Highlight Word (Gold Italic)</label>
+                    <input
+                      type="text"
+                      value={formData.hero.highlightWord}
+                      onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, highlightWord: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-serif italic font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Description Content</label>
+                  <textarea
+                    rows={3}
+                    value={formData.hero.description}
+                    onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, description: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 2: ACTIVITY CARDS */}
+          {contentSubTab === 'operations' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Activity Operations Cards ({formData.operations.length})</h3>
+                <Button 
+                  onClick={() => setModalConfig({ listKey: 'operations', item: { icon: 'Video', opNumber: '05', title: '', subtitle: '', description: '', accent: '#D4AF37' } })} 
+                  variant="gold" 
+                  size="sm" 
+                  className="text-xs uppercase"
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Activity Card
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {formData.operations.map((op, idx) => (
+                  <div key={op.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-3">
+                    <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                      <span className="font-mono text-[10px] text-luxury-gold uppercase">Operation {op.opNumber || `0${idx + 1}`}</span>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => setModalConfig({ listKey: 'operations', item: op })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleItemDelete('operations', op.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </div>
+                    </div>
+
+                    <h4 className="font-serif font-bold text-white text-base">{op.title}</h4>
+                    {op.subtitle && <span className="text-zinc-400 font-mono text-[10px] uppercase block">{op.subtitle}</span>}
+                    <p className="text-zinc-400 font-light text-xs leading-relaxed">{op.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 3: SERVICE CATEGORIES (PILLS) */}
+          {contentSubTab === 'services' && (
+            <div className="space-y-6 text-xs">
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Services Header</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
+                    <input
+                      type="text"
+                      value={formData.servicesHeader.badge}
+                      onChange={(e) => persistChanges({ ...formData, servicesHeader: { ...formData.servicesHeader, badge: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Main Title</label>
+                    <input
+                      type="text"
+                      value={formData.servicesHeader.titleLine1}
+                      onChange={(e) => persistChanges({ ...formData, servicesHeader: { ...formData.servicesHeader, titleLine1: e.target.value } })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                  <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Service Category Pills ({formData.servicesList.length})</h3>
+                  <Button 
+                    onClick={() => setModalConfig({ listKey: 'servicesList', item: { tag: '' } })} 
+                    variant="gold" 
+                    size="sm" 
+                    className="text-xs uppercase"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Service Tag
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap gap-2.5">
+                  {formData.servicesList.map((srv, idx) => (
+                    <div key={srv.id || idx} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-200">
+                      <span className="font-mono text-xs">{srv.tag}</span>
+                      <button onClick={() => handleItemDelete('servicesList', srv.id)} className="text-zinc-500 hover:text-rose-400"><X className="w-3 h-3" /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-TAB 4: QUOTE PHILOSOPHY CARD */}
+          {contentSubTab === 'quote' && (
+            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
+              <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+                <Award className="w-4 h-4 text-luxury-gold" />
+                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Quote Philosophy Card CMS</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Quote Content</label>
+                  <textarea
+                    rows={3}
+                    value={formData.quoteBanner.quoteText || formData.quoteBanner.quote || ''}
+                    onChange={(e) => persistChanges({ ...formData, quoteBanner: { ...formData.quoteBanner, quoteText: e.target.value, quote: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif italic text-sm font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Author Name / Title</label>
+                  <input
+                    type="text"
+                    value={formData.quoteBanner.authorName || formData.quoteBanner.author || ''}
+                    onChange={(e) => persistChanges({ ...formData, quoteBanner: { ...formData.quoteBanner, authorName: e.target.value, author: e.target.value } })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono uppercase font-bold"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: LIVE PREVIEW */}
+      {activeTab === 'preview' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-3 bg-zinc-950/80 border border-zinc-800 p-2 rounded-xl">
+            <button onClick={() => setPreviewMode('desktop')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'desktop' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Monitor className="w-3.5 h-3.5" /> Desktop (1440px)
+            </button>
+            <button onClick={() => setPreviewMode('tablet')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'tablet' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Tablet className="w-3.5 h-3.5" /> Tablet (768px)
+            </button>
+            <button onClick={() => setPreviewMode('mobile')} className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'mobile' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}>
+              <Smartphone className="w-3.5 h-3.5" /> Mobile (375px)
+            </button>
+          </div>
+
+          <div className="flex justify-center bg-black/90 p-4 rounded-2xl border border-zinc-800 min-h-[500px]">
+            <div className={`bg-black transition-all duration-300 border border-zinc-800 rounded-xl overflow-hidden ${
+              previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
+            }`}>
+              <iframe
+                src="http://localhost:5173/what-we-do"
+                title="Live Preview What We Do"
+                className="w-full h-[600px] border-none"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE / EDIT MODAL */}
+      {modalConfig && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <form onSubmit={handleModalSave} className="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">
+                {modalConfig.item.id ? 'Edit Item' : 'Add New Item'}
+              </h3>
+              <button type="button" onClick={() => setModalConfig(null)} className="text-zinc-500 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => (
+                <div key={key}>
+                  <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
+                  <input
+                    type="text"
+                    value={modalConfig.item[key] || ''}
+                    onChange={(e) => setModalConfig({
+                      ...modalConfig,
+                      item: { ...modalConfig.item, [key]: e.target.value }
+                    })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+              <Button type="button" variant="outline" size="sm" onClick={() => setModalConfig(null)}>Cancel</Button>
+              <Button type="submit" variant="gold" size="sm">Save Item</Button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

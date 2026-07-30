@@ -18,70 +18,146 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
     strategyPillarsData, 
     strategyPresetsData, 
     blogCategoriesData, 
-    latestInsightsData, 
-    blogPageSettingsData, 
   } = useData();
 
-  const blogsList = blogsData || [];
-  
-  // Settings with defaults
-  const showHero = blogPageSettingsData?.showHero !== false;
-  const showStrategy = blogPageSettingsData?.showStrategy !== false;
-  const showLatest = blogPageSettingsData?.showLatest !== false;
-  const showFilters = blogPageSettingsData?.showFilters !== false;
+  let localDb: any = {};
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) localDb = JSON.parse(saved);
+  } catch (e) {}
 
-  const categories = (blogCategoriesData && blogCategoriesData.length > 0)
-    ? [{ name: "All" }, ...blogCategoriesData.filter((c:any) => c.active !== false)]
-    : [{ name: "All" }, { name: "Lifestyle" }, { name: "Marketing" }];
+  const defaultBlogs = [
+    {
+      id: "blog-1",
+      title: "The Art of Golden Ratios in Modern Luxury Branding",
+      slug: "golden-ratios-luxury-branding",
+      category: "Branding",
+      coverImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800",
+      excerpt: "Exploring mathematical elegance in high-fashion identity design and visual hierarchy.",
+      content: "Detailed technical whitepaper on golden ratios in modern digital branding...",
+      publishDate: "2026-07-20",
+      readTime: "6 min read",
+      author: "Aman",
+      featured: true,
+      status: "published",
+      active: true
+    },
+    {
+      id: "blog-2",
+      title: "Building 60FPS Three.js Configurators for WebGL",
+      slug: "60fps-threejs-configurators",
+      category: "Marketing",
+      coverImage: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800",
+      excerpt: "Optimizing GPU memory buffers, draw calls, and lighting shaders for interactive browser experiences.",
+      content: "Deep-dive technical guide into Three.js performance tuning...",
+      publishDate: "2026-07-15",
+      readTime: "10 min read",
+      author: "TechMaster Lead",
+      featured: true,
+      status: "published",
+      active: true
+    }
+  ];
 
-  const presets = (strategyPresetsData && strategyPresetsData.length > 0) 
-    ? strategyPresetsData.filter((p:any) => p.active !== false)
-    : [];
+  const rawBlogs = (blogsData && blogsData.length > 0) ? blogsData : (localDb?.blogs || localDb?.blogsData || defaultBlogs);
+  const blogsList = rawBlogs.filter((b: any) => b.active !== false && b.status !== "draft");
+
+  const defaultHero = {
+    badge: "CREATOR JOURNAL",
+    titleLine1: "Thoughts on Tech",
+    titleLine2: "education & scalability.",
+    active: true
+  };
+  const activeHero = { ...defaultHero, ...localDb?.blogHero, ...blogHeroData };
+
+  const defaultStrategy = {
+    badge: "Featured Strategy",
+    titleLine1: "Engineering",
+    titleLine2: "Content Marketing",
+    titleLine3: "Excellence",
+    description: "Traditional advertising has diminishing returns. We help engineering brands build market authority through high-utility technical content, storytelling, and high-impact distribution loops.",
+    active: true
+  };
+  const activeStrategyData = { ...defaultStrategy, ...localDb?.featuredStrategy, ...featuredStrategyData };
+
+  const defaultStats = [
+    { number: "10M+", label: "Impressions", active: true },
+    { number: "+150%", label: "Engagement", active: true },
+    { number: "4.8x", label: "Content ROI", active: true }
+  ];
+  const activeStats = (strategyStatsData && strategyStatsData.length > 0) 
+    ? strategyStatsData 
+    : (localDb?.strategyStats || defaultStats);
+
+  const defaultPillars = [
+    { title: "Audience Retention", description: "Translate complex system architecture into clean narratives.", active: true },
+    { title: "Search Dominance", description: "Rank first for high-intent queries that developers actually search.", active: true },
+    { title: "Distribution Loops", description: "Syndicate deep-dives into social threads, shorts, and digests.", active: true }
+  ];
+  const activePillars = (strategyPillarsData && strategyPillarsData.length > 0) 
+    ? strategyPillarsData 
+    : (localDb?.strategyPillars || defaultPillars);
+
+  const defaultPresets = [
+    { presetName: "solopreneur", badge: "Solo Creator", impressions: "50K - 100K+", channel: "Twitter/X, Dev.to & LinkedIn", focus: "Build in public, share raw learnings, create highly readable dev cheatsheets.", roi: "High authority, premium lead acquisition", active: true },
+    { presetName: "startup", badge: "Growth Startup", impressions: "250K - 500K+", channel: "GitHub, Medium, Tech Newsletters", focus: "Detailed technical case studies, comparisons, integration guides, and live streams.", roi: "Product signups, community growth", active: true },
+    { presetName: "enterprise", badge: "Enterprise Brand", impressions: "1M - 5M+", channel: "YouTube Documentaries, Dedicated Hubs", focus: "High-production whitepapers, engineering-led media channels.", roi: "Market standard positioning, enterprise adoption", active: true }
+  ];
+  const rawPresets = (strategyPresetsData && strategyPresetsData.length > 0)
+    ? strategyPresetsData
+    : (localDb?.strategyPresets || defaultPresets);
+  const presets = rawPresets.filter((p: any) => p.active !== false);
+
+  const defaultCategories = [
+    { name: "All" }, { name: "Lifestyle" }, { name: "Marketing" }, { name: "Branding" }, { name: "Creator Journey" }, { name: "Tips" }, { name: "Latest News" }
+  ];
+  const rawCategories = (blogCategoriesData && blogCategoriesData.length > 0)
+    ? blogCategoriesData
+    : (localDb?.blogCategories || defaultCategories);
+  const categories = [{ name: "All" }, ...rawCategories.filter((c: any) => c.name !== "All" && c.active !== false)];
 
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [activeStrategy, setActiveStrategy] = useState<string>("");
+  const [activeStrategyPreset, setActiveStrategyPreset] = useState<string>("");
 
   useEffect(() => {
-    if (presets.length > 0 && !activeStrategy) {
-      setActiveStrategy(presets[0].presetName || presets[0].id);
+    if (presets.length > 0 && !activeStrategyPreset) {
+      setActiveStrategyPreset(presets[0].presetName || presets[0].id);
     }
-  }, [presets, activeStrategy]);
+  }, [presets, activeStrategyPreset]);
 
-  const activePresetItem = presets.find((p:any) => p.presetName === activeStrategy || p.id === activeStrategy) || presets[0] || {};
+  const activePresetItem = presets.find((p: any) => p.presetName === activeStrategyPreset || p.id === activeStrategyPreset) || presets[0] || {};
 
   const filteredBlogs = selectedCategory === "All"
-    ? blogsList.filter(post => post.active !== false && post.status !== "draft")
-    : blogsList.filter(post => post.active !== false && post.status !== "draft" && post.category === selectedCategory);
+    ? blogsList
+    : blogsList.filter((post: any) => post.category === selectedCategory);
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
       {/* Background Glow */}
-      {blogHeroData?.glowEnabled !== false && (
-        <>
-          <div className="absolute top-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-purple opacity-20 pointer-events-none" />
-          <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
-        </>
-      )}
+      <div className="absolute top-1/4 right-1/4 w-[35vw] h-[35vw] aurora-glow-purple opacity-20 pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
 
       {/* Hero Header */}
-      {showHero && blogHeroData?.active !== false && (
+      {activeHero.active !== false && (
         <section className="max-w-7xl mx-auto text-left mb-16 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="typo-badge mb-4"
+            className="typo-badge mb-4 uppercase tracking-[2px]"
           >
-            {blogHeroData?.badge || "CREATOR JOURNAL"}
+            {activeHero.badge || "CREATOR JOURNAL"}
           </motion.div>
           
-          <h1 className="typo-h1 mb-8" dangerouslySetInnerHTML={{ __html: blogHeroData?.titleLine1 + '<br/>' + (blogHeroData?.titleLine2 ? `<span class="text-gold italic font-bold">${blogHeroData.titleLine2}</span>` : '') }}>
+          <h1 className="typo-h1 mb-8">
+            {activeHero.titleLine1 || "Thoughts on Tech"} <br />
+            <span className="text-gold italic font-bold">{activeHero.titleLine2 || "education & scalability."}</span>
           </h1>
         </section>
       )}
 
       {/* Content Marketing Section / Strategy Builder */}
-      {showStrategy && featuredStrategyData?.active !== false && (
+      {activeStrategyData.active !== false && (
         <section className="max-w-7xl mx-auto mb-12 relative z-10 text-left">
           <div className="border border-white/5 bg-black/40 backdrop-blur-md rounded-3xl p-8 md:p-12">
             {/* Header */}
@@ -89,19 +165,19 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
               <div>
                 <div className="typo-badge mb-3 flex items-center gap-2">
                   <Target className="w-3.5 h-3.5" />
-                  {featuredStrategyData?.badge || "Featured Strategy"}
+                  {activeStrategyData.badge || "Featured Strategy"}
                 </div>
                 <h2 className="font-serif text-2xl sm:text-4xl font-light text-white leading-snug">
-                  {featuredStrategyData?.titleLine1} <span className="text-gold font-bold italic">{featuredStrategyData?.titleLine2}</span> {featuredStrategyData?.titleLine3}
+                  {activeStrategyData.titleLine1} <span className="text-gold font-bold italic">{activeStrategyData.titleLine2}</span> {activeStrategyData.titleLine3}
                 </h2>
                 <p className="text-gray-400 text-sm max-w-2xl mt-4 font-light leading-relaxed">
-                  {featuredStrategyData?.description}
+                  {activeStrategyData.description}
                 </p>
               </div>
               
               {/* Stats row */}
               <div className="grid grid-cols-3 gap-6 border-t md:border-t-0 md:border-l border-white/10 pt-6 md:pt-0 md:pl-10">
-                {(strategyStatsData || []).filter((s:any) => s.active !== false).map((stat:any, idx:number) => (
+                {activeStats.filter((s: any) => s.active !== false).map((stat: any, idx: number) => (
                   <div key={idx} className="text-left">
                     <div className="text-xl sm:text-2xl font-serif text-gold font-bold">{stat.number}</div>
                     <div className="text-[9px] text-gray-500 uppercase tracking-widest font-mono mt-1">{stat.label}</div>
@@ -115,7 +191,7 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
               {/* Core Pillars */}
               <div className="lg:col-span-7 flex flex-col justify-between gap-6">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {(strategyPillarsData || []).filter((p:any) => p.active !== false).map((pillar:any, index:number) => (
+                  {activePillars.filter((p: any) => p.active !== false).map((pillar: any, index: number) => (
                     <div key={index} className="border border-white/5 bg-white/[0.02] p-6 rounded-2xl flex flex-col justify-between hover:border-white/10 transition-colors">
                       <div>
                         <div className="mb-4 bg-gold/10 w-9 h-9 rounded-xl flex items-center justify-center">
@@ -140,13 +216,13 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
                     
                     {/* Toggles */}
                     <div className="flex bg-black/40 p-1 rounded-xl gap-1 mb-6 border border-white/5">
-                      {presets.map((preset:any) => (
+                      {presets.map((preset: any) => (
                         <button
                           key={preset.presetName || preset.id}
-                          onClick={() => setActiveStrategy(preset.presetName || preset.id)}
-                          className={`flex-1 text-[10px] sm:text-xs font-semibold py-2 rounded-lg transition-all duration-300 ${
-                            activeStrategy === (preset.presetName || preset.id)
-                              ? "bg-gold text-black shadow-lg shadow-gold/10"
+                          onClick={() => setActiveStrategyPreset(preset.presetName || preset.id)}
+                          className={`flex-1 text-[10px] sm:text-xs font-semibold py-2 rounded-lg transition-all duration-300 cursor-pointer ${
+                            activeStrategyPreset === (preset.presetName || preset.id)
+                              ? "bg-gold text-black shadow-lg shadow-gold/10 font-bold"
                               : "text-gray-400 hover:text-white"
                           }`}
                         >
@@ -191,35 +267,31 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
       )}
 
       {/* Main Blog Hub */}
-      {showLatest && (
-        <section className="max-w-7xl mx-auto text-left relative z-10 mb-12">
-          <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-6 mb-10 gap-6">
-            <div>
-              <h2 className="font-serif text-3xl font-light">{latestInsightsData?.title || "Latest Insights"}</h2>
-              <p className="text-gray-400 text-xs mt-1 font-light">{latestInsightsData?.subtitle || "Browse thoughts, guides, and updates from the team"}</p>
-            </div>
-            
-            {/* Category Filter Bar */}
-            {showFilters && (
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category:any) => (
-                  <button
-                    key={category.name}
-                    onClick={() => setSelectedCategory(category.name)}
-                    className={`px-4 py-2 rounded-full text-xs transition-all duration-300 ${
-                      selectedCategory === category.name
-                        ? "bg-gold text-black font-semibold border border-gold"
-                        : "bg-white/[0.03] border border-white/5 hover:border-white/20 text-gray-300 hover:text-white"
-                    }`}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-            )}
+      <section className="max-w-7xl mx-auto text-left relative z-10 mb-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-6 mb-10 gap-6">
+          <div>
+            <h2 className="font-serif text-3xl font-light">Latest Insights</h2>
+            <p className="text-gray-400 text-xs mt-1 font-light">Browse thoughts, guides, and updates from the team</p>
           </div>
-        </section>
-      )}
+          
+          {/* Category Filter Bar */}
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category: any) => (
+              <button
+                key={category.name}
+                onClick={() => setSelectedCategory(category.name)}
+                className={`px-4 py-2 rounded-full text-xs transition-all duration-300 cursor-pointer ${
+                  selectedCategory === category.name
+                    ? "bg-gold text-black font-semibold border border-gold"
+                    : "bg-white/[0.03] border border-white/5 hover:border-white/20 text-gray-300 hover:text-white"
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Blog List Grid */}
       <section className="max-w-7xl mx-auto text-left relative z-10">
@@ -228,7 +300,7 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
             <p className="text-gray-400 text-sm">No articles found in this category.</p>
             <button
               onClick={() => setSelectedCategory("All")}
-              className="text-gold text-xs uppercase tracking-[1.5px] font-bold mt-4 hover:underline"
+              className="text-gold text-xs uppercase tracking-[1.5px] font-bold mt-4 hover:underline cursor-pointer"
             >
               Reset Filters
             </button>
@@ -239,9 +311,9 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             <AnimatePresence mode="popLayout">
-              {filteredBlogs.map((post, idx) => (
+              {filteredBlogs.map((post: any, idx: number) => (
                 <motion.div
-                  key={post.id || post.slug}
+                  key={post.id || post.slug || idx}
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
