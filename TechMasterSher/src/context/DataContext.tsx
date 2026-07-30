@@ -182,30 +182,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshData = useCallback(async () => {
     try {
-      // 1. Health check - using the base API URL without /cms
-      const healthUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/api/v1", "/health") : "https://tech-master-6km7.onrender.com/health";
-      const healthRes = await fetch(healthUrl);
-      if (!healthRes.ok) {
-         throw new Error("Backend health check failed");
-      }
-      setIsBackendConnected(true);
-
-      // 2. CMS fetch
       const response = await fetch(CMS_API_URL);
-      if (!response.ok) {
-        console.warn("Backend is reachable but CMS fetch failed, falling back to empty/default data.");
-        setDbData({}); // Prevents the application from throwing "API CONNECTION ERROR"
-      } else {
+      if (response.ok) {
         const result = await response.json();
         if (result.success && result.data) {
-          console.log('Fetched CMS data:', result.data);
           applyCmsDataToState(result.data);
-        } else {
-          setDbData({});
+          setIsBackendConnected(true);
         }
+      } else {
+        console.warn("CMS fetch returned non-200 status:", response.status);
       }
     } catch (err) {
-      console.error('Backend CMS sync failed:', err);
+      console.error("Backend CMS sync failed:", err);
       setIsBackendConnected(false);
     } finally {
       setIsLoading(false);

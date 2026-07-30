@@ -24,7 +24,11 @@ export const About = () => {
       smallBadge: "ABOUT TECH MASTER",
       mainHeading: "What Tech Master Is",
       highlightedHeading: "Tech Master",
-      description: "It started in 2019 one person, one channel, and a belief that tech content in India could be smarter than it was. That belief became Tech Master, and by 2023, it had become a company. Today, Tech Master Digital Pvt Ltd is a 50+ person team running four established channels across tech, automobiles, and entertainment with a fifth already taking shape in 3D animation out of a full production studio in Jaipur, complete with an in-house editing suite, animation team, and gaming studio. Today our content generates 1B+ views every month."
+      description: "It started in 2019 one person, one channel, and a belief that tech content in India could be smarter than it was. That belief became Tech Master, and by 2023, it had become a company. Today, Tech Master Digital Pvt Ltd is a 50+ person team running four established channels across tech, automobiles, and entertainment with a fifth already taking shape in 3D animation out of a full production studio in Jaipur, complete with an in-house editing suite, animation team, and gaming studio. Today our content generates 1B+ views every month.",
+      backgroundMedia: "",
+      order: 1,
+      visibility: true,
+      status: "Published"
     },
 
     // SECTION 2 — COMPANY CULTURE
@@ -36,19 +40,40 @@ export const About = () => {
       imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
       imageAlt: "Tech Master Team",
       imageSubtitle: "Jaipur Studio",
-      imageDescription: "50+ Person Production & Gaming Suite"
+      imageDescription: "50+ Person Production & Gaming Suite",
+      overlayCaption: "",
+      bgStyle: "glass",
+      borderStyle: "gold-subtle",
+      order: 2,
+      visibility: true,
+      status: "Published"
     },
 
-    // SECTION 3 — FOUNDER PHILOSOPHY
+    // SECTION 3 — STUDIO / IMAGE CARD
+    studioCard: {
+      imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
+      imageAlt: "Tech Master Team",
+      imageSubtitle: "Jaipur Studio",
+      imageDescription: "50+ Person Production & Gaming Suite",
+      overlayCaption: "",
+      visibility: true,
+      order: 3
+    },
+
+    // SECTION 4 — FOUNDER PHILOSOPHY
     philosophy: {
       smallBadge: "FOUNDER PHILOSOPHY",
       quote: "Information is Wealth.",
       description: "Information is Wealth.",
       founderName: "Tech Master Founder",
-      profileImageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80"
+      founderDesignation: "Founder & CEO",
+      profileImageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80",
+      showDivider: true,
+      order: 4,
+      visibility: true,
+      status: "Published"
     },
 
-    // Parity bindings for frontend site compatibility
     story: {
       imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
     },
@@ -61,18 +86,61 @@ export const About = () => {
 
   const [formData, setFormData] = useState(() => ({
     aboutTechMaster: { ...defaultAboutData.aboutTechMaster, ...(storedAbout.aboutTechMaster || {}) },
-    culture: { ...defaultAboutData.culture, ...(storedAbout.culture || {}) },
+    culture: { 
+      ...defaultAboutData.culture, 
+      ...(storedAbout.culture || {}),
+      highlightedText: (storedAbout.culture?.highlightedText && storedAbout.culture.highlightedText.trim()) 
+        ? storedAbout.culture.highlightedText 
+        : defaultAboutData.culture.highlightedText 
+    },
+    studioCard: { ...defaultAboutData.studioCard, ...(storedAbout.studioCard || {}) },
     philosophy: { ...defaultAboutData.philosophy, ...(storedAbout.philosophy || {}) }
   }));
+
+  useEffect(() => {
+    const fetchLatestAbout = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/about');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData({
+              aboutTechMaster: { ...defaultAboutData.aboutTechMaster, ...(data.aboutTechMaster || {}) },
+              culture: { 
+                ...defaultAboutData.culture, 
+                ...(data.culture || {}),
+                highlightedText: data.culture?.highlightedText || defaultAboutData.culture.highlightedText
+              },
+              studioCard: { ...defaultAboutData.studioCard, ...(data.studioCard || {}) },
+              philosophy: { ...defaultAboutData.philosophy, ...(data.philosophy || {}) }
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest about from backend:", err);
+      }
+    };
+    fetchLatestAbout();
+  }, []);
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
   // Sync to database and frontend state
-  const syncToDatabase = (nextData, isPublished = false) => {
+  const syncToDatabase = async (nextData, isPublished = false) => {
     setFormData(nextData);
 
     const payload = {
       ...nextData,
+      studioCard: {
+        imageUrl: nextData.culture.imageUrl,
+        imageAlt: nextData.culture.imageAlt,
+        imageSubtitle: nextData.culture.imageSubtitle,
+        imageDescription: nextData.culture.imageDescription,
+        overlayCaption: nextData.culture.overlayCaption || "",
+        visibility: nextData.culture.visibility !== false,
+        order: 3,
+        ...(nextData.studioCard || {})
+      },
       story: {
         imageUrl: nextData.culture.imageUrl
       },
@@ -82,6 +150,17 @@ export const About = () => {
     };
 
     updateSection('about', payload);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/about', {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
 
     setIsSaved(true);
     showToast(isPublished ? 'About Page Published Live!' : 'Draft Saved Successfully!', 'success');
@@ -351,6 +430,34 @@ export const About = () => {
                     culture: { ...formData.culture, imageAlt: e.target.value }
                   })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-300"
+                />
+              </div>
+
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Image Subtitle Badge (e.g. Jaipur Studio)</label>
+                <input
+                  type="text"
+                  value={formData.culture.imageSubtitle || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    culture: { ...formData.culture, imageSubtitle: e.target.value }
+                  })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-luxury-gold font-mono uppercase font-semibold"
+                  placeholder="Jaipur Studio"
+                />
+              </div>
+
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Image Overlay Caption</label>
+                <input
+                  type="text"
+                  value={formData.culture.imageDescription || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    culture: { ...formData.culture, imageDescription: e.target.value }
+                  })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-200 font-serif font-bold"
+                  placeholder="50+ Person Production & Gaming Suite"
                 />
               </div>
 

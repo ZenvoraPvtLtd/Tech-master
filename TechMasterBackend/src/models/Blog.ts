@@ -19,16 +19,16 @@ export interface IBlog extends Document, ICmsBase {
 
 const BlogSchema = new Schema<IBlog>(
   {
-    title: { type: String, required: true, trim: true },
-    slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    category: { type: String, required: true, trim: true },
+    title: { type: String, default: "", trim: true },
+    slug: { type: String, default: "", lowercase: true, trim: true },
+    category: { type: String, default: "Branding", trim: true },
     readTime: { type: String, default: "5 min read" },
-    publishDate: { type: String },
+    publishDate: { type: String, default: "" },
     date: { type: Date, default: Date.now },
-    excerpt: { type: String, required: true },
-    content: { type: String, required: true },
+    excerpt: { type: String, default: "" },
+    content: { type: String, default: "" },
     author: { type: String, default: "TechMaster" },
-    coverImage: { type: String },
+    coverImage: { type: String, default: "" },
     featured: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     seo: { type: SeoSchema },
@@ -36,6 +36,7 @@ const BlogSchema = new Schema<IBlog>(
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -9,7 +9,7 @@ import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 
 export const WhatWeDo = () => {
-  const { db, updateSection } = useDatabase();
+  const { db, updateSection, apiFetch } = useDatabase();
   const { openMediaManager } = useMediaManager();
 
   const [activeTab, setActiveTab] = useState('content'); // overview, content, media, seo, visibility, publish, preview
@@ -138,13 +138,39 @@ export const WhatWeDo = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestWhatWeDo = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/whatWeDo');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultWhatWeDoCMS,
+              ...data,
+              hero: { ...defaultWhatWeDoCMS.hero, ...(data.hero || {}) },
+              operations: (data.operations && data.operations.length > 0) ? data.operations : defaultWhatWeDoCMS.operations,
+              servicesHeader: { ...defaultWhatWeDoCMS.servicesHeader, ...(data.servicesHeader || {}) },
+              servicesList: (data.servicesList && data.servicesList.length > 0) ? data.servicesList : defaultWhatWeDoCMS.servicesList,
+              quoteBanner: { ...defaultWhatWeDoCMS.quoteBanner, ...(data.quoteBanner || {}) }
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest whatWeDo from backend:", err);
+      }
+    };
+    fetchLatestWhatWeDo();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('whatWeDoData', nextState);
     updateSection('what_we_do', nextState);
+    updateSection('whatWeDo', nextState);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -154,6 +180,18 @@ export const WhatWeDo = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/whatWeDo', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'What We Do Page Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);

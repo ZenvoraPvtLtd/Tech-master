@@ -23,11 +23,6 @@ if (process.env.NODE_ENV === "development") {
 app.use(helmet());
 
 // CORS Configuration
-const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:5173",
-  process.env.ADMIN_URL || "http://localhost:5174",
-];
-
 app.use(
   cors({
     origin: true, // Allow any origin
@@ -57,10 +52,10 @@ app.use(cookieParser());
 
 // 5. Mount API Routes
 app.use("/api/v1/cms", cmsRouter);
+app.use("/api/v1", cmsRouter);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/media", uploadRoutes);
-// Versioned alias removed per user request
 
 // 6. Health Check Route
 app.get("/health", (req: Request, res: Response) => {
@@ -71,12 +66,12 @@ app.get("/health", (req: Request, res: Response) => {
   });
 });
 
-// 6. 404 Route Handler
+// 7. 404 Route Handler
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-// 7. Centralized Global Error Handler
+// 8. Centralized Global Error Handler
 app.use(errorHandler);
 
 export default app;

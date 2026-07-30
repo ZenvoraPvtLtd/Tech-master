@@ -16,6 +16,25 @@ const iconMap: Record<string, React.ReactNode> = {
 
 export const WhatWeDo: React.FC = () => {
   const { whatWeDoData } = useData();
+  const [liveData, setLiveData] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const fetchWhatWeDo = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/whatWeDo`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct What We Do fetch error:", e);
+      }
+    };
+    fetchWhatWeDo();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -28,6 +47,7 @@ export const WhatWeDo: React.FC = () => {
       smallBadge: "CORE ACTIVITIES",
       headline: "What We Do to",
       highlightWord: "Reshape Learning",
+      titleLine2: "",
       description: "We build content, platforms, keynotes, and campaigns to bridge the gap between classroom syntax and global engineering workspaces."
     },
     operations: [
@@ -77,15 +97,12 @@ export const WhatWeDo: React.FC = () => {
     }
   };
 
-  const activeData = { ...defaultPayload, ...localDb?.whatWeDoData, ...whatWeDoData };
+  const hero = { ...defaultPayload.hero, ...(localDb?.whatWeDoData?.hero || {}), ...(whatWeDoData?.hero || {}), ...(liveData?.hero || {}) };
 
-  const hero = activeData.hero || defaultPayload.hero;
+  const rawOperations = (liveData?.operations || whatWeDoData?.operations || localDb?.whatWeDoData?.operations || defaultPayload.operations);
+  const validOperations = (Array.isArray(rawOperations) && rawOperations.length > 0) ? rawOperations : defaultPayload.operations;
 
-  const rawOperations = (activeData.operations && activeData.operations.length > 0)
-    ? activeData.operations
-    : defaultPayload.operations;
-
-  const operations = rawOperations.map((op: any) => ({
+  const operations = validOperations.map((op: any) => ({
     icon: iconMap[op.icon] || <Video className="w-6 h-6 text-gold" />,
     title: op.title,
     subtitle: op.subtitle,
@@ -93,14 +110,13 @@ export const WhatWeDo: React.FC = () => {
     accent: op.accent || op.accentColor || "#D4AF37"
   }));
 
-  const servicesHeader = activeData.servicesHeader || defaultPayload.servicesHeader;
-  const rawServices = (activeData.servicesList && activeData.servicesList.length > 0)
-    ? activeData.servicesList
-    : defaultPayload.servicesList;
+  const servicesHeader = { ...defaultPayload.servicesHeader, ...(localDb?.whatWeDoData?.servicesHeader || {}), ...(whatWeDoData?.servicesHeader || {}), ...(liveData?.servicesHeader || {}) };
+  const rawServices = (liveData?.servicesList || whatWeDoData?.servicesList || localDb?.whatWeDoData?.servicesList || defaultPayload.servicesList);
+  const validServices = (Array.isArray(rawServices) && rawServices.length > 0) ? rawServices : defaultPayload.servicesList;
 
-  const servicesList = rawServices.map((s: any) => typeof s === 'string' ? s : (s.tag || s.name || s));
+  const servicesList = validServices.map((s: any) => typeof s === 'string' ? s : (s.tag || s.name || s.title || s));
 
-  const quoteBanner = activeData.quoteBanner || defaultPayload.quoteBanner;
+  const quoteBanner = { ...defaultPayload.quoteBanner, ...(localDb?.whatWeDoData?.quoteBanner || {}), ...(whatWeDoData?.quoteBanner || {}), ...(liveData?.quoteBanner || {}) };
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">

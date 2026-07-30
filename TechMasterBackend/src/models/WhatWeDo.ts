@@ -15,53 +15,27 @@ export interface IServiceListItem {
 }
 
 export interface IWhatWeDo extends Document, ICmsBase {
-  hero?: {
-    badgeText?: string;
-    heading: string;
-    description: string;
-    mediaFile?: IMedia;
-  };
-  operations?: IOperationItem[];
-  servicesList?: IServiceListItem[];
-  quoteBanner?: {
-    quote: string;
-    author: string;
-  };
+  hero?: any;
+  operations?: any[];
+  servicesHeader?: any;
+  servicesList?: any[];
+  quoteBanner?: any;
   seo?: ISeo;
 }
 
 const WhatWeDoSchema = new Schema<IWhatWeDo>(
   {
-    hero: {
-      badgeText: { type: String, default: "" },
-      heading: { type: String, default: "" },
-      description: { type: String, default: "" },
-      mediaFile: { type: MediaSchema },
-    },
-    operations: [
-      {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        icon: { type: String, default: "" },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    servicesList: [
-      {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    quoteBanner: {
-      quote: { type: String, default: "" },
-      author: { type: String, default: "" },
-    },
+    hero: { type: Schema.Types.Mixed, default: {} },
+    operations: { type: [Schema.Types.Mixed], default: [] },
+    servicesHeader: { type: Schema.Types.Mixed, default: {} },
+    servicesList: { type: [Schema.Types.Mixed], default: [] },
+    quoteBanner: { type: Schema.Types.Mixed, default: {} },
     seo: { type: SeoSchema },
     ...CmsBaseFields,
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

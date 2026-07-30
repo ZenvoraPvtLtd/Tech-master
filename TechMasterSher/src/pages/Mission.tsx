@@ -7,6 +7,25 @@ const accentColors = ["#D4AF37", "#00E5FF", "#aa3bff", "#FF007F"];
 
 export const Mission: React.FC = () => {
   const { missionVisionData } = useData();
+  const [liveMV, setLiveMV] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const fetchMissionVision = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/missionVision`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveMV(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Mission & Vision fetch error:", e);
+      }
+    };
+    fetchMissionVision();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -46,9 +65,9 @@ export const Mission: React.FC = () => {
     ],
     brandPillarsHeader: {
       badge: "OUR PILLARS",
-      titleLine1: "The",
-      titleLine2: "Foundation",
-      titleLine3: "of Our Work"
+      titleLine1: "",
+      titleLine2: "",
+      titleLine3: ""
     },
     brandPillars: [
       { title: "Full-Stack Architecture", subtitle: "Next.js • Node.js • Distributed Systems", description: "Comprehensive coverage from browser rendering loops down to database sharding.", borderColor: "#D4AF37" },
@@ -78,18 +97,24 @@ export const Mission: React.FC = () => {
     }
   };
 
-  const activeMV = { ...defaultMV, ...localDb?.missionVisionData, ...missionVisionData };
+  const activeMV = { ...defaultMV, ...localDb?.missionVisionData, ...missionVisionData, ...liveMV };
 
-  const heroData = activeMV.hero || defaultMV.hero;
-  const missionData = activeMV.mission || defaultMV.mission;
-  const visionData = activeMV.vision || defaultMV.vision;
-  const coreValuesHeader = activeMV.coreValuesHeader || defaultMV.coreValuesHeader;
-  const brandPillarsHeader = activeMV.brandPillarsHeader || defaultMV.brandPillarsHeader;
-  const roadmapHeader = activeMV.roadmapHeader || defaultMV.roadmapHeader;
-  const ctaForm = activeMV.cta || defaultMV.cta;
+  const heroData = { ...defaultMV.hero, ...(localDb?.missionVisionData?.hero || {}), ...(missionVisionData?.hero || {}), ...(liveMV?.hero || {}) };
+  const missionData = { ...defaultMV.mission, ...(localDb?.missionVisionData?.mission || {}), ...(missionVisionData?.mission || {}), ...(liveMV?.mission || {}) };
+  const visionData = { ...defaultMV.vision, ...(localDb?.missionVisionData?.vision || {}), ...(missionVisionData?.vision || {}), ...(liveMV?.vision || {}) };
+  const coreValuesHeader = { ...defaultMV.coreValuesHeader, ...(localDb?.missionVisionData?.coreValuesHeader || {}), ...(missionVisionData?.coreValuesHeader || {}), ...(liveMV?.coreValuesHeader || {}) };
+  const rawBrandPillarsHeader = { ...defaultMV.brandPillarsHeader, ...(localDb?.missionVisionData?.brandPillarsHeader || {}), ...(missionVisionData?.brandPillarsHeader || {}), ...(liveMV?.brandPillarsHeader || {}) };
+  const brandPillarsHeader = {
+    ...rawBrandPillarsHeader,
+    titleLine1: rawBrandPillarsHeader.titleLine1 === "The" ? "" : (rawBrandPillarsHeader.titleLine1 || ""),
+    titleLine2: rawBrandPillarsHeader.titleLine2 === "Foundation" ? "" : (rawBrandPillarsHeader.titleLine2 || ""),
+    titleLine3: rawBrandPillarsHeader.titleLine3 === "of Our Work" ? "" : (rawBrandPillarsHeader.titleLine3 || "")
+  };
+  const roadmapHeader = { ...defaultMV.roadmapHeader, ...(localDb?.missionVisionData?.roadmapHeader || {}), ...(missionVisionData?.roadmapHeader || {}), ...(liveMV?.roadmapHeader || {}) };
+  const ctaForm = { ...defaultMV.cta, ...(localDb?.missionVisionData?.cta || {}), ...(missionVisionData?.cta || {}), ...(liveMV?.cta || {}) };
 
-  const rawCoreValues = (activeMV.coreValues && activeMV.coreValues.length > 0) ? activeMV.coreValues : defaultMV.coreValues;
-  const coreValues = rawCoreValues
+  const rawCoreValues = (liveMV?.coreValues || missionVisionData?.coreValues || localDb?.missionVisionData?.coreValues || defaultMV.coreValues);
+  const coreValues = (Array.isArray(rawCoreValues) && rawCoreValues.length > 0 ? rawCoreValues : defaultMV.coreValues)
     .filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
     .map((v: any, idx: number) => ({
       title: v.title || v.valueName,
@@ -97,11 +122,13 @@ export const Mission: React.FC = () => {
       accent: v.accentColor || accentColors[idx % accentColors.length],
     }));
 
-  const rawBrandPillars = (activeMV.brandPillars && activeMV.brandPillars.length > 0) ? activeMV.brandPillars : defaultMV.brandPillars;
-  const brandPillars = rawBrandPillars.filter((p: any) => p.status === "Active" || p.status === true || p.status === undefined);
+  const rawBrandPillars = (liveMV?.brandPillars || missionVisionData?.brandPillars || localDb?.missionVisionData?.brandPillars || defaultMV.brandPillars);
+  const brandPillars = (Array.isArray(rawBrandPillars) && rawBrandPillars.length > 0 ? rawBrandPillars : defaultMV.brandPillars)
+    .filter((p: any) => p.status === "Active" || p.status === true || p.status === undefined);
 
-  const rawRoadmap = (activeMV.roadmap && activeMV.roadmap.length > 0) ? activeMV.roadmap : defaultMV.roadmap;
-  const roadmapItems = rawRoadmap.filter((r: any) => r.status !== "Inactive");
+  const rawRoadmap = (liveMV?.roadmap || missionVisionData?.roadmap || localDb?.missionVisionData?.roadmap || defaultMV.roadmap);
+  const roadmapItems = (Array.isArray(rawRoadmap) && rawRoadmap.length > 0 ? rawRoadmap : defaultMV.roadmap)
+    .filter((r: any) => r.status !== "Inactive");
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-20 px-6 overflow-hidden">
@@ -201,10 +228,16 @@ export const Mission: React.FC = () => {
         {brandPillars.length > 0 && (
           <div className="mb-12">
             <div className="mb-12 text-center">
-              <p className="typo-badge mb-4">{brandPillarsHeader.badge || "OUR PILLARS"}</p>
-              <h2 className="font-serif text-3xl md:text-4xl text-white font-light mb-8">
-                {brandPillarsHeader.titleLine1 || "The"} <span className="text-gold italic font-bold">{brandPillarsHeader.titleLine2 || "Foundation"}</span> {brandPillarsHeader.titleLine3 || "of Our Work"}
-              </h2>
+              {brandPillarsHeader.badge && <p className="typo-badge mb-4">{brandPillarsHeader.badge}</p>}
+              {(brandPillarsHeader.titleLine1 || brandPillarsHeader.titleLine2 || brandPillarsHeader.titleLine3 || brandPillarsHeader.title) && (
+                <h2 className="font-serif text-3xl md:text-4xl text-white font-light mb-8">
+                  {brandPillarsHeader.titleLine1 || brandPillarsHeader.title || ""}
+                  {brandPillarsHeader.titleLine2 && (
+                    <span className="text-gold italic font-bold"> {brandPillarsHeader.titleLine2}</span>
+                  )}
+                  {brandPillarsHeader.titleLine3 && ` ${brandPillarsHeader.titleLine3}`}
+                </h2>
+              )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {brandPillars.map((pillar: any, idx: number) => {

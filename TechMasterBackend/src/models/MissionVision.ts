@@ -24,88 +24,37 @@ export interface IRoadmapItem {
 }
 
 export interface IMissionVision extends Document, ICmsBase {
-  hero?: {
-    badgeText?: string;
-    heading: string;
-    description: string;
-    mediaFile?: IMedia;
-  };
-  mission?: {
-    title: string;
-    description: string;
-    mediaFile?: IMedia;
-  };
-  vision?: {
-    title: string;
-    description: string;
-    mediaFile?: IMedia;
-  };
-  coreValues?: ICoreValueItem[];
-  brandPillars?: IBrandPillar[];
-  roadmap?: IRoadmapItem[];
-  cta?: {
-    heading?: string;
-    description?: string;
-    buttonText?: string;
-    buttonUrl?: string;
-  };
+  hero?: any;
+  mission?: any;
+  vision?: any;
+  coreValuesHeader?: any;
+  coreValues?: any[];
+  brandPillarsHeader?: any;
+  brandPillars?: any[];
+  roadmapHeader?: any;
+  roadmap?: any[];
+  cta?: any;
   seo?: ISeo;
 }
 
 const MissionVisionSchema = new Schema<IMissionVision>(
   {
-    hero: {
-      badgeText: { type: String, default: "" },
-      heading: { type: String, default: "" },
-      description: { type: String, default: "" },
-      mediaFile: { type: MediaSchema },
-    },
-    mission: {
-      title: { type: String, default: "" },
-      description: { type: String, default: "" },
-      mediaFile: { type: MediaSchema },
-    },
-    vision: {
-      title: { type: String, default: "" },
-      description: { type: String, default: "" },
-      mediaFile: { type: MediaSchema },
-    },
-    coreValues: [
-      {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        icon: { type: String, default: "" },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    brandPillars: [
-      {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        image: { type: MediaSchema },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    roadmap: [
-      {
-        phase: { type: String, required: true },
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        dateRange: { type: String, default: "" },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    cta: {
-      heading: { type: String, default: "" },
-      description: { type: String, default: "" },
-      buttonText: { type: String, default: "" },
-      buttonUrl: { type: String, default: "" },
-    },
+    hero: { type: Schema.Types.Mixed, default: {} },
+    mission: { type: Schema.Types.Mixed, default: {} },
+    vision: { type: Schema.Types.Mixed, default: {} },
+    coreValuesHeader: { type: Schema.Types.Mixed, default: {} },
+    coreValues: { type: [Schema.Types.Mixed], default: [] },
+    brandPillarsHeader: { type: Schema.Types.Mixed, default: {} },
+    brandPillars: { type: [Schema.Types.Mixed], default: [] },
+    roadmapHeader: { type: Schema.Types.Mixed, default: {} },
+    roadmap: { type: [Schema.Types.Mixed], default: [] },
+    cta: { type: Schema.Types.Mixed, default: {} },
     seo: { type: SeoSchema },
     ...CmsBaseFields,
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

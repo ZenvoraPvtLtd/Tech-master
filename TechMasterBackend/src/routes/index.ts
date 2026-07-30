@@ -42,6 +42,7 @@ import { TermsPolicy } from "../models/TermsPolicy";
 import { PrivacyPolicy } from "../models/PrivacyPolicy";
 import { CookiePolicy } from "../models/CookiePolicy";
 import { LegalSettings } from "../models/LegalSettings";
+import { About } from "../models/About";
 
 import {
   serviceRepository,
@@ -63,6 +64,7 @@ import {
   privacyPolicyRepository,
   cookiePolicyRepository,
   legalSettingsRepository,
+  aboutRepository,
 } from "../repositories";
 
 const router = Router();
@@ -151,6 +153,7 @@ router.get("/", async (req, res, next) => {
       privacyPolicy,
       cookiePolicy,
       legalSettings,
+      aboutDocs,
     ] = await Promise.all([
       serviceRepository.find(),
       blogRepository.find(),
@@ -171,6 +174,7 @@ router.get("/", async (req, res, next) => {
       privacyPolicyRepository.find(),
       cookiePolicyRepository.find(),
       legalSettingsRepository.find(),
+      aboutRepository.find(),
     ]);
 
     // 3. Construct aggregated CMS state
@@ -188,12 +192,14 @@ router.get("/", async (req, res, next) => {
       contact: contact[0] || null,
       websiteSettings: websiteSettings[0] || null,
       servicesPage: servicesPage[0] || null,
-      missionVision: missionVision[0] || null,
+      missionVision: cmsDataMap['missionVision'] || missionVision[0] || null,
       testimonialsPage: testimonialsPage[0] || null,
       termsPolicy: termsPolicy[0] || null,
       privacyPolicy: privacyPolicy[0] || null,
       cookiePolicy: cookiePolicy[0] || null,
       legalSettings: legalSettings[0] || null,
+      about: cmsDataMap['about'] || aboutDocs[0] || null,
+      whatWeDo: cmsDataMap['whatWeDo'] || cmsDataMap['what_we_do'] || cmsDataMap['whatWeDoData'] || null,
       ...cmsDataMap, // Dynamically override and inject any updated flat keys
     };
 
@@ -238,28 +244,33 @@ router.post("/update", authenticate as any, async (req: any, res: any, next: any
       privacyPolicy: PrivacyPolicy,
       cookiePolicy: CookiePolicy,
       legalSettings: LegalSettings,
+      about: About,
     };
 
     if (ModelMap[key]) {
       const Model = ModelMap[key];
-      await Model.deleteMany({});
-      
-      if (Array.isArray(value)) {
-        const payloadArray = value;
-        const recordsToInsert = payloadArray.map((item: any) => {
-          const cleanItem = { ...item };
+      try {
+        await Model.deleteMany({});
+        
+        if (Array.isArray(value)) {
+          const payloadArray = value;
+          const recordsToInsert = payloadArray.map((item: any) => {
+            const cleanItem = { ...item };
+            if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
+              cleanItem._id = cleanItem.id;
+            }
+            return cleanItem;
+          });
+          await Model.insertMany(recordsToInsert);
+        } else if (value && typeof value === 'object') {
+          const cleanItem = { ...value };
           if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
             cleanItem._id = cleanItem.id;
           }
-          return cleanItem;
-        });
-        await Model.insertMany(recordsToInsert);
-      } else if (value && typeof value === 'object') {
-        const cleanItem = { ...value };
-        if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
-          cleanItem._id = cleanItem.id;
+          await Model.create(cleanItem);
         }
-        await Model.create(cleanItem);
+      } catch (err) {
+        console.warn(`Structured model sync warning for ${key}:`, err);
       }
     }
 
@@ -269,25 +280,33 @@ router.post("/update", authenticate as any, async (req: any, res: any, next: any
   }
 });
 
-// Mount all CMS sub-routers
+// Mount all CMS sub-routers with both kebab-case and camelCase aliases for 100% API compatibility
 router.use("/homepage", homepageRoutes);
 router.use("/about", aboutRoutes);
 router.use("/founder-journey", founderJourneyRoutes);
+router.use("/founderJourney", founderJourneyRoutes);
 router.use("/mission-vision", missionVisionRoutes);
+router.use("/missionVision", missionVisionRoutes);
 router.use("/what-we-do", whatWeDoRoutes);
+router.use("/whatWeDo", whatWeDoRoutes);
 router.use("/services", serviceRoutes);
 router.use("/collaborations", collaborationRoutes);
 router.use("/campaigns", campaignRoutes);
 router.use("/product-launches", productLaunchRoutes);
+router.use("/productLaunches", productLaunchRoutes);
 router.use("/events", eventRoutes);
 router.use("/portfolio", portfolioRoutes);
 router.use("/media-gallery", mediaGalleryRoutes);
+router.use("/mediaGallery", mediaGalleryRoutes);
 router.use("/careers", careerRoutes);
 router.use("/blogs", blogRoutes);
+router.use("/blog", blogRoutes);
 router.use("/faqs", faqRoutes);
 router.use("/contact", contactRoutes);
 router.use("/website-settings", websiteSettingsRoutes);
+router.use("/websiteSettings", websiteSettingsRoutes);
 router.use("/testimonials-page", testimonialsPageRoutes);
+router.use("/testimonialsPage", testimonialsPageRoutes);
 router.use("/legal", legalRoutes);
 
 export default router;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -60,9 +60,9 @@ export const MissionVision = () => {
     ],
     brandPillarsHeader: {
       badge: "OUR PILLARS",
-      titleLine1: "The",
-      titleLine2: "Foundation",
-      titleLine3: "of Our Work"
+      titleLine1: "",
+      titleLine2: "",
+      titleLine3: ""
     },
     brandPillars: [
       { id: "pil-1", title: "Full-Stack Architecture", subtitle: "Next.js • Node.js • Distributed Systems", description: "Comprehensive coverage from browser rendering loops down to database sharding.", borderColor: "#D4AF37", order: 1, status: "Active" },
@@ -130,14 +130,45 @@ export const MissionVision = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestMissionVision = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/missionVision');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultMissionVisionCMS,
+              ...data,
+              hero: { ...defaultMissionVisionCMS.hero, ...(data.hero || {}) },
+              mission: { ...defaultMissionVisionCMS.mission, ...(data.mission || {}) },
+              vision: { ...defaultMissionVisionCMS.vision, ...(data.vision || {}) },
+              coreValuesHeader: { ...defaultMissionVisionCMS.coreValuesHeader, ...(data.coreValuesHeader || {}) },
+              coreValues: (data.coreValues && data.coreValues.length > 0) ? data.coreValues : defaultMissionVisionCMS.coreValues,
+              brandPillarsHeader: { ...defaultMissionVisionCMS.brandPillarsHeader, ...(data.brandPillarsHeader || {}) },
+              brandPillars: (data.brandPillars && data.brandPillars.length > 0) ? data.brandPillars : defaultMissionVisionCMS.brandPillars,
+              roadmapHeader: { ...defaultMissionVisionCMS.roadmapHeader, ...(data.roadmapHeader || {}) },
+              roadmap: (data.roadmap && data.roadmap.length > 0) ? data.roadmap : defaultMissionVisionCMS.roadmap,
+              cta: { ...defaultMissionVisionCMS.cta, ...(data.cta || {}) }
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest missionVision from backend:", err);
+      }
+    };
+    fetchLatestMissionVision();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('missionVisionData', nextState);
     updateSection('missionCMS', nextState);
     updateSection('mission_vision', nextState);
+    updateSection('missionVision', nextState);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -147,6 +178,18 @@ export const MissionVision = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/missionVision', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'Mission & Vision Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);

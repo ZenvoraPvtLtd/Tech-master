@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -141,6 +141,34 @@ export const Blogs = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestBlogs = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/blogs');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultBlogCMS,
+              ...data,
+              blogHero: { ...defaultBlogCMS.blogHero, ...(data.blogHero || {}) },
+              featuredStrategy: { ...defaultBlogCMS.featuredStrategy, ...(data.featuredStrategy || {}) },
+              strategyStats: (data.strategyStats && data.strategyStats.length > 0) ? data.strategyStats : defaultBlogCMS.strategyStats,
+              strategyPillars: (data.strategyPillars && data.strategyPillars.length > 0) ? data.strategyPillars : defaultBlogCMS.strategyPillars,
+              strategyPresets: (data.strategyPresets && data.strategyPresets.length > 0) ? data.strategyPresets : defaultBlogCMS.strategyPresets,
+              blogCategories: (data.blogCategories && data.blogCategories.length > 0) ? data.blogCategories : defaultBlogCMS.blogCategories,
+              latestInsights: { ...defaultBlogCMS.latestInsights, ...(data.latestInsights || {}) },
+              blogs: (data.blogs && data.blogs.length > 0) ? data.blogs : defaultBlogCMS.blogs
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest blogs from backend:", err);
+      }
+    };
+    fetchLatestBlogs();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('blogCMS', nextState);
@@ -156,7 +184,7 @@ export const Blogs = () => {
     updateSection('blogPageSettings', nextState.blogPageSettings);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -166,6 +194,18 @@ export const Blogs = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/blogs', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'Blog Page Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);

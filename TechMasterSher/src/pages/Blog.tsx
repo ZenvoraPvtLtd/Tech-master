@@ -20,6 +20,26 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
     blogCategoriesData, 
   } = useData();
 
+  const [liveBlogData, setLiveBlogData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchBlogData = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/blogs`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveBlogData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Blog fetch error:", e);
+      }
+    };
+    fetchBlogData();
+  }, []);
+
   let localDb: any = {};
   try {
     const saved = localStorage.getItem('zenvora_db');
@@ -59,8 +79,8 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
     }
   ];
 
-  const rawBlogs = (blogsData && blogsData.length > 0) ? blogsData : (localDb?.blogs || localDb?.blogsData || defaultBlogs);
-  const blogsList = rawBlogs.filter((b: any) => b.active !== false && b.status !== "draft");
+  const rawBlogs = (liveBlogData?.blogs || blogsData || localDb?.blogs || localDb?.blogsData || defaultBlogs);
+  const blogsList = Array.isArray(rawBlogs) ? rawBlogs.filter((b: any) => b.active !== false && b.status !== "draft") : defaultBlogs;
 
   const defaultHero = {
     badge: "CREATOR JOURNAL",
@@ -68,7 +88,7 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
     titleLine2: "education & scalability.",
     active: true
   };
-  const activeHero = { ...defaultHero, ...localDb?.blogHero, ...blogHeroData };
+  const activeHero = { ...defaultHero, ...(localDb?.blogHero || {}), ...(blogHeroData || {}), ...(liveBlogData?.blogHero || {}) };
 
   const defaultStrategy = {
     badge: "Featured Strategy",
@@ -78,43 +98,36 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
     description: "Traditional advertising has diminishing returns. We help engineering brands build market authority through high-utility technical content, storytelling, and high-impact distribution loops.",
     active: true
   };
-  const activeStrategyData = { ...defaultStrategy, ...localDb?.featuredStrategy, ...featuredStrategyData };
+  const activeStrategyData = { ...defaultStrategy, ...(localDb?.featuredStrategy || {}), ...(featuredStrategyData || {}), ...(liveBlogData?.featuredStrategy || {}) };
 
   const defaultStats = [
     { number: "10M+", label: "Impressions", active: true },
     { number: "+150%", label: "Engagement", active: true },
     { number: "4.8x", label: "Content ROI", active: true }
   ];
-  const activeStats = (strategyStatsData && strategyStatsData.length > 0) 
-    ? strategyStatsData 
-    : (localDb?.strategyStats || defaultStats);
+  const activeStats = (liveBlogData?.strategyStats || strategyStatsData || localDb?.strategyStats || defaultStats);
 
   const defaultPillars = [
     { title: "Audience Retention", description: "Translate complex system architecture into clean narratives.", active: true },
     { title: "Search Dominance", description: "Rank first for high-intent queries that developers actually search.", active: true },
     { title: "Distribution Loops", description: "Syndicate deep-dives into social threads, shorts, and digests.", active: true }
   ];
-  const activePillars = (strategyPillarsData && strategyPillarsData.length > 0) 
-    ? strategyPillarsData 
-    : (localDb?.strategyPillars || defaultPillars);
+  const activePillars = (liveBlogData?.strategyPillars || strategyPillarsData || localDb?.strategyPillars || defaultPillars);
 
   const defaultPresets = [
     { presetName: "solopreneur", badge: "Solo Creator", impressions: "50K - 100K+", channel: "Twitter/X, Dev.to & LinkedIn", focus: "Build in public, share raw learnings, create highly readable dev cheatsheets.", roi: "High authority, premium lead acquisition", active: true },
     { presetName: "startup", badge: "Growth Startup", impressions: "250K - 500K+", channel: "GitHub, Medium, Tech Newsletters", focus: "Detailed technical case studies, comparisons, integration guides, and live streams.", roi: "Product signups, community growth", active: true },
     { presetName: "enterprise", badge: "Enterprise Brand", impressions: "1M - 5M+", channel: "YouTube Documentaries, Dedicated Hubs", focus: "High-production whitepapers, engineering-led media channels.", roi: "Market standard positioning, enterprise adoption", active: true }
   ];
-  const rawPresets = (strategyPresetsData && strategyPresetsData.length > 0)
-    ? strategyPresetsData
-    : (localDb?.strategyPresets || defaultPresets);
-  const presets = rawPresets.filter((p: any) => p.active !== false);
+  const rawPresets = (liveBlogData?.strategyPresets || strategyPresetsData || localDb?.strategyPresets || defaultPresets);
+  const presets = Array.isArray(rawPresets) ? rawPresets.filter((p: any) => p.active !== false) : defaultPresets;
 
   const defaultCategories = [
     { name: "All" }, { name: "Lifestyle" }, { name: "Marketing" }, { name: "Branding" }, { name: "Creator Journey" }, { name: "Tips" }, { name: "Latest News" }
   ];
-  const rawCategories = (blogCategoriesData && blogCategoriesData.length > 0)
-    ? blogCategoriesData
-    : (localDb?.blogCategories || defaultCategories);
-  const categories = [{ name: "All" }, ...rawCategories.filter((c: any) => c.name !== "All" && c.active !== false)];
+  const rawCategories = (liveBlogData?.blogCategories || blogCategoriesData || localDb?.blogCategories || defaultCategories);
+  const validCategories = Array.isArray(rawCategories) ? rawCategories : defaultCategories;
+  const categories = [{ name: "All" }, ...validCategories.filter((c: any) => c.name !== "All" && c.active !== false)];
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeStrategyPreset, setActiveStrategyPreset] = useState<string>("");
