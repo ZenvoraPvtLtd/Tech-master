@@ -13,7 +13,7 @@ interface HeaderProps {
   onChangePage: (page: string) => void;
 }
 
-const ScrollCounter = () => {
+const ScrollCounter = ({ viewsLabel }: { viewsLabel?: string }) => {
   const [viewsCount, setViewsCount] = useState(0);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const ScrollCounter = () => {
   return (
     <div className="h-7 px-3.5 rounded-full border border-gold/30 bg-[#0a0a0a]/95 backdrop-blur-xl flex items-center justify-center gap-1.5 shadow-sm pointer-events-auto select-none">
       <span className="font-mono text-[9.5px] text-gray-400 tracking-[1.5px] uppercase font-semibold leading-none self-center translate-y-[0.5px]">
-        VIEWS
+        {viewsLabel || "VIEWS"}
       </span>
       <span className="font-mono font-bold text-gold text-[10px] tracking-wider tabular-nums leading-none self-center">
         {viewsCount.toLocaleString()}+
@@ -44,11 +44,16 @@ const ScrollCounter = () => {
 };
 
 export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
-  const { dbData, websiteSettings, termsPolicyData, privacyPolicyData, legalSettingsData } = useData();
+  const { dbData, websiteSettings, homeData, termsPolicyData, privacyPolicyData, legalSettingsData } = useData();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const activeHome = { ...(dbData?.homepageCMS || dbData?.homepage || {}), ...(homeData || {}) };
+  const viewsLabel = activeHome?.navbar?.viewsText || (websiteSettings as any)?.viewsText || "VIEWS";
+  const navBtnText = activeHome?.navbar?.buttonText || (websiteSettings as any)?.buttonText || "LET'S TALK";
+  const navBtnLink = activeHome?.navbar?.buttonLink || (websiteSettings as any)?.buttonLink || "contact";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -191,15 +196,15 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         {/* Action Button & Hamburger Toggle */}
         <div className="flex items-center gap-4 sm:gap-6">
           <div className="flex items-center justify-center pointer-events-auto">
-            <ScrollCounter />
+            <ScrollCounter viewsLabel={viewsLabel} />
           </div>
           <div className={`hidden sm:block transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <Magnetic strength={0.3}>
               <button
-                onClick={() => handleNavClick("contact")}
+                onClick={() => handleNavClick((navBtnLink || "contact").replace(/^\//, ""))}
                 className="light-sweep h-7 px-3.5 rounded-full border border-gold/30 hover:border-gold hover:text-black hover:bg-gold transition-all duration-500 text-[10px] font-black uppercase tracking-[1.5px] text-gold flex items-center justify-center gap-1.5 shadow-sm"
               >
-                Let's Talk
+                {navBtnText}
                 <ArrowUpRight className="w-3 h-3" />
               </button>
             </Magnetic>

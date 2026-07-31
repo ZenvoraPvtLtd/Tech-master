@@ -4,10 +4,65 @@ import { useMediaManager } from '../../context/MediaContext';
 import { 
   Home as HomeIcon, Check, Save, Plus, Trash2, Edit3, Eye, EyeOff, 
   ArrowUp, ArrowDown, Sparkles, Image as ImageIcon, Video, Link as LinkIcon, 
-  Layers, Sliders, Play, ShieldCheck, Globe, Move, Search, RefreshCw, X, RotateCcw, AlertTriangle
+  Layers, Sliders, Play, ShieldCheck, Globe, Move, Search, RefreshCw, X, RotateCcw, AlertTriangle, UploadCloud
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
+
+const defaultCircleAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80";
+
+const lenskartLogoB64 = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90"><g fill="none" stroke="black" stroke-width="7"><circle cx="35" cy="45" r="20"/><circle cx="75" cy="45" r="20"/></g><text x="110" y="56" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="42" fill="black">lenskart</text></svg>')}`;
+
+const ultravioletteLogoB64 = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 100" width="540" height="100"><polygon points="30,25 80,25 55,75" fill="none" stroke="black" stroke-width="10" stroke-linejoin="round"/><text x="110" y="62" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="38" fill="black" letter-spacing="7">ULTRAVIOLETTE</text></svg>')}`;
+
+const createTextLogoB64 = (text) => `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 90" width="340" height="90"><text x="170" y="55" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="32" fill="black" text-anchor="middle" letter-spacing="3">${text}</text></svg>`)}`;
+
+const getBrandDefaultLogo = (brandName, customUrl) => {
+  if (customUrl && customUrl.trim()) return customUrl.trim();
+  const name = (brandName || '').toLowerCase().trim();
+  const cleanAlpha = name.replace(/[^a-z0-9]/g, "");
+
+  const cdnMap = {
+    amazon: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/amazon.svg",
+    asus: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/asus.svg",
+    dell: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/dell.svg",
+    flipkart: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/flipkart.svg",
+    huawei: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/huawei.svg",
+    iqoo: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/iqoo.svg",
+    marshall: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/marshall.svg",
+    xiaomi: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/xiaomi.svg",
+    mi: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/xiaomi.svg",
+    motorola: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/motorola.svg",
+    oneplus: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/oneplus.svg",
+    oppo: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/oppo.svg",
+    googlepixel: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/google.svg",
+    google: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/google.svg",
+    pixel: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/google.svg",
+    poco: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/poco.svg",
+    realme: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/realme.svg",
+    samsung: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/samsung.svg",
+    vivo: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/vivo.svg",
+    sony: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/sony.svg",
+    nothing: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/nothing.svg",
+    tesla: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/tesla.svg",
+    tata: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/tata.svg",
+    hyundai: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/hyundai.svg",
+    kia: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/kia.svg",
+    blinkit: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/blinkit.svg",
+    lenskart: lenskartLogoB64,
+    ultraviolette: ultravioletteLogoB64,
+    thesleepcompany: createTextLogoB64("THE SLEEP CO"),
+    sleepcompany: createTextLogoB64("THE SLEEP CO"),
+    fireboltt: createTextLogoB64("FIRE-BOLTT"),
+    fireboltt: createTextLogoB64("FIRE-BOLTT"),
+    noise: createTextLogoB64("NOISE"),
+    boat: createTextLogoB64("boAt"),
+    cashify: createTextLogoB64("CASHIFY")
+  };
+
+  if (cdnMap[cleanAlpha]) return cdnMap[cleanAlpha];
+  return createTextLogoB64((brandName || 'BRAND').toUpperCase());
+};
 
 export const Homepage = () => {
   const { db, updateSection, apiFetch } = useDatabase();
@@ -88,11 +143,11 @@ export const Homepage = () => {
       subHeading: "We're just getting started / Five channels today. A Media Empire in Motion.",
       visible: true,
       channels: [
-        { id: 'ch-1', name: 'Tech Master', ytSubs: '33M Subs on YT', igFollowers: '5.8M Followers on IG', popular: '195M (Short)', logoUrl: '', order: 1, visible: true, deleted: false },
-        { id: 'ch-2', name: 'Next Univerz', ytSubs: '5.5M Subs on YT', igFollowers: '', popular: '88M (Shorts)', logoUrl: '', order: 2, visible: true, deleted: false },
-        { id: 'ch-3', name: 'Master Wheels', ytSubs: '4.6M Subs on YT', igFollowers: '1.2M Followers on IG', popular: '148M (Short)', logoUrl: '', order: 3, visible: true, deleted: false },
-        { id: 'ch-4', name: 'Full Circle', ytSubs: '300K Subs on YT', igFollowers: '', popular: '2M (Short)', logoUrl: '', order: 4, visible: true, deleted: false },
-        { id: 'ch-5', name: 'Trendz Talk', ytSubs: '', igFollowers: '15K Followers on IG', popular: '4.8M (Reel)', logoUrl: '', order: 5, visible: true, deleted: false }
+        { id: 'ch-1', name: 'Tech Master', circleImage: '', ytSubs: '33M Subs on YT', igFollowers: '5.8M Followers on IG', popular: '195M (Short)', logoUrl: '', order: 1, visible: true, deleted: false },
+        { id: 'ch-2', name: 'Next Univerz', circleImage: '', ytSubs: '5.5M Subs on YT', igFollowers: '', popular: '88M (Shorts)', logoUrl: '', order: 2, visible: true, deleted: false },
+        { id: 'ch-3', name: 'Master Wheels', circleImage: '', ytSubs: '4.6M Subs on YT', igFollowers: '1.2M Followers on IG', popular: '148M (Short)', logoUrl: '', order: 3, visible: true, deleted: false },
+        { id: 'ch-4', name: 'Full Circle', circleImage: '', ytSubs: '300K Subs on YT', igFollowers: '', popular: '2M (Short)', logoUrl: '', order: 4, visible: true, deleted: false },
+        { id: 'ch-5', name: 'Trendz Talk', circleImage: '', ytSubs: '', igFollowers: '15K Followers on IG', popular: '4.8M (Reel)', logoUrl: '', order: 5, visible: true, deleted: false }
       ]
     },
 
@@ -238,6 +293,73 @@ export const Homepage = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  const handleDirectFileUpload = async (file, onUploaded) => {
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const savedAuth = localStorage.getItem('zenvora_auth');
+      let token = "";
+      if (savedAuth) {
+        try {
+          const parsed = JSON.parse(savedAuth);
+          token = parsed.token || "";
+        } catch (e) {}
+      }
+      const formDataUpload = new FormData();
+      formDataUpload.append("file", file);
+
+      const baseHost = (import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com").replace(/\/api\/v1\/?$/i, "");
+      const uploadPath = file.type.startsWith("video") ? "/api/upload/video" : "/api/upload/image";
+      const response = await fetch(`${baseHost}${uploadPath}`, {
+        method: "POST",
+        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        credentials: "include",
+        body: formDataUpload
+      });
+
+      const data = await response.json();
+      if (data.success && data.data?.cloudinaryUrl) {
+        const uploadedUrl = data.data.cloudinaryUrl;
+        onUploaded(uploadedUrl);
+
+        // Store into Media Library immediately so it is available in Media Library tab!
+        try {
+          const isVideo = file.type.startsWith('video');
+          const newMediaItem = {
+            id: data.data._id || `media-${Date.now()}`,
+            title: file.name.split('.')[0] || 'Uploaded Media',
+            type: isVideo ? 'Video' : 'Image',
+            category: 'General',
+            url: uploadedUrl,
+            imageUrl: !isVideo ? uploadedUrl : '',
+            videoUrl: isVideo ? uploadedUrl : '',
+            thumbnail: uploadedUrl,
+            size: `${((data.data.fileSize || file.size) / (1024 * 1024)).toFixed(2)} MB`,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            status: 'Active',
+            visibility: true
+          };
+
+          const currentLibrary = db?.mediaLibrary || [];
+          const updatedLibrary = [newMediaItem, ...currentLibrary.filter(m => m.url !== uploadedUrl)];
+          updateSection('mediaLibrary', updatedLibrary);
+        } catch (mErr) {
+          console.warn("Media Library sync warning:", mErr);
+        }
+
+        showToast('File uploaded successfully & saved to Media Library!', 'success');
+      } else {
+        throw new Error(data.message || 'Upload failed');
+      }
+    } catch (err) {
+      console.error("Direct upload error:", err);
+      showToast('Upload failed: ' + (err.message || 'Error uploading file'), 'error');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchLatestHomepage = async () => {
       try {
@@ -305,7 +427,10 @@ export const Homepage = () => {
     updateSection('homeData', nextState);
   };
 
-  const handleSaveAll = async () => {
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const handlePublishAll = async (isPublished = true) => {
+    setIsPublishing(true);
     persistChanges(formData);
     try {
       if (apiFetch) {
@@ -313,13 +438,26 @@ export const Homepage = () => {
           method: 'PUT',
           body: JSON.stringify(formData)
         });
+        try {
+          await apiFetch('/cms/update', {
+            method: 'POST',
+            body: JSON.stringify({ key: 'homepage', value: formData })
+          });
+          await apiFetch('/cms/update', {
+            method: 'POST',
+            body: JSON.stringify({ key: 'homepageCMS', value: formData })
+          });
+        } catch (e) {}
       }
+      setIsSaved(true);
+      showToast(isPublished ? 'Homepage CMS Published Live & Synchronized to MongoDB!' : 'Homepage Draft Saved Locally!', 'success');
+      setTimeout(() => setIsSaved(false), 2500);
     } catch (err) {
       console.warn("Backend API sync warning:", err);
+      showToast('Saved locally! Backend: ' + (err.message || 'Updated'), 'info');
+    } finally {
+      setIsPublishing(false);
     }
-    setIsSaved(true);
-    showToast('Homepage CMS saved & synchronized to MongoDB!', 'success');
-    setTimeout(() => setIsSaved(false), 2500);
   };
 
   // Direct Cloudinary / API File Upload Handler
@@ -387,21 +525,16 @@ export const Homepage = () => {
     persistChanges(updatedState);
   };
 
-  // Helper Soft Delete / Permanent Delete
-  const handleItemDelete = (listKey, parentKey, id, permanent = false) => {
+  // Helper Delete (Removes item completely from state)
+  const handleItemDelete = (listKey, parentKey, id) => {
     const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
-    let updated;
-    if (permanent) {
-      updated = list.filter(item => item.id !== id);
-    } else {
-      updated = list.map(item => item.id === id ? { ...item, deleted: true } : item);
-    }
+    const updated = list.filter(item => item.id !== id);
     const updatedState = parentKey 
       ? { ...formData, [parentKey]: { ...formData[parentKey], [listKey]: updated } }
       : { ...formData, [listKey]: updated };
     persistChanges(updatedState);
     setDeleteConfirmItem(null);
-    showToast(permanent ? 'Item permanently deleted' : 'Item soft-deleted. Restore anytime.', 'info');
+    showToast('Item deleted successfully from CMS!', 'info');
   };
 
   // Helper Restore Soft Deleted Item
@@ -421,12 +554,29 @@ export const Homepage = () => {
     const { listKey, parentKey, item } = modalConfig;
     const list = parentKey ? [...formData[parentKey][listKey]] : [...formData[listKey]];
     
+    const processedItem = { ...item };
+    if (listKey === 'channels' || parentKey === 'channelsTicker') {
+      const img = processedItem.circleImage || processedItem.logoUrl || processedItem.image || processedItem.imageUrl || '';
+      processedItem.circleImage = img;
+      processedItem.logoUrl = img;
+      processedItem.image = img;
+      processedItem.imageUrl = img;
+    }
+
+    if (listKey === 'brands' || parentKey === 'brandCollaborations') {
+      const bImg = processedItem.logoUrl || processedItem.logo || processedItem.imageUrl || processedItem.brandLogo || '';
+      processedItem.logoUrl = bImg;
+      processedItem.logo = bImg;
+      processedItem.imageUrl = bImg;
+      processedItem.brandLogo = bImg;
+    }
+
     let updated;
-    if (item.id) {
-      updated = list.map(i => i.id === item.id ? item : i);
+    if (processedItem.id) {
+      updated = list.map(i => i.id === processedItem.id ? processedItem : i);
     } else {
       const newItem = {
-        ...item,
+        ...processedItem,
         id: `${listKey.slice(0, 2)}-${Date.now()}`,
         order: list.length + 1,
         visible: true,
@@ -474,10 +624,27 @@ export const Homepage = () => {
           </p>
         </div>
 
-        <Button onClick={handleSaveAll} variant="gold" className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold">
-          {isSaved ? <Check className="w-4 h-4 text-black" /> : <Save className="w-4 h-4" />}
-          {isSaved ? 'Synchronized!' : 'Save & Sync All Sections'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => handlePublishAll(false)} variant="outline" size="sm" className="text-xs uppercase tracking-wider">
+            Save Draft
+          </Button>
+          <Button 
+            onClick={() => handlePublishAll(true)} 
+            disabled={isPublishing} 
+            variant="gold" 
+            size="sm" 
+            className="text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5"
+          >
+            {isPublishing ? (
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-black" />
+            ) : isSaved ? (
+              <Check className="w-3.5 h-3.5 text-black" />
+            ) : (
+              <Save className="w-3.5 h-3.5" />
+            )}
+            {isPublishing ? 'Publishing...' : isSaved ? 'Published Live!' : 'Publish Changes'}
+          </Button>
+        </div>
       </div>
 
       {/* Section Switcher Tabs */}
@@ -740,7 +907,7 @@ export const Homepage = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Official Channels Ticker List</h3>
               <Button 
-                onClick={() => setModalConfig({ listKey: 'channels', parentKey: 'channelsTicker', item: { name: '', ytSubs: '', igFollowers: '', popular: '' } })} 
+                onClick={() => setModalConfig({ listKey: 'channels', parentKey: 'channelsTicker', item: { name: '', circleImage: '', ytSubs: '', igFollowers: '' } })} 
                 variant="gold" 
                 size="sm" 
                 className="text-xs uppercase"
@@ -754,6 +921,7 @@ export const Homepage = () => {
                 <thead className="bg-zinc-900/80 text-zinc-400 uppercase font-mono text-[10px]">
                   <tr>
                     <th className="py-2.5 px-4">Order</th>
+                    <th className="py-2.5 px-4">Avatar Image</th>
                     <th className="py-2.5 px-4">Channel Name</th>
                     <th className="py-2.5 px-4">YouTube Subs</th>
                     <th className="py-2.5 px-4">IG Followers</th>
@@ -762,13 +930,22 @@ export const Homepage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/60">
-                  {formData.channelsTicker.channels.map((ch, idx) => (
+                  {formData.channelsTicker.channels.filter(ch => !ch.deleted).map((ch, idx) => (
                     <tr key={ch.id} className={`hover:bg-zinc-900/30 ${ch.deleted ? 'opacity-40' : ''}`}>
                       <td className="py-2.5 px-4 font-mono text-zinc-500">
                         <div className="flex items-center gap-1">
                           <button onClick={() => swapOrder('channels', 'channelsTicker', idx, -1)} className="hover:text-luxury-gold cursor-pointer"><ArrowUp className="w-3 h-3" /></button>
                           <span>{idx + 1}</span>
                           <button onClick={() => swapOrder('channels', 'channelsTicker', idx, 1)} className="hover:text-luxury-gold cursor-pointer"><ArrowDown className="w-3 h-3" /></button>
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <div className="w-9 h-9 rounded-full overflow-hidden border border-luxury-gold/50 bg-black flex items-center justify-center shadow-sm">
+                          <img 
+                            src={ch.circleImage || ch.image || ch.imageUrl || defaultCircleAvatar} 
+                            alt={ch.name} 
+                            className="w-full h-full object-cover" 
+                          />
                         </div>
                       </td>
                       <td className="py-2.5 px-4 font-serif font-bold text-zinc-200">{ch.name}</td>
@@ -784,7 +961,7 @@ export const Homepage = () => {
                       </td>
                       <td className="py-2.5 px-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => setModalConfig({ listKey: 'channels', parentKey: 'channelsTicker', item: ch })} className="p-1 text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => setModalConfig({ listKey: 'channels', parentKey: 'channelsTicker', item: { name: '', circleImage: '', ytSubs: '', igFollowers: '', ...ch, circleImage: ch.circleImage || ch.logoUrl || ch.image || ch.imageUrl || '' } })} className="p-1 text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
                           {ch.deleted ? (
                             <button onClick={() => handleItemRestore('channels', 'channelsTicker', ch.id)} className="p-1 text-emerald-400"><RotateCcw className="w-3.5 h-3.5" /></button>
                           ) : (
@@ -951,7 +1128,7 @@ export const Homepage = () => {
                   />
                 </div>
                 <Button 
-                  onClick={() => setModalConfig({ listKey: 'brands', parentKey: 'brandCollaborations', item: { brandName: '', websiteUrl: '' } })} 
+                  onClick={() => setModalConfig({ listKey: 'brands', parentKey: 'brandCollaborations', item: { brandName: '', logoUrl: '', websiteUrl: '' } })} 
                   variant="gold" 
                   size="sm" 
                   className="text-xs uppercase"
@@ -961,47 +1138,181 @@ export const Homepage = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {formData.brandCollaborations.brands
-                .filter(b => b.brandName.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map((b, idx) => (
-                  <div key={b.id} className="p-3 bg-zinc-900/60 border border-zinc-800 rounded-xl text-center space-y-2 relative group text-xs">
-                    <span className="font-semibold text-zinc-200 block truncate">{b.brandName}</span>
-                    <button 
-                      onClick={() => handleItemDelete('brands', 'brandCollaborations', b.id, true)} 
-                      className="absolute top-2 right-2 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
+                .filter(b => (b.brandName || '').toLowerCase().includes(searchQuery.toLowerCase()) && !b.deleted)
+                .map((b) => {
+                  const logoSrc = getBrandDefaultLogo(b.brandName, b.logoUrl || b.logo || b.imageUrl);
+                  return (
+                    <div key={b.id} className="p-3 bg-zinc-900/60 border border-zinc-800 hover:border-luxury-gold/40 rounded-xl flex flex-col items-center justify-between text-center space-y-2 relative group text-xs transition-all h-28 shadow-sm">
+                      <div className="w-full h-12 flex items-center justify-center bg-black/40 rounded-lg p-1.5 overflow-hidden">
+                        <img 
+                          src={logoSrc} 
+                          alt={b.brandName}
+                          onError={(e) => {
+                            if (e.target.dataset.errored) return;
+                            e.target.dataset.errored = "true";
+                            const name = (b.brandName || "BRAND").toUpperCase();
+                            e.target.src = createTextLogoB64(name);
+                          }}
+                          className="max-h-full max-w-full object-contain filter invert opacity-90 group-hover:opacity-100 transition-opacity" 
+                        />
+                      </div>
+                      <span className="font-semibold text-zinc-200 block truncate w-full text-[11px] font-mono">{b.brandName}</span>
+                      
+                      <div className="absolute top-1 right-1 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-950/80 p-1 rounded-md border border-zinc-800">
+                        <button 
+                          onClick={() => setModalConfig({ 
+                            listKey: 'brands', 
+                            parentKey: 'brandCollaborations', 
+                            item: { brandName: b.brandName || '', logoUrl: b.logoUrl || b.logo || b.imageUrl || '', websiteUrl: b.websiteUrl || '', id: b.id } 
+                          })}
+                          className="text-zinc-400 hover:text-luxury-gold p-0.5"
+                          title="Edit Brand Logo & Details"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </button>
+                        <button 
+                          onClick={() => handleItemDelete('brands', 'brandCollaborations', b.id)} 
+                          className="text-zinc-400 hover:text-rose-400 p-0.5"
+                          title="Delete Brand"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>
       )}
 
-      {/* SECTION 11: NEWSLETTER & CONTACT */}
+      {/* SECTION 11: NEWSLETTER & CONTACT PREVIEW */}
       {activeSection === 'sec-11' && (
-        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
-          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Newsletter & Contact Preview Settings</h3>
-
-          <div className="space-y-4">
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-6 text-xs">
+          {/* Newsletter Box */}
+          <div className="space-y-4 border-b border-zinc-800/80 pb-6">
+            <h3 className="text-sm font-serif font-bold text-luxury-gold uppercase tracking-wider">Newsletter Subscription CMS</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Newsletter Tag / Badge</label>
+                <input
+                  type="text"
+                  value={formData?.newsletterContact?.newsletter?.tag || formData?.newsletter?.tag || formData?.newsletterContact?.newsletterBadge || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    persistChanges({
+                      ...formData,
+                      newsletter: { ...(formData.newsletter || {}), tag: val, badge: val },
+                      newsletterContact: { ...(formData.newsletterContact || {}), newsletterBadge: val, newsletter: { ...(formData.newsletterContact?.newsletter || {}), tag: val } }
+                    });
+                  }}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
+                />
+              </div>
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Subscribe Button Text</label>
+                <input
+                  type="text"
+                  value={formData?.newsletterContact?.newsletter?.buttonText || formData?.newsletter?.buttonText || formData?.newsletterContact?.buttonText || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    persistChanges({
+                      ...formData,
+                      newsletter: { ...(formData.newsletter || {}), buttonText: val },
+                      newsletterContact: { ...(formData.newsletterContact || {}), buttonText: val, newsletter: { ...(formData.newsletterContact?.newsletter || {}), buttonText: val } }
+                    });
+                  }}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono font-bold"
+                />
+              </div>
+            </div>
             <div>
               <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Newsletter Heading</label>
               <input
                 type="text"
-                value={formData.newsletterContact.newsletterHeading}
-                onChange={(e) => persistChanges({ ...formData, newsletterContact: { ...formData.newsletterContact, newsletterHeading: e.target.value } })}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif"
+                value={formData?.newsletterContact?.newsletter?.heading || formData?.newsletter?.heading || formData?.newsletterContact?.newsletterHeading || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  persistChanges({
+                    ...formData,
+                    newsletter: { ...(formData.newsletter || {}), heading: val },
+                    newsletterContact: { ...(formData.newsletterContact || {}), newsletterHeading: val, newsletter: { ...(formData.newsletterContact?.newsletter || {}), heading: val } }
+                  });
+                }}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold text-sm"
               />
             </div>
             <div>
-              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Contact Preview CTA Text</label>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Newsletter Description</label>
+              <textarea
+                rows={2}
+                value={formData?.newsletterContact?.newsletter?.description || formData?.newsletter?.description || formData?.newsletterContact?.newsletterDescription || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  persistChanges({
+                    ...formData,
+                    newsletter: { ...(formData.newsletter || {}), description: val },
+                    newsletterContact: { ...(formData.newsletterContact || {}), newsletterDescription: val, newsletter: { ...(formData.newsletterContact?.newsletter || {}), description: val } }
+                  });
+                }}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
+              />
+            </div>
+          </div>
+
+          {/* Contact Preview Box */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Contact Preview CTA Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Contact Tag / Badge</label>
+                <input
+                  type="text"
+                  value={formData?.newsletterContact?.contactPreview?.tag || formData?.contactPreview?.tag || formData?.newsletterContact?.contactBadge || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    persistChanges({
+                      ...formData,
+                      contactPreview: { ...(formData.contactPreview || {}), tag: val, badge: val },
+                      newsletterContact: { ...(formData.newsletterContact || {}), contactBadge: val, contactPreview: { ...(formData.newsletterContact?.contactPreview || {}), tag: val } }
+                    });
+                  }}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
+                />
+              </div>
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">CTA Button Text</label>
+                <input
+                  type="text"
+                  value={formData?.newsletterContact?.contactPreview?.primaryCta || formData?.contactPreview?.primaryCta || formData?.newsletterContact?.contactCtaText || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    persistChanges({
+                      ...formData,
+                      contactPreview: { ...(formData.contactPreview || {}), primaryCta: val, buttonText: val },
+                      newsletterContact: { ...(formData.newsletterContact || {}), contactCtaText: val, contactPreview: { ...(formData.newsletterContact?.contactPreview || {}), primaryCta: val } }
+                    });
+                  }}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono font-bold"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Contact Preview Heading</label>
               <input
                 type="text"
-                value={formData.newsletterContact.contactCtaText}
-                onChange={(e) => persistChanges({ ...formData, newsletterContact: { ...formData.newsletterContact, contactCtaText: e.target.value } })}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
+                value={formData?.newsletterContact?.contactPreview?.heading || formData?.contactPreview?.heading || formData?.newsletterContact?.contactHeading || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  persistChanges({
+                    ...formData,
+                    contactPreview: { ...(formData.contactPreview || {}), heading: val },
+                    newsletterContact: { ...(formData.newsletterContact || {}), contactHeading: val, contactPreview: { ...(formData.newsletterContact?.contactPreview || {}), heading: val } }
+                  });
+                }}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold text-sm"
               />
             </div>
           </div>
@@ -1022,20 +1333,85 @@ export const Homepage = () => {
             </div>
 
             <div className="space-y-3 text-xs">
-              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => (
-                <div key={key}>
-                  <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
-                  <input
-                    type="text"
-                    value={modalConfig.item[key] || ''}
-                    onChange={(e) => setModalConfig({
-                      ...modalConfig,
-                      item: { ...modalConfig.item, [key]: e.target.value }
-                    })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
-                  />
-                </div>
-              ))}
+              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => {
+                const isImageKey = ['circleImage', 'image', 'imageUrl', 'logo', 'logoUrl', 'avatar', 'thumbnail', 'bgMediaUrl'].includes(key);
+                const fieldLabel = (key === 'circleImage' || key === 'logoUrl') ? 'Channel Avatar Image URL' : key;
+                return (
+                  <div key={key}>
+                    <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{fieldLabel}</label>
+                    {isImageKey ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-luxury-gold bg-black shrink-0 flex items-center justify-center shadow-md">
+                            <img 
+                              src={modalConfig.item[key] || defaultCircleAvatar} 
+                              alt="Preview" 
+                              className="w-full h-full object-cover" 
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Cloudinary Image URL"
+                            value={modalConfig.item[key] || ''}
+                            onChange={(e) => setModalConfig({
+                              ...modalConfig,
+                              item: { ...modalConfig.item, [key]: e.target.value }
+                            })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none font-mono text-[11px]"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <label className="flex-1 bg-luxury-gold/15 hover:bg-luxury-gold/25 text-luxury-gold border border-luxury-gold/40 rounded-lg px-3 py-2 text-[11px] font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-sm">
+                            <UploadCloud className="w-4 h-4 text-luxury-gold" />
+                            {isUploading ? 'Uploading to Cloudinary...' : 'Upload Photo from PC'}
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              disabled={isUploading}
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  handleDirectFileUpload(e.target.files[0], (url) => {
+                                    setModalConfig(prev => ({
+                                      ...prev,
+                                      item: { ...prev.item, [key]: url }
+                                    }));
+                                  });
+                                }
+                              }}
+                              className="hidden" 
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => openMediaManager({
+                              onSelect: (url) => {
+                                setModalConfig(prev => ({
+                                  ...prev,
+                                  item: { ...prev.item, [key]: url }
+                                }));
+                              }
+                            })}
+                            className="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg px-3 py-2 text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors"
+                          >
+                            <ImageIcon className="w-3.5 h-3.5 text-luxury-gold" />
+                            Media Library
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={modalConfig.item[key] || ''}
+                        onChange={(e) => setModalConfig({
+                          ...modalConfig,
+                          item: { ...modalConfig.item, [key]: e.target.value }
+                        })}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">

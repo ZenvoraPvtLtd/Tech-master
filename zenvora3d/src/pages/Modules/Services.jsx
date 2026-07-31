@@ -252,11 +252,7 @@ export const Services = () => {
         {[
           { id: 'accordions', label: '1. Service Accordions', icon: Briefcase },
           { id: 'content', label: '2. Page Content CMS', icon: Layers },
-          { id: 'media', label: 'Media Library', icon: ImageIcon },
-          { id: 'seo', label: 'SEO & Search', icon: Globe },
-          { id: 'visibility', label: 'Visibility & Access', icon: Eye },
-          { id: 'publish', label: 'Publish Settings', icon: Clock },
-          { id: 'preview', label: 'Live Preview', icon: Monitor }
+          { id: 'media', label: 'Media Library', icon: ImageIcon }
         ].map(tab => {
           const IconComp = tab.icon;
           return (

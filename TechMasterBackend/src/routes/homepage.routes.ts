@@ -38,11 +38,11 @@ const defaultHomepageData = {
     highlightedHeading: 'Same Obsession.',
     subHeading: "We're just getting started / Five channels today. A Media Empire in Motion.",
     channels: [
-      { id: 'ch-1', name: 'Tech Master', ytSubs: '33M Subs on YT', igFollowers: '5.8M Followers on IG' },
-      { id: 'ch-2', name: 'Next Univerz', ytSubs: '5.5M Subs on YT', igFollowers: '' },
-      { id: 'ch-3', name: 'Master Wheels', ytSubs: '4.6M Subs on YT', igFollowers: '1.2M Followers on IG' },
-      { id: 'ch-4', name: 'Full Circle', ytSubs: '300K Subs on YT', igFollowers: '' },
-      { id: 'ch-5', name: 'Trendz Talk', ytSubs: '', igFollowers: '15K Followers on IG' }
+      { id: 'ch-1', name: 'Tech Master', circleImage: '', logoUrl: '', ytSubs: '33M Subs on YT', igFollowers: '5.8M Followers on IG' },
+      { id: 'ch-2', name: 'Next Univerz', circleImage: '', logoUrl: '', ytSubs: '5.5M Subs on YT', igFollowers: '' },
+      { id: 'ch-3', name: 'Master Wheels', circleImage: '', logoUrl: '', ytSubs: '4.6M Subs on YT', igFollowers: '1.2M Followers on IG' },
+      { id: 'ch-4', name: 'Full Circle', circleImage: '', logoUrl: '', ytSubs: '300K Subs on YT', igFollowers: '' },
+      { id: 'ch-5', name: 'Trendz Talk', circleImage: '', logoUrl: '', ytSubs: '', igFollowers: '15K Followers on IG' }
     ]
   },
   coreValues: {

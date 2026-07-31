@@ -278,11 +278,7 @@ export const Collaborations = () => {
         {[
           { id: 'content', label: 'Page Content CMS', icon: Layers },
           { id: 'overview', label: 'Overview & Stats', icon: Handshake },
-          { id: 'media', label: 'Media Assets', icon: ImageIcon },
-          { id: 'seo', label: 'SEO & Search', icon: Globe },
-          { id: 'visibility', label: 'Visibility & Access', icon: Eye },
-          { id: 'publish', label: 'Publish Settings', icon: Clock },
-          { id: 'preview', label: 'Live Preview', icon: Monitor }
+          { id: 'media', label: 'Media Assets', icon: ImageIcon }
         ].map(tab => {
           const IconComp = tab.icon;
           return (

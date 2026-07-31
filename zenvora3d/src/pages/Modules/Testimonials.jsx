@@ -152,14 +152,10 @@ export const Testimonials = () => {
   };
 
   const tabs = [
-    { id: 'analytics', label: 'Analytics Dashboard', icon: BarChart },
     { id: 'written', label: 'Written Reviews', icon: FileText },
     { id: 'video', label: 'Video Testimonials', icon: Video },
     { id: 'content', label: 'Page Content', icon: Layers },
-    { id: 'media', label: 'Media Gallery', icon: ImageIcon },
-    { id: 'seo', label: 'SEO & Search', icon: Search },
-    { id: 'visibility', label: 'Publish Settings', icon: Settings },
-    { id: 'preview', label: 'Live Preview', icon: Eye }
+    { id: 'media', label: 'Media Gallery', icon: ImageIcon }
   ];
 
   const contentSubTabs = [

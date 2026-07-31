@@ -335,16 +335,7 @@ export const FounderJourney = () => {
     { id: 'sec-1', label: '1. Journey Hero' },
     { id: 'sec-2', label: '2. Timeline Milestones (2019-2026)' },
     { id: 'sec-3', label: '3. Journey Statistics' },
-    { id: 'sec-4', label: '4. Growth Roadmap' },
-    { id: 'sec-5', label: '5. Line Settings' },
-    { id: 'sec-6', label: '6. Background CMS' },
-    { id: 'sec-7', label: '7. Typography' },
-    { id: 'sec-8', label: '8. Animation Controls' },
-    { id: 'sec-9', label: '9. SEO Manager' },
-    { id: 'sec-10', label: '10. Media Library' },
-    { id: 'sec-11', label: '11. Visibility & Devices' },
-    { id: 'sec-12', label: '12. Version Management' },
-    { id: 'sec-13', label: '13. Live Preview' }
+    { id: 'sec-4', label: '4. Growth Roadmap' }
   ];
 
   return (
@@ -576,55 +567,7 @@ export const FounderJourney = () => {
         </div>
       )}
 
-      {/* SECTION 5 to 12 SHORT PANELS */}
-      {['sec-5', 'sec-6', 'sec-7', 'sec-8', 'sec-9', 'sec-10', 'sec-11', 'sec-12'].includes(activeSection) && (
-        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
-          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">
-            {cmsSectionsList.find(s => s.id === activeSection)?.label}
-          </h3>
-          <p className="text-zinc-400 font-light">
-            All parameters for this section are pre-loaded from website production data and synced live. Click 'Publish Live' to push edits.
-          </p>
-        </div>
-      )}
 
-      {/* SECTION 13: LIVE PREVIEW */}
-      {activeSection === 'sec-13' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-center gap-3 bg-zinc-950/80 border border-zinc-800 p-2 rounded-xl">
-            <button
-              onClick={() => setPreviewMode('desktop')}
-              className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'desktop' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}
-            >
-              <Monitor className="w-3.5 h-3.5" /> Desktop (1440px)
-            </button>
-            <button
-              onClick={() => setPreviewMode('tablet')}
-              className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'tablet' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}
-            >
-              <Tablet className="w-3.5 h-3.5" /> Tablet (768px)
-            </button>
-            <button
-              onClick={() => setPreviewMode('mobile')}
-              className={`px-3 py-1 rounded text-xs flex items-center gap-1.5 ${previewMode === 'mobile' ? 'bg-luxury-gold text-black font-bold' : 'text-zinc-400'}`}
-            >
-              <Smartphone className="w-3.5 h-3.5" /> Mobile (375px)
-            </button>
-          </div>
-
-          <div className="flex justify-center bg-black/90 p-4 rounded-2xl border border-zinc-800 min-h-[500px]">
-            <div className={`bg-black transition-all duration-300 border border-zinc-800 rounded-xl overflow-hidden ${
-              previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
-            }`}>
-              <iframe
-                src="http://localhost:5173/journey"
-                title="Live Preview Founder Journey"
-                className="w-full h-[600px] border-none"
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* CREATE / EDIT MODAL */}
       {modalConfig && (

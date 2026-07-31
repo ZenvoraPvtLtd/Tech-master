@@ -111,7 +111,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setDbData(db);
     setIsBackendConnected(true);
 
-    if (db.homepage) setHomeData(db.homepage);
+    if (db.homepageCMS) setHomeData(db.homepageCMS);
+    else if (db.homepage) setHomeData(db.homepage);
+    else if (db.homeData) setHomeData(db.homeData);
     if (db.about) setAboutData(db.about);
     if (db.founderJourney) {
       setJourneyData(db.founderJourney.milestones || []);

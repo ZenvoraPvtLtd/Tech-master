@@ -44,14 +44,15 @@ interface HomeProps {
 
 
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
-  const { homeData, dbData, isLoading } = useData();
+  const { homeData, dbData } = useData();
   const [liveHomeData, setLiveHomeData] = useState<any>(null);
 
   useEffect(() => {
     const fetchHomepage = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1";
-        const res = await fetch(`${baseUrl}/homepage`);
+        const envUrl = import.meta.env.VITE_API_URL?.trim();
+        const base = envUrl ? (envUrl.replace(/\/+$|\/api\/v1\/*$/i, "").endsWith("/api/v1") ? envUrl.replace(/\/+$|\/api\/v1\/*$/i, "") : `${envUrl.replace(/\/+$|\/api\/v1\/*$/i, "")}/api/v1`) : "https://techmasterbackend.onrender.com/api/v1";
+        const res = await fetch(`${base}/homepage?t=${Date.now()}`);
         if (res.ok) {
           const json = await res.json();
           if (json.success && json.data) {
@@ -62,10 +63,19 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         console.warn("Direct Homepage fetch error:", e);
       }
     };
-    fetchHomepage();
-  }, []);
 
-  if (isLoading || (!homeData && !liveHomeData)) return <div className="min-h-screen bg-black flex items-center justify-center"><span className="text-gold uppercase tracking-widest text-xs font-bold">Initializing CMS...</span></div>;
+    fetchHomepage();
+    const interval = setInterval(fetchHomepage, 2500);
+    const handleFocus = () => { fetchHomepage(); };
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("storage", handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("storage", handleFocus);
+    };
+  }, []);
 
   let localDb: any = {};
   try {
@@ -74,42 +84,121 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   } catch (e) {}
 
   const activeHome = {
-    ...homeData,
-    ...(localDb?.homepageCMS || localDb?.homepage || {}),
+    ...(homeData || {}),
     ...(dbData?.homepageCMS || dbData?.homepage || {}),
+    ...(localDb?.homepageCMS || localDb?.homepage || {}),
     ...(liveHomeData || {})
   };
 
-  const heroBadge = activeHome?.hero?.badge || "TECH MASTER";
-  const heroTopBadge = activeHome?.hero?.topBadgeText || "India's most-watched media production house";
-  const heroMainHeading = activeHome?.hero?.mainHeading || "TECH MASTER";
-  const heroTagline = activeHome?.hero?.tagline || '"Nothing We Make Is Forgettable. Unskippable. Unforgettable."';
-  const heroSubTagline = activeHome?.hero?.subTagline || "Attention and Influence — At Scale";
+  const heroBadge = liveHomeData?.hero?.badge || activeHome?.hero?.badge || activeHome?.heroBadge || "TECH MASTER";
+  const heroTopBadge = liveHomeData?.hero?.topBadgeText || activeHome?.hero?.topBadgeText || activeHome?.heroTopBadge || "India's most-watched media production house";
+  const heroMainHeading = liveHomeData?.hero?.mainHeading || activeHome?.hero?.mainHeading || activeHome?.heroMainHeading || "TECH MASTER";
+  const heroTagline = liveHomeData?.hero?.tagline || activeHome?.hero?.tagline || activeHome?.heroTagline || '"Nothing We Make Is Forgettable. Unskippable. Unforgettable."';
+  const heroSubTagline = liveHomeData?.hero?.subTagline || activeHome?.hero?.subTagline || activeHome?.heroSubTagline || "Attention and Influence — At Scale";
 
-  const introBadge = activeHome?.introVision?.introBadge || "INTRO";
-  const introHeading = activeHome?.introVision?.introHeading || "Building High-Scale Media Channels";
-  const introDescription = activeHome?.introVision?.introDescription || "Tech Master Digital Pvt Ltd builds and runs a portfolio of high-scale content channels across tech, automobiles, and entertainment. We take complex subjects and make them impossible to scroll past. Combining editorial rigor with production value that stands out.";
+  const introBadge = liveHomeData?.introVision?.introBadge || activeHome?.introVision?.introBadge || activeHome?.introBadge || "INTRO";
+  const introHeading = liveHomeData?.introVision?.introHeading || activeHome?.introVision?.introHeading || activeHome?.introHeading || "Building High-Scale Media Channels";
+  const introDescription = liveHomeData?.introVision?.introDescription || activeHome?.introVision?.introDescription || activeHome?.introDescription || "Tech Master Digital Pvt Ltd builds and runs a portfolio of high-scale content channels across tech, automobiles, and entertainment. We take complex subjects and make them impossible to scroll past. Combining editorial rigor with production value that stands out.";
 
-  const visionBadge = activeHome?.introVision?.visionBadge || "THE VISION";
-  const visionHeading = activeHome?.introVision?.visionHeading || "Complexity Made Simple & Unforgettable";
-  const visionDescription = activeHome?.introVision?.visionDescription || "Tech Master exists to make complexity feel simple, and simplicity feel unforgettable. We tell stories that inform without lecturing, entertain without diluting, and connect without pretending. The result: content built to travel across platforms, across formats, across the world.";
+  const visionBadge = liveHomeData?.introVision?.visionBadge || activeHome?.introVision?.visionBadge || activeHome?.visionBadge || "THE VISION";
+  const visionHeading = liveHomeData?.introVision?.visionHeading || activeHome?.introVision?.visionHeading || activeHome?.visionHeading || "Complexity Made Simple & Unforgettable";
+  const visionDescription = liveHomeData?.introVision?.visionDescription || activeHome?.introVision?.visionDescription || activeHome?.visionDescription || "Tech Master exists to make complexity feel simple, and simplicity feel unforgettable. We tell stories that inform without lecturing, entertain without diluting, and connect without pretending. The result: content built to travel across platforms, across formats, across the world.";
 
-  const founderBadge = activeHome?.founder?.badge || "ABOUT THE CEO / FOUNDER";
-  const founderName = activeHome?.founder?.name || "Arvind Kharra";
-  const founderHighlighted = activeHome?.founder?.highlightedName || "aka Tech Master";
-  const founderBio = activeHome?.founder?.description || "An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions.";
+  const founderBadge = liveHomeData?.founder?.badge || activeHome?.founder?.badge || activeHome?.founderBadge || "ABOUT THE CEO / FOUNDER";
+  const founderName = liveHomeData?.founder?.name || activeHome?.founder?.name || activeHome?.founderName || "Arvind Kharra";
+  const founderHighlighted = liveHomeData?.founder?.highlightedName || activeHome?.founder?.highlightedName || activeHome?.founderHighlighted || "aka Tech Master";
+  const founderBio = liveHomeData?.founder?.description || activeHome?.founder?.description || activeHome?.founderBio || "An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions.";
 
-  const tickerHeading = activeHome?.channelsTicker?.heading || "Different audiences.";
-  const tickerHighlight = activeHome?.channelsTicker?.highlightedHeading || "Same Obsession.";
-  const tickerSubHeading = activeHome?.channelsTicker?.subHeading || "We're just getting started / Five channels today. A Media Empire in Motion.";
+  const tickerHeading = liveHomeData?.channelsTicker?.heading || activeHome?.channelsTicker?.heading || activeHome?.tickerHeading || "Different audiences.";
+  const tickerHighlight = liveHomeData?.channelsTicker?.highlightedHeading || activeHome?.channelsTicker?.highlightedHeading || activeHome?.tickerHighlight || "Same Obsession.";
+  const tickerSubHeading = liveHomeData?.channelsTicker?.subHeading || activeHome?.channelsTicker?.subHeading || activeHome?.tickerSubHeading || "We're just getting started / Five channels today. A Media Empire in Motion.";
+  const defaultBrandChannels = [
+    { brandName: "Tech Master" },
+    { brandName: "Next Univerz" },
+    { brandName: "Master Wheels" },
+    { brandName: "Full Circle" },
+    { brandName: "Trendz Talk" }
+  ];
+  const rawChannels = (liveHomeData?.channelsTicker?.channels && liveHomeData.channelsTicker.channels.length > 0)
+    ? liveHomeData.channelsTicker.channels
+    : ((activeHome?.channelsTicker?.channels && activeHome.channelsTicker.channels.length > 0)
+      ? activeHome.channelsTicker.channels
+      : (activeHome?.channels && activeHome.channels.length > 0 ? activeHome.channels : defaultBrandChannels));
+  const tickerChannelsList = rawChannels.filter((c: any) => c.visible !== false && c.deleted !== true);
+
+  const newsletterHeading = liveHomeData?.newsletterContact?.newsletter?.heading
+    || activeHome?.newsletterContact?.newsletter?.heading 
+    || activeHome?.newsletter?.heading 
+    || activeHome?.newsletterContact?.newsletterHeading 
+    || activeHome?.newsletterHeading 
+    || homeData?.newsletter?.heading 
+    || "Stay in the Loop";
+
+  const newsletterTag = liveHomeData?.newsletterContact?.newsletter?.tag
+    || activeHome?.newsletterContact?.newsletter?.tag 
+    || activeHome?.newsletterContact?.newsletter?.badge 
+    || activeHome?.newsletter?.tag 
+    || activeHome?.newsletter?.badge 
+    || activeHome?.newsletterContact?.newsletterBadge 
+    || activeHome?.newsletterBadge 
+    || homeData?.newsletter?.tag 
+    || "NEWSLETTER SUBSCRIPTION";
+
+  const newsletterDesc = liveHomeData?.newsletterContact?.newsletter?.description
+    || activeHome?.newsletterContact?.newsletter?.description 
+    || activeHome?.newsletter?.description 
+    || activeHome?.newsletterContact?.newsletterDescription 
+    || activeHome?.newsletterDescription 
+    || homeData?.newsletter?.description 
+    || "Join my newsletter...";
+
+  const newsletterBtnText = liveHomeData?.newsletterContact?.newsletter?.buttonText
+    || activeHome?.newsletterContact?.newsletter?.buttonText 
+    || activeHome?.newsletter?.buttonText 
+    || activeHome?.newsletterContact?.buttonText 
+    || activeHome?.buttonText 
+    || homeData?.newsletter?.buttonText 
+    || "Subscribe";
+
+  const contactTag = liveHomeData?.newsletterContact?.contactPreview?.tag
+    || activeHome?.newsletterContact?.contactPreview?.tag 
+    || activeHome?.newsletterContact?.contactPreview?.badge 
+    || activeHome?.contactPreview?.tag 
+    || activeHome?.contactPreview?.badge 
+    || activeHome?.newsletterContact?.contactBadge 
+    || activeHome?.contactBadge 
+    || homeData?.contactPreview?.tag 
+    || "COLLABORATION INQUIRY";
+
+  const contactHeading = liveHomeData?.newsletterContact?.contactPreview?.heading
+    || activeHome?.newsletterContact?.contactPreview?.heading 
+    || activeHome?.contactPreview?.heading 
+    || activeHome?.newsletterContact?.contactHeading 
+    || activeHome?.contactHeading 
+    || homeData?.contactPreview?.heading 
+    || "Ready to Collaborate?";
+
+  const contactCtaText = liveHomeData?.newsletterContact?.contactPreview?.primaryCta
+    || liveHomeData?.newsletterContact?.contactPreview?.buttonText
+    || activeHome?.newsletterContact?.contactPreview?.primaryCta 
+    || activeHome?.newsletterContact?.contactPreview?.buttonText 
+    || activeHome?.contactPreview?.primaryCta 
+    || activeHome?.contactPreview?.buttonText 
+    || activeHome?.newsletterContact?.contactCtaText 
+    || activeHome?.contactCtaText 
+    || homeData?.contactPreview?.primaryCta 
+    || "Get In Touch";
 
   const defaultCoreValues = [
     { title: "Fearless Energy", desc: "Pushing creative boundaries with unyielding momentum and passion." },
     { title: "Creative Storytelling", desc: "Crafting narratives that resonate, inform, and inspire millions." },
     { title: "Community First", desc: "Building genuine connections and putting our audience at the heart of everything we create." }
   ];
-  const coreValuesList = (activeHome?.coreValues?.cards && activeHome.coreValues.cards.length > 0)
-    ? activeHome.coreValues.cards.map((c: any) => ({ title: c.title, desc: c.desc || c.description }))
+  const rawCoreValues = (liveHomeData?.coreValues?.cards && liveHomeData.coreValues.cards.length > 0)
+    ? liveHomeData.coreValues.cards
+    : (activeHome?.coreValues?.cards || []);
+  const coreValuesList = (rawCoreValues && rawCoreValues.length > 0)
+    ? rawCoreValues.filter((c: any) => c.deleted !== true).map((c: any) => ({ title: c.title, desc: c.desc || c.description }))
     : defaultCoreValues;
 
   const defaultStats = [
@@ -121,15 +210,20 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     { number: "25B", label: "Lifetime Views on YT" },
     { number: "50+", label: "Global Brand Collaborations" }
   ];
-  const statsList = (activeHome?.statistics?.counters && activeHome.statistics.counters.length > 0)
-    ? activeHome.statistics.counters.map((s: any) => ({ number: s.value || s.number, label: s.label }))
+  const rawCounters = (liveHomeData?.statistics?.counters && liveHomeData.statistics.counters.length > 0)
+    ? liveHomeData.statistics.counters
+    : (activeHome?.statistics?.counters || []);
+  const statsList = (rawCounters && rawCounters.length > 0)
+    ? rawCounters.filter((s: any) => s.deleted !== true).map((s: any) => ({ number: s.value || s.number, label: s.label }))
     : defaultStats;
 
   const dummyViews = ["1.2M views", "850K views", "3.4M views", "2.1M views", "500K views", "4.8M views", "920K views", "1.5M views", "300K views", "2.9M views"];
 
-  const reelsList = Array.isArray(activeHome?.shortsReels?.list)
-    ? activeHome.shortsReels.list
-    : (Array.isArray(activeHome?.reels) ? activeHome.reels : (Array.isArray(dbData?.homepage?.reels) ? dbData.homepage.reels : []));
+  const reelsList = Array.isArray(liveHomeData?.shortsReels?.list)
+    ? liveHomeData.shortsReels.list.filter((r: any) => r.deleted !== true)
+    : (Array.isArray(activeHome?.shortsReels?.list)
+      ? activeHome.shortsReels.list.filter((r: any) => r.deleted !== true)
+      : (Array.isArray(activeHome?.reels) ? activeHome.reels : (Array.isArray(dbData?.homepage?.reels) ? dbData.homepage.reels : [])));
 
   const shortsList = Array.isArray(activeHome?.shorts)
     ? activeHome.shorts
@@ -480,20 +574,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           className="flex w-max items-center justify-center mt-4"
         >
           {[1, 2, 3, 4].map((groupIndex) => {
-            const defaultBrandChannels = [
-              { brandName: "Tech Master" },
-              { brandName: "Next Univerz" },
-              { brandName: "Master Wheels" },
-              { brandName: "Full Circle" },
-              { brandName: "Trendz Talk" }
-            ];
-
             return (
               <div key={groupIndex} className="flex items-center">
-                {defaultBrandChannels.map((brand: any, idx: number) => {
+                {tickerChannelsList.map((brand: any, idx: number) => {
+                  const bName = brand.brandName || brand.name || brand.title || "";
+                  const bImg = brand.circleImage || brand.logoUrl || brand.image || brand.imageUrl || circleImg;
                   return (
                     <div
-                      key={`${brand.brandName}-${idx}-${groupIndex}`}
+                      key={`${bName}-${idx}-${groupIndex}`}
                       onClick={() => handleNavClick("portfolio")}
                       data-cursor="CLICK"
                       className="group/brand relative inline-flex items-center justify-center px-10 sm:px-16 py-2 transition-all duration-300 cursor-pointer select-none"
@@ -502,13 +590,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                         {/* Professional Channel Circle Image above the name */}
                         <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border border-gold/40 group-hover/brand:border-gold transition-all duration-300 mb-3 shadow-[0_0_12px_rgba(212,175,55,0.15)] group-hover/brand:shadow-[0_0_20px_rgba(212,175,55,0.35)] relative bg-black/60 flex items-center justify-center">
                           <img
-                            src={circleImg}
-                            alt={`${brand.brandName} Circle Icon`}
+                            src={bImg}
+                            alt={`${bName} Circle Icon`}
                             className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover/brand:scale-110"
                           />
                         </div>
                         <span className="font-serif text-xl sm:text-2xl font-bold text-gold tracking-[3px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300">
-                          {brand.brandName}
+                          {bName}
                         </span>
                       </div>
                       <span className="text-white/20 mx-8 self-center select-none">•</span>
@@ -624,17 +712,28 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         {/* Small Badge */}
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/80 border border-gold/30 px-5 py-2 rounded-full bg-black/50 font-mono font-semibold tracking-[3px] uppercase">
-            BRAND COLLABORATIONS
+            {activeHome?.brandCollaborations?.badge || "BRAND COLLABORATIONS"}
           </span>
         </div>
 
         {/* Main Heading & Subtitle */}
         <div className="max-w-3xl mx-auto mb-12 relative z-20">
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-white mb-4 tracking-tight">
-            Trusted By <span className="text-gold italic font-bold">Leading Technology Brands</span>
+            {activeHome?.brandCollaborations?.heading ? (
+              <>
+                {activeHome.brandCollaborations.heading.split(" ")[0]}{" "}
+                <span className="text-gold italic font-bold">
+                  {activeHome.brandCollaborations.heading.split(" ").slice(1).join(" ")}
+                </span>
+              </>
+            ) : (
+              <>
+                Trusted By <span className="text-gold italic font-bold">Leading Technology Brands</span>
+              </>
+            )}
           </h2>
           <p className="text-gray-400 text-xs sm:text-sm md:text-base font-light leading-relaxed">
-            Proud collaborations and partnerships with globally recognized technology brands that have helped shape our educational ecosystem.
+            {activeHome?.brandCollaborations?.subtitle || activeHome?.brandCollaborations?.description || "Proud collaborations and partnerships with globally recognized technology brands that have helped shape our educational ecosystem."}
           </p>
         </div>
 
@@ -642,6 +741,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         {(() => {
           const lenskartSvgStr = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90"><g fill="none" stroke="white" stroke-width="7"><circle cx="35" cy="45" r="20"/><circle cx="75" cy="45" r="20"/></g><text x="110" y="56" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="42" fill="white">lenskart</text></svg>';
           const lenskartLogoB64 = `data:image/svg+xml;base64,${btoa(lenskartSvgStr)}`;
+
+          const ultravioletteSvgStr = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 100" width="540" height="100"><polygon points="30,25 80,25 55,75" fill="none" stroke="white" stroke-width="10" stroke-linejoin="round"/><text x="110" y="62" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="38" fill="white" letter-spacing="7">ULTRAVIOLETTE</text></svg>';
+          const ultravioletteLogoB64 = `data:image/svg+xml;base64,${btoa(ultravioletteSvgStr)}`;
 
           const brandVectorMap: Record<string, { icon: string; fallback: any }> = {
             amazon: { icon: "https://cdn.simpleicons.org/amazon/white", fallback: amazonLogo },
@@ -670,7 +772,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             lenskart: { icon: lenskartLogoB64, fallback: lenskartLogoB64 },
             "the sleep company": { icon: "https://cdn.simpleicons.org/thesleepcompany/white", fallback: sleepCompanyLogo },
             "fire-boltt": { icon: "https://cdn.simpleicons.org/fireboltt/white", fallback: fireboltLogo },
-            ultraviolette: { icon: "https://cdn.simpleicons.org/ultraviolette/white", fallback: ultravioletteLogo },
+            ultraviolette: { icon: ultravioletteLogoB64, fallback: ultravioletteLogoB64 },
             tesla: { icon: "https://cdn.simpleicons.org/tesla/white", fallback: teslaLogo },
             tata: { icon: "https://cdn.simpleicons.org/tata/white", fallback: tataLogo },
             hyundai: { icon: "https://cdn.simpleicons.org/hyundai/white", fallback: hyundaiLogo },
@@ -702,9 +804,15 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             };
           });
 
-          const activeCollabs = (homeData?.brandCollaborationsList && homeData.brandCollaborationsList.length > 0)
-            ? homeData.brandCollaborationsList.filter((b: any) => b.status === "Active" || b.status === true || b.status === undefined)
-            : defaultBrandCollabs;
+          const rawCollabs = (liveHomeData?.brandCollaborations?.brands && liveHomeData.brandCollaborations.brands.length > 0)
+            ? liveHomeData.brandCollaborations.brands
+            : ((activeHome?.brandCollaborations?.brands && activeHome.brandCollaborations.brands.length > 0)
+              ? activeHome.brandCollaborations.brands
+              : (homeData?.brandCollaborationsList && homeData.brandCollaborationsList.length > 0
+                ? homeData.brandCollaborationsList
+                : defaultBrandCollabs));
+
+          const activeCollabs = rawCollabs.filter((b: any) => b.deleted !== true && (b.status === "Active" || b.status === true || b.status === undefined || b.visible !== false));
 
           const displayCollabs = activeCollabs.length > 0
             ? [...activeCollabs].map((b: any) => {
@@ -713,17 +821,15 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 const cleanAlphanumeric = bName.toLowerCase().replace(/[^a-z0-9]/g, "");
                 
                 const generatedFallback = 'TEXT_FALLBACK';
+                const vInfo = brandVectorMap[cleanName];
+                const customLogo = b.logoUrl || b.logo || b.imageUrl || b.brandLogo;
                 
-                const vInfo = brandVectorMap[cleanName] || { 
-                  icon: `https://cdn.simpleicons.org/${cleanAlphanumeric}/white`, 
-                  fallback: b.logo || b.brandLogo || generatedFallback
-                };
                 return {
                   brandName: bName,
-                  logo: vInfo.icon,
-                  fallbackLogo: vInfo.fallback || b.logo || b.brandLogo || generatedFallback,
+                  logo: customLogo || (vInfo ? vInfo.icon : `https://cdn.simpleicons.org/${cleanAlphanumeric}/white`),
+                  fallbackLogo: customLogo || (vInfo ? vInfo.fallback : generatedFallback),
+                  isCustom: Boolean(customLogo),
                   order: Number(b.order) || 0
-
                 };
               }).sort((a: any, b: any) => a.order - b.order)
             : defaultBrandCollabs;
@@ -750,19 +856,19 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 >
                   {displayCollabs.map((brand: any, idx: number) => {
                     const bName = brand.brandName;
-                    const isUltra = bName.toLowerCase() === "ultraviolette";
+                    const isUltra = bName.toLowerCase().includes("ultraviolet");
                     const isCashify = bName.toLowerCase() === "cashify";
                     const isLenskart = bName.toLowerCase() === "lenskart";
 
-                    const imgClasses = (isUltra || isCashify || isLenskart)
-                      ? "h-7 sm:h-9 md:h-11 w-auto max-w-[120px] sm:max-w-[160px] md:max-w-[200px]"
-                      : "h-12 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[240px] md:max-w-[280px]";
+                    const imgClasses = isUltra
+                      ? "h-5 sm:h-6 md:h-7 w-auto max-w-[100px] sm:max-w-[130px] md:max-w-[150px]"
+                      : ((isCashify || isLenskart)
+                        ? "h-7 sm:h-9 md:h-11 w-auto max-w-[120px] sm:max-w-[160px] md:max-w-[200px]"
+                        : "h-12 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[240px] md:max-w-[280px]");
 
-                    const logoFilter = isUltra 
-                      ? "brightness(10) contrast(50) grayscale(1)" 
-                      : isCashify
-                        ? "brightness(2.8) contrast(150%) grayscale(1)"
-                        : "grayscale(1) brightness(1.2)";
+                    const logoFilter = isCashify
+                      ? "brightness(2.8) contrast(150%) grayscale(1)"
+                      : "grayscale(1) brightness(1.2)";
 
                     return (
                       <motion.div
@@ -814,14 +920,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* Newsletter */}
       <section className="scroll-section py-12 px-6 max-w-4xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.newsletter?.tag || "NEWSLETTER SUBSCRIPTION"}</span>
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{newsletterTag}</span>
         </div>
         <div className="glass-panel p-6 sm:p-12 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(212,175,55,0.05)] fade-up">
-          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">{homeData?.newsletter?.heading || "Stay in the Loop"}</h2>
-          <p className="text-gray-400 text-sm mb-8 font-light">{homeData?.newsletter?.description || "Join my newsletter..."}</p>
+          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">{newsletterHeading}</h2>
+          <p className="text-gray-400 text-sm mb-8 font-light">{newsletterDesc}</p>
           <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
             <input type="email" placeholder="Enter your email" className="flex-1 bg-black/50 border border-white/10 rounded-full px-6 py-3 text-white focus:outline-none focus:border-gold/50 transition-colors" />
-            <button type="submit" className="bg-gold text-black px-8 py-3 rounded-full font-bold uppercase text-xs tracking-[1px] hover:bg-white transition-colors">{homeData?.newsletter?.buttonText || "Subscribe"}</button>
+            <button type="submit" className="bg-gold text-black px-8 py-3 rounded-full font-bold uppercase text-xs tracking-[1px] hover:bg-white transition-colors">{newsletterBtnText}</button>
           </form>
         </div>
       </section>
@@ -829,15 +935,15 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* Contact Preview */}
       <section className="scroll-section pb-8 px-6 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-10 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{homeData?.contactPreview?.tag || "COLLABORATION INQUIRY"}</span>
+          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{contactTag}</span>
         </div>
         <h2 className="typo-h2 mb-8 fade-up">
-          {homeData?.contactPreview?.heading || "Ready to Collaborate?"}
+          {contactHeading}
         </h2>
         <button
           onClick={() => handleNavClick("contact")}
           className="light-sweep px-8 py-4 bg-white text-black font-bold uppercase text-xs tracking-[2px] rounded-full hover:bg-gold hover:text-black transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)] fade-up"
-        >{homeData?.contactPreview?.primaryCta || "Get In Touch"}</button>
+        >{contactCtaText}</button>
       </section>
 
       {/* Lightbox Modal */}
