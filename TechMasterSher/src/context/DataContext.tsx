@@ -91,7 +91,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [dbData, setDbData] = useState<any>(null);
   const REFRESH_INTERVAL_MS = 5000;
-  const CMS_API_URL = `${import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1"}/cms`;
+  const CMS_API_URL = `${import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1"}/cms`;
 
   const applyCmsDataToState = useCallback((db: any) => {
     let localDb = {};

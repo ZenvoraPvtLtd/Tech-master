@@ -13,7 +13,7 @@ export const Contact: React.FC = () => {
   useEffect(() => {
     const fetchContact = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1";
         const res = await fetch(`${baseUrl}/contact`);
         if (res.ok) {
           const json = await res.json();
@@ -68,7 +68,7 @@ export const Contact: React.FC = () => {
     setIsSubmitting(true);
     setErrorMsg("");
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"}` + "/cms/public/enquiry", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1"}` + "/cms/public/enquiry", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

@@ -50,7 +50,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   useEffect(() => {
     const fetchHomepage = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1";
         const res = await fetch(`${baseUrl}/homepage`);
         if (res.ok) {
           const json = await res.json();
