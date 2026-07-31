@@ -30,7 +30,6 @@ import nothingLogo from "../assets/Nothing.jpeg";
 import blinkitLogo from "../assets/blinkit.jpeg";
 import sleepCompanyLogo from "../assets/Thesleepcompany.jpeg";
 import fireboltLogo from "../assets/firebolt.jpeg";
-import ultravioletteLogo from "../assets/ultraviolette.jpeg";
 import teslaLogo from "../assets/Tesla.jpeg";
 import tataLogo from "../assets/TATA.jpeg";
 import hyundaiLogo from "../assets/Hyundai.jpeg";
