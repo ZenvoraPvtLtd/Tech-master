@@ -127,8 +127,20 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
   const dummyViews = ["1.2M views", "850K views", "3.4M views", "2.1M views", "500K views", "4.8M views", "920K views", "1.5M views", "300K views", "2.9M views"];
 
+  const reelsList = Array.isArray(activeHome?.shortsReels?.list)
+    ? activeHome.shortsReels.list
+    : (Array.isArray(activeHome?.reels) ? activeHome.reels : (Array.isArray(dbData?.homepage?.reels) ? dbData.homepage.reels : []));
+
+  const shortsList = Array.isArray(activeHome?.shorts)
+    ? activeHome.shorts
+    : (Array.isArray(dbData?.homepage?.shorts) ? dbData.homepage.shorts : []);
+
+  const longList = Array.isArray(activeHome?.longVideos?.list)
+    ? activeHome.longVideos.list
+    : (Array.isArray(activeHome?.longVideos) ? activeHome.longVideos : (Array.isArray(dbData?.homepage?.longVideos) ? dbData.homepage.longVideos : []));
+
   const dynamicVideos = [
-    ...(dbData?.homepage?.reels || []).map((v: any, i: number) => ({
+    ...reelsList.map((v: any, i: number) => ({
       id: v.id,
       title: v.title,
       type: "reel",
@@ -141,7 +153,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       author: v.author,
       handle: v.handle
     })),
-    ...(dbData?.homepage?.shorts || []).map((v: any, i: number) => ({
+    ...shortsList.map((v: any, i: number) => ({
       id: v.id,
       title: v.title,
       type: "short",
@@ -154,7 +166,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       author: v.author,
       handle: v.handle
     })),
-    ...(dbData?.homepage?.longVideos || []).map((v: any, i: number) => ({
+    ...longList.map((v: any, i: number) => ({
       id: v.id,
       title: v.title,
       type: "long_video",
