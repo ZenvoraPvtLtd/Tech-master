@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -9,7 +9,7 @@ import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 
 export const ProductLaunches = () => {
-  const { db, updateSection } = useDatabase();
+  const { db, updateSection, apiFetch } = useDatabase();
   const { openMediaManager } = useMediaManager();
 
   const [activeTab, setActiveTab] = useState('products'); // overview, products, content, media, seo, visibility, publish, preview
@@ -125,14 +125,41 @@ export const ProductLaunches = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestLaunches = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/product-launches');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultLaunchesCMS,
+              ...data,
+              hero: { ...defaultLaunchesCMS.hero, ...(data.hero || {}) },
+              products: (data.products && data.products.length > 0) ? data.products : defaultLaunchesCMS.products,
+              featureVideo: { ...defaultLaunchesCMS.featureVideo, ...(data.featureVideo || {}) },
+              initiativesHeader: { ...defaultLaunchesCMS.initiativesHeader, ...(data.initiativesHeader || {}) },
+              initiatives: (data.initiatives && data.initiatives.length > 0) ? data.initiatives : defaultLaunchesCMS.initiatives,
+              downloads: (data.downloads && data.downloads.length > 0) ? data.downloads : defaultLaunchesCMS.downloads
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest product launches from backend:", err);
+      }
+    };
+    fetchLatestLaunches();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('launchesData', nextState);
     updateSection('productLaunchesCMS', nextState);
-    updateSection('campaigns', nextState);
+    updateSection('productLaunches', nextState);
+    updateSection('product_launches', nextState);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -142,6 +169,18 @@ export const ProductLaunches = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/product-launches', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'Product Launches Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);

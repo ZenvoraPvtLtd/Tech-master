@@ -10,40 +10,25 @@ export interface IMilestone {
 }
 
 export interface IFounderJourney extends Document, ICmsBase {
-  hero: {
-    badgeText: string;
-    heading: string;
-    highlightWord: string;
-    description: string;
-    scrollIndicatorText: string;
-  };
-  milestones: IMilestone[];
+  hero?: any;
+  milestones?: any[];
+  roadmap?: any;
+  stats?: any;
   seo?: ISeo;
 }
 
 const FounderJourneySchema = new Schema<IFounderJourney>(
   {
-    hero: {
-      badgeText: { type: String, default: "" },
-      heading: { type: String, default: "" },
-      highlightWord: { type: String, default: "" },
-      description: { type: String, default: "" },
-      scrollIndicatorText: { type: String, default: "" },
-    },
-    milestones: [
-      {
-        year: { type: String, required: true },
-        title: { type: String, required: true },
-        subtitle: { type: String, required: true },
-        description: { type: String, required: true },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
+    hero: { type: Schema.Types.Mixed, default: {} },
+    milestones: { type: [Schema.Types.Mixed], default: [] },
+    roadmap: { type: Schema.Types.Mixed, default: {} },
+    stats: { type: Schema.Types.Mixed, default: {} },
     seo: { type: SeoSchema },
     ...CmsBaseFields,
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

@@ -25,8 +25,14 @@ export const About: React.FC = () => {
     fetchAbout();
   }, []);
 
-  const activeAbout = liveAbout || aboutData;
-  const aboutDataAny = (activeAbout as any) || {};
+  let localDb: any = {};
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) localDb = JSON.parse(saved);
+  } catch (e) {}
+
+  const rawAbout = liveAbout?.value || liveAbout || aboutData || localDb?.about || {};
+  const aboutDataAny = (rawAbout as any) || {};
 
   // Extract Section 1 (About Tech Master)
   const aboutTechMaster = aboutDataAny?.aboutTechMaster || {
@@ -102,7 +108,25 @@ export const About: React.FC = () => {
               className="glass-panel p-8 sm:p-12 rounded-3xl border border-gold/30 bg-black/50 backdrop-blur-xl text-left shadow-[0_0_40px_rgba(212,175,55,0.1)]"
             >
               <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-6">
-                What <span className="text-gold">{aboutTechMaster.highlightedHeading || "Tech Master"}</span> Is
+                {(() => {
+                  const main = aboutTechMaster.mainHeading || "What Tech Master Is";
+                  const highlight = aboutTechMaster.highlightedHeading || "Tech Master";
+                  if (highlight && main.includes(highlight)) {
+                    const parts = main.split(highlight);
+                    return (
+                      <>
+                        {parts[0]}
+                        <span className="text-gold">{highlight}</span>
+                        {parts.slice(1).join(highlight)}
+                      </>
+                    );
+                  }
+                  return (
+                    <>
+                      {main} {highlight && <span className="text-gold">{highlight}</span>}
+                    </>
+                  );
+                })()}
               </h2>
               <div 
                 className="text-gray-300 font-light text-base sm:text-lg leading-relaxed space-y-4"
@@ -125,11 +149,31 @@ export const About: React.FC = () => {
               >
                 <span className="typo-badge mb-4 block uppercase">{culture.smallBadge || "OUR CULTURE"}</span>
                 <h2 className="font-serif text-2xl sm:text-4xl text-white font-bold mb-6">
-                  {culture.mainHeading || "Good People."}
-                  <br />
-                  <span className="text-gold italic font-bold">
-                    {culture.highlightedText || "Good Work. Good Vibes"}
-                  </span>
+                  {(() => {
+                    const main = culture.mainHeading || "Good People.";
+                    const highlight = culture.highlightedText || "Good Work. Good Vibes";
+                    if (highlight && main.includes(highlight)) {
+                      const parts = main.split(highlight);
+                      return (
+                        <>
+                          {parts[0]}
+                          <span className="text-gold italic font-bold">{highlight}</span>
+                          {parts.slice(1).join(highlight)}
+                        </>
+                      );
+                    }
+                    return (
+                      <>
+                        {main}
+                        {highlight && (
+                          <>
+                            <br />
+                            <span className="text-gold italic font-bold">{highlight}</span>
+                          </>
+                        )}
+                      </>
+                    );
+                  })()}
                 </h2>
                 <div 
                   className="text-gray-300 font-light text-base leading-relaxed"
@@ -148,16 +192,16 @@ export const About: React.FC = () => {
               >
                 <img
                   src={studioImgUrl}
-                  alt={studioCard.imageAlt || culture.imageAlt || "Tech Master Team"}
+                  alt={culture.imageAlt || studioCard.imageAlt || "Tech Master Team"}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
                   <span className="text-gold font-mono text-xs uppercase tracking-widest font-bold block mb-1">
-                    {studioCard.imageSubtitle || culture.imageSubtitle || "Jaipur Studio"}
+                    {culture.imageSubtitle || studioCard.imageSubtitle || "Jaipur Studio"}
                   </span>
                   <p className="text-white font-serif text-lg font-bold">
-                    {studioCard.imageDescription || culture.imageDescription || "50+ Person Production & Gaming Suite"}
+                    {culture.imageDescription || studioCard.imageDescription || "50+ Person Production & Gaming Suite"}
                   </p>
                   {studioCard.overlayCaption && (
                     <p className="text-gray-300 text-xs mt-1 italic">

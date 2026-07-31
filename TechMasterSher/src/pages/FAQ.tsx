@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
@@ -6,6 +6,25 @@ import { useData } from "../context/DataContext";
 export const FAQ: React.FC = () => {
   const { dbData } = useData();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [liveFaqData, setLiveFaqData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/faqs`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveFaqData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct FAQ fetch error:", e);
+      }
+    };
+    fetchFaqs();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -13,7 +32,7 @@ export const FAQ: React.FC = () => {
     if (saved) localDb = JSON.parse(saved);
   } catch (e) {}
 
-  const rawData = dbData?.faqPageData || localDb?.faqPageData || {};
+  const rawData = liveFaqData || dbData?.faqPageData || localDb?.faqPageData || {};
 
   const faqSettings = rawData.settings || {
     badge: "INFORMATION ARCHIVE",
@@ -21,9 +40,11 @@ export const FAQ: React.FC = () => {
     highlightHeading: "Frequently Asked Questions"
   };
 
-  const faqsList = rawData.faqs || [
+  const defaultFaqs = [
     { id: '1', question: "What is your main service?", answer: "We provide enterprise tech solutions.", category: "General", order: 1 }
   ];
+
+  const faqsList = (rawData.faqs && rawData.faqs.length > 0) ? rawData.faqs : defaultFaqs;
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
@@ -50,7 +71,7 @@ export const FAQ: React.FC = () => {
 
       {/* FAQ Accordion Grid */}
       <section className="max-w-4xl mx-auto text-left flex flex-col gap-5 relative z-10">
-        {faqsList.map((faq) => {
+        {faqsList.map((faq: any) => {
           const isExpanded = expandedId === faq.id;
 
           return (

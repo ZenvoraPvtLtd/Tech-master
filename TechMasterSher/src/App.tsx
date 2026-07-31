@@ -31,6 +31,8 @@ import { Blog } from "./pages/Blog";
 import { BlogDetails } from "./pages/BlogDetails";
 import { FAQ } from "./pages/FAQ";
 import { Contact } from "./pages/Contact";
+import { Privacy } from "./pages/Privacy";
+import { Terms } from "./pages/Terms";
 
 function App() {
   const [activePage, setActivePage] = useState("home");
@@ -125,6 +127,12 @@ function App() {
         return <FAQ />;
       case "contact":
         return <Contact />;
+      case "privacy":
+      case "privacy-policy":
+        return <Privacy />;
+      case "terms":
+      case "terms-of-service":
+        return <Terms />;
       default:
         if (activePage.startsWith("blog-details/")) {
           const slug = activePage.split("blog-details/")[1];

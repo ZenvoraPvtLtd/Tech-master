@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -7,20 +7,148 @@ import {
   BarChart, Users, Video, FileText, Briefcase, Award, Folder
 } from 'lucide-react';
 
+const defaultTestimonialsData = {
+  hero: {
+    smallBadge: "COMMUNITY ACCLAIM",
+    title: "Student Placements & Academics Success",
+    highlightText: "Academics Success",
+    description: "Discover reviews from Aman's mentored students, university professors, and tech partners who have integrated our curricula."
+  },
+  successStats: [
+    { id: '1', label: 'Placement Rate', value: '98', suffix: '%', icon: 'Award', color: '#D4AF37' },
+    { id: '2', label: 'Average Salary', value: '14', suffix: 'LPA', icon: 'TrendingUp', color: '#00E5FF' },
+    { id: '3', label: 'Students Hired', value: '1,200', suffix: '+', icon: 'Users', color: '#aa3bff' },
+    { id: '4', label: 'Tech Partners', value: '45', suffix: '+', icon: 'Briefcase', color: '#FF007F' }
+  ],
+  videoTestimonials: [
+    { id: '1', name: 'Rahul Sharma', role: 'SDE-2', company: 'Amazon', duration: '2:15', thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80', video: '' },
+    { id: '2', name: 'Priya Patel', role: 'Frontend Engineer', company: 'Microsoft', duration: '1:45', thumbnail: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=600&q=80', video: '' }
+  ],
+  writtenTestimonials: [
+    { id: '1', name: 'Arjun Desai', designation: 'Backend Developer', company: 'Uber', rating: 5, review: 'The curriculum completely changed my perspective on distributed systems and system design architectures.', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80' },
+    { id: '2', name: 'Neha Gupta', designation: 'Data Engineer', company: 'Meta', rating: 5, review: 'Aman’s teaching methodology is phenomenal. The practical approach helped me crack the toughest interviews.', photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1bf98a?auto=format&fit=crop&w=150&q=80' },
+    { id: '3', name: 'Vikram Singh', designation: 'Full Stack Engineer', company: 'Google', rating: 5, review: 'The live coding sessions were eye-opening. I gained the confidence to build and deploy scalable applications.', photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80' }
+  ],
+  categories: [
+    { id: 'cat1', title: 'Software Engineering', icon: 'Terminal', description: 'Advanced programming tracks' },
+    { id: 'cat2', title: 'Data Science', icon: 'Database', description: 'Analytics and ML tracks' }
+  ],
+  featuredQuote: {
+    showSection: true,
+    quote: "The best way to predict the future is to invent it.",
+    author: "Alan Kay",
+    subtitle: "Computer Scientist",
+    accentColor: "#D4AF37"
+  },
+  whatWeDo: [
+    { id: 'op1', title: 'Technical Interview Prep', subtitle: 'Algorithms & System Design', description: 'Intensive preparation for FAANG level interviews.', icon: 'Code' },
+    { id: 'op2', title: 'Resume Review', subtitle: 'ATS Optimization', description: 'Crafting resumes that get shortlisted by top companies.', icon: 'FileText' }
+  ],
+  seo: {
+    metaTitle: "Testimonials & Success Stories | TechMaster",
+    metaDescription: "Read reviews and watch video testimonials from Aman's students, tech partners, and global corporate clients."
+  }
+};
+
 export const Testimonials = () => {
-  const { dbData, localDb, saveToLocalDb, updateSection } = useDatabase();
+  const { dbData, localDb, saveToLocalDb, updateSection, apiFetch } = useDatabase();
   const { openMediaModal } = useMediaManager();
   
   const [activeTab, setActiveTab] = useState('analytics');
   const [activeSubTab, setActiveSubTab] = useState('hero');
   const [previewMode, setPreviewMode] = useState('desktop');
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const rawData = dbData?.testimonialsPageData || localDb?.testimonialsPageData || {};
+  const [formData, setFormData] = useState({ ...defaultTestimonialsData, ...rawData });
+
+  useEffect(() => {
+    const fetchLatestTestimonials = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/testimonials');
+          if (res.success && res.data) {
+            setFormData(prev => ({ ...defaultTestimonialsData, ...res.data }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch testimonials from backend:", err);
+      }
+    };
+    fetchLatestTestimonials();
+  }, []);
 
   const handleSave = (sectionKey, data) => {
-    const updatedData = { ...rawData, [sectionKey]: data };
-    if (updateSection) updateSection('testimonialsPageData', updatedData);
+    const updatedData = { ...formData, [sectionKey]: data };
+    setFormData(updatedData);
+    if (updateSection) {
+      updateSection('testimonialsPageData', updatedData);
+      updateSection('testimonialsCMS', updatedData);
+    }
     saveToLocalDb('testimonialsPageData', updatedData);
+  };
+
+  const handlePublishAll = async () => {
+    setIsPublishing(true);
+    try {
+      const payload = { ...formData };
+      if (updateSection) {
+        updateSection('testimonialsPageData', payload);
+        updateSection('testimonialsCMS', payload);
+      }
+      saveToLocalDb('testimonialsPageData', payload);
+
+      if (apiFetch) {
+        await apiFetch('/testimonials', {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+      }
+      alert("Testimonials Published Live to Website!");
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+      alert("Published locally! Backend notice: " + (err.message || "Saved"));
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const handleAddWrittenReview = () => {
+    const newReview = {
+      id: Date.now().toString(),
+      name: "New Student",
+      designation: "Software Engineer",
+      company: "Tech Corp",
+      rating: 5,
+      review: "Amazing learning experience and guidance!",
+      photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+    };
+    const updated = [...(formData.writtenTestimonials || []), newReview];
+    setFormData({ ...formData, writtenTestimonials: updated });
+  };
+
+  const handleDeleteWrittenReview = (id) => {
+    const updated = (formData.writtenTestimonials || []).filter(item => item.id !== id);
+    setFormData({ ...formData, writtenTestimonials: updated });
+  };
+
+  const handleAddVideoTestimonial = () => {
+    const newVideo = {
+      id: Date.now().toString(),
+      name: "New Creator",
+      role: "Frontend Developer",
+      company: "Startup",
+      duration: "2:00",
+      thumbnail: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+      video: ""
+    };
+    const updated = [...(formData.videoTestimonials || []), newVideo];
+    setFormData({ ...formData, videoTestimonials: updated });
+  };
+
+  const handleDeleteVideoTestimonial = (id) => {
+    const updated = (formData.videoTestimonials || []).filter(item => item.id !== id);
+    setFormData({ ...formData, videoTestimonials: updated });
   };
 
   const tabs = [
@@ -65,9 +193,13 @@ export const Testimonials = () => {
             <Check className="w-4 h-4 text-green-400" />
             MongoDB Synced
           </button>
-          <button className="flex items-center gap-2 px-6 py-2 bg-gold hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+          <button 
+            onClick={handlePublishAll}
+            disabled={isPublishing}
+            className="flex items-center gap-2 px-6 py-2 bg-gold hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)] cursor-pointer disabled:opacity-50"
+          >
             <Save className="w-4 h-4" />
-            Publish Changes
+            {isPublishing ? 'Publishing...' : 'Publish Changes'}
           </button>
         </div>
       </div>
@@ -111,9 +243,9 @@ export const Testimonials = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { label: "Total Reviews", value: "3,450+", icon: Star, color: "text-yellow-400" },
-                  { label: "Video Testimonials", value: "142", icon: Video, color: "text-blue-400" },
-                  { label: "Success Stories", value: "89", icon: Briefcase, color: "text-green-400" },
+                  { label: "Total Reviews", value: `${formData.writtenTestimonials?.length || 0}+`, icon: Star, color: "text-yellow-400" },
+                  { label: "Video Testimonials", value: `${formData.videoTestimonials?.length || 0}`, icon: Video, color: "text-blue-400" },
+                  { label: "Success Stories", value: `${formData.successStats?.length || 0}`, icon: Briefcase, color: "text-green-400" },
                   { label: "Total Views", value: "2.1M", icon: Eye, color: "text-purple-400" }
                 ].map((stat, i) => (
                   <div key={i} className="bg-black/40 border border-white/5 rounded-xl p-5 flex flex-col items-center justify-center text-center">
@@ -131,27 +263,77 @@ export const Testimonials = () => {
             <div className="space-y-6 animate-in fade-in duration-300">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-serif text-white">Written Endorsements</h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg border border-white/10 text-sm transition-colors">
+                <button 
+                  onClick={handleAddWrittenReview}
+                  className="flex items-center gap-2 px-4 py-2 bg-gold hover:bg-yellow-500 text-black font-medium rounded-lg text-sm transition-colors cursor-pointer"
+                >
                   <Plus className="w-4 h-4" /> Add Review
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="p-4 bg-black/40 border border-white/5 rounded-xl flex flex-col gap-4 hover:border-gold/30 transition-all">
-                    <div className="flex justify-between items-start">
-                      <div className="flex gap-3 items-center">
-                        <div className="w-10 h-10 rounded-full bg-zinc-800" />
-                        <div>
-                          <p className="text-sm font-bold text-white">Student Name {i}</p>
-                          <p className="text-[10px] text-gray-500 font-mono uppercase">Software Engineer, Google</p>
-                        </div>
+              <div className="grid grid-cols-1 gap-4">
+                {(formData.writtenTestimonials || []).map((item, idx) => (
+                  <div key={item.id || idx} className="p-4 bg-black/40 border border-white/5 rounded-xl flex flex-col gap-4 hover:border-gold/30 transition-all">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[10px] text-gray-500 uppercase mb-1">Student Name</label>
+                        <input
+                          type="text"
+                          className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-gold outline-none"
+                          value={item.name || ''}
+                          onChange={(e) => {
+                            const updated = [...formData.writtenTestimonials];
+                            updated[idx] = { ...updated[idx], name: e.target.value };
+                            setFormData({ ...formData, writtenTestimonials: updated });
+                          }}
+                        />
                       </div>
-                      <div className="flex gap-2">
-                        <button className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"><Edit3 className="w-4 h-4" /></button>
-                        <button className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                      <div>
+                        <label className="block text-[10px] text-gray-500 uppercase mb-1">Designation</label>
+                        <input
+                          type="text"
+                          className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-gold outline-none"
+                          value={item.designation || ''}
+                          onChange={(e) => {
+                            const updated = [...formData.writtenTestimonials];
+                            updated[idx] = { ...updated[idx], designation: e.target.value };
+                            setFormData({ ...formData, writtenTestimonials: updated });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-500 uppercase mb-1">Company</label>
+                        <input
+                          type="text"
+                          className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-gold outline-none"
+                          value={item.company || ''}
+                          onChange={(e) => {
+                            const updated = [...formData.writtenTestimonials];
+                            updated[idx] = { ...updated[idx], company: e.target.value };
+                            setFormData({ ...formData, writtenTestimonials: updated });
+                          }}
+                        />
                       </div>
                     </div>
-                    <p className="text-sm text-gray-400 italic">"The curriculum completely changed my perspective on distributed systems and system design architectures."</p>
+                    <div>
+                      <label className="block text-[10px] text-gray-500 uppercase mb-1">Review Paragraph</label>
+                      <textarea
+                        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-gold outline-none h-16"
+                        value={item.review || ''}
+                        onChange={(e) => {
+                          const updated = [...formData.writtenTestimonials];
+                          updated[idx] = { ...updated[idx], review: e.target.value };
+                          setFormData({ ...formData, writtenTestimonials: updated });
+                        }}
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <button 
+                        onClick={() => handleDeleteWrittenReview(item.id || idx)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-xs transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete Review
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -163,24 +345,79 @@ export const Testimonials = () => {
             <div className="space-y-6 animate-in fade-in duration-300">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-serif text-white">Video Experiences</h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg border border-white/10 text-sm transition-colors">
+                <button 
+                  onClick={handleAddVideoTestimonial}
+                  className="flex items-center gap-2 px-4 py-2 bg-gold hover:bg-yellow-500 text-black font-medium rounded-lg text-sm transition-colors cursor-pointer"
+                >
                   <Plus className="w-4 h-4" /> Add Video
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[1, 2].map(i => (
-                  <div key={i} className="p-4 bg-black/40 border border-white/5 rounded-xl hover:border-gold/30 transition-all">
-                    <div className="aspect-video w-full bg-zinc-800 rounded-lg mb-4 flex items-center justify-center relative group">
-                      <Play className="w-8 h-8 text-white/50 group-hover:text-gold transition-colors" />
-                    </div>
-                    <div className="flex justify-between items-center">
+                {(formData.videoTestimonials || []).map((item, idx) => (
+                  <div key={item.id || idx} className="p-4 bg-black/40 border border-white/5 rounded-xl hover:border-gold/30 transition-all flex flex-col gap-3">
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <p className="text-sm font-bold text-white">Video Review {i}</p>
-                        <p className="text-[10px] text-gray-500 font-mono uppercase">Batch 2024</p>
+                        <label className="block text-[10px] text-gray-500 uppercase mb-1">Student Name</label>
+                        <input
+                          type="text"
+                          className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-gold outline-none"
+                          value={item.name || ''}
+                          onChange={(e) => {
+                            const updated = [...formData.videoTestimonials];
+                            updated[idx] = { ...updated[idx], name: e.target.value };
+                            setFormData({ ...formData, videoTestimonials: updated });
+                          }}
+                        />
                       </div>
-                      <div className="flex gap-2">
-                        <button className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"><Edit3 className="w-4 h-4" /></button>
+                      <div>
+                        <label className="block text-[10px] text-gray-500 uppercase mb-1">Role / Designation</label>
+                        <input
+                          type="text"
+                          className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-gold outline-none"
+                          value={item.role || ''}
+                          onChange={(e) => {
+                            const updated = [...formData.videoTestimonials];
+                            updated[idx] = { ...updated[idx], role: e.target.value };
+                            setFormData({ ...formData, videoTestimonials: updated });
+                          }}
+                        />
                       </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] text-gray-500 uppercase mb-1">Company</label>
+                        <input
+                          type="text"
+                          className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-gold outline-none"
+                          value={item.company || ''}
+                          onChange={(e) => {
+                            const updated = [...formData.videoTestimonials];
+                            updated[idx] = { ...updated[idx], company: e.target.value };
+                            setFormData({ ...formData, videoTestimonials: updated });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-500 uppercase mb-1">Video Duration</label>
+                        <input
+                          type="text"
+                          className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:border-gold outline-none"
+                          value={item.duration || ''}
+                          onChange={(e) => {
+                            const updated = [...formData.videoTestimonials];
+                            updated[idx] = { ...updated[idx], duration: e.target.value };
+                            setFormData({ ...formData, videoTestimonials: updated });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <button 
+                        onClick={() => handleDeleteVideoTestimonial(item.id || idx)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-xs transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete Video
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -212,15 +449,38 @@ export const Testimonials = () => {
                     <div className="space-y-4">
                       <div>
                         <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Small Badge</label>
-                        <input type="text" className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold outline-none" defaultValue="COMMUNITY ACCLAIM" />
+                        <input 
+                          type="text" 
+                          className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold outline-none" 
+                          value={formData?.hero?.smallBadge || ''} 
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            hero: { ...(formData.hero || {}), smallBadge: e.target.value }
+                          })}
+                        />
                       </div>
                       <div>
                         <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Main Heading</label>
-                        <input type="text" className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold outline-none" defaultValue="Student Placements & Academics Success" />
+                        <input 
+                          type="text" 
+                          className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold outline-none" 
+                          value={formData?.hero?.title || ''} 
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            hero: { ...(formData.hero || {}), title: e.target.value }
+                          })}
+                        />
                       </div>
                       <div>
                         <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">Description</label>
-                        <textarea className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold outline-none h-24" defaultValue="Discover reviews from Aman's mentored students, university professors, and tech partners who have integrated our curricula." />
+                        <textarea 
+                          className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold outline-none h-24" 
+                          value={formData?.hero?.description || ''} 
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            hero: { ...(formData.hero || {}), description: e.target.value }
+                          })}
+                        />
                       </div>
                     </div>
                   </div>

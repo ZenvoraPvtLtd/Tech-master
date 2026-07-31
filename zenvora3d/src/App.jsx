@@ -79,6 +79,8 @@ function AppContent() {
       case 'product-launches':
         return <ProductLaunches />;
       case 'portfolio':
+      case 'our-work':
+      case 'ourWork':
         return <Portfolio />;
       case 'media-gallery':
         return <MediaGallery />;

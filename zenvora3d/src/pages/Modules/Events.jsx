@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -9,7 +9,7 @@ import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 
 export const Events = () => {
-  const { db, updateSection } = useDatabase();
+  const { db, updateSection, apiFetch } = useDatabase();
   const { openMediaManager } = useMediaManager();
 
   const [activeTab, setActiveTab] = useState('events_list'); // overview, events_list, content, media, seo, visibility, publish, preview
@@ -127,15 +127,42 @@ export const Events = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestEvents = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/events');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultEventsCMS,
+              ...data,
+              hero: { ...defaultEventsCMS.hero, ...(data.hero || {}) },
+              eventsList: (data.eventsList && data.eventsList.length > 0) ? data.eventsList : defaultEventsCMS.eventsList,
+              engagementTypesHeader: { ...defaultEventsCMS.engagementTypesHeader, ...(data.engagementTypesHeader || {}) },
+              engagementTypes: (data.engagementTypes && data.engagementTypes.length > 0) ? data.engagementTypes : defaultEventsCMS.engagementTypes,
+              bookingSection: { ...defaultEventsCMS.bookingSection, ...(data.bookingSection || {}) },
+              bookingInquiries: (data.bookingInquiries && data.bookingInquiries.length > 0) ? data.bookingInquiries : defaultEventsCMS.bookingInquiries
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest events from backend:", err);
+      }
+    };
+    fetchLatestEvents();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('eventsData_CMS', nextState);
     updateSection('eventsCMS', nextState);
+    updateSection('eventsPage', nextState);
     updateSection('eventsData', nextState.eventsList);
     updateSection('bookingInquiries', nextState.bookingInquiries);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -145,6 +172,18 @@ export const Events = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/events', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'Events Page Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);

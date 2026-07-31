@@ -1,42 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { 
   HelpCircle, ChevronDown, Edit2, Trash2, Plus, Search, GripVertical, Check, Save 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export const FAQ = () => {
-  const { dbData, localDb, saveToLocalDb, updateSection } = useDatabase();
-
-  const rawData = dbData?.faqPageData || localDb?.faqPageData || {};
-
-  const faqSettings = rawData.settings || {
+const defaultFaqData = {
+  settings: {
     badge: "INFORMATION ARCHIVE",
     heading: "Answers &",
     highlightHeading: "Frequently Asked Questions"
-  };
-
-  const faqs = rawData.faqs || [
+  },
+  faqs: [
     { id: '1', question: "What is your main service?", answer: "We provide enterprise tech solutions.", category: "General", order: 1 }
-  ];
+  ]
+};
+
+export const FAQ = () => {
+  const { dbData, localDb, saveToLocalDb, updateSection, apiFetch } = useDatabase();
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const rawData = dbData?.faqPageData || localDb?.faqPageData || {};
+
+  const [settingsForm, setSettingsForm] = useState(rawData.settings || defaultFaqData.settings);
+  const [faqs, setFaqs] = useState(rawData.faqs || defaultFaqData.faqs);
+
+  useEffect(() => {
+    const fetchLatestFaqs = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/faqs');
+          if (res.success && res.data) {
+            const data = res.data;
+            if (data.settings) setSettingsForm(data.settings);
+            if (data.faqs && data.faqs.length > 0) setFaqs(data.faqs);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch FAQs from backend:", err);
+      }
+    };
+    fetchLatestFaqs();
+  }, []);
 
   const handleSaveSettings = (newSettings) => {
-    const updated = { ...rawData, settings: newSettings };
+    setSettingsForm(newSettings);
+    const updated = { settings: newSettings, faqs };
     if (updateSection) updateSection('faqPageData', updated);
     saveToLocalDb('faqPageData', updated);
   };
 
   const handleSaveFaqs = (newFaqs) => {
-    const updated = { ...rawData, faqs: newFaqs };
+    setFaqs(newFaqs);
+    const updated = { settings: settingsForm, faqs: newFaqs };
     if (updateSection) updateSection('faqPageData', updated);
     saveToLocalDb('faqPageData', updated);
   };
 
+  const handlePublishAll = async () => {
+    setIsPublishing(true);
+    const payload = { settings: settingsForm, faqs };
+    if (updateSection) {
+      updateSection('faqPageData', payload);
+      updateSection('faqs', payload.faqs);
+    }
+    saveToLocalDb('faqPageData', payload);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/faqs', {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+      }
+      alert("FAQ Portal Published Live to Website!");
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+      alert("Published locally! Backend notice: " + (err.message || "Saved"));
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   const [activeTab, setActiveTab] = useState('hero');
   const [expandedPreviewId, setExpandedPreviewId] = useState(null);
-  
-  // Settings Form State
-  const [settingsForm, setSettingsForm] = useState(faqSettings);
 
   const saveHeroSettings = () => {
     handleSaveSettings(settingsForm);
@@ -85,8 +132,12 @@ export const FAQ = () => {
           <p className="text-gray-400 text-sm">Exact visual mirror of the TechMaster website FAQ section with instant live preview.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-6 py-2 bg-gold hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all">
-            <Save className="w-4 h-4" /> Publish Changes
+          <button 
+            onClick={handlePublishAll}
+            disabled={isPublishing}
+            className="flex items-center gap-2 px-6 py-2 bg-gold hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" /> {isPublishing ? 'Publishing...' : 'Publish Changes'}
           </button>
         </div>
       </div>

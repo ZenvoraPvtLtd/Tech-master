@@ -45,7 +45,85 @@ interface HomeProps {
 
 export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   const { homeData, dbData, isLoading } = useData();
-  if (isLoading || !homeData) return <div className="min-h-screen bg-black flex items-center justify-center"><span className="text-gold uppercase tracking-widest text-xs font-bold">Initializing CMS...</span></div>;
+  const [liveHomeData, setLiveHomeData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchHomepage = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/homepage`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveHomeData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Homepage fetch error:", e);
+      }
+    };
+    fetchHomepage();
+  }, []);
+
+  if (isLoading || (!homeData && !liveHomeData)) return <div className="min-h-screen bg-black flex items-center justify-center"><span className="text-gold uppercase tracking-widest text-xs font-bold">Initializing CMS...</span></div>;
+
+  let localDb: any = {};
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) localDb = JSON.parse(saved);
+  } catch (e) {}
+
+  const activeHome = {
+    ...homeData,
+    ...(localDb?.homepageCMS || localDb?.homepage || {}),
+    ...(dbData?.homepageCMS || dbData?.homepage || {}),
+    ...(liveHomeData || {})
+  };
+
+  const heroBadge = activeHome?.hero?.badge || "TECH MASTER";
+  const heroTopBadge = activeHome?.hero?.topBadgeText || "India's most-watched media production house";
+  const heroMainHeading = activeHome?.hero?.mainHeading || "TECH MASTER";
+  const heroTagline = activeHome?.hero?.tagline || '"Nothing We Make Is Forgettable. Unskippable. Unforgettable."';
+  const heroSubTagline = activeHome?.hero?.subTagline || "Attention and Influence — At Scale";
+
+  const introBadge = activeHome?.introVision?.introBadge || "INTRO";
+  const introHeading = activeHome?.introVision?.introHeading || "Building High-Scale Media Channels";
+  const introDescription = activeHome?.introVision?.introDescription || "Tech Master Digital Pvt Ltd builds and runs a portfolio of high-scale content channels across tech, automobiles, and entertainment. We take complex subjects and make them impossible to scroll past. Combining editorial rigor with production value that stands out.";
+
+  const visionBadge = activeHome?.introVision?.visionBadge || "THE VISION";
+  const visionHeading = activeHome?.introVision?.visionHeading || "Complexity Made Simple & Unforgettable";
+  const visionDescription = activeHome?.introVision?.visionDescription || "Tech Master exists to make complexity feel simple, and simplicity feel unforgettable. We tell stories that inform without lecturing, entertain without diluting, and connect without pretending. The result: content built to travel across platforms, across formats, across the world.";
+
+  const founderBadge = activeHome?.founder?.badge || "ABOUT THE CEO / FOUNDER";
+  const founderName = activeHome?.founder?.name || "Arvind Kharra";
+  const founderHighlighted = activeHome?.founder?.highlightedName || "aka Tech Master";
+  const founderBio = activeHome?.founder?.description || "An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions.";
+
+  const tickerHeading = activeHome?.channelsTicker?.heading || "Different audiences.";
+  const tickerHighlight = activeHome?.channelsTicker?.highlightedHeading || "Same Obsession.";
+  const tickerSubHeading = activeHome?.channelsTicker?.subHeading || "We're just getting started / Five channels today. A Media Empire in Motion.";
+
+  const defaultCoreValues = [
+    { title: "Fearless Energy", desc: "Pushing creative boundaries with unyielding momentum and passion." },
+    { title: "Creative Storytelling", desc: "Crafting narratives that resonate, inform, and inspire millions." },
+    { title: "Community First", desc: "Building genuine connections and putting our audience at the heart of everything we create." }
+  ];
+  const coreValuesList = (activeHome?.coreValues?.cards && activeHome.coreValues.cards.length > 0)
+    ? activeHome.coreValues.cards.map((c: any) => ({ title: c.title, desc: c.desc || c.description }))
+    : defaultCoreValues;
+
+  const defaultStats = [
+    { number: "40M+", label: "Subscribers" },
+    { number: "7M+", label: "IG Followers" },
+    { number: "1B+", label: "Monthly Views" },
+    { number: "2500+", label: "Videos Published" },
+    { number: "500K+", label: "FB Followers" },
+    { number: "25B", label: "Lifetime Views on YT" },
+    { number: "50+", label: "Global Brand Collaborations" }
+  ];
+  const statsList = (activeHome?.statistics?.counters && activeHome.statistics.counters.length > 0)
+    ? activeHome.statistics.counters.map((s: any) => ({ number: s.value || s.number, label: s.label }))
+    : defaultStats;
 
   const dummyViews = ["1.2M views", "850K views", "3.4M views", "2.1M views", "500K views", "4.8M views", "920K views", "1.5M views", "300K views", "2.9M views"];
 
@@ -267,7 +345,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         {/* Badges directly below Navbar */}
         <div className="flex flex-col items-center gap-3 relative z-20 mb-4 sm:mb-6">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            TECH MASTER
+            {heroBadge}
           </span>
 
           <motion.div
@@ -279,7 +357,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             <svg className="w-3.5 h-3.5 fill-current text-gold" viewBox="0 0 24 24">
               <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
-            India's most-watched media production house
+            {heroTopBadge}
           </motion.div>
         </div>
 
@@ -294,8 +372,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             transition={{ duration: 1.0, delay: 0.4, ease: "easeOut" }}
             className="font-serif text-5xl sm:text-7xl md:text-8xl font-black mb-6 tracking-tight"
           >
-            <span className="text-white">TECH </span>
-            <span className="text-gold">MASTER</span>
+            <span className="text-white">{heroMainHeading.split(" ")[0] || "TECH"} </span>
+            <span className="text-gold">{heroMainHeading.split(" ").slice(1).join(" ") || "MASTER"}</span>
           </motion.h1>
 
           {/* Tagline */}
@@ -305,9 +383,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             transition={{ duration: 1.0, delay: 0.6 }}
             className="text-gray-300 text-base sm:text-xl md:text-2xl font-serif italic max-w-3xl leading-relaxed mb-6 md:mb-10 p-6 md:p-8 rounded-2xl border border-gold/30 bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
           >
-            "Nothing We Make Is Forgettable. Unskippable. Unforgettable."
+            {heroTagline}
             <span className="block text-xs font-mono font-normal text-gold/80 not-italic uppercase tracking-[2px] mt-3">
-              Attention and Influence — At Scale
+              {heroSubTagline}
             </span>
           </motion.div>
 
@@ -335,23 +413,23 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Intro Card */}
           <div className="glass-panel p-8 sm:p-10 rounded-3xl border border-white/10 hover:border-gold/30 transition-all duration-300">
-            <span className="typo-badge mb-4 block text-gold">INTRO</span>
+            <span className="typo-badge mb-4 block text-gold">{introBadge}</span>
             <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-4">
-              Building High-Scale Media Channels
+              {introHeading}
             </h2>
             <p className="text-gray-300 text-sm sm:text-base font-light leading-relaxed">
-              Tech Master Digital Pvt Ltd builds and runs a portfolio of high-scale content channels across tech, automobiles, and entertainment. We take complex subjects and make them impossible to scroll past. Combining editorial rigor with production value that stands out.
+              {introDescription}
             </p>
           </div>
 
           {/* The Vision Card */}
           <div className="glass-panel p-8 sm:p-10 rounded-3xl border border-gold/30 bg-gold/5 hover:border-gold transition-all duration-300">
-            <span className="typo-badge mb-4 block text-gold">THE VISION</span>
+            <span className="typo-badge mb-4 block text-gold">{visionBadge}</span>
             <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-4">
-              Complexity Made Simple & Unforgettable
+              {visionHeading}
             </h2>
             <p className="text-gray-300 text-sm sm:text-base font-light leading-relaxed">
-              Tech Master exists to make complexity feel simple, and simplicity feel unforgettable. We tell stories that inform without lecturing, entertain without diluting, and connect without pretending. The result: content built to travel across platforms, across formats, across the world.
+              {visionDescription}
             </p>
           </div>
         </div>
@@ -361,13 +439,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       <section className="scroll-section py-12 px-6 max-w-7xl mx-auto relative z-10">
         <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-gold/30 bg-black/60 backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.08)]">
           <span className="typo-badge text-gold/80 border border-gold/30 px-4 py-1.5 rounded-full bg-black/40 font-mono font-semibold text-xs inline-block mb-6">
-            ABOUT THE CEO / FOUNDER
+            {founderBadge}
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-bold mb-6">
-            Arvind Kharra <span className="text-gold italic">aka Tech Master</span>
+            {founderName} <span className="text-gold italic">{founderHighlighted}</span>
           </h2>
           <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed max-w-4xl">
-            An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions.
+            {founderBio}
           </p>
         </div>
       </section>
@@ -376,10 +454,10 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       <section className="py-8 bg-black/60 border-y border-white/10 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-3">
         <div className="flex flex-col items-center gap-1 relative z-20 max-w-3xl px-6">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            Different audiences. <span className="text-gold italic font-bold">Same Obsession.</span>
+            {tickerHeading} <span className="text-gold italic font-bold">{tickerHighlight}</span>
           </h2>
           <p className="text-gray-400 text-xs sm:text-sm font-mono tracking-wider uppercase mt-1">
-            We're just getting started / Five channels today. A Media Empire in Motion.
+            {tickerSubHeading}
           </p>
         </div>
 
@@ -435,24 +513,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       <section className="scroll-section section-padding relative z-10 text-left">
         <div className="flex justify-center mb-12 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            HOW WE MOVE
+            {activeHome?.coreValues?.badge || "HOW WE MOVE"}
           </span>
         </div>
         <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {[
-            {
-              title: "Fearless Energy",
-              desc: "Pushing creative boundaries with unyielding momentum and passion."
-            },
-            {
-              title: "Creative Storytelling",
-              desc: "Crafting narratives that resonate, inform, and inspire millions."
-            },
-            {
-              title: "Community First",
-              desc: "Building genuine connections and putting our audience at the heart of everything we create."
-            }
-          ].map((val: any, idx: number) => (
+          {coreValuesList.map((val: any, idx: number) => (
             <div key={idx} className="glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300">
               <h3 className="typo-h4 mb-3 text-white font-serif">{val.title}</h3>
               <p className="text-gray-400 text-sm font-light leading-relaxed">{val.desc}</p>
@@ -465,23 +530,15 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       <section className="scroll-section py-16 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-center">
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
-            GLOBAL REACH & STATISTICS
+            {activeHome?.statistics?.badge || "GLOBAL REACH & STATISTICS"}
           </span>
         </div>
         <div className="max-w-7xl mx-auto">
           <h2 className="typo-h2 mb-12">
-            Influence & <span className="text-gold italic font-bold">Impact</span>
+            {activeHome?.statistics?.heading?.split("&")[0] || "Influence &"} <span className="text-gold italic font-bold">{activeHome?.statistics?.heading?.split("&")[1] || "Impact"}</span>
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-            {[
-              { number: "40M+", label: "Subscribers" },
-              { number: "7M+", label: "IG Followers" },
-              { number: "1B+", label: "Monthly Views" },
-              { number: "2500+", label: "Videos Published" },
-              { number: "500K+", label: "FB Followers" },
-              { number: "25B", label: "Lifetime Views on YT" },
-              { number: "50+", label: "Global Brand Collaborations" }
-            ].map((stat: any, idx: number) => (
+            {statsList.map((stat: any, idx: number) => (
               <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
                 <AnimatedCounter 
                   value={stat.number} 

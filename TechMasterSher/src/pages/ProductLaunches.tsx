@@ -14,6 +14,25 @@ const iconMap: Record<string, React.ReactNode> = {
 
 export const ProductLaunches: React.FC = () => {
   const { launchesData } = useData();
+  const [liveLaunchesData, setLiveLaunchesData] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const fetchLaunches = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/product-launches`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveLaunchesData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct ProductLaunches fetch error:", e);
+      }
+    };
+    fetchLaunches();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -71,15 +90,12 @@ export const ProductLaunches: React.FC = () => {
     ]
   };
 
-  const activeLaunches = { ...defaultLaunches, ...localDb?.launchesData, ...launchesData };
+  const hero = { ...defaultLaunches.hero, ...(localDb?.launchesData?.hero || {}), ...(launchesData?.hero || {}), ...(liveLaunchesData?.hero || {}) };
 
-  const hero = activeLaunches.hero || defaultLaunches.hero;
+  const rawProducts = (liveLaunchesData?.products || launchesData?.products || localDb?.launchesData?.products || defaultLaunches.products);
+  const validProducts = (Array.isArray(rawProducts) && rawProducts.length > 0) ? rawProducts : defaultLaunches.products;
 
-  const rawProducts = (activeLaunches.products && activeLaunches.products.length > 0)
-    ? activeLaunches.products
-    : defaultLaunches.products;
-
-  const products = rawProducts.map((prod: any) => ({
+  const products = validProducts.map((prod: any) => ({
     icon: iconMap[prod.icon] || <Laptop className="w-6 h-6 text-gold" />,
     title: prod.title,
     tagline: prod.tagline,
@@ -88,13 +104,12 @@ export const ProductLaunches: React.FC = () => {
     accent: prod.accent || prod.accentColor || "#D4AF37"
   }));
 
-  const featureVideo = activeLaunches.featureVideo || defaultLaunches.featureVideo;
+  const featureVideo = { ...defaultLaunches.featureVideo, ...(localDb?.launchesData?.featureVideo || {}), ...(launchesData?.featureVideo || {}), ...(liveLaunchesData?.featureVideo || {}) };
 
-  const rawInitiatives = (activeLaunches.initiatives && activeLaunches.initiatives.length > 0)
-    ? activeLaunches.initiatives
-    : defaultLaunches.initiatives;
+  const rawInitiatives = (liveLaunchesData?.initiatives || launchesData?.initiatives || localDb?.launchesData?.initiatives || defaultLaunches.initiatives);
+  const validInitiatives = (Array.isArray(rawInitiatives) && rawInitiatives.length > 0) ? rawInitiatives : defaultLaunches.initiatives;
 
-  const initiatives = rawInitiatives.filter((init: any) => init.visible !== false && init.status !== "Inactive");
+  const initiatives = validInitiatives.filter((init: any) => init.visible !== false && init.status !== "Inactive");
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">

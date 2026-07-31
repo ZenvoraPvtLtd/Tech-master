@@ -97,8 +97,6 @@ export const Mission: React.FC = () => {
     }
   };
 
-  const activeMV = { ...defaultMV, ...localDb?.missionVisionData, ...missionVisionData, ...liveMV };
-
   const heroData = { ...defaultMV.hero, ...(localDb?.missionVisionData?.hero || {}), ...(missionVisionData?.hero || {}), ...(liveMV?.hero || {}) };
   const missionData = { ...defaultMV.mission, ...(localDb?.missionVisionData?.mission || {}), ...(missionVisionData?.mission || {}), ...(liveMV?.mission || {}) };
   const visionData = { ...defaultMV.vision, ...(localDb?.missionVisionData?.vision || {}), ...(missionVisionData?.vision || {}), ...(liveMV?.vision || {}) };

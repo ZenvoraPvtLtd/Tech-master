@@ -7,7 +7,26 @@ export const Services: React.FC = () => {
   const { servicesData: cmsServices, servicesPageData: cmsServicesPage } = useData();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeAdvancedTab, setActiveAdvancedTab] = useState<string | null>(null);
+  const [liveServicesData, setLiveServicesData] = useState<any>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/services`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveServicesData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Services fetch error:", e);
+      }
+    };
+    fetchServices();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -70,9 +89,11 @@ export const Services: React.FC = () => {
     }
   ];
 
-  const rawServices = (cmsServices && cmsServices.length > 0)
-    ? cmsServices
-    : (localDb?.servicesData || defaultServices);
+  const rawServices = (liveServicesData?.servicesData && liveServicesData.servicesData.length > 0)
+    ? liveServicesData.servicesData
+    : (cmsServices && cmsServices.length > 0)
+      ? cmsServices
+      : (localDb?.servicesData || defaultServices);
 
   const servicesDataList = [...rawServices].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
@@ -104,7 +125,8 @@ export const Services: React.FC = () => {
     }
   };
 
-  const servicesPageData = { ...defaultPageData, ...localDb?.servicesPageData, ...cmsServicesPage };
+  const fetchedServicesPageData = liveServicesData?.servicesPageData || liveServicesData;
+  const servicesPageData = { ...defaultPageData, ...localDb?.servicesPageData, ...cmsServicesPage, ...(fetchedServicesPageData?.hero ? fetchedServicesPageData : {}) };
   const heroData = servicesPageData.hero || defaultPageData.hero;
   const expertise = servicesPageData.expertise || defaultPageData.expertise;
   const cta = servicesPageData.cta || defaultPageData.cta;

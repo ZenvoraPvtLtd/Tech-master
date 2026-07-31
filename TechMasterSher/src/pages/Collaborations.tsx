@@ -7,6 +7,25 @@ import { AnimatedCounter } from "../components/AnimatedCounter";
 
 export const Collaborations: React.FC = () => {
   const { dbData } = useData();
+  const [liveCollabData, setLiveCollabData] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const fetchCollaborations = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/collaborations`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveCollabData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Collaborations fetch error:", e);
+      }
+    };
+    fetchCollaborations();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -72,41 +91,33 @@ export const Collaborations: React.FC = () => {
     ]
   };
 
-  const activeCollaborations = { ...defaultCollaborations, ...localDb?.collaborationsPage, ...dbData?.collaborationsPage };
+  const hero = { ...defaultCollaborations.hero, ...(localDb?.collaborationsPage?.hero || {}), ...(dbData?.collaborationsPage?.hero || {}), ...(liveCollabData?.hero || {}) };
 
-  const hero = activeCollaborations.hero || defaultCollaborations.hero;
+  const rawCarousel = (liveCollabData?.brandCarousel || dbData?.collaborationsPage?.brandCarousel || localDb?.collaborationsPage?.brandCarousel || defaultCollaborations.brandCarousel);
+  const validCarousel = (Array.isArray(rawCarousel) && rawCarousel.length > 0) ? rawCarousel : defaultCollaborations.brandCarousel;
+  const brandCarousel = validCarousel.map((b: any) => typeof b === 'string' ? b : (b.brandName || b.name || b));
 
-  const rawCarousel = (activeCollaborations.brandCarousel && activeCollaborations.brandCarousel.length > 0)
-    ? activeCollaborations.brandCarousel
-    : defaultCollaborations.brandCarousel;
-  const brandCarousel = rawCarousel.map((b: any) => typeof b === 'string' ? b : (b.brandName || b.name || b));
+  const rawPartners = (liveCollabData?.partners || dbData?.collaborationsPage?.partners || localDb?.collaborationsPage?.partners || defaultCollaborations.partners);
+  const validPartners = (Array.isArray(rawPartners) && rawPartners.length > 0) ? rawPartners : defaultCollaborations.partners;
+  const partners = validPartners.filter((p: any) => p.status === "Active" || p.status === true || p.status === undefined);
 
-  const rawPartners = (activeCollaborations.partners && activeCollaborations.partners.length > 0)
-    ? activeCollaborations.partners
-    : defaultCollaborations.partners;
-  const partners = rawPartners.filter((p: any) => p.status === "Active" || p.status === true || p.status === undefined);
+  const rawMetrics = (liveCollabData?.metrics || dbData?.collaborationsPage?.metrics || localDb?.collaborationsPage?.metrics || defaultCollaborations.metrics);
+  const validMetrics = (Array.isArray(rawMetrics) && rawMetrics.length > 0) ? rawMetrics : defaultCollaborations.metrics;
+  const metrics = validMetrics.filter((m: any) => m.status === "Active" || m.status === true || m.status === undefined);
 
-  const rawMetrics = (activeCollaborations.metrics && activeCollaborations.metrics.length > 0)
-    ? activeCollaborations.metrics
-    : defaultCollaborations.metrics;
-  const metrics = rawMetrics.filter((m: any) => m.status === "Active" || m.status === true || m.status === undefined);
+  const rawCampaigns = (liveCollabData?.campaigns || dbData?.collaborationsPage?.campaigns || localDb?.collaborationsPage?.campaigns || defaultCollaborations.campaigns);
+  const validCampaigns = (Array.isArray(rawCampaigns) && rawCampaigns.length > 0) ? rawCampaigns : defaultCollaborations.campaigns;
+  const campaigns = validCampaigns.filter((c: any) => c.status === "Active" || c.status === true || c.status === undefined);
 
-  const rawCampaigns = (activeCollaborations.campaigns && activeCollaborations.campaigns.length > 0)
-    ? activeCollaborations.campaigns
-    : defaultCollaborations.campaigns;
-  const campaigns = rawCampaigns.filter((c: any) => c.status === "Active" || c.status === true || c.status === undefined);
+  const history = { ...defaultCollaborations.history, ...(localDb?.collaborationsPage?.history || {}), ...(dbData?.collaborationsPage?.history || {}), ...(liveCollabData?.history || {}) };
 
-  const history = activeCollaborations.history || defaultCollaborations.history;
+  const rawProcess = (liveCollabData?.process || dbData?.collaborationsPage?.process || localDb?.collaborationsPage?.process || defaultCollaborations.process);
+  const validProcess = (Array.isArray(rawProcess) && rawProcess.length > 0) ? rawProcess : defaultCollaborations.process;
+  const process = validProcess.filter((pr: any) => pr.status === "Active" || pr.status === true || pr.status === undefined);
 
-  const rawProcess = (activeCollaborations.process && activeCollaborations.process.length > 0)
-    ? activeCollaborations.process
-    : defaultCollaborations.process;
-  const process = rawProcess.filter((pr: any) => pr.status === "Active" || pr.status === true || pr.status === undefined);
-
-  const rawTestimonials = (activeCollaborations.testimonials && activeCollaborations.testimonials.length > 0)
-    ? activeCollaborations.testimonials
-    : defaultCollaborations.testimonials;
-  const testimonials = rawTestimonials.filter((t: any) => t.status === "Active" || t.status === true || t.status === undefined);
+  const rawTestimonials = (liveCollabData?.testimonials || dbData?.collaborationsPage?.testimonials || localDb?.collaborationsPage?.testimonials || defaultCollaborations.testimonials);
+  const validTestimonials = (Array.isArray(rawTestimonials) && rawTestimonials.length > 0) ? rawTestimonials : defaultCollaborations.testimonials;
+  const testimonials = validTestimonials.filter((t: any) => t.status === "Active" || t.status === true || t.status === undefined);
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">

@@ -114,147 +114,45 @@ export interface IFeaturedVideoItem {
 }
 
 export interface IHomepage extends Document, ICmsBase {
-  hero: {
-    title: string;
-    highlightTitle: string;
-    description: string;
-    ctaButtonText: string;
-    ctaButtonUrl: string;
-    mediaFile?: IMedia;
-  };
-  statisticsCounters: IStatCounter[];
-  coreValues: ICoreValue[];
-  brandPartners?: IBrandPartner[];
-  brandCollaborationsList?: IBrandCollaborationItem[];
-  featuredVideos?: IFeaturedVideoItem[];
-  featuredCampaigns?: IFeaturedCampaigns;
-  eventHighlights?: IEventHighlights;
+  hero?: any;
+  introVision?: any;
+  founder?: any;
+  channelsTicker?: any;
+  coreValues?: any;
+  statistics?: any;
+  shortsReels?: any;
+  longVideos?: any;
+  brandCollaborations?: any;
+  newsletterContact?: any;
+  statisticsCounters?: any[];
+  brandPartners?: any[];
+  brandCollaborationsList?: any[];
+  featuredVideos?: any[];
   seo?: ISeo;
 }
 
 const HomepageSchema = new Schema<IHomepage>(
   {
-    hero: {
-      title: { type: String, default: "" },
-      highlightTitle: { type: String, default: "" },
-      description: { type: String, default: "" },
-      ctaButtonText: { type: String, default: "" },
-      ctaButtonUrl: { type: String, default: "" },
-      mediaFile: { type: MediaSchema },
-    },
-    statisticsCounters: [
-      {
-        prefix: { type: String, default: "" },
-        number: { type: Number, required: true },
-        suffix: { type: String, default: "" },
-        label: { type: String, required: true },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    coreValues: [
-      {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        icon: { type: String, default: "" },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    brandPartners: [
-      {
-        brandName: { type: String, required: true },
-        youtubeUrl: { type: String, default: "" },
-        instagramUrl: { type: String, default: "" },
-        showYouTube: { type: Boolean, default: true },
-        showInstagram: { type: Boolean, default: true },
-        brandLogo: { type: String, default: "" },
-        logo: { type: String, default: "" },
-        website: { type: String, default: "" },
-        themeColor: { type: String, default: "#D4AF37" },
-        status: { type: String, default: "Active" },
-        order: { type: Number, default: 0 },
-      },
-    ],
-    brandCollaborationsList: [
-      {
-        brandName: { type: String, required: true },
-        logo: { type: String, default: "" },
-        brandLogo: { type: String, default: "" },
-        status: { type: String, default: "Active" },
-        order: { type: Number, default: 0 },
-      },
-    ],
-    featuredVideos: [
-      {
-        youtubeUrl: { type: String, required: true },
-        videoId: { type: String, required: true },
-        startTime: { type: Schema.Types.Mixed, default: "0:00" },
-        endTime: { type: Schema.Types.Mixed, default: "" },
-        order: { type: Number, default: 0 },
-        status: { type: String, default: "Active" },
-      },
-    ],
-    featuredCampaigns: {
-      sectionTag: { type: String, default: "" },
-      smallHeading: { type: String, default: "" },
-      mainHeading: { type: String, default: "" },
-      highlightHeading: { type: String, default: "" },
-      description: { type: String, default: "" },
-      backgroundImage: { type: String, default: "" },
-      backgroundVideo: { type: String, default: "" },
-      enableSection: { type: Boolean, default: true },
-      list: [
-        {
-          id: { type: String, required: true },
-          title: { type: String, required: true },
-          description: { type: String, default: "" },
-          coverImage: { type: String, default: "" },
-          video: { type: String, default: "" },
-          galleryImages: [{ type: String }],
-          ctaText: { type: String, default: "" },
-          ctaUrl: { type: String, default: "" },
-          featured: { type: Boolean, default: false },
-          active: { type: Boolean, default: true },
-          order: { type: Number, default: 0 }
-        }
-      ]
-    },
-    eventHighlights: {
-      sectionTag: { type: String, default: "" },
-      smallHeading: { type: String, default: "" },
-      mainHeading: { type: String, default: "" },
-      highlightHeading: { type: String, default: "" },
-      description: { type: String, default: "" },
-      backgroundImage: { type: String, default: "" },
-      backgroundVideo: { type: String, default: "" },
-      enableSection: { type: Boolean, default: true },
-      list: [
-        {
-          id: { type: String, required: true },
-          title: { type: String, required: true },
-          description: { type: String, default: "" },
-          date: { type: String, default: "" },
-          time: { type: String, default: "" },
-          location: { type: String, default: "" },
-          category: { type: String, default: "" },
-          image: { type: String, default: "" },
-          banner: { type: String, default: "" },
-          thumbnail: { type: String, default: "" },
-          galleryImages: [{ type: String }],
-          video: { type: String, default: "" },
-          reel: { type: String, default: "" },
-          ctaText: { type: String, default: "" },
-          ctaUrl: { type: String, default: "" },
-          featured: { type: Boolean, default: false },
-          active: { type: Boolean, default: true },
-          order: { type: Number, default: 0 }
-        }
-      ]
-    },
+    hero: { type: Schema.Types.Mixed, default: {} },
+    introVision: { type: Schema.Types.Mixed, default: {} },
+    founder: { type: Schema.Types.Mixed, default: {} },
+    channelsTicker: { type: Schema.Types.Mixed, default: {} },
+    coreValues: { type: Schema.Types.Mixed, default: {} },
+    statistics: { type: Schema.Types.Mixed, default: {} },
+    shortsReels: { type: Schema.Types.Mixed, default: {} },
+    longVideos: { type: Schema.Types.Mixed, default: {} },
+    brandCollaborations: { type: Schema.Types.Mixed, default: {} },
+    newsletterContact: { type: Schema.Types.Mixed, default: {} },
+    statisticsCounters: { type: [Schema.Types.Mixed], default: [] },
+    brandPartners: { type: [Schema.Types.Mixed], default: [] },
+    brandCollaborationsList: { type: [Schema.Types.Mixed], default: [] },
+    featuredVideos: { type: [Schema.Types.Mixed], default: [] },
     seo: { type: SeoSchema },
     ...CmsBaseFields,
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

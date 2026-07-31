@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -161,6 +161,29 @@ export const FounderJourney = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestFounderJourney = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/founder-journey');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultJourneyData,
+              ...data,
+              hero: { ...defaultJourneyData.hero, ...(data.hero || {}) },
+              milestones: (data.milestones && data.milestones.length > 0) ? data.milestones : defaultJourneyData.milestones,
+              roadmap: { ...defaultJourneyData.roadmap, ...(data.roadmap || {}) }
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest founder journey from backend:", err);
+      }
+    };
+    fetchLatestFounderJourney();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('founderJourney', nextState);
@@ -168,7 +191,7 @@ export const FounderJourney = () => {
     updateSection('journeyMilestones', nextState.milestones);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -178,6 +201,18 @@ export const FounderJourney = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/founder-journey', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'Founder Journey Published Live to Website!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);

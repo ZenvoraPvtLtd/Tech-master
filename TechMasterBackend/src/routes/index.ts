@@ -22,6 +22,8 @@ import faqRoutes from "./faq.routes";
 import contactRoutes from "./contact.routes";
 import websiteSettingsRoutes from "./websiteSettings.routes";
 import testimonialsPageRoutes from "./testimonialsPage.routes";
+import privacyPolicyRoutes from "./privacyPolicy.routes";
+import termsPolicyRoutes from "./termsPolicy.routes";
 import legalRoutes from "./legal.routes";
 
 // Import models and repositories
@@ -194,12 +196,23 @@ router.get("/", async (req, res, next) => {
       servicesPage: servicesPage[0] || null,
       missionVision: cmsDataMap['missionVision'] || missionVision[0] || null,
       testimonialsPage: testimonialsPage[0] || null,
-      termsPolicy: termsPolicy[0] || null,
-      privacyPolicy: privacyPolicy[0] || null,
+      termsPolicy: cmsDataMap['termsPolicy'] || cmsDataMap['termsPolicyData'] || termsPolicy[0] || null,
+      privacyPolicy: cmsDataMap['privacyPolicy'] || cmsDataMap['privacyPolicyData'] || privacyPolicy[0] || null,
       cookiePolicy: cookiePolicy[0] || null,
       legalSettings: legalSettings[0] || null,
       about: cmsDataMap['about'] || aboutDocs[0] || null,
       whatWeDo: cmsDataMap['whatWeDo'] || cmsDataMap['what_we_do'] || cmsDataMap['whatWeDoData'] || null,
+      collaborationsPage: cmsDataMap['collaborationsPage'] || cmsDataMap['collaborationsCMS'] || cmsDataMap['collaborations'] || null,
+      campaignsPage: cmsDataMap['campaignsPage'] || cmsDataMap['campaignsCMS'] || cmsDataMap['campaignsData'] || cmsDataMap['campaigns'] || null,
+      launchesData: cmsDataMap['launchesData'] || cmsDataMap['productLaunchesCMS'] || cmsDataMap['productLaunches'] || null,
+      eventsData_CMS: cmsDataMap['eventsData_CMS'] || cmsDataMap['eventsCMS'] || cmsDataMap['eventsPage'] || null,
+      portfolioCMS: cmsDataMap['portfolioCMS'] || cmsDataMap['portfolioPage'] || cmsDataMap['ourWork'] || null,
+      homepageCMS: cmsDataMap['homepageCMS'] || cmsDataMap['homepage'] || cmsDataMap['homeData'] || null,
+      founderJourney: cmsDataMap['founderJourney'] || cmsDataMap['founder_journey'] || null,
+      servicesCMS: cmsDataMap['servicesCMS'] || cmsDataMap['servicesPageData'] || cmsDataMap['coreServices'] || null,
+      testimonialsCMS: cmsDataMap['testimonialsCMS'] || cmsDataMap['testimonialsPageData'] || cmsDataMap['testimonials'] || null,
+      faqPageData: cmsDataMap['faqPageData'] || cmsDataMap['faqs'] || null,
+      contactPageData: cmsDataMap['contactPageData'] || cmsDataMap['contactInfo'] || cmsDataMap['contact'] || null,
       ...cmsDataMap, // Dynamically override and inject any updated flat keys
     };
 
@@ -259,6 +272,13 @@ router.post("/update", authenticate as any, async (req: any, res: any, next: any
             if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
               cleanItem._id = cleanItem.id;
             }
+            if (!cleanItem.slug) {
+              cleanItem.slug = (cleanItem.title || cleanItem.name || cleanItem.productName || "item")
+                .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || `item-${Date.now()}`;
+            }
+            if (!cleanItem.title) cleanItem.title = cleanItem.name || cleanItem.productName || "Untitled";
+            if (!cleanItem.category) cleanItem.category = "General";
+            if (!cleanItem.description) cleanItem.description = "";
             return cleanItem;
           });
           await Model.insertMany(recordsToInsert);
@@ -267,6 +287,13 @@ router.post("/update", authenticate as any, async (req: any, res: any, next: any
           if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
             cleanItem._id = cleanItem.id;
           }
+          if (!cleanItem.slug) {
+            cleanItem.slug = (cleanItem.title || cleanItem.name || cleanItem.productName || key)
+              .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || `${key}-${Date.now()}`;
+          }
+          if (!cleanItem.title) cleanItem.title = cleanItem.name || cleanItem.productName || key;
+          if (!cleanItem.category) cleanItem.category = "General";
+          if (!cleanItem.description) cleanItem.description = "";
           await Model.create(cleanItem);
         }
       } catch (err) {
@@ -282,31 +309,65 @@ router.post("/update", authenticate as any, async (req: any, res: any, next: any
 
 // Mount all CMS sub-routers with both kebab-case and camelCase aliases for 100% API compatibility
 router.use("/homepage", homepageRoutes);
+router.use("/home", homepageRoutes);
+router.use("/home-page", homepageRoutes);
+router.use("/homePage", homepageRoutes);
 router.use("/about", aboutRoutes);
 router.use("/founder-journey", founderJourneyRoutes);
 router.use("/founderJourney", founderJourneyRoutes);
+router.use("/journey", founderJourneyRoutes);
 router.use("/mission-vision", missionVisionRoutes);
 router.use("/missionVision", missionVisionRoutes);
 router.use("/what-we-do", whatWeDoRoutes);
 router.use("/whatWeDo", whatWeDoRoutes);
 router.use("/services", serviceRoutes);
+router.use("/core-services", serviceRoutes);
+router.use("/coreServices", serviceRoutes);
 router.use("/collaborations", collaborationRoutes);
+router.use("/collaborations-page", collaborationRoutes);
+router.use("/collaborationsPage", collaborationRoutes);
+router.use("/brand-collaborations", collaborationRoutes);
 router.use("/campaigns", campaignRoutes);
+router.use("/campaigns-page", campaignRoutes);
+router.use("/campaignsPage", campaignRoutes);
 router.use("/product-launches", productLaunchRoutes);
 router.use("/productLaunches", productLaunchRoutes);
+router.use("/product-launch", productLaunchRoutes);
+router.use("/launches", productLaunchRoutes);
 router.use("/events", eventRoutes);
+router.use("/events-page", eventRoutes);
+router.use("/eventsPage", eventRoutes);
+router.use("/talks", eventRoutes);
 router.use("/portfolio", portfolioRoutes);
+router.use("/our-work", portfolioRoutes);
+router.use("/ourWork", portfolioRoutes);
+router.use("/work", portfolioRoutes);
 router.use("/media-gallery", mediaGalleryRoutes);
 router.use("/mediaGallery", mediaGalleryRoutes);
 router.use("/careers", careerRoutes);
 router.use("/blogs", blogRoutes);
 router.use("/blog", blogRoutes);
 router.use("/faqs", faqRoutes);
+router.use("/faq", faqRoutes);
+router.use("/faq-page", faqRoutes);
+router.use("/faqPage", faqRoutes);
 router.use("/contact", contactRoutes);
+router.use("/contact-page", contactRoutes);
+router.use("/contactPage", contactRoutes);
 router.use("/website-settings", websiteSettingsRoutes);
 router.use("/websiteSettings", websiteSettingsRoutes);
 router.use("/testimonials-page", testimonialsPageRoutes);
 router.use("/testimonialsPage", testimonialsPageRoutes);
+router.use("/testimonials", testimonialsPageRoutes);
+router.use("/testimonial", testimonialsPageRoutes);
+router.use("/privacy-policy", privacyPolicyRoutes);
+router.use("/privacyPolicy", privacyPolicyRoutes);
+router.use("/privacy", privacyPolicyRoutes);
+router.use("/terms-of-service", termsPolicyRoutes);
+router.use("/termsOfService", termsPolicyRoutes);
+router.use("/terms-and-conditions", termsPolicyRoutes);
+router.use("/termsConditions", termsPolicyRoutes);
+router.use("/terms", termsPolicyRoutes);
 router.use("/legal", legalRoutes);
 
 export default router;

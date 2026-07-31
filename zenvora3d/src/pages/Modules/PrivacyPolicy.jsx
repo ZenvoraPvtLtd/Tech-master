@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { 
   ShieldCheck, Save, Eye, Plus, Trash2, Edit3, ArrowUp, ArrowDown, 
@@ -9,7 +9,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const PrivacyPolicy = () => {
-  const { db, updateSection, saveToLocalDb } = useDatabase();
+  const { db, updateSection, saveToLocalDb, apiFetch } = useDatabase();
+  const [isPublishing, setIsPublishing] = useState(false);
 
   // Initial / Existing State fallback
   const rawData = db?.privacyPolicy || {};
@@ -34,6 +35,29 @@ export const PrivacyPolicy = () => {
     "Aman & Tech Master Media Labs operates this portfolio and education portal. We respect your privacy and only collect direct email addresses when you subscribe to our newsletter."
   );
   const [visibility, setVisibility] = useState(rawData.visibility ?? true);
+
+  useEffect(() => {
+    const fetchLatestPrivacy = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/privacy-policy');
+          if (res.success && res.data) {
+            const data = res.data;
+            if (data.smallBadge) setSmallBadge(data.smallBadge);
+            if (data.popupTitle) setPopupTitle(data.popupTitle);
+            if (data.effectiveDate) setEffectiveDate(data.effectiveDate);
+            if (data.lastUpdatedDate) setLastUpdatedDate(data.lastUpdatedDate);
+            if (data.versionNumber) setVersionNumber(data.versionNumber);
+            if (data.introParagraph) setIntroParagraph(data.introParagraph);
+            if (data.sections && data.sections.length > 0) setSections(data.sections);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch privacy policy from backend:", err);
+      }
+    };
+    fetchLatestPrivacy();
+  }, []);
 
   // Module 2 — Sections
   const defaultSections = [
@@ -212,7 +236,8 @@ export const PrivacyPolicy = () => {
   };
 
   // Global Publish Handler
-  const handlePublishAll = () => {
+  const handlePublishAll = async () => {
+    setIsPublishing(true);
     const fullPayload = {
       smallBadge,
       popupTitle,
@@ -236,7 +261,21 @@ export const PrivacyPolicy = () => {
 
     if (updateSection) updateSection('privacyPolicy', fullPayload);
     if (saveToLocalDb) saveToLocalDb('privacyPolicy', fullPayload);
-    triggerToast("Privacy Policy CMS published & synced with website live!");
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/privacy-policy', {
+          method: 'PUT',
+          body: JSON.stringify(fullPayload)
+        });
+      }
+      triggerToast("Privacy Policy CMS published & synced with website live!");
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+      triggerToast("Saved locally! Backend: " + (err.message || "Updated"));
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (

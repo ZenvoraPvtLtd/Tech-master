@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -9,7 +9,7 @@ import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 
 export const Collaborations = () => {
-  const { db, updateSection } = useDatabase();
+  const { db, updateSection, apiFetch } = useDatabase();
   const { openMediaManager } = useMediaManager();
 
   const [activeTab, setActiveTab] = useState('content'); // overview, content, media, seo, visibility, publish, preview
@@ -154,13 +154,42 @@ export const Collaborations = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestCollaborations = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/collaborations');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultCollaborationsCMS,
+              ...data,
+              hero: { ...defaultCollaborationsCMS.hero, ...(data.hero || {}) },
+              brandCarousel: (data.brandCarousel && data.brandCarousel.length > 0) ? data.brandCarousel : defaultCollaborationsCMS.brandCarousel,
+              partners: (data.partners && data.partners.length > 0) ? data.partners : defaultCollaborationsCMS.partners,
+              metrics: (data.metrics && data.metrics.length > 0) ? data.metrics : defaultCollaborationsCMS.metrics,
+              campaigns: (data.campaigns && data.campaigns.length > 0) ? data.campaigns : defaultCollaborationsCMS.campaigns,
+              history: { ...defaultCollaborationsCMS.history, ...(data.history || {}) },
+              process: (data.process && data.process.length > 0) ? data.process : defaultCollaborationsCMS.process,
+              testimonials: (data.testimonials && data.testimonials.length > 0) ? data.testimonials : defaultCollaborationsCMS.testimonials
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest collaborations from backend:", err);
+      }
+    };
+    fetchLatestCollaborations();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('collaborationsPage', nextState);
     updateSection('collaborationsCMS', nextState);
+    updateSection('collaborations', nextState);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -170,6 +199,18 @@ export const Collaborations = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/collaborations', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'Brand Collaborations Page Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);

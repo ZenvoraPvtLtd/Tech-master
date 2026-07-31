@@ -29,71 +29,33 @@ export interface ICollabProcess {
 }
 
 export interface ICollaboration extends Document, ICmsBase {
-  hero?: {
-    badgeText?: string;
-    heading: string;
-    description: string;
-    mediaFile?: IMedia;
-  };
-  brandCarousel?: IBrandCarouselItem[];
-  partners?: IPartner[];
-  metrics?: ICollabMetric[];
-  process?: ICollabProcess[];
-  history?: {
-    title?: string;
-    description?: string;
-  };
+  hero?: any;
+  brandCarousel?: any[];
+  partners?: any[];
+  metrics?: any[];
+  campaigns?: any[];
+  history?: any;
+  process?: any[];
+  testimonials?: any[];
   seo?: ISeo;
 }
 
 const CollaborationSchema = new Schema<ICollaboration>(
   {
-    hero: {
-      badgeText: { type: String, default: "" },
-      heading: { type: String, default: "" },
-      description: { type: String, default: "" },
-      mediaFile: { type: MediaSchema },
-    },
-    brandCarousel: [
-      {
-        name: { type: String, required: true },
-        logo: { type: MediaSchema, required: true },
-        link: { type: String, default: "" },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    partners: [
-      {
-        partnerName: { type: String, required: true },
-        logo: { type: MediaSchema, required: true },
-        description: { type: String, default: "" },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    metrics: [
-      {
-        number: { type: String, required: true },
-        label: { type: String, required: true },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    process: [
-      {
-        step: { type: String, required: true },
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-      },
-    ],
-    history: {
-      title: { type: String, default: "" },
-      description: { type: String, default: "" },
-    },
+    hero: { type: Schema.Types.Mixed, default: {} },
+    brandCarousel: { type: [Schema.Types.Mixed], default: [] },
+    partners: { type: [Schema.Types.Mixed], default: [] },
+    metrics: { type: [Schema.Types.Mixed], default: [] },
+    campaigns: { type: [Schema.Types.Mixed], default: [] },
+    history: { type: Schema.Types.Mixed, default: {} },
+    process: { type: [Schema.Types.Mixed], default: [] },
+    testimonials: { type: [Schema.Types.Mixed], default: [] },
     seo: { type: SeoSchema },
     ...CmsBaseFields,
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote, Play, X } from "lucide-react";
 import * as Icons from "lucide-react";
@@ -17,6 +17,25 @@ export const Testimonials: React.FC = () => {
   const { dbData } = useData();
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [liveTestimonialsData, setLiveTestimonialsData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/testimonials`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveTestimonialsData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Testimonials fetch error:", e);
+      }
+    };
+    fetchTestimonials();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -24,7 +43,7 @@ export const Testimonials: React.FC = () => {
     if (saved) localDb = JSON.parse(saved);
   } catch (e) {}
 
-  const rawData = dbData?.testimonialsPageData || localDb?.testimonialsPageData;
+  const rawData = liveTestimonialsData || dbData?.testimonialsPageData || localDb?.testimonialsPageData;
   const page = rawData || {};
   
   const hero = page.hero || {

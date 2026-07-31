@@ -132,14 +132,13 @@ export const About = () => {
     const payload = {
       ...nextData,
       studioCard: {
-        imageUrl: nextData.culture.imageUrl,
-        imageAlt: nextData.culture.imageAlt,
-        imageSubtitle: nextData.culture.imageSubtitle,
-        imageDescription: nextData.culture.imageDescription,
-        overlayCaption: nextData.culture.overlayCaption || "",
+        imageUrl: nextData.culture.imageUrl || nextData.studioCard?.imageUrl,
+        imageAlt: nextData.culture.imageAlt || nextData.studioCard?.imageAlt,
+        imageSubtitle: nextData.culture.imageSubtitle || nextData.studioCard?.imageSubtitle,
+        imageDescription: nextData.culture.imageDescription || nextData.studioCard?.imageDescription,
+        overlayCaption: nextData.culture.overlayCaption || nextData.studioCard?.overlayCaption || "",
         visibility: nextData.culture.visibility !== false,
-        order: 3,
-        ...(nextData.studioCard || {})
+        order: 3
       },
       story: {
         imageUrl: nextData.culture.imageUrl

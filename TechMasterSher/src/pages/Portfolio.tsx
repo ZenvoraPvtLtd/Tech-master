@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
@@ -8,6 +8,25 @@ import { LuxuryCard } from "../components/LuxuryCard";
 export const Portfolio: React.FC = () => {
   const { dbData } = useData();
   const [activeFilter, setActiveFilter] = useState("All");
+  const [livePortfolioData, setLivePortfolioData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/portfolio`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLivePortfolioData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Portfolio fetch error:", e);
+      }
+    };
+    fetchPortfolio();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -17,12 +36,12 @@ export const Portfolio: React.FC = () => {
 
   const activeDb = { ...localDb, ...dbData };
 
-  const rawHero = activeDb?.portfolioHero || activeDb?.portfolioCMS?.hero;
+  const rawHero = livePortfolioData?.hero || activeDb?.portfolioHero || activeDb?.portfolioCMS?.hero;
   
   const heroData = {
     badge: (rawHero?.badge && !rawHero.badge.includes("MASTERPIECES")) ? rawHero.badge : "CREATIVE ECOSYSTEM",
     title: (rawHero?.title && rawHero.title !== "MASTERPIECES") ? rawHero.title : "The",
-    highlightText: (rawHero?.highlightText && rawHero.highlightText !== "MASTERPIECES") ? rawHero.highlightText : "Multiverse",
+    highlightText: (rawHero?.highlightText || rawHero?.highlightedTitle) ? (rawHero.highlightText || rawHero.highlightedTitle) : "Multiverse",
     description: (rawHero?.description && !rawHero.description.includes("executive content management platform")) 
       ? rawHero.description 
       : "Masterpieces. In Motion — Our portfolio of 5 high-scale content channels spanning technology, automotive, podcasts, and viral entertainment."
@@ -174,18 +193,21 @@ export const Portfolio: React.FC = () => {
     }
   ];
 
-  const channels = (activeDb?.multiverseChannels || activeDb?.portfolioCMS?.channels || defaultChannels).filter((c: any) => c.visible !== false && !c.deleted);
+  const rawChannels = livePortfolioData?.channels || activeDb?.multiverseChannels || activeDb?.portfolioCMS?.channels || defaultChannels;
+  const channels = (Array.isArray(rawChannels) && rawChannels.length > 0 ? rawChannels : defaultChannels).filter((c: any) => c.visible !== false && !c.deleted);
 
-  const rawProjects = (activeDb?.portfolio && activeDb.portfolio.length > 0) 
-    ? activeDb.portfolio 
-    : (activeDb?.portfolioCMS?.projects && activeDb.portfolioCMS.projects.length > 0) 
-      ? activeDb.portfolioCMS.projects 
-      : defaultProjects;
+  const rawProjects = (livePortfolioData?.projects && livePortfolioData.projects.length > 0)
+    ? livePortfolioData.projects
+    : (activeDb?.portfolio && activeDb.portfolio.length > 0) 
+      ? activeDb.portfolio 
+      : (activeDb?.portfolioCMS?.projects && activeDb.portfolioCMS.projects.length > 0) 
+        ? activeDb.portfolioCMS.projects 
+        : defaultProjects;
 
-  const portfolioList = rawProjects.filter((p: any) => p.visible !== false && !p.deleted);
+  const portfolioList = (Array.isArray(rawProjects) && rawProjects.length > 0 ? rawProjects : defaultProjects).filter((p: any) => p.visible !== false && !p.deleted);
 
   const defaultFilters = ["Videos", "Photos", "Projects", "Campaigns", "Reels", "Commercial Shoots", "Client Work"];
-  const rawFilters = activeDb?.portfolioFilters || activeDb?.portfolioCMS?.categories || defaultFilters;
+  const rawFilters = livePortfolioData?.categories || activeDb?.portfolioFilters || activeDb?.portfolioCMS?.categories || defaultFilters;
   
   const filters = [
     "All",

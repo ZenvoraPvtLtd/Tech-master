@@ -2,17 +2,19 @@ import { Schema, model, Document } from "mongoose";
 import { SeoSchema, CmsBaseFields, ICmsBase, ISeo } from "./shared";
 
 export interface IService extends Document, ICmsBase {
-  title: string;
-  slug: string;
-  tagline: string;
-  description: string;
-  features: string[];
+  servicesPageData?: any;
+  servicesData?: any[];
+  title?: string;
+  slug?: string;
+  tagline?: string;
+  description?: string;
+  features?: any[];
   icon?: string;
   accentColor?: string;
   overview?: string;
-  benefits?: string[];
-  process?: string[];
-  gallery?: string[];
+  benefits?: any[];
+  process?: any[];
+  gallery?: any[];
   ctaText?: string;
   ctaUrl?: string;
   displayOrder?: number;
@@ -21,16 +23,18 @@ export interface IService extends Document, ICmsBase {
 
 const ServiceSchema = new Schema<IService>(
   {
-    title: { type: String, required: true, trim: true },
-    slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    tagline: { type: String, required: true },
-    description: { type: String, required: true },
-    features: [{ type: String, required: true }],
+    servicesPageData: { type: Schema.Types.Mixed, default: {} },
+    servicesData: { type: [Schema.Types.Mixed], default: [] },
+    title: { type: String, default: "", trim: true },
+    slug: { type: String, default: "", lowercase: true, trim: true },
+    tagline: { type: String, default: "" },
+    description: { type: String, default: "" },
+    features: [{ type: Schema.Types.Mixed }],
     icon: { type: String, default: "Cpu" },
     accentColor: { type: String, default: "#D4AF37" },
     overview: { type: String },
-    benefits: [{ type: String }],
-    process: [{ type: String }],
+    benefits: [{ type: Schema.Types.Mixed }],
+    process: [{ type: Schema.Types.Mixed }],
     gallery: [{ type: String }],
     ctaText: { type: String },
     ctaUrl: { type: String },
@@ -40,6 +44,7 @@ const ServiceSchema = new Schema<IService>(
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

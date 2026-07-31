@@ -60,29 +60,25 @@ export const SeoSchema = new Schema<ISeo>(
 
 // Base Fields applied to all CMS Models
 export interface ICmsBase {
-  status: "Active" | "Inactive";
-  publishStatus: "Published" | "Draft" | "Archived";
+  status?: string;
+  publishStatus?: string;
   createdBy?: Schema.Types.ObjectId;
   updatedBy?: Schema.Types.ObjectId;
-  isDeleted: boolean;
+  isDeleted?: boolean;
   deletedAt?: Date | null;
 }
 
 export const CmsBaseFields = {
   status: {
     type: String,
-    required: true,
-    enum: ["Active", "Inactive"],
-    default: "Active" as "Active" | "Inactive",
+    default: "Active",
   },
   publishStatus: {
     type: String,
-    required: true,
-    enum: ["Published", "Draft", "Archived"],
-    default: "Draft" as "Published" | "Draft" | "Archived",
+    default: "Published",
   },
   createdBy: { type: Schema.Types.ObjectId, ref: "User" },
   updatedBy: { type: Schema.Types.ObjectId, ref: "User" },
-  isDeleted: { type: Boolean, required: true, default: false },
+  isDeleted: { type: Boolean, default: false },
   deletedAt: { type: Date, default: null as any },
 };

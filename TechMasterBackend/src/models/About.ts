@@ -196,6 +196,7 @@ const AboutSchema = new Schema<IAbout>(
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { 
   Settings, Save, Check, Mail, Phone, MessageCircle, MapPin, 
@@ -6,64 +6,110 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export const Contact = () => {
-  const { dbData, localDb, saveToLocalDb, updateSection } = useDatabase();
-
-  const rawData = dbData?.contactPageData || localDb?.contactPageData || {};
-
-  // Module 1: Hero Section
-  const contactHero = rawData.hero || {
+const defaultContactData = {
+  hero: {
     badge: "DIRECT PORTAL",
     heading: "Connect &",
-    highlightHeading: "Launch Collaborations",
-  };
-
-  // Module 2: Direct Channels
-  const contactInfo = rawData.info || {
+    highlightHeading: "Launch Collaborations"
+  },
+  info: {
     email: "aman@techmaster.com",
     phone: "+91 98765 43210",
     whatsapp: "919876543210",
     address: "TechMaster HQ, Silicon Valley"
-  };
-
-  // Module 6: Map Settings
-  const contactMap = rawData.map || {
+  },
+  map: {
     url: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808580700d987b51%3A0xcb13e9a7e02e60f0!2sSilicon%20Valley!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus"
-  };
-
-  // Module 7: Social Links
-  const socialLinks = rawData.socials || [
+  },
+  socials: [
     { platform: "Instagram", handle: "@aman_techmaster", url: "https://instagram.com" },
-    { platform: "LinkedIn", handle: "/in/aman-tech", url: "https://linkedin.com" },
-    { platform: "YouTube", handle: "TechMaster Channel", url: "https://youtube.com" },
-    { platform: "Twitter/X", handle: "@techmaster_x", url: "https://twitter.com" }
-  ];
-
-  // Module 4: Inquiry Categories
-  const inquiryCategories = rawData.categories || [
+    { platform: "LinkedIn", handle: "/in/aman-tech", url: "https://linkedin.com" }
+  ],
+  categories: [
     { label: "Business Inquiry", value: "business" },
-    { label: "Brand Collaboration", value: "collab" },
-    { label: "Speaking Event", value: "speaking" }
-  ];
+    { label: "Brand Collaboration", value: "collab" }
+  ]
+};
 
-  // Module 5: Submissions Inbox (Mocked for Preview)
-  const submissions = rawData.submissions || [
-    { id: 1, name: "Google Inc.", email: "partners@google.com", category: "collab", status: "Pending" }
-  ];
+export const Contact = () => {
+  const { dbData, localDb, saveToLocalDb, updateSection, apiFetch } = useDatabase();
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const rawData = dbData?.contactPageData || localDb?.contactPageData || {};
+
+  const [heroForm, setHeroForm] = useState(rawData.hero || defaultContactData.hero);
+  const [infoForm, setInfoForm] = useState(rawData.info || defaultContactData.info);
+  const [mapForm, setMapForm] = useState(rawData.map || defaultContactData.map);
+  const [socialsForm, setSocialsForm] = useState(rawData.socials || defaultContactData.socials);
+  const [categoriesForm, setCategoriesForm] = useState(rawData.categories || defaultContactData.categories);
+
+  useEffect(() => {
+    const fetchLatestContact = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/contact');
+          if (res.success && res.data) {
+            const data = res.data;
+            if (data.hero) setHeroForm(data.hero);
+            if (data.info) setInfoForm(data.info);
+            if (data.map) setMapForm(data.map);
+            if (data.socials && data.socials.length > 0) setSocialsForm(data.socials);
+            if (data.categories && data.categories.length > 0) setCategoriesForm(data.categories);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch contact data from backend:", err);
+      }
+    };
+    fetchLatestContact();
+  }, []);
+
+  const handlePublishAll = async () => {
+    setIsPublishing(true);
+    const payload = {
+      hero: heroForm,
+      info: infoForm,
+      map: mapForm,
+      socials: socialsForm,
+      categories: categoriesForm
+    };
+    if (updateSection) {
+      updateSection('contactPageData', payload);
+      updateSection('contactInfo', infoForm);
+      updateSection('contactHero', heroForm);
+    }
+    saveToLocalDb('contactPageData', payload);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/contact', {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+      }
+      alert("Contact Page Published Live to Website!");
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+      alert("Published locally! Backend notice: " + (err.message || "Saved"));
+    } finally {
+      setIsPublishing(false);
+    }
+  };
 
   const handleSaveData = (section, data) => {
-    const updated = { ...rawData, [section]: data };
+    const updated = {
+      hero: heroForm,
+      info: infoForm,
+      map: mapForm,
+      socials: socialsForm,
+      categories: categoriesForm,
+      [section]: data
+    };
     if (updateSection) updateSection('contactPageData', updated);
     saveToLocalDb('contactPageData', updated);
   };
 
   const [activeTab, setActiveTab] = useState('hero');
-  
-  // Forms
-  const [heroForm, setHeroForm] = useState(contactHero);
-  const [infoForm, setInfoForm] = useState(contactInfo);
-  const [mapForm, setMapForm] = useState(contactMap);
-  const [socialsForm, setSocialsForm] = useState(socialLinks);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white p-6 pb-24">
@@ -77,8 +123,12 @@ export const Contact = () => {
           <p className="text-gray-400 text-sm">Visual exact mirror of the Website Contact Page with instant sync.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-6 py-2 bg-gold hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all">
-            <Save className="w-4 h-4" /> Publish Changes
+          <button 
+            onClick={handlePublishAll}
+            disabled={isPublishing}
+            className="flex items-center gap-2 px-6 py-2 bg-gold hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" /> {isPublishing ? 'Publishing...' : 'Publish Changes'}
           </button>
         </div>
       </div>

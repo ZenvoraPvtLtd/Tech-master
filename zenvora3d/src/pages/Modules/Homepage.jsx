@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -175,20 +175,148 @@ export const Homepage = () => {
     }
   };
 
-  const cmsData = db?.homepageCMS || db?.homepage || defaultHomepageCMS;
+  const rawHomepage = db?.homepageCMS || db?.homepage || {};
+  const cmsData = {
+    ...defaultHomepageCMS,
+    ...rawHomepage,
+    navbar: {
+      ...defaultHomepageCMS.navbar,
+      ...(rawHomepage.navbar || {}),
+      navItems: (rawHomepage.navbar?.navItems && rawHomepage.navbar.navItems.length > 0)
+        ? rawHomepage.navbar.navItems
+        : defaultHomepageCMS.navbar.navItems
+    },
+    hero: { ...defaultHomepageCMS.hero, ...(rawHomepage.hero || {}) },
+    introVision: { ...defaultHomepageCMS.introVision, ...(rawHomepage.introVision || {}) },
+    founder: { ...defaultHomepageCMS.founder, ...(rawHomepage.founder || {}) },
+    channelsTicker: {
+      ...defaultHomepageCMS.channelsTicker,
+      ...(rawHomepage.channelsTicker || {}),
+      channels: (rawHomepage.channelsTicker?.channels && rawHomepage.channelsTicker.channels.length > 0)
+        ? rawHomepage.channelsTicker.channels
+        : defaultHomepageCMS.channelsTicker.channels
+    },
+    coreValues: {
+      ...defaultHomepageCMS.coreValues,
+      ...(rawHomepage.coreValues || {}),
+      cards: (rawHomepage.coreValues?.cards && rawHomepage.coreValues.cards.length > 0)
+        ? rawHomepage.coreValues.cards
+        : defaultHomepageCMS.coreValues.cards
+    },
+    statistics: {
+      ...defaultHomepageCMS.statistics,
+      ...(rawHomepage.statistics || {}),
+      counters: (rawHomepage.statistics?.counters && rawHomepage.statistics.counters.length > 0)
+        ? rawHomepage.statistics.counters
+        : defaultHomepageCMS.statistics.counters
+    },
+    shortsReels: {
+      ...defaultHomepageCMS.shortsReels,
+      ...(rawHomepage.shortsReels || {}),
+      list: (rawHomepage.shortsReels?.list && rawHomepage.shortsReels.list.length > 0)
+        ? rawHomepage.shortsReels.list
+        : defaultHomepageCMS.shortsReels.list
+    },
+    longVideos: {
+      ...defaultHomepageCMS.longVideos,
+      ...(rawHomepage.longVideos || {}),
+      list: (rawHomepage.longVideos?.list && rawHomepage.longVideos.list.length > 0)
+        ? rawHomepage.longVideos.list
+        : defaultHomepageCMS.longVideos.list
+    },
+    brandCollaborations: {
+      ...defaultHomepageCMS.brandCollaborations,
+      ...(rawHomepage.brandCollaborations || {}),
+      brands: (rawHomepage.brandCollaborations?.brands && rawHomepage.brandCollaborations.brands.length > 0)
+        ? rawHomepage.brandCollaborations.brands
+        : defaultHomepageCMS.brandCollaborations.brands
+    },
+    newsletterContact: { ...defaultHomepageCMS.newsletterContact, ...(rawHomepage.newsletterContact || {}) }
+  };
+
   const [formData, setFormData] = useState(cmsData);
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
+
+  useEffect(() => {
+    const fetchLatestHomepage = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/homepage');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultHomepageCMS,
+              ...data,
+              navbar: {
+                ...defaultHomepageCMS.navbar,
+                ...(data.navbar || {}),
+                navItems: (data.navbar?.navItems && data.navbar.navItems.length > 0) ? data.navbar.navItems : (prev.navbar?.navItems || defaultHomepageCMS.navbar.navItems)
+              },
+              hero: { ...defaultHomepageCMS.hero, ...(data.hero || {}) },
+              introVision: { ...defaultHomepageCMS.introVision, ...(data.introVision || {}) },
+              founder: { ...defaultHomepageCMS.founder, ...(data.founder || {}) },
+              channelsTicker: {
+                ...defaultHomepageCMS.channelsTicker,
+                ...(data.channelsTicker || {}),
+                channels: (data.channelsTicker?.channels && data.channelsTicker.channels.length > 0) ? data.channelsTicker.channels : (prev.channelsTicker?.channels || defaultHomepageCMS.channelsTicker.channels)
+              },
+              coreValues: {
+                ...defaultHomepageCMS.coreValues,
+                ...(data.coreValues || {}),
+                cards: (data.coreValues?.cards && data.coreValues.cards.length > 0) ? data.coreValues.cards : (prev.coreValues?.cards || defaultHomepageCMS.coreValues.cards)
+              },
+              statistics: {
+                ...defaultHomepageCMS.statistics,
+                ...(data.statistics || {}),
+                counters: (data.statistics?.counters && data.statistics.counters.length > 0) ? data.statistics.counters : (prev.statistics?.counters || defaultHomepageCMS.statistics.counters)
+              },
+              shortsReels: {
+                ...defaultHomepageCMS.shortsReels,
+                ...(data.shortsReels || {}),
+                list: (data.shortsReels?.list && data.shortsReels.list.length > 0) ? data.shortsReels.list : (prev.shortsReels?.list || defaultHomepageCMS.shortsReels.list)
+              },
+              longVideos: {
+                ...defaultHomepageCMS.longVideos,
+                ...(data.longVideos || {}),
+                list: (data.longVideos?.list && data.longVideos.list.length > 0) ? data.longVideos.list : (prev.longVideos?.list || defaultHomepageCMS.longVideos.list)
+              },
+              brandCollaborations: {
+                ...defaultHomepageCMS.brandCollaborations,
+                ...(data.brandCollaborations || {}),
+                brands: (data.brandCollaborations?.brands && data.brandCollaborations.brands.length > 0) ? data.brandCollaborations.brands : (prev.brandCollaborations?.brands || defaultHomepageCMS.brandCollaborations.brands)
+              },
+              newsletterContact: { ...defaultHomepageCMS.newsletterContact, ...(data.newsletterContact || {}) }
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest homepage from backend:", err);
+      }
+    };
+    fetchLatestHomepage();
+  }, []);
 
   // Direct persistence caller
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('homepageCMS', nextState);
     updateSection('homepage', nextState);
+    updateSection('homeData', nextState);
   };
 
-  const handleSaveAll = () => {
+  const handleSaveAll = async () => {
     persistChanges(formData);
+    try {
+      if (apiFetch) {
+        await apiFetch('/homepage', {
+          method: 'PUT',
+          body: JSON.stringify(formData)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
     setIsSaved(true);
     showToast('Homepage CMS saved & synchronized to MongoDB!', 'success');
     setTimeout(() => setIsSaved(false), 2500);
@@ -379,8 +507,8 @@ export const Homepage = () => {
                 <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Button Text</label>
                 <input
                   type="text"
-                  value={formData.navbar.buttonText}
-                  onChange={(e) => persistChanges({ ...formData, navbar: { ...formData.navbar, buttonText: e.target.value } })}
+                  value={formData?.navbar?.buttonText || ''}
+                  onChange={(e) => persistChanges({ ...formData, navbar: { ...(formData.navbar || {}), buttonText: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
                 />
               </div>
@@ -388,8 +516,8 @@ export const Homepage = () => {
                 <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Button Target Link</label>
                 <input
                   type="text"
-                  value={formData.navbar.buttonLink}
-                  onChange={(e) => persistChanges({ ...formData, navbar: { ...formData.navbar, buttonLink: e.target.value } })}
+                  value={formData?.navbar?.buttonLink || ''}
+                  onChange={(e) => persistChanges({ ...formData, navbar: { ...(formData.navbar || {}), buttonLink: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono focus:outline-none"
                 />
               </div>
@@ -397,8 +525,8 @@ export const Homepage = () => {
                 <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Views Badge</label>
                 <input
                   type="text"
-                  value={formData.navbar.viewsText}
-                  onChange={(e) => persistChanges({ ...formData, navbar: { ...formData.navbar, viewsText: e.target.value } })}
+                  value={formData?.navbar?.viewsText || ''}
+                  onChange={(e) => persistChanges({ ...formData, navbar: { ...(formData.navbar || {}), viewsText: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
                 />
               </div>
@@ -479,8 +607,8 @@ export const Homepage = () => {
               <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
               <input
                 type="text"
-                value={formData.hero.badge}
-                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, badge: e.target.value } })}
+                value={formData?.hero?.badge || ''}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...(formData.hero || {}), badge: e.target.value } })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
               />
             </div>
@@ -488,8 +616,8 @@ export const Homepage = () => {
               <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Top Sub-Badge Text</label>
               <input
                 type="text"
-                value={formData.hero.topBadgeText}
-                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, topBadgeText: e.target.value } })}
+                value={formData?.hero?.topBadgeText || ''}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...(formData.hero || {}), topBadgeText: e.target.value } })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
               />
             </div>
@@ -497,8 +625,8 @@ export const Homepage = () => {
               <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Main Heading</label>
               <input
                 type="text"
-                value={formData.hero.mainHeading}
-                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, mainHeading: e.target.value } })}
+                value={formData?.hero?.mainHeading || ''}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...(formData.hero || {}), mainHeading: e.target.value } })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif font-bold"
               />
             </div>
@@ -506,8 +634,8 @@ export const Homepage = () => {
               <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Hero Tagline</label>
               <textarea
                 rows={2}
-                value={formData.hero.tagline}
-                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, tagline: e.target.value } })}
+                value={formData?.hero?.tagline || ''}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...(formData.hero || {}), tagline: e.target.value } })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-serif italic"
               />
             </div>
@@ -515,8 +643,8 @@ export const Homepage = () => {
               <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Sub-Tagline</label>
               <input
                 type="text"
-                value={formData.hero.subTagline}
-                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, subTagline: e.target.value } })}
+                value={formData?.hero?.subTagline || ''}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...(formData.hero || {}), subTagline: e.target.value } })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
               />
             </div>

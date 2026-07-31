@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,7 +9,45 @@ import { ArrowDown } from "lucide-react";
 gsap.registerPlugin(ScrollTrigger);
 
 export const Journey: React.FC = () => {
-  const { journeyHero } = useData();
+  const { journeyHero, dbData } = useData();
+  const [liveJourneyData, setLiveJourneyData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchFounderJourney = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/founder-journey`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveJourneyData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Founder Journey fetch error:", e);
+      }
+    };
+    fetchFounderJourney();
+  }, []);
+
+  let localDb: any = {};
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) localDb = JSON.parse(saved);
+  } catch (e) {}
+
+  const activeJourney = {
+    ...(localDb?.founderJourney || {}),
+    ...(dbData?.founderJourney || {}),
+    ...(liveJourneyData || {})
+  };
+
+  const heroSmallBadge = activeJourney?.hero?.smallBadge || activeJourney?.hero?.badgeText || "WELCOME TO TECH MASTER'S JOURNEY";
+  const heroTitle = activeJourney?.hero?.title || "Stories that";
+  const heroHighlight = activeJourney?.hero?.highlightText || "Stay with You";
+  const heroDescription = activeJourney?.hero?.description || journeyHero?.description || "Tracing the evolution from a single video in 2019 to the world's most-subscribed tech creator with over 20 billion views.";
+  const heroScrollText = activeJourney?.hero?.scrollText || journeyHero?.scrollIndicatorText || "Explore timeline";
+
   useEffect(() => {
     // 1. Line drawing animation
     gsap.fromTo(
@@ -126,7 +164,22 @@ export const Journey: React.FC = () => {
     }
   ];
 
-  const milestonesToDisplay = newMilestones;
+  const rawMilestones = activeJourney?.milestones || dbData?.journeyMilestones || newMilestones;
+  const milestonesToDisplay = (Array.isArray(rawMilestones) && rawMilestones.length > 0 ? rawMilestones : newMilestones).filter((m: any) => m.visible !== false && !m.deleted);
+
+  const defaultRoadmap = [
+    { title: "2021 — New Beginnings", desc: "What was a one-person project became three. Two new channels launched and our first employee joined." },
+    { title: "2022 — First Studio", desc: "A brand trusted us before we were big enough to matter. Content stopped being made in a bedroom." },
+    { title: "2023 — 10M Subscribers", desc: "Tech Master Shorts crossed 10 million subscribers. An experiment became a category of its own." },
+    { title: "2024 — Seven Play Buttons", desc: "Twenty-five people, one mission, seven Play Buttons on the wall." },
+    { title: "2025 — #1 Tech Creator", desc: "Every all-nighter built to this: Tech Master became the most-subscribed tech creator in the world." },
+    { title: "2026 — 20 Billion Views", desc: "The first tech creator in the world to cross 20 billion views on a single channel." }
+  ];
+  const rawRoadmap = activeJourney?.roadmap?.items || defaultRoadmap;
+  const roadmapItems = (Array.isArray(rawRoadmap) && rawRoadmap.length > 0 ? rawRoadmap : defaultRoadmap).map((r: any) => ({
+    title: r.title,
+    desc: r.desc || r.description
+  }));
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
@@ -142,7 +195,7 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="typo-badge mb-4"
         >
-          WELCOME TO TECH MASTER'S JOURNEY
+          {heroSmallBadge}
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
@@ -150,7 +203,7 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="typo-h2 mb-6"
         >
-          Stories that <span className="text-gold italic font-bold">Stay with You</span>
+          {heroTitle} <span className="text-gold italic font-bold">{heroHighlight}</span>
         </motion.h1>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -158,12 +211,12 @@ export const Journey: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-gray-300 text-sm sm:text-base font-light max-w-2xl mx-auto leading-relaxed p-6 rounded-2xl border border-gold bg-black/40 backdrop-blur-md shadow-[0_0_15px_rgba(212,175,55,0.15)] mt-4"
         >
-          {journeyHero?.description || "Tracing the evolution from a single video in 2019 to the world's most-subscribed tech creator with over 20 billion views."}
+          {heroDescription}
         </motion.div>
 
         {/* Scroll Indicator */}
         <div className="flex flex-col items-center gap-2 mt-12 opacity-55">
-          <span className="text-[9px] uppercase tracking-[3px]">{journeyHero?.scrollIndicatorText || "Explore timeline"}</span>
+          <span className="text-[9px] uppercase tracking-[3px]">{heroScrollText}</span>
           <ArrowDown className="w-4 h-4 text-gold animate-bounce" />
         </div>
       </div>
@@ -310,14 +363,7 @@ export const Journey: React.FC = () => {
             {/* Loop 1 and Loop 2 for infinite ticker */}
             {[1, 2].map((loopGroup) => (
               <div key={loopGroup} className="flex gap-8">
-                {[
-                  { title: "2021 — New Beginnings", desc: "What was a one-person project became three. Two new channels launched and our first employee joined." },
-                  { title: "2022 — First Studio", desc: "A brand trusted us before we were big enough to matter. Content stopped being made in a bedroom." },
-                  { title: "2023 — 10M Subscribers", desc: "Tech Master Shorts crossed 10 million subscribers. An experiment became a category of its own." },
-                  { title: "2024 — Seven Play Buttons", desc: "Twenty-five people, one mission, seven Play Buttons on the wall." },
-                  { title: "2025 — #1 Tech Creator", desc: "Every all-nighter built to this: Tech Master became the most-subscribed tech creator in the world." },
-                  { title: "2026 — 20 Billion Views", desc: "The first tech creator in the world to cross 20 billion views on a single channel." }
-                ].map((item, idx) => {
+                {roadmapItems.map((item: any, idx: number) => {
                   const isCardOnTop = idx % 2 === 0;
                   return (
                     <div key={idx} className="flex flex-col items-center justify-center w-[300px] h-[440px] relative select-none">

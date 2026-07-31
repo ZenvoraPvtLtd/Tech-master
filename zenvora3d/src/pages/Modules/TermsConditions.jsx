@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { 
   Scale, Save, Eye, Plus, Trash2, Edit3, ArrowUp, ArrowDown, 
@@ -9,7 +9,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const TermsConditions = () => {
-  const { db, updateSection, saveToLocalDb } = useDatabase();
+  const { db, updateSection, saveToLocalDb, apiFetch } = useDatabase();
+  const [isPublishing, setIsPublishing] = useState(false);
 
   // Initial / Existing State fallback
   const rawData = db?.termsPolicy || {};
@@ -34,6 +35,29 @@ export const TermsConditions = () => {
     "By browsing this platform, subscribing to our mailing list, or submitting inquiries, you agree to these Terms of Service."
   );
   const [visibility, setVisibility] = useState(rawData.visibility ?? true);
+
+  useEffect(() => {
+    const fetchLatestTerms = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/terms');
+          if (res.success && res.data) {
+            const data = res.data;
+            if (data.smallBadge) setSmallBadge(data.smallBadge);
+            if (data.popupTitle) setPopupTitle(data.popupTitle);
+            if (data.effectiveDate) setEffectiveDate(data.effectiveDate);
+            if (data.lastUpdatedDate) setLastUpdatedDate(data.lastUpdatedDate);
+            if (data.versionNumber) setVersionNumber(data.versionNumber);
+            if (data.introParagraph) setIntroParagraph(data.introParagraph);
+            if (data.sections && data.sections.length > 0) setSections(data.sections);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch terms policy from backend:", err);
+      }
+    };
+    fetchLatestTerms();
+  }, []);
 
   // Module 2 — Terms Sections
   const defaultSections = [
@@ -225,7 +249,8 @@ export const TermsConditions = () => {
   };
 
   // Global Publish Handler
-  const handlePublishAll = () => {
+  const handlePublishAll = async () => {
+    setIsPublishing(true);
     const fullPayload = {
       smallBadge,
       popupTitle,
@@ -249,7 +274,21 @@ export const TermsConditions = () => {
 
     if (updateSection) updateSection('termsPolicy', fullPayload);
     if (saveToLocalDb) saveToLocalDb('termsPolicy', fullPayload);
-    triggerToast("Terms & Conditions CMS published & synced live with website!");
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/terms', {
+          method: 'PUT',
+          body: JSON.stringify(fullPayload)
+        });
+      }
+      triggerToast("Terms of Service CMS published & synced live with website!");
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+      triggerToast("Saved locally! Backend: " + (err.message || "Updated"));
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (

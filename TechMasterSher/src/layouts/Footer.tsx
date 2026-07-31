@@ -389,8 +389,22 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <p className="text-[10px] uppercase tracking-[2px] text-gray-300 font-light">
             &copy; {new Date().getFullYear()} {websiteSettings?.copyrightText || websiteSettings?.companyName || "TECH MASTER MEDIA & CREATIVE LABS"}. ALL RIGHTS RESERVED.
           </p>
-          <p className="text-[9px] uppercase tracking-[1px] text-gray-500 mt-1">
-            Designed and developed by .......
+          <p className="text-[9px] uppercase tracking-[1px] text-gray-500 mt-1 flex items-center gap-3">
+            <span>Designed and developed by .......</span>
+            <span>•</span>
+            <button 
+              onClick={() => onChangePage("privacy")}
+              className="text-gray-400 hover:text-gold transition-colors underline cursor-pointer"
+            >
+              Privacy Policy
+            </button>
+            <span>•</span>
+            <button 
+              onClick={() => onChangePage("terms")}
+              className="text-gray-400 hover:text-gold transition-colors underline cursor-pointer"
+            >
+              Terms of Service
+            </button>
           </p>
         </div>
 

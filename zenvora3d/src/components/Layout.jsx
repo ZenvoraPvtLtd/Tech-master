@@ -35,7 +35,7 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
     { id: 'brand-collaborations', label: 'Brand Collaborations', icon: Handshake },
     { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
     { id: 'product-launches', label: 'Product Launches', icon: Rocket },
-    { id: 'portfolio', label: 'Portfolio', icon: FolderHeart },
+    { id: 'portfolio', label: 'Our Work / Portfolio', icon: FolderHeart },
     { id: 'media-gallery', label: 'Media Gallery', icon: Newspaper },
     { id: 'testimonials', label: 'Testimonials', icon: Award },
     { id: 'events', label: 'Events', icon: Calendar },

@@ -1,15 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, MessageCircle, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
 
 export const Contact: React.FC = () => {
   const { dbData } = useData();
-
-
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [liveContactData, setLiveContactData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/contact`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveContactData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Contact fetch error:", e);
+      }
+    };
+    fetchContact();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -17,7 +34,7 @@ export const Contact: React.FC = () => {
     if (saved) localDb = JSON.parse(saved);
   } catch (e) {}
 
-  const rawData = dbData?.contactPageData || localDb?.contactPageData || {};
+  const rawData = liveContactData || dbData?.contactPageData || localDb?.contactPageData || {};
 
   const contactHero = rawData.hero || { badge: "DIRECT PORTAL", heading: "Connect &", highlightHeading: "Launch Collaborations" };
   const contactInfo = rawData.info || { email: "aman@techmaster.com", phone: "+91 98765 43210", whatsapp: "919876543210", address: "TechMaster HQ, Silicon Valley" };

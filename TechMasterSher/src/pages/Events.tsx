@@ -11,6 +11,25 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const Events: React.FC = () => {
   const { eventsData: cmsEvents, updateSection } = useData();
+  const [liveEventsData, setLiveEventsData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-6km7.onrender.com/api/v1";
+        const res = await fetch(`${baseUrl}/events`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveEventsData(json.data);
+          }
+        }
+      } catch (e) {
+        console.warn("Direct Events fetch error:", e);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   let localDb: any = {};
   try {
@@ -54,8 +73,9 @@ export const Events: React.FC = () => {
     }
   ];
 
-  const rawEvents = (cmsEvents && cmsEvents.length > 0) ? cmsEvents : (localDb?.eventsData || defaultEvents);
-  const eventsData = rawEvents.filter((evt: any) => evt.status !== "Inactive");
+  const rawEvents = (liveEventsData?.eventsList || (Array.isArray(liveEventsData) && liveEventsData.length > 0 ? liveEventsData : null) || cmsEvents || localDb?.eventsData || defaultEvents);
+  const validEvents = (Array.isArray(rawEvents) && rawEvents.length > 0) ? rawEvents : defaultEvents;
+  const eventsData = validEvents.filter((evt: any) => evt.status !== "Inactive");
 
   const defaultHero = {
     smallBadge: "PUBLIC ENGAGEMENTS",
@@ -64,22 +84,24 @@ export const Events: React.FC = () => {
     description: "Aman shares developer insights, soft-skills blueprints, and live systems architecture demonstrations on global stages."
   };
 
-  const hero = { ...defaultHero, ...localDb?.eventsData_CMS?.hero };
+  const hero = { ...defaultHero, ...(localDb?.eventsData_CMS?.hero || {}), ...(liveEventsData?.hero || {}) };
 
   const defaultChips = [
     "Event Hosting", "Guest Appearance", "Corporate Events", "Fashion Shows", 
     "Product Events", "Meetups", "Workshops", "Conferences"
   ];
 
-  const rawChips = localDb?.eventsData_CMS?.engagementTypes || defaultChips;
-  const engagementChips = rawChips.map((c: any) => typeof c === 'string' ? c : (c.type || c.name || c));
+  const rawChips = liveEventsData?.engagementTypes || localDb?.eventsData_CMS?.engagementTypes || defaultChips;
+  const engagementChips = (Array.isArray(rawChips) ? rawChips : defaultChips).map((c: any) => typeof c === 'string' ? c : (c.type || c.name || c));
 
-  const bookingSection = localDb?.eventsData_CMS?.bookingSection || {
+  const bookingSection = {
     smallBadge: "SPEAKER BOOKINGS",
     headlineLine1: "Bring Aman to",
     highlightWord: "Your Event",
     description: "Aman keynote schedules fill up rapidly. Bookings are open for university developer panels, virtual technical summits, DevFests, or corporate software consulting cycles.",
-    pressKitNote: "Full Press Kit and AV Rider available upon approval."
+    pressKitNote: "Full Press Kit and AV Rider available upon approval.",
+    ...(localDb?.eventsData_CMS?.bookingSection || {}),
+    ...(liveEventsData?.bookingSection || {})
   };
 
   // Booking Form State

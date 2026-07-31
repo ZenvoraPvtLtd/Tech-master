@@ -2,34 +2,29 @@ import { Schema, model, Document } from "mongoose";
 import { MediaSchema, SeoSchema, CmsBaseFields, ICmsBase, IMedia, ISeo } from "./shared";
 
 export interface IProductLaunch extends Document, ICmsBase {
-  productName: string;
-  slug: string;
-  brandDetails?: string;
-  launchEventTitle: string;
-  description: string;
-  launchDate?: Date;
-  coverImage?: IMedia;
-  featureVideo?: IMedia;
-  accentColor?: string;
+  hero?: any;
+  products?: any[];
+  featureVideo?: any;
+  initiativesHeader?: any;
+  initiatives?: any[];
+  downloads?: any[];
   seo?: ISeo;
 }
 
 const ProductLaunchSchema = new Schema<IProductLaunch>(
   {
-    productName: { type: String, required: true, trim: true },
-    slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    brandDetails: { type: String, default: "" },
-    launchEventTitle: { type: String, required: true },
-    description: { type: String, required: true },
-    launchDate: { type: Date },
-    coverImage: { type: MediaSchema },
-    featureVideo: { type: MediaSchema },
-    accentColor: { type: String, default: "#D4AF37" },
+    hero: { type: Schema.Types.Mixed, default: {} },
+    products: { type: [Schema.Types.Mixed], default: [] },
+    featureVideo: { type: Schema.Types.Mixed, default: {} },
+    initiativesHeader: { type: Schema.Types.Mixed, default: {} },
+    initiatives: { type: [Schema.Types.Mixed], default: [] },
+    downloads: { type: [Schema.Types.Mixed], default: [] },
     seo: { type: SeoSchema },
     ...CmsBaseFields,
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 

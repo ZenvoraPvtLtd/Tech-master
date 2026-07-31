@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -130,14 +130,37 @@ export const Services = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestServices = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/services');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultServicesCMS,
+              ...data,
+              servicesPageData: { ...defaultServicesCMS.servicesPageData, ...(data.servicesPageData || {}) },
+              servicesData: (data.servicesData && data.servicesData.length > 0) ? data.servicesData : defaultServicesCMS.servicesData
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest services from backend:", err);
+      }
+    };
+    fetchLatestServices();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('servicesPageData', nextState.servicesPageData);
     updateSection('servicesCMS', nextState);
     updateSection('servicesData', nextState.servicesData);
+    updateSection('coreServices', nextState);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -147,6 +170,18 @@ export const Services = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/services', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'Services Catalog Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);

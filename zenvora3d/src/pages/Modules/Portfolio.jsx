@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
@@ -251,17 +251,42 @@ export const Portfolio = () => {
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
+  useEffect(() => {
+    const fetchLatestPortfolio = async () => {
+      try {
+        if (apiFetch) {
+          const res = await apiFetch('/portfolio');
+          if (res.success && res.data) {
+            const data = res.data;
+            setFormData(prev => ({
+              ...defaultPortfolioCMS,
+              ...data,
+              hero: { ...defaultPortfolioCMS.hero, ...(data.hero || {}) },
+              channels: (data.channels && data.channels.length > 0) ? data.channels : defaultPortfolioCMS.channels,
+              categories: (data.categories && data.categories.length > 0) ? data.categories : defaultPortfolioCMS.categories,
+              projects: (data.projects && data.projects.length > 0) ? data.projects : defaultPortfolioCMS.projects
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch latest portfolio from backend:", err);
+      }
+    };
+    fetchLatestPortfolio();
+  }, []);
+
   const persistChanges = (nextState) => {
     setFormData(nextState);
     updateSection('portfolioCMS', nextState);
     updateSection('portfolioPage', nextState);
+    updateSection('ourWork', nextState);
     updateSection('portfolio', nextState.projects);
     updateSection('portfolioFilters', nextState.categories);
     updateSection('multiverseChannels', nextState.channels);
     updateSection('portfolioHero', nextState.hero);
   };
 
-  const handleSaveAll = (isPublished = false) => {
+  const handleSaveAll = async (isPublished = false) => {
     const updatedState = {
       ...formData,
       versioning: {
@@ -271,6 +296,18 @@ export const Portfolio = () => {
       }
     };
     persistChanges(updatedState);
+
+    try {
+      if (apiFetch) {
+        await apiFetch('/portfolio', {
+          method: 'PUT',
+          body: JSON.stringify(updatedState)
+        });
+      }
+    } catch (err) {
+      console.warn("Backend API sync warning:", err);
+    }
+
     setIsSaved(true);
     showToast(isPublished ? 'Our Work Page Published Live!' : 'Draft Saved Successfully!', 'success');
     setTimeout(() => setIsSaved(false), 2500);
