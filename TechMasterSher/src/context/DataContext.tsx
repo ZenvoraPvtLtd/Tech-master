@@ -90,8 +90,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [dbData, setDbData] = useState<any>(null);
+  const DEFAULT_API_URL = "https://techmasterbackend.onrender.com/api/v1";
+  const getApiBaseUrl = () => {
+    const envUrl = import.meta.env.VITE_API_URL?.trim();
+    if (!envUrl) return DEFAULT_API_URL;
+    const normalized = envUrl.replace(/\/+$|\/api\/v1\/*$/i, "");
+    return normalized.endsWith("/api/v1") ? normalized : `${normalized}/api/v1`;
+  };
   const REFRESH_INTERVAL_MS = 5000;
-  const CMS_API_URL = `${import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1"}/cms`;
 
   const applyCmsDataToState = useCallback((db: any) => {
     let localDb = {};
@@ -182,23 +188,25 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshData = useCallback(async () => {
     try {
-      const response = await fetch(CMS_API_URL);
+      const baseUrl = getApiBaseUrl();
+      const response = await fetch(`${baseUrl}/cms`);
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.data) {
           applyCmsDataToState(result.data);
           setIsBackendConnected(true);
+          return;
         }
-      } else {
-        console.warn("CMS fetch returned non-200 status:", response.status);
       }
+      applyCmsDataToState({});
     } catch (err) {
-      console.error("Backend CMS sync failed:", err);
+      console.warn("Backend CMS sync initial fallback:", err);
       setIsBackendConnected(false);
+      applyCmsDataToState({});
     } finally {
       setIsLoading(false);
     }
-  }, [CMS_API_URL, applyCmsDataToState]);
+  }, [applyCmsDataToState]);
 
   useEffect(() => {
     void refreshData();
