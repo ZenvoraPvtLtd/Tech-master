@@ -8,7 +8,7 @@ import {
   Award, FileSpreadsheet, FileText, MessageSquare, Globe, 
   Users, Settings, Menu, LogOut, Bell, X, ChevronDown, 
   ChevronRight, ShieldAlert, Layers, ExternalLink, PhoneCall, Scale,
-  FolderKanban, Navigation, Mail, ShieldCheck, BarChart3, Rocket, HelpCircle
+  FolderKanban, Navigation, Mail, ShieldCheck, BarChart3, Rocket, HelpCircle, Film
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -25,6 +25,7 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
 
   const websitePages = [
     { id: 'homepage', label: 'Homepage', icon: Home },
+    { id: 'featured-videos', label: 'Featured Videos', icon: Film },
     { id: 'about', label: 'About', icon: User },
     { id: 'founder-journey', label: 'Founder Journey', icon: History },
     { id: 'mission-vision', label: 'Mission & Vision', icon: Target },

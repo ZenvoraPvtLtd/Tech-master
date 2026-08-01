@@ -233,10 +233,43 @@ export const Journey: React.FC = () => {
         <div className="flex flex-col gap-16 relative">
           {milestonesToDisplay.map((item: any, index: number) => {
             const isEven = index % 2 === 0;
+
+            const yearBlock = (
+              <div className={`timeline-reveal ${isEven ? "pr-8 text-right" : "pl-8 text-left"} pt-2`}>
+                <motion.span 
+                  initial={{ color: "rgba(255,255,255,0.2)", scale: 1 }}
+                  whileInView={{ color: "#D4AF37", scale: 1.1, textShadow: "0 0 20px rgba(212,175,55,0.6)" }}
+                  viewport={{ amount: 0.5 }}
+                  transition={{ duration: 0.3 }}
+                  className={`font-serif text-5xl font-black block mb-1 inline-block ${isEven ? "origin-right" : "origin-left"}`}
+                >
+                  {item.year}
+                </motion.span>
+                <span className="text-gray-400 text-xs uppercase tracking-[2px] font-mono block">
+                  {item.subtitle}
+                </span>
+              </div>
+            );
+
+            const cardBlock = (
+              <LuxuryCard
+                accentColor="#D4AF37"
+                className="timeline-reveal"
+                index={index}
+              >
+                <h3 className="font-serif text-xl md:text-2xl text-white font-medium mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed">
+                  {item.description}
+                </p>
+              </LuxuryCard>
+            );
+
             return (
               <div
                 key={index}
-                className="timeline-item flex flex-col sm:flex-row relative w-full items-start sm:justify-between"
+                className="timeline-item flex flex-col sm:flex-row relative w-full items-center sm:justify-between"
               >
                 {/* Timeline connector circle node */}
                 <motion.div 
@@ -244,7 +277,7 @@ export const Journey: React.FC = () => {
                   whileInView={{ borderColor: "#D4AF37", boxShadow: "0 0 18px rgba(212,175,55,0.9)" }}
                   viewport={{ amount: 0.5 }}
                   transition={{ duration: 0.4 }}
-                  className="absolute left-4 sm:left-1/2 w-4 h-4 rounded-full border bg-black -translate-x-1/2 top-1.5 z-20 flex items-center justify-center"
+                  className="absolute left-4 sm:left-1/2 w-4 h-4 rounded-full border bg-black -translate-x-1/2 top-3 sm:top-1/2 -translate-y-1/2 z-20 flex items-center justify-center"
                 >
                   <motion.div 
                     initial={{ backgroundColor: "rgba(255,255,255,0.2)", scale: 1, boxShadow: "0 0 0px rgba(212,175,55,0)" }}
@@ -255,47 +288,9 @@ export const Journey: React.FC = () => {
                   />
                 </motion.div>
 
-                {/* Left space (empty on small, used on larger displays) */}
-                <div className={`hidden sm:block w-[45%] ${isEven ? "order-1 text-right" : "order-2"}`}>
-                  {isEven && (
-                    <div className="timeline-reveal pr-8 pt-1">
-                      <motion.span 
-                        initial={{ color: "rgba(255,255,255,0.2)", scale: 1 }}
-                        whileInView={{ color: "#D4AF37", scale: 1.1, textShadow: "0 0 20px rgba(212,175,55,0.6)" }}
-                        viewport={{ amount: 0.5 }}
-                        transition={{ duration: 0.3 }}
-                        className="font-serif text-5xl font-black block mb-1 origin-right inline-block"
-                      >
-                        {item.year}
-                      </motion.span>
-                      <span className="text-gray-400 text-xs uppercase tracking-[2px] font-mono block">
-                        {item.subtitle}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right space or content card */}
-                <div className={`w-[90%] sm:w-[45%] pl-10 sm:pl-0 ${isEven ? "order-2 sm:order-2" : "order-2 sm:order-1 text-left sm:text-right"}`}>
-                  {!isEven && (
-                    <div className="timeline-reveal hidden sm:block pl-8 pb-4 pt-1">
-                      <motion.span 
-                        initial={{ color: "rgba(255,255,255,0.2)", scale: 1 }}
-                        whileInView={{ color: "#D4AF37", scale: 1.1, textShadow: "0 0 20px rgba(212,175,55,0.6)" }}
-                        viewport={{ amount: 0.5 }}
-                        transition={{ duration: 0.3 }}
-                        className="font-serif text-5xl font-black block mb-1 origin-left inline-block"
-                      >
-                        {item.year}
-                      </motion.span>
-                      <span className="text-gray-400 text-xs uppercase tracking-[2px] font-mono block">
-                        {item.subtitle}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Timeline mobile-specific header display */}
-                  <div className="sm:hidden timeline-reveal mb-2">
+                {/* Mobile Display (Stacked layout for mobile screens) */}
+                <div className="sm:hidden w-full pl-10">
+                  <div className="timeline-reveal mb-2">
                     <motion.span 
                       initial={{ color: "rgba(255,255,255,0.2)", scale: 1 }}
                       whileInView={{ color: "#D4AF37", scale: 1.1 }}
@@ -309,19 +304,15 @@ export const Journey: React.FC = () => {
                       {item.subtitle}
                     </span>
                   </div>
+                  {cardBlock}
+                </div>
 
-                  <LuxuryCard
-                    accentColor="#D4AF37"
-                    className="timeline-reveal"
-                    index={index}
-                  >
-                    <h3 className="font-serif text-xl md:text-2xl text-white font-medium mb-3">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed">
-                      {item.description}
-                    </p>
-                  </LuxuryCard>
+                {/* Desktop Display (Alternating 50/50 Columns) */}
+                <div className="hidden sm:block w-[45%] order-1">
+                  {isEven ? yearBlock : cardBlock}
+                </div>
+                <div className="hidden sm:block w-[45%] order-2">
+                  {isEven ? cardBlock : yearBlock}
                 </div>
               </div>
             );

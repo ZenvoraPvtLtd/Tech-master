@@ -5,8 +5,55 @@ import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
 import { LuxuryCard } from "../components/LuxuryCard";
 
+const YoutubeIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
+const InstagramIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+  </svg>
+);
+
+const CHANNEL_SOCIAL_LINKS: Record<string, { youtube?: string; instagram?: string }> = {
+  "Tech Master": {
+    youtube: "https://www.youtube.com/@techmasterhq",
+    instagram: "https://www.instagram.com/techmasterco/?hl=en"
+  },
+  "Next Univerz": {
+    youtube: "https://www.youtube.com/@NextUniverz",
+    instagram: "https://www.instagram.com/NextUniverz/"
+  },
+  "Master Wheels": {
+    youtube: "https://www.youtube.com/@MasterWheelsAK",
+    instagram: "https://www.instagram.com/masterwheel1/"
+  },
+  "Full Circle": {
+    youtube: "https://www.youtube.com/@fullcircle_in",
+    instagram: "https://www.instagram.com/fullcircle_in/"
+  },
+  "Trendz Talk": {
+    youtube: "",
+    instagram: "https://www.instagram.com/techmasterco/"
+  }
+};
+
+const getSocialLinks = (ch: any) => {
+  const rawName = (ch.keyName || ch.name || "").replace(/^\d+\.\s*/, "").trim();
+  const known = CHANNEL_SOCIAL_LINKS[rawName] || CHANNEL_SOCIAL_LINKS[ch.name] || {};
+  return {
+    youtube: ch.youtubeLink || ch.ytLink || known.youtube || (ch.link?.includes("youtube") ? ch.link : ""),
+    instagram: ch.instagramLink || ch.igLink || known.instagram || (ch.link?.includes("instagram") ? ch.link : "")
+  };
+};
+
 export const Portfolio: React.FC = () => {
   const { dbData } = useData();
+  const [selectedChannel, setSelectedChannel] = useState("All");
   const [activeFilter, setActiveFilter] = useState("All");
   const [livePortfolioData, setLivePortfolioData] = useState<any>(null);
 
@@ -49,6 +96,8 @@ export const Portfolio: React.FC = () => {
 
   const defaultChannels = [
     {
+      id: "ch-1",
+      keyName: "Tech Master",
       name: "1. Tech Master",
       desc: "High-scale technology breakdowns, hardware reviews, and cinematic teardowns.",
       stats: ["33M Subs on YT", "5.8M Followers on IG"],
@@ -59,6 +108,8 @@ export const Portfolio: React.FC = () => {
       accent: "#D4AF37"
     },
     {
+      id: "ch-2",
+      keyName: "Next Univerz",
       name: "2. Next Univerz",
       desc: "Engineering insights, software masterclasses, and digital transformation.",
       stats: ["5.5M Subs on YT"],
@@ -69,6 +120,8 @@ export const Portfolio: React.FC = () => {
       accent: "#00E5FF"
     },
     {
+      id: "ch-3",
+      keyName: "Master Wheels",
       name: "3. Master Wheels",
       desc: "Supercar testing, EV innovations, and automotive engineering marvels.",
       stats: ["4.6M Subs on YT", "1.2M Followers on IG"],
@@ -79,6 +132,8 @@ export const Portfolio: React.FC = () => {
       accent: "#FF3366"
     },
     {
+      id: "ch-4",
+      keyName: "Full Circle",
       name: "4. Full Circle",
       desc: "Deep-dive conversations, creator podcasts, and behind-the-scenes stories.",
       stats: ["300K Subs on YT"],
@@ -89,6 +144,8 @@ export const Portfolio: React.FC = () => {
       accent: "#AA3BFF"
     },
     {
+      id: "ch-5",
+      keyName: "Trendz Talk",
       name: "5. Trendz Talk",
       desc: "Viral tech trends, short-form pop tech, and culture storytelling.",
       stats: ["15K Followers on IG"],
@@ -105,7 +162,7 @@ export const Portfolio: React.FC = () => {
       id: "proj-1",
       title: "Asus ROG Phone 8 Global Reveal",
       category: "Videos",
-      client: "ASUS Gaming",
+      client: "Tech Master",
       year: "2026",
       description: "Complete commercial production, 3D gaming render animations, and multi-channel launch across Tech Master ecosystem.",
       imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800",
@@ -210,22 +267,37 @@ export const Portfolio: React.FC = () => {
   const rawFilters = livePortfolioData?.categories || activeDb?.portfolioFilters || activeDb?.portfolioCMS?.categories || defaultFilters;
   
   const filters = [
-    "All",
+    "All Work",
     ...rawFilters.map((f: any) => typeof f === 'string' ? f : (f.name || f)).filter(Boolean)
   ];
 
-  const filteredProjects = activeFilter === "All"
-    ? portfolioList
-    : portfolioList.filter((proj: any) => proj.category === activeFilter || (proj.categories && proj.categories.includes(activeFilter)));
+  // Combined Dual Filtering by Channel & Category
+  const filteredProjects = portfolioList.filter((proj: any) => {
+    // 1. Channel Filter
+    const matchesChannel = selectedChannel === "All" || (
+      (proj.client && proj.client.toLowerCase().includes(selectedChannel.toLowerCase())) ||
+      (proj.title && proj.title.toLowerCase().includes(selectedChannel.toLowerCase())) ||
+      (proj.description && proj.description.toLowerCase().includes(selectedChannel.toLowerCase()))
+    );
+
+    // 2. Category Filter
+    const isAllCategory = activeFilter === "All" || activeFilter === "All Work";
+    const matchesCategory = isAllCategory || (
+      proj.category === activeFilter ||
+      (proj.categories && proj.categories.includes(activeFilter))
+    );
+
+    return matchesChannel && matchesCategory;
+  });
 
   return (
-    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
+    <div className="relative text-white min-h-screen pt-24 pb-16 px-6 overflow-hidden bg-black">
       {/* Background radial overlay */}
       <div className="absolute top-1/4 left-1/4 w-[30vw] h-[30vw] aurora-glow-purple opacity-20 pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
 
       {/* Hero Header */}
-      <section className="max-w-7xl mx-auto text-left mb-12 relative z-10">
+      <section className="max-w-7xl mx-auto text-left mb-10 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -243,79 +315,226 @@ export const Portfolio: React.FC = () => {
         </p>
       </section>
 
-      {/* The Multiverse Channel Grid */}
-      <section className="max-w-7xl mx-auto mb-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {channels.map((channel: any, idx: number) => {
-            const channelStats = Array.isArray(channel.stats) 
-              ? channel.stats 
-              : [channel.ytSubs, channel.igFollowers].filter(Boolean);
+      {/* 1. CHANNEL FILTER BUTTONS BAR */}
+      <section className="max-w-7xl mx-auto mb-8 relative z-10">
+        <div className="flex flex-wrap gap-2.5 items-center">
+          <button
+            onClick={() => setSelectedChannel("All")}
+            className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-[1.5px] border transition-all duration-300 cursor-pointer ${
+              selectedChannel === "All"
+                ? "bg-gold border-gold text-black shadow-[0_0_20px_rgba(212,175,55,0.3)] font-black"
+                : "bg-[#0d0d0d] border-white/10 text-gray-400 hover:border-gold/40 hover:text-white"
+            }`}
+          >
+            ALL CHANNELS
+          </button>
 
+          {channels.map((ch: any) => {
+            const rawName = (ch.keyName || ch.name || "").replace(/^\d+\.\s*/, "").trim();
+            const isSelected = selectedChannel.toLowerCase() === rawName.toLowerCase();
             return (
-              <motion.div
-                key={channel.id || idx}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="glass-panel p-6 rounded-3xl border border-white/10 hover:border-gold/40 transition-all duration-300 flex flex-col justify-between"
+              <button
+                key={ch.id || ch.name}
+                onClick={() => setSelectedChannel(rawName)}
+                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-[1.5px] border transition-all duration-300 cursor-pointer flex items-center gap-2 ${
+                  isSelected
+                    ? "bg-gold border-gold text-black shadow-[0_0_20px_rgba(212,175,55,0.3)] font-black"
+                    : "bg-[#0d0d0d] border-white/10 text-gray-400 hover:border-gold/40 hover:text-white"
+                }`}
               >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-serif text-xl font-bold text-white">{channel.name}</h3>
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: channel.accent || '#D4AF37' }} />
-                  </div>
-                  <p className="text-gray-400 text-xs sm:text-sm font-light leading-relaxed mb-4">
-                    {channel.desc}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {channelStats.map((st: string, i: number) => (
-                      <span key={i} className="px-3 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs font-mono font-semibold">
-                        {st}
-                      </span>
-                    ))}
-                  </div>
-                  {channel.popular && (
-                    <div className="text-[11px] font-mono text-gray-400 bg-black/40 p-3 rounded-xl border border-white/5 mb-4">
-                      <span className="text-gray-500 uppercase tracking-wider block text-[9px] mb-1">Most Popular:</span>
-                      <span className="text-white font-medium">{channel.popular}</span>
-                    </div>
-                  )}
-                </div>
-
-                {channel.link && (
-                  <a
-                    href={channel.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1.5 text-gold hover:text-white transition-colors text-xs font-mono uppercase tracking-wider font-bold"
-                  >
-                    Visit Channel <ArrowUpRight className="w-3.5 h-3.5" />
-                  </a>
-                )}
-              </motion.div>
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: ch.accent || '#D4AF37' }} />
+                {rawName}
+              </button>
             );
           })}
         </div>
       </section>
 
-      {/* Filter Tabs */}
-      <section className="max-w-7xl mx-auto mb-16 flex flex-wrap gap-3 text-left relative z-10">
+      {/* 2. DYNAMIC CENTERED CHANNEL CARDS DISPLAY */}
+      <section className="max-w-7xl mx-auto mb-16 relative z-10">
+        <AnimatePresence mode="wait">
+          {selectedChannel !== "All" ? (
+            // Single Centered Channel Card
+            <motion.div
+              key={selectedChannel}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="max-w-xl mx-auto"
+            >
+              {(() => {
+                const ch = channels.find((c: any) => {
+                  const rawName = (c.keyName || c.name || "").replace(/^\d+\.\s*/, "").trim();
+                  return rawName.toLowerCase() === selectedChannel.toLowerCase();
+                }) || channels[0];
+                
+                const channelStats = Array.isArray(ch.stats) 
+                  ? ch.stats 
+                  : [ch.ytSubs, ch.igFollowers].filter(Boolean);
+
+                return (
+                  <div className="glass-panel p-8 sm:p-10 rounded-3xl border-2 border-gold/50 shadow-[0_0_50px_rgba(212,175,55,0.25)] bg-black/85 backdrop-blur-xl flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-5">
+                        <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">{ch.name}</h3>
+                        <span className="w-3.5 h-3.5 rounded-full shadow-[0_0_12px_rgba(212,175,55,0.8)]" style={{ backgroundColor: ch.accent || '#D4AF37' }} />
+                      </div>
+                      <div className="flex flex-wrap gap-2.5 mb-6">
+                        {channelStats.map((st: string, i: number) => (
+                          <span key={i} className="px-4 py-1.5 rounded-full bg-gold/15 border border-gold/40 text-gold text-xs font-mono font-bold">
+                            {st}
+                          </span>
+                        ))}
+                      </div>
+                      {ch.popular && (
+                        <div className="text-xs font-mono text-gray-300 bg-black/60 p-4 rounded-2xl border border-white/10 mb-6">
+                          <span className="text-gold uppercase tracking-wider block text-[10px] mb-1 font-bold">MOST POPULAR:</span>
+                          <span className="text-white font-semibold text-sm">{ch.popular}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Circular Social Buttons (YouTube & Instagram) */}
+                    {(() => {
+                      const social = getSocialLinks(ch);
+                      return (
+                        <div className="flex items-center gap-3 pt-2">
+                          {social.youtube && (
+                            <a
+                              href={social.youtube}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Visit YouTube Channel"
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-11 h-11 rounded-full border border-red-500/40 bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 flex items-center justify-center shadow-lg group/btn cursor-pointer"
+                            >
+                              <YoutubeIcon className="w-5 h-5 transition-transform duration-300 group-hover/btn:scale-110" />
+                            </a>
+                          )}
+                          {social.instagram && (
+                            <a
+                              href={social.instagram}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Visit Instagram Page"
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-11 h-11 rounded-full border border-pink-500/40 bg-pink-500/10 text-pink-400 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-300 flex items-center justify-center shadow-lg group/btn cursor-pointer"
+                            >
+                              <InstagramIcon className="w-5 h-5 transition-transform duration-300 group-hover/btn:scale-110" />
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                );
+              })()}
+            </motion.div>
+          ) : (
+            // Grid of All 5 Channels
+            <motion.div
+              key="all-channels-grid"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {channels.map((channel: any, idx: number) => {
+                const channelStats = Array.isArray(channel.stats) 
+                  ? channel.stats 
+                  : [channel.ytSubs, channel.igFollowers].filter(Boolean);
+
+                const rawName = (channel.keyName || channel.name || "").replace(/^\d+\.\s*/, "").trim();
+
+                return (
+                  <motion.div
+                    key={channel.id || idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: idx * 0.08 }}
+                    className="glass-panel p-6 rounded-3xl border border-white/10 hover:border-gold/40 transition-all duration-300 flex flex-col justify-between cursor-pointer group"
+                    onClick={() => setSelectedChannel(rawName)}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-serif text-xl font-bold text-white group-hover:text-gold transition-colors">{channel.name}</h3>
+                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: channel.accent || '#D4AF37' }} />
+                      </div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {channelStats.map((st: string, i: number) => (
+                          <span key={i} className="px-3 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs font-mono font-semibold">
+                            {st}
+                          </span>
+                        ))}
+                      </div>
+                      {channel.popular && (
+                        <div className="text-[11px] font-mono text-gray-400 bg-black/40 p-3 rounded-xl border border-white/5 mb-4">
+                          <span className="text-gray-500 uppercase tracking-wider block text-[9px] mb-1">MOST POPULAR:</span>
+                          <span className="text-white font-medium">{channel.popular}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Circular Social Buttons (YouTube & Instagram) */}
+                    {(() => {
+                      const social = getSocialLinks(channel);
+                      return (
+                        <div className="flex items-center gap-3 pt-2">
+                          {social.youtube && (
+                            <a
+                              href={social.youtube}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Visit YouTube Channel"
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-10 h-10 rounded-full border border-red-500/40 bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 flex items-center justify-center shadow-lg group/btn cursor-pointer"
+                            >
+                              <YoutubeIcon className="w-4.5 h-4.5 transition-transform duration-300 group-hover/btn:scale-110" />
+                            </a>
+                          )}
+                          {social.instagram && (
+                            <a
+                              href={social.instagram}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Visit Instagram Page"
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-10 h-10 rounded-full border border-pink-500/40 bg-pink-500/10 text-pink-400 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-300 flex items-center justify-center shadow-lg group/btn cursor-pointer"
+                            >
+                              <InstagramIcon className="w-4.5 h-4.5 transition-transform duration-300 group-hover/btn:scale-110" />
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
+
+      {/* 3. CATEGORY FILTERS TABS */}
+      <section className="max-w-7xl mx-auto mb-10 flex flex-wrap gap-3 text-left relative z-10">
         {filters.map((filter: string) => (
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
             className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-[1.5px] border transition-all duration-300 cursor-pointer ${
               activeFilter === filter
-                ? "bg-gold border-gold text-black shadow-[0_0_20px_rgba(212,175,55,0.2)]"
+                ? "bg-gold border-gold text-black shadow-[0_0_20px_rgba(212,175,55,0.2)] font-bold"
                 : "bg-[#0d0d0d] border-white/10 text-gray-400 hover:border-white/40 hover:text-white"
             }`}
           >
-            {filter === "All" ? "All Work" : filter}
+            {filter}
           </button>
         ))}
       </section>
 
-      {/* Grid List */}
+      {/* 4. WORK ITEMS GRID LIST */}
       <section className="max-w-7xl mx-auto text-left relative z-10">
         <motion.div 
           layout

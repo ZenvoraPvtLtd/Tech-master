@@ -192,15 +192,26 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const baseUrl = getApiBaseUrl();
       const response = await fetch(`${baseUrl}/cms`);
+      let fetchedDb: any = {};
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.data) {
-          applyCmsDataToState(result.data);
-          setIsBackendConnected(true);
-          return;
+          fetchedDb = result.data;
         }
       }
-      applyCmsDataToState({});
+
+      try {
+        const fvRes = await fetch(`${baseUrl}/featured-videos`);
+        if (fvRes.ok) {
+          const fvJson = await fvRes.json();
+          if (fvJson.success && Array.isArray(fvJson.data)) {
+            fetchedDb.featuredVideos = fvJson.data;
+          }
+        }
+      } catch (e) {}
+
+      applyCmsDataToState(fetchedDb);
+      setIsBackendConnected(true);
     } catch (err) {
       console.warn("Backend CMS sync initial fallback:", err);
       setIsBackendConnected(false);

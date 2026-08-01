@@ -58,13 +58,12 @@ const defaultHomepageData = {
     badge: 'GLOBAL REACH & STATISTICS',
     heading: 'Influence & Impact',
     counters: [
-      { id: 'st-1', value: '40M+', label: 'Subscribers' },
-      { id: 'st-2', value: '7M+', label: 'IG Followers' },
-      { id: 'st-3', value: '1B+', label: 'Monthly Views' },
-      { id: 'st-4', value: '2500+', label: 'Videos Published' },
-      { id: 'st-5', value: '500K+', label: 'FB Followers' },
-      { id: 'st-6', value: '25B', label: 'Lifetime Views on YT' },
-      { id: 'st-7', value: '50+', label: 'Global Brand Collaborations' }
+      { id: 'st-1', value: '50M+', label: 'Community' },
+      { id: 'st-2', value: '1B+', label: 'Monthly Views' },
+      { id: 'st-3', value: '2500+', label: 'Videos Published' },
+      { id: 'st-4', value: '500K+', label: 'FB Followers' },
+      { id: 'st-5', value: '25B+', label: 'Lifetime Views on YT' },
+      { id: 'st-6', value: '50+', label: 'Global Brand Collaborations' }
     ]
   },
   brandCollaborations: {

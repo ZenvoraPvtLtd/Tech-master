@@ -22,6 +22,9 @@ const getBrandDefaultLogo = (brandName, customUrl) => {
   const name = (brandName || '').toLowerCase().trim();
   const cleanAlpha = name.replace(/[^a-z0-9]/g, "");
 
+  const mahindraSvgStr = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 360" width="500" height="360"><g fill="white"><path d="M 30,10 L 235,240 L 165,350 L 125,350 Z" /><path d="M 30,10 L 165,350 L 235,240 Z" fill="#E2E8F0" /><path d="M 470,10 L 265,240 L 335,350 L 375,350 Z" /><path d="M 470,10 L 335,350 L 265,240 Z" fill="#CBD5E1" /></g></svg>';
+  const mahindraLogoB64 = `data:image/svg+xml;base64,${btoa(mahindraSvgStr)}`;
+
   const cdnMap = {
     amazon: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/amazon.svg",
     asus: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/asus.svg",
@@ -29,7 +32,9 @@ const getBrandDefaultLogo = (brandName, customUrl) => {
     flipkart: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/flipkart.svg",
     huawei: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/huawei.svg",
     iqoo: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/iqoo.svg",
-    marshall: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/marshall.svg",
+    fireboltt: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/fireboltt.svg",
+    firebolt: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/fireboltt.svg",
+    mahindra: mahindraLogoB64,
     xiaomi: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/xiaomi.svg",
     mi: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/xiaomi.svg",
     motorola: "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/motorola.svg",
@@ -169,13 +174,12 @@ export const Homepage = () => {
       heading: 'Influence & Impact',
       visible: true,
       counters: [
-        { id: 'st-1', value: '40M+', label: 'Subscribers', icon: 'Users', order: 1, visible: true, deleted: false },
-        { id: 'st-2', value: '7M+', label: 'IG Followers', icon: 'Instagram', order: 2, visible: true, deleted: false },
-        { id: 'st-3', value: '1B+', label: 'Monthly Views', font: 'mono', order: 3, visible: true, deleted: false },
-        { id: 'st-4', value: '2500+', label: 'Videos Published', icon: 'Video', order: 4, visible: true, deleted: false },
-        { id: 'st-5', value: '500K+', label: 'FB Followers', icon: 'Share2', order: 5, visible: true, deleted: false },
-        { id: 'st-6', value: '25B', label: 'Lifetime Views on YT', icon: 'Youtube', order: 6, visible: true, deleted: false },
-        { id: 'st-7', value: '50+', label: 'Global Brand Collaborations', icon: 'Award', order: 7, visible: true, deleted: false }
+        { id: 'st-1', value: '50M+', label: 'Community', icon: 'Users', order: 1, visible: true, deleted: false },
+        { id: 'st-2', value: '1B+', label: 'Monthly Views', font: 'mono', order: 2, visible: true, deleted: false },
+        { id: 'st-3', value: '2500+', label: 'Videos Published', icon: 'Video', order: 3, visible: true, deleted: false },
+        { id: 'st-4', value: '500K+', label: 'FB Followers', icon: 'Share2', order: 4, visible: true, deleted: false },
+        { id: 'st-5', value: '25B+', label: 'Lifetime Views on YT', icon: 'Youtube', order: 5, visible: true, deleted: false },
+        { id: 'st-6', value: '50+', label: 'Global Brand Collaborations', icon: 'Award', order: 6, visible: true, deleted: false }
       ]
     },
 
@@ -209,10 +213,10 @@ export const Homepage = () => {
       description: 'Proud collaborations and partnerships with globally recognized technology brands that have helped shape our educational ecosystem.',
       visible: true,
       brands: [
-        'Amazon', 'Asus', 'Dell', 'Flipkart', 'Huawei', 'IQOO', 'Marshall', 'Xiaomi',
+        'Amazon', 'Asus', 'Dell', 'Flipkart', 'Huawei', 'IQOO', 'Fire-Boltt', 'Xiaomi',
         'Motorola', 'OnePlus', 'Oppo', 'Google Pixel', 'Poco', 'Realme', 'Samsung', 'Vivo',
         'boAt', 'Cashify', 'Sony', 'Nothing', 'Blinkit', 'Lenskart', 'The Sleep Company',
-        'Noise', 'Fire-Boltt', 'Tesla', 'Tata', 'Hyundai', 'Kia', 'Ultraviolette'
+        'Noise', 'Mahindra', 'Tesla', 'Tata', 'Hyundai', 'Kia', 'Ultraviolette'
       ].map((name, idx) => ({ id: `b-${idx + 1}`, brandName: name, logoUrl: '', websiteUrl: '', order: idx + 1, visible: true, deleted: false }))
     },
 

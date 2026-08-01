@@ -227,23 +227,25 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                   className="w-full h-full object-cover absolute inset-0 z-20 opacity-90 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                 />
 
-                {/* 2. Instant Video Stream iFrame (Autoplays live video streams on all cards by default) */}
+                {/* 2. Instant Video Stream iFrame (Guaranteed 100% Full Bleed Edge-To-Edge Video with ZERO Letterbox Black Bars on ALL Cards) */}
                 {videoId && (
-                  <iframe
-                    src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
-                    title={displayTitle}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    className="w-full h-full object-cover absolute inset-0 z-30 border-0 pointer-events-none scale-105 transition-opacity duration-300"
-                  />
+                  <div className="absolute inset-0 z-30 overflow-hidden flex items-center justify-center pointer-events-none">
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
+                      title={displayTitle}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      className="w-[175%] h-[175%] min-w-[175%] min-h-[175%] object-cover border-0 pointer-events-none origin-center transform scale-105"
+                    />
+                  </div>
                 )}
 
                 {/* Multi-Layer Dark Vignette Overlays */}
                 {isActive ? (
                   <>
-                    {/* Bottom-to-Top Dark Gradient */}
+                    {/* Bottom-to-Top Dark Gradient for crisp text readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none z-35 transition-opacity duration-300" />
-                    {/* Top-to-Bottom Ambient Vignette */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-none z-35" />
+                    {/* Soft Top Ambient Shadow */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent pointer-events-none z-35" />
 
                     {/* Retro + Grainy Film Overlay Effect */}
                     <div className="absolute inset-0 pointer-events-none z-38 overflow-hidden">

@@ -274,9 +274,9 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           })}
         </div>
 
-        {/* RIGHT COLUMN (lg:col-span-3): 3D Spatial Node Panel */}
-        <div className="lg:col-span-3 flex flex-col justify-stretch h-full">
-          <div className="glass-panel p-4 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center relative overflow-hidden h-full min-h-[280px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+        {/* RIGHT COLUMN (lg:col-span-3): Taller & Perfectly Balanced 3D Spatial Node Panel */}
+        <div className="lg:col-span-3 flex flex-col justify-stretch h-full items-center lg:items-end">
+          <div className="glass-panel p-4 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center relative overflow-hidden h-full min-h-[360px] sm:min-h-[380px] w-full max-w-[260px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
             <div className="absolute inset-0 z-0">
               <Canvas camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: true, alpha: true }}>
                 <ambientLight intensity={0.6} />

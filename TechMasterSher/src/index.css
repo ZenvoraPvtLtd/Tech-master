@@ -1,10 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,700..900;1,6..96,700..900&family=Cinzel:wght@600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Syne:wght@700;800&family=Unbounded:wght@700;800;900&family=Orbitron:wght@700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 @import "tailwindcss";
 
 @theme {
   --font-serif: "Playfair Display", serif;
   --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-brand: "Bodoni Moda", "Cinzel", serif;
+  --font-display: "Syne", "Unbounded", sans-serif;
 
   --color-gold: #D4AF37;
   --color-gold-light: #F3E5AB;

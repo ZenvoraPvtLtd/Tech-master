@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ArrowDown, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -14,7 +14,6 @@ import dellLogo from "../assets/DELL.jpeg";
 import flipkartLogo from "../assets/Flipkart.jpeg";
 import huaweiLogo from "../assets/HUAWEI.jpeg";
 import miLogo from "../assets/MI.jpeg";
-import marshallLogo from "../assets/Marshall_clean.png";
 import motorolaLogo from "../assets/motorola_hd.png";
 import oneplusLogo from "../assets/Oneplus.jpeg";
 import oppoLogo from "../assets/oppo.jpeg";
@@ -201,20 +200,47 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     : defaultCoreValues;
 
   const defaultStats = [
-    { number: "40M+", label: "Subscribers" },
-    { number: "7M+", label: "IG Followers" },
+    { number: "50M+", label: "Community" },
     { number: "1B+", label: "Monthly Views" },
     { number: "2500+", label: "Videos Published" },
     { number: "500K+", label: "FB Followers" },
-    { number: "25B", label: "Lifetime Views on YT" },
+    { number: "25B+", label: "Lifetime Views on YT" },
     { number: "50+", label: "Global Brand Collaborations" }
   ];
   const rawCounters = (liveHomeData?.statistics?.counters && liveHomeData.statistics.counters.length > 0)
     ? liveHomeData.statistics.counters
     : (activeHome?.statistics?.counters || []);
-  const statsList = (rawCounters && rawCounters.length > 0)
-    ? rawCounters.filter((s: any) => s.deleted !== true).map((s: any) => ({ number: s.value || s.number, label: s.label }))
+
+  let processedStats = (rawCounters && rawCounters.length > 0)
+    ? rawCounters
+        .filter((s: any) => s.deleted !== true)
+        .map((s: any) => {
+          let num = s.value || s.number || "";
+          if (num === "25B") num = "25B+";
+          return { number: num, label: s.label || "" };
+        })
     : defaultStats;
+
+  // Filter out any unwanted RGR / RRR cards
+  processedStats = processedStats.filter((s: any) => 
+    !/rgr|rrr/i.test(s.number) && !/rgr|rrr/i.test(s.label)
+  );
+
+  // Replace old separate "Subscribers" (40M+) & "IG Followers" (7M+) cards with single "50M+" "Community" card
+  const hasOldSubCards = processedStats.some((s: any) => 
+    /subscriber/i.test(s.label) || /ig follower/i.test(s.label) || s.number === "40M+" || s.number === "7M+"
+  );
+
+  if (hasOldSubCards) {
+    processedStats = processedStats.filter((s: any) => 
+      !/subscriber/i.test(s.label) && !/ig follower/i.test(s.label) && s.number !== "40M+" && s.number !== "7M+"
+    );
+    if (!processedStats.some((s: any) => /community/i.test(s.label))) {
+      processedStats.unshift({ number: "50M+", label: "Community" });
+    }
+  }
+
+  const statsList = processedStats.length > 0 ? processedStats : defaultStats;
 
   const dummyViews = ["1.2M views", "850K views", "3.4M views", "2.1M views", "500K views", "4.8M views", "920K views", "1.5M views", "300K views", "2.9M views"];
 
@@ -429,6 +455,57 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           },
         });
       });
+
+      // Intro & Vision Timeline Line Animation
+      gsap.fromTo(
+        ".intro-vision-line-active",
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".intro-vision-timeline",
+            start: "top 65%",
+            end: "bottom 75%",
+            scrub: true,
+          },
+        }
+      );
+
+      // Highlight Vision Card when line reaches it
+      gsap.to(".vision-card-inner", {
+        borderColor: "rgba(212, 175, 55, 0.8)",
+        backgroundColor: "rgba(212, 175, 55, 0.08)",
+        boxShadow: "0 0 50px rgba(212, 175, 55, 0.35)",
+        scale: 1.02,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: ".vision-card-node",
+          start: "top 75%",
+          toggleActions: "play reverse play reverse",
+        },
+      });
+
+      gsap.to(".vision-badge", {
+        color: "#D4AF37",
+        duration: 0.5,
+        scrollTrigger: {
+          trigger: ".vision-card-node",
+          start: "top 75%",
+          toggleActions: "play reverse play reverse",
+        },
+      });
+
+      gsap.to(".vision-orb", {
+        backgroundColor: "#D4AF37",
+        boxShadow: "0 0 15px rgba(212, 175, 55, 1)",
+        duration: 0.5,
+        scrollTrigger: {
+          trigger: ".vision-card-node",
+          start: "top 75%",
+          toggleActions: "play reverse play reverse",
+        },
+      });
     });
 
     return () => {
@@ -441,6 +518,60 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   };
 
   const filteredVideos = activeVideos;
+
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress: timelineScrollProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start 70%", "end 75%"]
+  });
+
+  const timelineScaleY = useSpring(timelineScrollProgress, { stiffness: 200, damping: 30 });
+
+  // Intro Card transform properties (Active near top 0% - 45%, highlights when scrolling up / dims when scrolling down)
+  const introHighlightProgress = useTransform(timelineScrollProgress, [0.0, 0.45], [1, 0]);
+  const introBorderColor = useTransform(
+    introHighlightProgress,
+    [0, 1],
+    ["rgba(255, 255, 255, 0.1)", "rgba(212, 175, 55, 0.95)"]
+  );
+  const introBgColor = useTransform(
+    introHighlightProgress,
+    [0, 1],
+    ["rgba(0, 0, 0, 0.6)", "rgba(212, 175, 55, 0.12)"]
+  );
+  const introShadow = useTransform(
+    introHighlightProgress,
+    [0, 1],
+    ["0px 10px 40px rgba(0,0,0,0.8)", "0px 0px 50px rgba(212,175,55,0.45)"]
+  );
+  const introScale = useTransform(introHighlightProgress, [0, 1], [0.98, 1.03]);
+
+  // Vision Card transform properties (Active near bottom 45% - 90%, highlights when scrolling down / dims when scrolling up)
+  const visionHighlightProgress = useTransform(timelineScrollProgress, [0.45, 0.9], [0, 1]);
+  const visionBorderColor = useTransform(
+    visionHighlightProgress,
+    [0, 1],
+    ["rgba(255, 255, 255, 0.1)", "rgba(212, 175, 55, 0.95)"]
+  );
+  const visionBgColor = useTransform(
+    visionHighlightProgress,
+    [0, 1],
+    ["rgba(0, 0, 0, 0.6)", "rgba(212, 175, 55, 0.12)"]
+  );
+  const visionShadow = useTransform(
+    visionHighlightProgress,
+    [0, 1],
+    ["0px 10px 40px rgba(0,0,0,0.8)", "0px 0px 50px rgba(212,175,55,0.45)"]
+  );
+  const visionScale = useTransform(visionHighlightProgress, [0, 1], [0.98, 1.03]);
+  const visionBadgeColor = useTransform(visionHighlightProgress, [0, 1], ["#9CA3AF", "#D4AF37"]);
+  const visionOrbColor = useTransform(visionHighlightProgress, [0, 1], ["#6B7280", "#D4AF37"]);
+  const visionOrbGlow = useTransform(
+    visionHighlightProgress,
+    [0, 1],
+    ["none", "0px 0px 15px rgba(212, 175, 55, 1)"]
+  );
 
   return (
     <div className="relative text-white min-h-screen">
@@ -470,15 +601,20 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="h-80 sm:h-96 md:h-[420px] w-full pointer-events-none" />
 
         <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-4 sm:mt-8">
-          {/* Main Title: TECH MASTER */}
+          {/* Main Title: TECH MASTER - Single Line Modern Sans-Serif Typography (Plus Jakarta Sans) */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.4, ease: "easeOut" }}
-            className="font-serif text-5xl sm:text-7xl md:text-8xl font-black mb-6 tracking-tight"
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight uppercase leading-none text-center whitespace-nowrap drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)] select-none"
+            style={{ fontFamily: "'Plus Jakarta Sans', 'Outfit', sans-serif" }}
           >
-            <span className="text-white">{heroMainHeading.split(" ")[0] || "TECH"} </span>
-            <span className="text-gold">{heroMainHeading.split(" ").slice(1).join(" ") || "MASTER"}</span>
+            <span className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+              {heroMainHeading.split(" ")[0] || "TECH"}{" "}
+            </span>
+            <span className="text-gold drop-shadow-[0_0_25px_rgba(212,175,55,0.5)]">
+              {heroMainHeading.split(" ").slice(1).join(" ") || "MASTER"}
+            </span>
           </motion.h1>
 
           {/* Tagline */}
@@ -513,30 +649,74 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
       </section>
 
-      {/* Intro & The Vision Grid */}
-      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Intro Card */}
-          <div className="glass-panel p-8 sm:p-10 rounded-3xl border border-white/10 hover:border-gold/30 transition-all duration-300">
-            <span className="typo-badge mb-4 block text-gold">{introBadge}</span>
-            <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-4">
-              {introHeading}
-            </h2>
-            <p className="text-gray-300 text-sm sm:text-base font-light leading-relaxed">
-              {introDescription}
-            </p>
+      {/* Intro & The Vision Animated Vertical Timeline Section */}
+      <section className="scroll-section py-20 px-6 max-w-4xl mx-auto relative z-10">
+        <div ref={timelineRef} className="intro-vision-timeline relative flex flex-col items-center gap-14 sm:gap-20">
+          
+          {/* Central Vertical Connecting Timeline Line (Journey Style) */}
+          <div className="absolute left-6 sm:left-10 md:left-1/2 -translate-x-1/2 top-10 bottom-10 w-[3px] bg-white/10 z-0 overflow-hidden rounded-full">
+            <motion.div
+              style={{ scaleY: timelineScaleY, transformOrigin: "top center" }}
+              className="intro-vision-line-active w-full h-full bg-gradient-to-b from-gold via-[#F3E5AB] to-gold shadow-[0_0_20px_rgba(212,175,55,0.9)]"
+            />
           </div>
 
-          {/* The Vision Card */}
-          <div className="glass-panel p-8 sm:p-10 rounded-3xl border border-gold/30 bg-gold/5 hover:border-gold transition-all duration-300">
-            <span className="typo-badge mb-4 block text-gold">{visionBadge}</span>
-            <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-4">
-              {visionHeading}
-            </h2>
-            <p className="text-gray-300 text-sm sm:text-base font-light leading-relaxed">
-              {visionDescription}
-            </p>
+          {/* Top Card: INTRO (Highlights with Gold Glow when scrolling up / active near top) */}
+          <div className="intro-card-node w-full relative z-10">
+            <motion.div
+              style={{
+                borderColor: introBorderColor,
+                backgroundColor: introBgColor,
+                boxShadow: introShadow,
+                scale: introScale
+              }}
+              className="glass-panel p-8 sm:p-10 md:p-12 rounded-3xl border backdrop-blur-xl transition-all duration-300 relative overflow-hidden"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <span className="w-3.5 h-3.5 rounded-full bg-gold animate-pulse shadow-[0_0_12px_rgba(212,175,55,0.9)]" />
+                <span className="typo-badge text-gold tracking-[2px] uppercase font-mono font-bold text-xs">{introBadge}</span>
+              </div>
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-5 leading-tight">
+                {introHeading}
+              </h2>
+              <p className="text-gray-300 text-sm sm:text-base md:text-lg font-light leading-relaxed">
+                {introDescription}
+              </p>
+            </motion.div>
           </div>
+
+          {/* Bottom Card: THE VISION (Highlights with Gold Glow when line reaches it on scroll) */}
+          <div className="vision-card-node w-full relative z-10">
+            <motion.div
+              style={{
+                borderColor: visionBorderColor,
+                backgroundColor: visionBgColor,
+                boxShadow: visionShadow,
+                scale: visionScale
+              }}
+              className="vision-card-inner glass-panel p-8 sm:p-10 md:p-12 rounded-3xl border backdrop-blur-xl transition-all duration-300 relative overflow-hidden"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <motion.span
+                  style={{ backgroundColor: visionOrbColor, boxShadow: visionOrbGlow }}
+                  className="vision-orb w-3.5 h-3.5 rounded-full transition-all duration-300"
+                />
+                <motion.span
+                  style={{ color: visionBadgeColor }}
+                  className="vision-badge typo-badge tracking-[2px] uppercase font-mono font-bold text-xs transition-colors duration-300"
+                >
+                  {visionBadge}
+                </motion.span>
+              </div>
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-5 leading-tight">
+                {visionHeading}
+              </h2>
+              <p className="text-gray-300 text-sm sm:text-base md:text-lg font-light leading-relaxed">
+                {visionDescription}
+              </p>
+            </motion.div>
+          </div>
+
         </div>
       </section>
 
@@ -568,7 +748,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
-          transition={{ ease: "linear", duration: 25, repeat: Infinity }}
+          transition={{ ease: "linear", duration: 85, repeat: Infinity }}
           style={{ willChange: "transform" }}
           className="flex w-max items-center justify-center mt-4"
         >
@@ -636,7 +816,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           <h2 className="typo-h2 mb-12">
             {activeHome?.statistics?.heading?.split("&")[0] || "Influence &"} <span className="text-gold italic font-bold">{activeHome?.statistics?.heading?.split("&")[1] || "Impact"}</span>
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {statsList.map((stat: any, idx: number) => (
               <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
                 <AnimatedCounter 
@@ -697,7 +877,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               
               return (
                 <>
-                  {reels.length > 0 && <StripeReelsCarousel reels={reels} isHomePage={true} />}
+                  <StripeReelsCarousel reels={reels} isHomePage={true} />
                   
                   <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
                     <LongVideosCarousel videos={cmsFeaturedVideos || []} isHomePage={true} />
@@ -706,8 +886,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               );
             })()}
           </div>
-      </section>      {/* 7. Brand Collaborations Static Grid (4 Cards Per Row) */}
-      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10 text-center">
+      </section>      {/* 7. Brand Collaborations Grid (Original Logo Size, Reduced Inner Gap, Centered) */}
+      <section className="scroll-section py-20 px-6 max-w-6xl mx-auto relative z-10 text-center flex flex-col items-center justify-center">
         {/* Small Badge */}
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/80 border border-gold/30 px-5 py-2 rounded-full bg-black/50 font-mono font-semibold tracking-[3px] uppercase">
@@ -744,6 +924,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           const ultravioletteSvgStr = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 100" width="540" height="100"><polygon points="30,25 80,25 55,75" fill="none" stroke="white" stroke-width="10" stroke-linejoin="round"/><text x="110" y="62" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="38" fill="white" letter-spacing="7">ULTRAVIOLETTE</text></svg>';
           const ultravioletteLogoB64 = `data:image/svg+xml;base64,${btoa(ultravioletteSvgStr)}`;
 
+          const mahindraSvgStr = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 360" width="500" height="360"><g fill="white"><path d="M 30,10 L 235,240 L 165,350 L 125,350 Z" /><path d="M 30,10 L 165,350 L 235,240 Z" fill="#E2E8F0" /><path d="M 470,10 L 265,240 L 335,350 L 375,350 Z" /><path d="M 470,10 L 335,350 L 265,240 Z" fill="#CBD5E1" /></g></svg>';
+          const mahindraLogoB64 = `data:image/svg+xml;base64,${btoa(mahindraSvgStr)}`;
+
           const brandVectorMap: Record<string, { icon: string; fallback: any }> = {
             amazon: { icon: "https://cdn.simpleicons.org/amazon/white", fallback: amazonLogo },
             asus: { icon: "https://cdn.simpleicons.org/asus/white", fallback: asusLogo },
@@ -751,7 +934,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             flipkart: { icon: flipkartLogo, fallback: flipkartLogo },
             huawei: { icon: "https://cdn.simpleicons.org/huawei/white", fallback: huaweiLogo },
             iqoo: { icon: "https://cdn.simpleicons.org/iqoo/white", fallback: iqooLogo },
-            marshall: { icon: marshallLogo, fallback: marshallLogo },
+            mahindra: { icon: mahindraLogoB64, fallback: mahindraLogoB64 },
             xiaomi: { icon: "https://cdn.simpleicons.org/xiaomi/white", fallback: miLogo },
             mi: { icon: "https://cdn.simpleicons.org/xiaomi/white", fallback: miLogo },
             motorola: { icon: "https://cdn.simpleicons.org/motorola/white", fallback: motorolaLogo },
@@ -771,6 +954,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             lenskart: { icon: lenskartLogoB64, fallback: lenskartLogoB64 },
             "the sleep company": { icon: "https://cdn.simpleicons.org/thesleepcompany/white", fallback: sleepCompanyLogo },
             "fire-boltt": { icon: "https://cdn.simpleicons.org/fireboltt/white", fallback: fireboltLogo },
+            fireboltt: { icon: "https://cdn.simpleicons.org/fireboltt/white", fallback: fireboltLogo },
             ultraviolette: { icon: ultravioletteLogoB64, fallback: ultravioletteLogoB64 },
             tesla: { icon: "https://cdn.simpleicons.org/tesla/white", fallback: teslaLogo },
             tata: { icon: "https://cdn.simpleicons.org/tata/white", fallback: tataLogo },
@@ -779,12 +963,12 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           };
 
           const oldBrands = [
-            "Amazon", "Asus", "Dell", "Flipkart", "Huawei", "IQOO", "Marshall", "Xiaomi",
+            "Amazon", "Asus", "Dell", "Flipkart", "Huawei", "IQOO", "Fire-Boltt", "Xiaomi",
             "Motorola", "OnePlus", "Oppo", "Google Pixel", "Poco", "Realme", "Samsung", "Vivo"
           ];
           const newBrands = [
             "boAt", "Cashify", "Sony", "Nothing", "Blinkit", "Lenskart", 
-            "The Sleep Company", "Noise", "Fire-Boltt", "Tesla", "Tata", 
+            "The Sleep Company", "Noise", "Mahindra", "Tesla", "Tata", 
             "Hyundai", "Kia", "Ultraviolette"
           ];
           const requestedBrands = [...oldBrands, ...newBrands];
@@ -813,33 +997,43 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
           const activeCollabs = rawCollabs.filter((b: any) => b.deleted !== true && (b.status === "Active" || b.status === true || b.status === undefined || b.visible !== false));
 
-          const displayCollabs = activeCollabs.length > 0
-            ? [...activeCollabs].map((b: any) => {
-                const bName = b.brandName || b.name || "";
-                const cleanName = bName.toLowerCase().trim();
-                const cleanAlphanumeric = bName.toLowerCase().replace(/[^a-z0-9]/g, "");
-                
-                const generatedFallback = 'TEXT_FALLBACK';
-                const vInfo = brandVectorMap[cleanName];
-                const customLogo = b.logoUrl || b.logo || b.imageUrl || b.brandLogo;
-                
-                return {
-                  brandName: bName,
-                  logo: customLogo || (vInfo ? vInfo.icon : `https://cdn.simpleicons.org/${cleanAlphanumeric}/white`),
-                  fallbackLogo: customLogo || (vInfo ? vInfo.fallback : generatedFallback),
-                  isCustom: Boolean(customLogo),
-                  order: Number(b.order) || 0
-                };
-              }).sort((a: any, b: any) => a.order - b.order)
-            : defaultBrandCollabs;
+          // Sanitize activeCollabs so Marshall is replaced with Fire-Boltt, and Fire-Boltt position becomes Mahindra
+          const sanitizedCollabs = activeCollabs.map((b: any) => {
+            const bName = b.brandName || b.name || "";
+            if (/marshall/i.test(bName)) {
+              return { ...b, brandName: "Fire-Boltt", logoUrl: "", logo: "" };
+            }
+            if (/fire-?boltt?/i.test(bName)) {
+              return { ...b, brandName: "Mahindra", logoUrl: "", logo: "" };
+            }
+            return b;
+          }).filter((b: any) => !/marshall/i.test(b.brandName || b.name || ""));
+
+          const displayCollabs = (sanitizedCollabs.length > 0 ? sanitizedCollabs : defaultBrandCollabs).map((b: any) => {
+            const bName = b.brandName || b.name || "";
+            const cleanName = bName.toLowerCase().trim();
+            const cleanAlphanumeric = bName.toLowerCase().replace(/[^a-z0-9]/g, "");
+            
+            const generatedFallback = 'TEXT_FALLBACK';
+            const vInfo = brandVectorMap[cleanName];
+            const customLogo = b.logoUrl || b.logo || b.imageUrl || b.brandLogo;
+            
+            return {
+              brandName: bName,
+              logo: (vInfo ? vInfo.icon : (customLogo || `https://cdn.simpleicons.org/${cleanAlphanumeric}/white`)),
+              fallbackLogo: (vInfo ? vInfo.fallback : (customLogo || generatedFallback)),
+              isCustom: Boolean(customLogo),
+              order: Number(b.order) || 0
+            };
+          }).sort((a: any, b: any) => a.order - b.order);
 
           return (
-            <div className="relative max-w-7xl mx-auto px-2 sm:px-4">
+            <div className="relative max-w-6xl mx-auto px-2 sm:px-4 flex flex-col items-center justify-center">
               {/* Background Ambient Aurora Glow behind Grid */}
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold/5 via-purple-900/10 to-transparent blur-3xl pointer-events-none" />
 
               {/* Luxury Apple + Linear Grid Wall Container */}
-              <div className="border border-white/5 rounded-3xl overflow-hidden bg-black/30 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative z-10 p-4 sm:p-6">
+              <div className="border border-white/5 rounded-3xl overflow-hidden bg-black/30 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative z-10 p-3 sm:p-5 w-full">
                 <motion.div 
                   initial="hidden"
                   whileInView="show"
@@ -851,7 +1045,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                       transition: { staggerChildren: 0.04 }
                     }
                   }}
-                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 w-full items-center justify-items-center"
+                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 sm:gap-2.5 w-full items-center justify-items-center"
                 >
                   {displayCollabs.map((brand: any, idx: number) => {
                     const bName = brand.brandName;
@@ -861,9 +1055,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
                     const imgClasses = isUltra
                       ? "h-5 sm:h-6 md:h-7 w-auto max-w-[100px] sm:max-w-[130px] md:max-w-[150px]"
-                      : ((isCashify || isLenskart)
-                        ? "h-7 sm:h-9 md:h-11 w-auto max-w-[120px] sm:max-w-[160px] md:max-w-[200px]"
-                        : "h-12 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[240px] md:max-w-[280px]");
+                      : (isCashify
+                        ? "h-4 sm:h-5 md:h-6 w-auto max-w-[85px] sm:max-w-[105px] md:max-w-[125px]"
+                        : (isLenskart
+                          ? "h-7 sm:h-9 md:h-11 w-auto max-w-[120px] sm:max-w-[160px] md:max-w-[200px]"
+                          : "h-12 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[240px] md:max-w-[280px]"));
 
                     const logoFilter = isCashify
                       ? "brightness(2.8) contrast(150%) grayscale(1)"
@@ -878,7 +1074,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                         }}
                         whileHover={{ y: -3, scale: 1.04 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className="group relative flex items-center justify-center p-4 sm:p-6 h-28 sm:h-36 w-full rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
+                        className="group relative flex items-center justify-center p-2.5 sm:p-4 h-24 sm:h-32 w-full rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
                       >
                         {/* Subtle Cell Hover Ambient Light Sweep */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
