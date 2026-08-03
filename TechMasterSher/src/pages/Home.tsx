@@ -90,7 +90,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     ...(liveHomeData || {})
   };
 
-  const heroBadge = liveHomeData?.hero?.badge || activeHome?.hero?.badge || activeHome?.heroBadge || "TECH MASTER";
   const heroTopBadge = liveHomeData?.hero?.topBadgeText || activeHome?.hero?.topBadgeText || activeHome?.heroTopBadge || "India's most-watched media production house";
   const heroMainHeading = liveHomeData?.hero?.mainHeading || activeHome?.hero?.mainHeading || activeHome?.heroMainHeading || "TECH MASTER";
   const heroTagline = liveHomeData?.hero?.tagline || activeHome?.hero?.tagline || activeHome?.heroTagline || '"Nothing We Make Is Forgettable. Unskippable. Unforgettable."';
