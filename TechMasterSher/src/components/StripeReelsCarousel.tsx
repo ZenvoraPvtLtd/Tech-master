@@ -29,15 +29,7 @@ const transitionSettings = {
   ease: stripeEasing,
 };
 
-const WORKING_VIDEOS = [
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutback2012.mp4"
-];
+
 
 // Complete 23 user-provided YouTube Shorts & Instagram Reels with exact channel handles and view counts
 const DEFAULT_REELS = [
@@ -354,7 +346,7 @@ function getEmbedUrl(url?: string, videoUrl?: string): { type: "youtube" | "inst
     };
   }
   
-  if (targetUrl.includes("instagram.com/reel/") || targetUrl.includes("instagram.com/p/") || targetUrl.includes("/reel/")) {
+  if (targetUrl.includes("instagram.com/") || targetUrl.includes("/reel/") || targetUrl.includes("/p/")) {
     let instId: string | null = null;
     const match = targetUrl.match(/\/reel\/([^/?#]+)/) || targetUrl.match(/\/p\/([^/?#]+)/);
     if (match) instId = match[1];
@@ -367,10 +359,7 @@ function getEmbedUrl(url?: string, videoUrl?: string): { type: "youtube" | "inst
     }
   }
   
-  const validMp4 = (videoUrl && videoUrl.endsWith(".mp4"))
-    ? videoUrl 
-    : WORKING_VIDEOS[Math.abs((targetUrl || videoUrl || "").length || 0) % WORKING_VIDEOS.length];
-
+  const validMp4 = (videoUrl && videoUrl.endsWith(".mp4")) ? videoUrl : undefined;
   return { type: "direct", fallbackVideo: validMp4 };
 }
 
@@ -648,8 +637,25 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                         loading="lazy"
                       />
                     );
+                  } else if (embedInfo.type === "instagram") {
+                    return (
+                      <iframe
+                        src={embedInfo.embedUrl}
+                        title={reel.title || "Instagram reel player"}
+                        className="w-[150%] h-[150%] absolute -left-[25%] -top-[25%] pointer-events-none object-cover border-none scale-105 opacity-95"
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                        loading="lazy"
+                      />
+                    );
                   } else {
-                    const videoSrc = reel.videoUrl || embedInfo.fallbackVideo || WORKING_VIDEOS[originalIndex % WORKING_VIDEOS.length];
+                    const videoSrc = reel.videoUrl || embedInfo.fallbackVideo;
+                    if (!videoSrc) {
+                      return (
+                        <div className="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-center p-4">
+                          <span className="text-gold text-xs font-mono">FEATURED MEDIA</span>
+                        </div>
+                      );
+                    }
                     return (
                       <video
                         ref={(el) => {
@@ -661,11 +667,6 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                               p.catch(() => {});
                             }
                           }
-                        }}
-                        onError={(e) => {
-                          const target = e.target as HTMLVideoElement;
-                          target.src = WORKING_VIDEOS[originalIndex % WORKING_VIDEOS.length];
-                          target.play().catch(() => {});
                         }}
                         src={mediaUrl(videoSrc)}
                         autoPlay
