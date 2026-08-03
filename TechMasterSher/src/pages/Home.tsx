@@ -585,12 +585,12 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       {/* 1. Hero Section */}
       <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-20 md:pt-24 pb-0 text-center">
         {/* Main Title: TECH MASTER - Positioned just below navbar */}
-        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-20 mb-2">
+        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-20 mb-3">
           <motion.h1
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-none text-center uppercase whitespace-nowrap select-none inline-block relative z-10 mb-3"
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-none text-center uppercase whitespace-nowrap select-none inline-block relative z-10 mb-4"
             style={{
               fontFamily: "'Montserrat', 'League Spartan', 'Outfit', sans-serif",
               fontWeight: 900,
@@ -625,17 +625,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             })()}
           </motion.h1>
 
-          {/* Small TECH MASTER Badge directly below big title (Above Lion) */}
-          <span className="typo-badge text-gold/80 border border-gold/30 px-4 py-1.5 rounded-full bg-black/60 font-mono font-semibold text-xs sm:text-sm backdrop-blur-md shadow-md">
-            {heroBadge}
-          </span>
-        </div>
-
-        {/* Vertical Gap for 3D Lion / Sher Logo */}
-        <div className="h-80 sm:h-[380px] md:h-[430px] w-full pointer-events-none" />
-
-        {/* Top Badge (INDIA'S MOST-WATCHED MEDIA PRODUCTION HOUSE) placed cleanly below 3D Lion */}
-        <div className="flex flex-col items-center relative z-20 mt-6 sm:mt-10 mb-6 sm:mb-8">
+          {/* INDIA'S MOST-WATCHED MEDIA PRODUCTION HOUSE Badge directly below TECH MASTER title (Above Lion) */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -649,7 +639,10 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </motion.div>
         </div>
 
-        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-2 sm:mt-4">
+        {/* Vertical Gap for 3D Lion / Sher Logo */}
+        <div className="h-64 sm:h-[320px] md:h-[360px] w-full pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-10 sm:mt-16 md:mt-20">
 
           {/* Tagline */}
           <motion.div
