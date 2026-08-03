@@ -644,6 +644,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                         title={reel.title || "YouTube video player"}
                         className="w-[170%] h-[170%] absolute -left-[35%] -top-[35%] pointer-events-none object-cover border-none scale-105"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        referrerPolicy="strict-origin-when-cross-origin"
                         loading="lazy"
                       />
                     );

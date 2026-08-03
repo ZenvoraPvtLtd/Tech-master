@@ -218,7 +218,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.warn("Backend CMS sync initial fallback:", err);
       setIsBackendConnected(false);
-      applyCmsDataToState({});
+      // Retain existing state on transient network/cold-start delay instead of clearing
     } finally {
       setIsLoading(false);
     }

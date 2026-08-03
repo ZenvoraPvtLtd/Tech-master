@@ -33,13 +33,14 @@ app.use(
   })
 );
 
-// 3. Rate Limiting (Prevent DDoS/abuse in production)
+// 3. Rate Limiting (Prevent DDoS/abuse in production while allowing seamless reading)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  max: 2000, // Increased limit for production clients
   message: "Too many requests from this IP, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.method === "GET", // Allow read requests without rate limiting block
 });
 
 if (process.env.NODE_ENV === "production") {
