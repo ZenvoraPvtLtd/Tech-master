@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, ArrowUp, ArrowDown, Eye, EyeOff, Star, 
-  ExternalLink, Sparkles, RefreshCw, Check, Youtube, Instagram, Film 
+  ExternalLink, Sparkles, RefreshCw, Check, Film 
 } from 'lucide-react';
 import { useDatabase } from '../../context/DatabaseContext';
+
+const YoutubeIcon = ({ className = "w-3.5 h-3.5" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
+const InstagramIcon = ({ className = "w-3.5 h-3.5" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+  </svg>
+);
 
 export default function FeaturedVideoManager() {
   const { dbData } = useDatabase();
@@ -14,7 +28,9 @@ export default function FeaturedVideoManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
-  const baseUrl = import.meta.env.VITE_API_URL || 'https://techmasterbackend.onrender.com/api/v1';
+  const baseUrl = (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
+    ? "http://localhost:5000/api/v1"
+    : (import.meta.env.VITE_API_URL || 'https://techmasterbackend.onrender.com/api/v1');
 
   const emptyForm = {
     platform: 'youtube',
@@ -274,7 +290,7 @@ export default function FeaturedVideoManager() {
                             ? 'bg-pink-500/10 border border-pink-500/30 text-pink-400' 
                             : 'bg-red-500/10 border border-red-500/30 text-red-400'
                         }`}>
-                          {isInsta ? <Instagram className="w-3.5 h-3.5" /> : <Youtube className="w-3.5 h-3.5" />}
+                          {isInsta ? <InstagramIcon className="w-3.5 h-3.5" /> : <YoutubeIcon className="w-3.5 h-3.5" />}
                           {isInsta ? 'Instagram' : 'YouTube'}
                         </span>
                       </td>

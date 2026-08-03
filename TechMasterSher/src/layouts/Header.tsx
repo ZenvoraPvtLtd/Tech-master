@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   const identityItems = dbData?.navigation?.identityItems || [
     { name: "Home", id: "home" },
     { name: "About Founder", id: "about" },
-    { name: "Founder's Journey", id: "journey" },
+    { name: "Journey", id: "journey" },
     { name: "Mission & Vision", id: "mission" },
     { name: "What We Do", id: "what-we-do" },
   ];
@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   const engagementItems = dbData?.navigation?.engagementItems || [
     { name: "Brand Collabs", id: "collaborations" },
     { name: "Campaigns", id: "campaigns" },
-    { name: "Product Launches", id: "product-launches" },
+    { name: "Launches", id: "product-launches" },
     { name: "Events & Talks", id: "events" },
     { name: "Our Work", id: "portfolio" },
     { name: "Careers", id: "career" },

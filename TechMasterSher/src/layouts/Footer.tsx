@@ -229,7 +229,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             [
               { name: "HOME PAGE", id: "home" },
               { name: "ABOUT FOUNDER", id: "about" },
-              { name: "FOUNDER'S JOURNEY", id: "journey" },
+              { name: "JOURNEY", id: "journey" },
               { name: "MISSION & VISION", id: "mission" },
               { name: "WHAT WE DO", id: "what-we-do" },
               { name: "LATEST BLOG", id: "blog" },
@@ -237,7 +237,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             [
               { name: "BRAND COLLABS", id: "collaborations" },
               { name: "CAMPAIGNS", id: "campaigns" },
-              { name: "PRODUCT LAUNCHES", id: "product-launches" },
+              { name: "LAUNCHES", id: "product-launches" },
               { name: "EVENTS & TALKS", id: "events" },
               { name: "OUR WORK", id: "portfolio" },
               { name: "MEDIA GALLERY", id: "gallery" },

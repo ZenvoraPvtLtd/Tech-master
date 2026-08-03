@@ -48,7 +48,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   useEffect(() => {
     const fetchHomepage = async () => {
       try {
-        const envUrl = import.meta.env.VITE_API_URL?.trim();
+        const envUrl = (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
+          ? "http://localhost:5000/api/v1"
+          : import.meta.env.VITE_API_URL?.trim();
         const base = envUrl ? (envUrl.replace(/\/+$|\/api\/v1\/*$/i, "").endsWith("/api/v1") ? envUrl.replace(/\/+$|\/api\/v1\/*$/i, "") : `${envUrl.replace(/\/+$|\/api\/v1\/*$/i, "")}/api/v1`) : "https://techmasterbackend.onrender.com/api/v1";
         const res = await fetch(`${base}/homepage?t=${Date.now()}`);
         if (res.ok) {
@@ -268,9 +270,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
       aspectRatio: "9/16",
       category: "Reels & Shorts",
-      views: v.views || dummyViews[i % dummyViews.length],
-      author: v.author,
-      handle: v.handle
+      views: v.viewCount || v.views || dummyViews[i % dummyViews.length],
+      viewCount: v.viewCount || v.views || dummyViews[i % dummyViews.length],
+      channelName: v.channelName || v.author || v.handle,
+      author: v.author || v.channelName,
+      handle: v.handle || v.channelName
     })),
     ...shortsList.map((v: any, i: number) => ({
       id: v.id,
@@ -281,9 +285,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
       aspectRatio: "9/16",
       category: "Reels & Shorts",
-      views: v.views || dummyViews[(i + 3) % dummyViews.length],
-      author: v.author,
-      handle: v.handle
+      views: v.viewCount || v.views || dummyViews[(i + 3) % dummyViews.length],
+      viewCount: v.viewCount || v.views || dummyViews[(i + 3) % dummyViews.length],
+      channelName: v.channelName || v.author || v.handle,
+      author: v.author || v.channelName,
+      handle: v.handle || v.channelName
     })),
     ...longList.map((v: any, i: number) => ({
       id: v.id,
@@ -577,18 +583,64 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-24 md:pt-28 pb-0 text-center">
-        {/* Badges directly below Navbar */}
-        <div className="flex flex-col items-center gap-3 relative z-20 mb-4 sm:mb-6">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+      <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-20 md:pt-24 pb-0 text-center">
+        {/* Main Title: TECH MASTER - Positioned just below navbar */}
+        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-20 mb-2">
+          <motion.h1
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-none text-center uppercase whitespace-nowrap select-none inline-block relative z-10 mb-3"
+            style={{
+              fontFamily: "'Montserrat', 'League Spartan', 'Outfit', sans-serif",
+              fontWeight: 900,
+              letterSpacing: "-0.02em",
+              filter: "drop-shadow(2px 2px 0px #880000)"
+            }}
+          >
+            {(() => {
+              const headingText = (heroMainHeading || "TECH MASTER").toUpperCase();
+              const parts = headingText.split(" ");
+              if (parts.length >= 2) {
+                const first = parts[0];
+                const rest = parts.slice(1).join(" ");
+                return (
+                  <>
+                    <span className="text-[#E2E8F0] opacity-95">{first}</span>{" "}
+                    <span
+                      className="bg-gradient-to-b from-[#FACC15] via-[#EAB308] to-[#B45309] bg-clip-text text-transparent"
+                      style={{
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                      }}
+                    >
+                      {rest}
+                    </span>
+                  </>
+                );
+              }
+              return (
+                <span className="text-[#E2E8F0]">{headingText}</span>
+              );
+            })()}
+          </motion.h1>
+
+          {/* Small TECH MASTER Badge directly below big title (Above Lion) */}
+          <span className="typo-badge text-gold/80 border border-gold/30 px-4 py-1.5 rounded-full bg-black/60 font-mono font-semibold text-xs sm:text-sm backdrop-blur-md shadow-md">
             {heroBadge}
           </span>
+        </div>
 
+        {/* Vertical Gap for 3D Lion / Sher Logo */}
+        <div className="h-80 sm:h-[380px] md:h-[430px] w-full pointer-events-none" />
+
+        {/* Top Badge (INDIA'S MOST-WATCHED MEDIA PRODUCTION HOUSE) placed cleanly below 3D Lion */}
+        <div className="flex flex-col items-center relative z-20 mt-6 sm:mt-10 mb-6 sm:mb-8">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="typo-badge border border-gold/25 px-4 py-1.5 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2 text-gold"
+            className="typo-badge border border-gold/25 px-5 py-2 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2 text-gold text-xs sm:text-sm shadow-md"
           >
             <svg className="w-3.5 h-3.5 fill-current text-gold" viewBox="0 0 24 24">
               <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -597,33 +649,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           </motion.div>
         </div>
 
-        {/* Vertical Gap for 3D Lion / Sher Logo */}
-        <div className="h-80 sm:h-96 md:h-[420px] w-full pointer-events-none" />
-
-        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-4 sm:mt-8">
-          {/* Main Title: TECH MASTER - Bold Geometric Sans-Serif (Montserrat ExtraBold), Yellow-Orange Vertical Gradient & 4px Red Offset Shadow */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, delay: 0.4, ease: "easeOut" }}
-            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black mb-6 leading-none text-center uppercase whitespace-nowrap select-none inline-block relative z-10"
-            style={{
-              fontFamily: "'Montserrat', 'League Spartan', 'Outfit', sans-serif",
-              fontWeight: 900,
-              letterSpacing: "-0.03em",
-              filter: "drop-shadow(4px 4px 0px #CC0000)"
-            }}
-          >
-            <span
-              className="bg-gradient-to-b from-[#FFF200] via-[#FFB700] to-[#FF7700] bg-clip-text text-transparent block"
-              style={{
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              {heroMainHeading ? heroMainHeading.toUpperCase() : "TECH MASTER"}
-            </span>
-          </motion.h1>
+        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-2 sm:mt-4">
 
           {/* Tagline */}
           <motion.div
@@ -858,43 +884,29 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
         {/* Video Cards Grid */}
         <div className="flex flex-col gap-16 md:gap-20 w-full max-w-7xl mx-auto video-showcase-grid-container">
-            {(() => {
-              let reels = filteredVideos.filter((v) => v.type === "reel" || v.type === "short");
-              if (reels.length >= 3) {
-                const v0 = reels[0];
-                const v1 = reels[1];
-                const v2 = reels[2];
-                const rest = reels.slice(3);
+          {(() => {
+            const cmsFeaturedVideos = (homeData?.featuredVideos && homeData.featuredVideos.length > 0)
+              ? homeData.featuredVideos.filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
+              : null;
+            
+            const cmsReels = (dbData?.featuredVideos && dbData.featuredVideos.length > 0)
+              ? dbData.featuredVideos
+              : (filteredVideos.filter((v: any) => v.type === "reel" || v.type === "short"));
+            
+            return (
+              <>
+                <StripeReelsCarousel reels={cmsReels} isHomePage={true} />
                 
-                const newReels = [v1, v2];
-                if (rest.length > 0) {
-                  newReels.push(rest[0]); // 3rd position
-                  newReels.push(v0);      // 4th position
-                  if (rest.length > 1) {
-                    newReels.push(...rest.slice(1));
-                  }
-                } else {
-                  newReels.push(v0);      // Fallback if exactly 3 reels
-                }
-                reels = newReels;
-              }
+                <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
+                  <LongVideosCarousel videos={cmsFeaturedVideos || []} isHomePage={true} />
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      </section>
 
-              const cmsFeaturedVideos = (homeData?.featuredVideos && homeData.featuredVideos.length > 0)
-                ? homeData.featuredVideos.filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
-                : null;
-              
-              return (
-                <>
-                  <StripeReelsCarousel reels={reels} isHomePage={true} />
-                  
-                  <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
-                    <LongVideosCarousel videos={cmsFeaturedVideos || []} isHomePage={true} />
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-      </section>      {/* 7. Brand Collaborations Grid (Original Logo Size, Reduced Inner Gap, Centered) */}
+      {/* 7. Brand Collaborations Grid (Original Logo Size, Reduced Inner Gap, Centered) */}
       <section className="scroll-section py-20 px-6 max-w-6xl mx-auto relative z-10 text-center flex flex-col items-center justify-center">
         {/* Small Badge */}
         <div className="flex justify-center mb-6 relative z-20">
