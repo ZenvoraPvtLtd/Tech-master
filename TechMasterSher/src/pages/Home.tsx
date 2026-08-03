@@ -601,19 +601,27 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div className="h-80 sm:h-96 md:h-[420px] w-full pointer-events-none" />
 
         <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-4 sm:mt-8">
-          {/* Main Title: TECH MASTER - Single Line Modern Sans-Serif Typography (Plus Jakarta Sans) */}
+          {/* Main Title: TECH MASTER - Bold Geometric Sans-Serif (Montserrat ExtraBold), Yellow-Orange Vertical Gradient & 4px Red Offset Shadow */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.4, ease: "easeOut" }}
-            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight uppercase leading-none text-center whitespace-nowrap drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)] select-none"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Outfit', sans-serif" }}
+            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black mb-6 leading-none text-center uppercase whitespace-nowrap select-none inline-block relative z-10"
+            style={{
+              fontFamily: "'Montserrat', 'League Spartan', 'Outfit', sans-serif",
+              fontWeight: 900,
+              letterSpacing: "-0.03em",
+              filter: "drop-shadow(4px 4px 0px #CC0000)"
+            }}
           >
-            <span className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-              {heroMainHeading.split(" ")[0] || "TECH"}{" "}
-            </span>
-            <span className="text-gold drop-shadow-[0_0_25px_rgba(212,175,55,0.5)]">
-              {heroMainHeading.split(" ").slice(1).join(" ") || "MASTER"}
+            <span
+              className="bg-gradient-to-b from-[#FFF200] via-[#FFB700] to-[#FF7700] bg-clip-text text-transparent block"
+              style={{
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              {heroMainHeading ? heroMainHeading.toUpperCase() : "TECH MASTER"}
             </span>
           </motion.h1>
 

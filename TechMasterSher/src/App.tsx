@@ -7,8 +7,8 @@ import { Header } from "./layouts/Header";
 import { Footer } from "./layouts/Footer";
 import { useData } from "./context/DataContext";
 import { BackgroundVideo } from "./components/BackgroundVideo";
+import { ScrollToTop } from "./components/ScrollToTop";
 import gsap from "gsap";
-
 
 // Pages
 import { Home } from "./pages/Home";
@@ -18,7 +18,6 @@ import { Mission } from "./pages/Mission";
 import { WhatWeDo } from "./pages/WhatWeDo";
 import { Services } from "./pages/Services";
 import { Collaborations } from "./pages/Collaborations";
-
 import { Campaigns } from "./pages/Campaigns";
 import { ProductLaunches } from "./pages/ProductLaunches";
 import { Events } from "./pages/Events";
@@ -64,7 +63,6 @@ function App() {
       }
       return;
     }
-    
 
     // Trigger overlay entrance
     gsap.to(".page-transition-overlay", {
@@ -161,21 +159,22 @@ function App() {
       {/* 5. R3F Spatial 3D Canvas Background */}
       <SceneContainer />
 
-      {/* 5. Global Page Transition Overlay */}
+      {/* 6. Global Page Transition Overlay */}
       <div
         className="page-transition-overlay fixed inset-0 bg-[#0d0d0d] z-[9999] pointer-events-none"
         style={{ clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)" }}
       />
 
-      {/* 6. Smooth Scroll Chassis & Content Layout */}
-      {!isLoading && (
+      {/* 7. Floating Global Scroll to Top Button */}
+      <ScrollToTop />
 
+      {/* 8. Smooth Scroll Chassis & Content Layout */}
+      {!isLoading && (
         <SmoothScroll>
           <div 
             className="relative min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-gold selection:text-black"
             style={{ zIndex: 10 }}
           >
-            
             {/* Header Sticky Navigation */}
             <Header activePage={activePage} onChangePage={navigatePage} />
 
