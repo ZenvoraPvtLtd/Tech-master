@@ -1,25 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { mediaUrl } from "../utils/media";
 
-const YoutubeIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-  </svg>
-);
-
-const InstagramIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-  </svg>
-);
-
 interface StripeReelsCarouselProps {
-  reels?: any[];
+  reels: any[];
   isHomePage?: boolean;
 }
 
@@ -29,446 +15,149 @@ const transitionSettings = {
   ease: stripeEasing,
 };
 
+function getEmbedUrl(url: string): { type: "youtube" | "instagram" | "direct"; embedUrl?: string; instId?: string } {
+  if (!url) return { type: "direct" };
 
-
-// Complete 23 user-provided YouTube Shorts & Instagram Reels with exact channel handles and view counts
-const DEFAULT_REELS = [
-  {
-    id: "reel-1",
-    platform: "youtube",
-    title: "Tech Master Viral Short",
-    views: "5.4M views",
-    channelName: "@techmasterhq",
-    url: "https://youtube.com/shorts/YP4CdON5rrQ?si=DOx4bPZIJPpc2LSa"
-  },
-  {
-    id: "reel-2",
-    platform: "youtube",
-    title: "Tech Master Official Video",
-    views: "3.8M views",
-    channelName: "@techmasterhq",
-    url: "https://www.youtube.com/watch?v=3VuyriEkDwg"
-  },
-  {
-    id: "reel-3",
-    platform: "youtube",
-    title: "Tech Master Exclusive Showcase",
-    views: "4.2M views",
-    channelName: "@techmasterhq",
-    url: "https://youtu.be/vW2K0L-vUgw?si=4KrnU7BeuuZIlO97"
-  },
-  {
-    id: "reel-4",
-    platform: "instagram",
-    title: "Tech Master Instagram Reel #1",
-    views: "1.8M views",
-    channelName: "@techmasterco",
-    url: "https://www.instagram.com/reel/DAs7dOoyU9d/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-  },
-  {
-    id: "reel-5",
-    platform: "instagram",
-    title: "Trendz Talk Viral Reel",
-    views: "2.4M views",
-    channelName: "@trendztalk",
-    url: "https://www.instagram.com/reel/DGdKcjNymR4/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-  },
-  {
-    id: "reel-6",
-    platform: "youtube",
-    title: "Master Wheels High-Speed Breakdown",
-    views: "3.2M views",
-    channelName: "@masterwheel1",
-    url: "https://youtube.com/shorts/iVGAICmKlpk?si=cL_9koXbTowODWEx"
-  },
-  {
-    id: "reel-7",
-    platform: "youtube",
-    title: "Next Univerz Masterclass",
-    views: "2.7M views",
-    channelName: "@NextUniverz",
-    url: "https://www.youtube.com/watch?v=oXr9B3Hg4fo"
-  },
-  {
-    id: "reel-8",
-    platform: "instagram",
-    title: "Full Circle Creator Story",
-    views: "950K views",
-    channelName: "@fullcircle_in",
-    url: "https://www.instagram.com/reel/Da1kOKEqys7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-  },
-  {
-    id: "reel-9",
-    platform: "youtube",
-    title: "Tech Master Hardware Teardown",
-    views: "8.4M views",
-    channelName: "@techmasterhq",
-    url: "https://www.youtube.com/watch?v=pGdwMZ_O_0A"
-  },
-  {
-    id: "reel-10",
-    platform: "youtube",
-    title: "Pop Tech Short-Form Reel",
-    views: "9.1M views",
-    channelName: "@trendztalk",
-    url: "https://youtube.com/shorts/gP7t0_5qMa4?si=1A54F_DsBGGlaPPF"
-  },
-  {
-    id: "reel-11",
-    platform: "youtube",
-    title: "Automotive Tech Special",
-    views: "4.1M views",
-    channelName: "@masterwheel1",
-    url: "https://youtu.be/Wnid6auAxbE?si=mJKMPlZLMcCTLnuz"
-  },
-  {
-    id: "reel-12",
-    platform: "youtube",
-    title: "Developer Deep Dive",
-    views: "2.2M views",
-    channelName: "@NextUniverz",
-    url: "https://www.youtube.com/watch?v=uMW9UyONsOk"
-  },
-  {
-    id: "reel-13",
-    platform: "instagram",
-    title: "Tech Master Official Reel",
-    views: "1.5M views",
-    channelName: "@techmasterco",
-    url: "https://www.instagram.com/techmasterco/reel/DPOfpSGgRkN/?hl=en"
-  },
-  {
-    id: "reel-14",
-    platform: "instagram",
-    title: "Viral Pop Culture Tech",
-    views: "3.1M views",
-    channelName: "@trendztalk",
-    url: "https://www.instagram.com/reel/DCRQiCgyu5W/?igsh=ZGVyMTRnOGpqNDVi"
-  },
-  {
-    id: "reel-15",
-    platform: "youtube",
-    title: "Full Circle Podcast Highlight",
-    views: "1.9M views",
-    channelName: "@fullcircle_in",
-    url: "https://youtu.be/iNtv0Yl1DB4?si=TTeocdaRSPQnL8_U"
-  },
-  {
-    id: "reel-16",
-    platform: "youtube",
-    title: "Tech Master Cinematic Reveal",
-    views: "4.4M views",
-    channelName: "@techmasterhq",
-    url: "https://www.youtube.com/watch?v=CaNEbx-Kwzc"
-  },
-  {
-    id: "reel-17",
-    platform: "youtube",
-    title: "Future Gadget Breakdown",
-    views: "3.9M views",
-    channelName: "@techmasterhq",
-    url: "https://www.youtube.com/watch?v=ClgRNy0QBWk"
-  },
-  {
-    id: "reel-18",
-    platform: "youtube",
-    title: "Supercar Track Telemetry Test",
-    views: "7.2M views",
-    channelName: "@masterwheel1",
-    url: "https://www.youtube.com/watch?v=mAXjgBDK3Gs"
-  },
-  {
-    id: "reel-19",
-    platform: "instagram",
-    title: "Tech Master Instagram Special",
-    views: "2.8M views",
-    channelName: "@techmasterco",
-    url: "https://www.instagram.com/reel/DW3uoC8CXWf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-  },
-  {
-    id: "reel-20",
-    platform: "instagram",
-    title: "Trendz Talk Pop Reel",
-    views: "1.7M views",
-    channelName: "@trendztalk",
-    url: "https://www.instagram.com/reel/DZHCtuzJzxn/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-  },
-  {
-    id: "reel-21",
-    platform: "instagram",
-    title: "Full Circle Studio Reel",
-    views: "890K views",
-    channelName: "@fullcircle_in",
-    url: "https://www.instagram.com/reel/DZt-HodJ94O/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-  },
-  {
-    id: "reel-22",
-    platform: "instagram",
-    title: "Next Univerz Tech Highlight",
-    views: "1.4M views",
-    channelName: "@NextUniverz",
-    url: "https://www.instagram.com/reel/DYZnd2FpY7O/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-  },
-  {
-    id: "reel-23",
-    platform: "instagram",
-    title: "Master Wheels Track Performance",
-    views: "4.5M views",
-    channelName: "@masterwheel1",
-    url: "https://www.instagram.com/reel/DT7z9b0gTCi/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-  }
-];
-
-export function normalizeReelItem(v: any): {
-  id: string;
-  platform: "youtube" | "instagram";
-  url: string;
-  thumbnail: string;
-  username: string;
-  channelName: string;
-  title: string;
-  views: string;
-  videoUrl: string;
-} {
-  const targetUrl = (v.url || v.videoUrl || "").trim();
-  const lowerUrl = targetUrl.toLowerCase();
-  const isInsta = v.platform === "instagram" || lowerUrl.includes("instagram.com") || lowerUrl.includes("/reel/") || lowerUrl.includes("/p/");
-  
-  let username = "";
-  let channelName = "";
-  let views = "";
-
-  if (lowerUrl.includes("yp4cdon5rrq") || lowerUrl.includes("3vuyriekdwg") || lowerUrl.includes("vw2k0l-vugw") || lowerUrl.includes("pgdwmz_o_0a") || lowerUrl.includes("canebx-kwzc") || lowerUrl.includes("clgrny0qbwk")) {
-    username = "@techmasterhq";
-    channelName = "Tech Master";
-    if (lowerUrl.includes("yp4cdon5rrq")) views = "5.4M";
-    else if (lowerUrl.includes("3vuyriekdwg")) views = "3.8M";
-    else if (lowerUrl.includes("vw2k0l-vugw")) views = "4.2M";
-    else if (lowerUrl.includes("pgdwmz_o_0a")) views = "8.4M";
-    else if (lowerUrl.includes("canebx-kwzc")) views = "4.4M";
-    else if (lowerUrl.includes("clgrny0qbwk")) views = "3.9M";
-    else views = "5.0M";
-  }
-  else if (lowerUrl.includes("das7dooyu9d") || lowerUrl.includes("dpofpsggrkn") || lowerUrl.includes("dw3uoc8cxwf")) {
-    username = "@techmasterco";
-    channelName = "Tech Master";
-    if (lowerUrl.includes("das7dooyu9d")) views = "1.8M";
-    else if (lowerUrl.includes("dpofpsggrkn")) views = "1.5M";
-    else if (lowerUrl.includes("dw3uoc8cxwf")) views = "2.8M";
-    else views = "2.0M";
-  }
-  else if (lowerUrl.includes("ivgaickmlpk") || lowerUrl.includes("wnid6auaxbe") || lowerUrl.includes("maxjgbdk3gs") || lowerUrl.includes("dt7z9b0gtci")) {
-    username = "@masterwheel1";
-    channelName = "Master Wheels";
-    if (lowerUrl.includes("ivgaickmlpk")) views = "3.2M";
-    else if (lowerUrl.includes("wnid6auaxbe")) views = "4.1M";
-    else if (lowerUrl.includes("maxjgbdk3gs")) views = "7.2M";
-    else if (lowerUrl.includes("dt7z9b0gtci")) views = "4.5M";
-    else views = "4.0M";
-  }
-  else if (lowerUrl.includes("oxr9b3hg4fo") || lowerUrl.includes("umw9uyonsok") || lowerUrl.includes("dyznd2fpy7o")) {
-    username = "@NextUniverz";
-    channelName = "Next Univerz";
-    if (lowerUrl.includes("oxr9b3hg4fo")) views = "2.7M";
-    else if (lowerUrl.includes("umw9uyonsok")) views = "2.2M";
-    else if (lowerUrl.includes("dyznd2fpy7o")) views = "1.4M";
-    else views = "2.5M";
-  }
-  else if (lowerUrl.includes("da1kokeqys7") || lowerUrl.includes("intv0yl1db4") || lowerUrl.includes("dzt-hodj94o")) {
-    username = "@fullcircle_in";
-    channelName = "Full Circle";
-    if (lowerUrl.includes("da1kokeqys7")) views = "950K";
-    else if (lowerUrl.includes("intv0yl1db4")) views = "1.9M";
-    else if (lowerUrl.includes("dzt-hodj94o")) views = "890K";
-    else views = "1.5M";
-  }
-  else if (lowerUrl.includes("dgdkcjnymr4") || lowerUrl.includes("gp7t0_5qma4") || lowerUrl.includes("dcrqicgyu5w") || lowerUrl.includes("dzhctuzjzxn")) {
-    username = "@trendztalk";
-    channelName = "Trendz Talk";
-    if (lowerUrl.includes("dgdkcjnymr4")) views = "2.4M";
-    else if (lowerUrl.includes("gp7t0_5qma4")) views = "9.1M";
-    else if (lowerUrl.includes("dcrqicgyu5w")) views = "3.1M";
-    else if (lowerUrl.includes("dzhctuzjzxn")) views = "1.7M";
-    else views = "2.0M";
-  }
-  else {
-    const rawName = v.username || v.channelName || v.author || v.handle || v.channel || "";
-    username = rawName ? (rawName.startsWith("@") ? rawName : `@${rawName}`) : (isInsta ? "@techmasterco" : "@techmasterhq");
-    channelName = username.replace("@", "");
-    views = (v.views || v.viewCount || "1.2M").toString().replace(/\s*views\s*/gi, "").trim();
-  }
-
-  let thumbnail = v.thumbnail || v.thumbnailUrl || v.imageUrl || "";
-  if (!thumbnail) {
-    if (!isInsta) {
-      const match = targetUrl.match(/(?:shorts\/|youtu\.be\/|v=|\/v\/|embed\/)([^"&?/\s]{11})/i);
-      const ytId = match ? match[1] : "";
-      if (ytId) {
-        thumbnail = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-      }
-    } else {
-      thumbnail = "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=800&auto=format&fit=crop";
-    }
-  }
-
-  return {
-    id: v._id || v.id || `reel-id-${Math.abs(targetUrl.length || 0)}-${views}`,
-    platform: isInsta ? "instagram" : "youtube",
-    url: targetUrl,
-    thumbnail,
-    username,
-    channelName,
-    title: v.title || "Featured Content",
-    views,
-    videoUrl: v.videoUrl || ""
-  };
-}
-
-function getEmbedUrl(url?: string, videoUrl?: string): { type: "youtube" | "instagram" | "direct"; embedUrl?: string; fallbackVideo?: string } {
-  const targetUrl = (url || "").trim();
-  
   let ytId: string | null = null;
-  if (targetUrl.includes("youtube.com/shorts/")) {
-    const parts = targetUrl.split("youtube.com/shorts/");
+  if (url.includes("youtube.com/shorts/")) {
+    const parts = url.split("youtube.com/shorts/");
     if (parts[1]) ytId = parts[1].split(/[?#]/)[0];
-  } else if (targetUrl.includes("youtu.be/")) {
-    const parts = targetUrl.split("youtu.be/");
+  } else if (url.includes("youtu.be/")) {
+    const parts = url.split("youtu.be/");
     if (parts[1]) ytId = parts[1].split(/[?#]/)[0];
-  } else if (targetUrl.includes("youtube.com/watch")) {
-    const match = targetUrl.match(/[?&]v=([^&#]+)/);
+  } else if (url.includes("youtube.com/watch")) {
+    const match = url.match(/[?&]v=([^&#]+)/);
     if (match) ytId = match[1];
   }
-  
+
   if (ytId) {
     return {
       type: "youtube",
-      embedUrl: `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1`
+      embedUrl: `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1`
     };
   }
-  
-  if (targetUrl.includes("instagram.com/") || targetUrl.includes("/reel/") || targetUrl.includes("/p/")) {
+
+  if (url.includes("instagram.com/reel/") || url.includes("instagram.com/p/") || url.includes("/reel/")) {
     let instId: string | null = null;
-    const match = targetUrl.match(/\/reel\/([^/?#]+)/) || targetUrl.match(/\/p\/([^/?#]+)/);
+    const match = url.match(/\/reel\/([^/?#]+)/) || url.match(/\/p\/([^/?#]+)/);
     if (match) instId = match[1];
-    
+
     if (instId) {
       return {
         type: "instagram",
-        embedUrl: `https://www.instagram.com/reel/${instId}/embed`
+        instId,
+        embedUrl: `https://www.instagram.com/reel/${instId}/embed/?autoplay=1`
       };
     }
   }
-  
-  const validMp4 = (videoUrl && videoUrl.endsWith(".mp4")) ? videoUrl : undefined;
-  return { type: "direct", fallbackVideo: validMp4 };
+
+  return { type: "direct" };
 }
+
+const DEFAULT_REELS = [
+  { id: 'sr-1', title: 'Tech Master Viral Short', url: 'https://youtube.com/shorts/YP4CdON5rrQ?si=DOx4bPZIJPpc2LSa', videoUrl: 'https://youtube.com/shorts/YP4CdON5rrQ?si=DOx4bPZIJPpc2LSa', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '5.4M views', category: 'Short' },
+  { id: 'sr-2', title: 'Tech Master Official Video', url: 'https://www.youtube.com/watch?v=3VuyriEkDwg', videoUrl: 'https://www.youtube.com/watch?v=3VuyriEkDwg', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '3.8M views', category: 'Short' },
+  { id: 'sr-3', title: 'Tech Master Exclusive Showcase', url: 'https://youtu.be/vW2K0L-vUgw?si=4KrnU7BeuuZIlO97', videoUrl: 'https://youtu.be/vW2K0L-vUgw?si=4KrnU7BeuuZIlO97', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '4.2M views', category: 'Short' },
+  { id: 'sr-4', title: 'Tech Master Instagram Reel #1', url: 'https://www.instagram.com/reel/DAs7dOoyU9d/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/DAs7dOoyU9d/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@techmasterco', handle: '@techmasterco', channelName: 'Tech Master', views: '1.8M views', category: 'Reel' },
+  { id: 'sr-5', title: 'Trendz Talk Pop Reel', url: 'https://www.instagram.com/reel/DGdKcjNymR4/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/DGdKcjNymR4/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@trendztalk', handle: '@trendztalk', channelName: 'Trendz Talk', views: '2.4M views', category: 'Reel' },
+  { id: 'sr-6', title: 'Master Wheels High-Speed Breakdown', url: 'https://youtu.be/iVGAICmKlpk?si=cL_9koXbTowODWEx', videoUrl: 'https://youtu.be/iVGAICmKlpk?si=cL_9koXbTowODWEx', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '3.2M views', category: 'Short' },
+  { id: 'sr-7', title: 'Next Univerz Masterclass', url: 'https://www.youtube.com/watch?v=oXr9B3Hg4fo', videoUrl: 'https://www.youtube.com/watch?v=oXr9B3Hg4fo', author: '@NextUniverz', handle: '@NextUniverz', channelName: 'Next Univerz', views: '2.7M views', category: 'Short' },
+  { id: 'sr-8', title: 'Full Circle Creator Story', url: 'https://www.instagram.com/reel/Da1kOKEqys7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/Da1kOKEqys7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@fullcircle_in', handle: '@fullcircle_in', channelName: 'Full Circle', views: '950K views', category: 'Reel' },
+  { id: 'sr-9', title: 'Tech Master Hardware Teardown', url: 'https://www.youtube.com/watch?v=pGdwMZ_O_0A', videoUrl: 'https://www.youtube.com/watch?v=pGdwMZ_O_0A', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '8.4M views', category: 'Short' },
+  { id: 'sr-10', title: 'Pop Tech Short-Form Reel', url: 'https://youtube.com/shorts/gP7t0_5qMa4?si=1A54F_DsBGGlaPPF', videoUrl: 'https://youtube.com/shorts/gP7t0_5qMa4?si=1A54F_DsBGGlaPPF', author: '@trendztalk', handle: '@trendztalk', channelName: 'Trendz Talk', views: '9.1M views', category: 'Short' },
+  { id: 'sr-11', title: 'Automotive Tech Special', url: 'https://youtu.be/Wnid6auAxbE?si=mJKMPlZLMcCTLnuz', videoUrl: 'https://youtu.be/Wnid6auAxbE?si=mJKMPlZLMcCTLnuz', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '4.1M views', category: 'Short' },
+  { id: 'sr-12', title: 'Developer Deep Dive', url: 'https://www.youtube.com/watch?v=uMW9UyONsOk', videoUrl: 'https://www.youtube.com/watch?v=uMW9UyONsOk', author: '@NextUniverz', handle: '@NextUniverz', channelName: 'Next Univerz', views: '2.2M views', category: 'Short' },
+  { id: 'sr-14', title: 'Viral Pop Culture Tech', url: 'https://www.instagram.com/reel/DCRQiCgyu5W/?igsh=ZGVyMTRnOGpqNDVi', videoUrl: 'https://www.instagram.com/reel/DCRQiCgyu5W/?igsh=ZGVyMTRnOGpqNDVi', author: '@trendztalk', handle: '@trendztalk', channelName: 'Trendz Talk', views: '3.1M views', category: 'Reel' },
+  { id: 'sr-15', title: 'Full Circle Podcast Highlight', url: 'https://youtu.be/iNtv0Yl1DB4?si=TTeocdaRSPQnL8_U', videoUrl: 'https://youtu.be/iNtv0Yl1DB4?si=TTeocdaRSPQnL8_U', author: '@fullcircle_in', handle: '@fullcircle_in', channelName: 'Full Circle', views: '1.9M views', category: 'Short' },
+  { id: 'sr-16', title: 'Tech Master Cinematic Reveal', url: 'https://www.youtube.com/watch?v=CaNEbx-Kwzc', videoUrl: 'https://www.youtube.com/watch?v=CaNEbx-Kwzc', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '4.4M views', category: 'Short' },
+  { id: 'sr-17', title: 'Future Gadget Breakdown', url: 'https://www.youtube.com/watch?v=ClgRNy0QBWk', videoUrl: 'https://www.youtube.com/watch?v=ClgRNy0QBWk', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '3.9M views', category: 'Short' },
+  { id: 'sr-18', title: 'Supercar Track Telemetry Test', url: 'https://www.youtube.com/watch?v=mAXjgBDK3Gs', videoUrl: 'https://www.youtube.com/watch?v=mAXjgBDK3Gs', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '7.2M views', category: 'Short' },
+  { id: 'sr-19', title: 'Tech Master Instagram Special', url: 'https://www.instagram.com/reel/DW3uoC8CXWf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/DW3uoC8CXWf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@techmasterco', handle: '@techmasterco', channelName: 'Tech Master', views: '2.8M views', category: 'Reel' },
+  { id: 'sr-20', title: 'Trendz Talk Pop Reel #2', url: 'https://www.instagram.com/reel/DZHCtuzJzxn/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/DZHCtuzJzxn/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@trendztalk', handle: '@trendztalk', channelName: 'Trendz Talk', views: '1.7M views', category: 'Reel' },
+  { id: 'sr-21', title: 'Full Circle Studio Reel', url: 'https://www.instagram.com/reel/DZt-HodJ94O/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/DZt-HodJ94O/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@fullcircle_in', handle: '@fullcircle_in', channelName: 'Full Circle', views: '890K views', category: 'Reel' },
+  { id: 'sr-22', title: 'Next Univerz Educational Reel', url: 'https://www.instagram.com/reel/DYZnd2FpY7O/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/DYZnd2FpY7O/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@NextUniverz', handle: '@NextUniverz', channelName: 'Next Univerz', views: '1.4M views', category: 'Reel' },
+  { id: 'sr-23', title: 'Master Wheels Track Performance', url: 'https://www.instagram.com/reel/DT7z9b0gTCi/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/DT7z9b0gTCi/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '4.5M views', category: 'Reel' }
+];
+
+const CardVideoPlayer: React.FC<{ src: string; isActive: boolean }> = ({ src, isActive }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isActive) {
+      video.play().catch((err) => {
+        console.warn("Video play failed:", err);
+      });
+    } else {
+      video.pause();
+    }
+  }, [isActive]);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      autoPlay={isActive}
+      muted
+      loop
+      playsInline
+      preload="auto"
+      className="w-full h-full object-cover"
+    />
+  );
+};
+
+const InstagramReelPlayer: React.FC<{ instId?: string; embedUrl: string; displayTitle: string; isActive: boolean }> = ({ instId, embedUrl, displayTitle, isActive }) => {
+  const [useFallback, setUseFallback] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isActive) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isActive]);
+
+  if (instId && !useFallback) {
+    return (
+      <video
+        ref={videoRef}
+        src={`https://ddinstagram.com/reel/${instId}/video.mp4`}
+        autoPlay={isActive}
+        muted
+        loop
+        playsInline
+        preload="auto"
+        onError={() => setUseFallback(true)}
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+
+  return (
+    <div className="w-full h-full relative overflow-hidden bg-black flex items-center justify-center">
+      <iframe
+        src={`${embedUrl}${isActive ? "" : "&muted=1"}`}
+        title={displayTitle}
+        className="w-full h-full scale-[2.2] origin-center pointer-events-none border-none bg-black"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+        loading="lazy"
+      />
+    </div>
+  );
+};
+
 
 export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels, isHomePage = false }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [fetchedMetadata, setFetchedMetadata] = useState<Record<string, { username: string; channelName: string; title: string; thumbnailUrl: string }>>({});
 
-  const activeReelsList = ((reels && reels.length > 0) ? reels : DEFAULT_REELS).map(normalizeReelItem);
-
-  useEffect(() => {
-    activeReelsList.forEach((reel) => {
-      const url = reel.url;
-      if (!url || fetchedMetadata[url]) return;
-
-      const lowerUrl = url.toLowerCase();
-      if (lowerUrl.includes("youtube.com") || lowerUrl.includes("youtu.be")) {
-        fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
-          .then((res) => {
-            if (res.ok) return res.json();
-            throw new Error("Failed to fetch");
-          })
-          .then((data) => {
-            let username = "";
-            const handleMatch = (data.author_url || "").match(/@([^/]+)/);
-            if (handleMatch && handleMatch[1]) {
-              username = `@${handleMatch[1]}`;
-            } else {
-              username = data.author_name ? `@${data.author_name.toLowerCase().replace(/[^a-z0-9]/g, "")}` : "@techmasterhq";
-            }
-            
-            const combined = (data.author_name || "").toLowerCase();
-            if (combined.includes("masterwheel")) username = "@masterwheel1";
-            else if (combined.includes("nextuniverz")) username = "@NextUniverz";
-            else if (combined.includes("fullcircle")) username = "@fullcircle_in";
-            else if (combined.includes("trendztalk")) username = "@trendztalk";
-            else if (combined.includes("tech master")) username = "@techmasterhq";
-
-            setFetchedMetadata((prev) => ({
-              ...prev,
-              [url]: {
-                username,
-                channelName: data.author_name || "Tech Master",
-                title: data.title || "YouTube Content",
-                thumbnailUrl: data.thumbnail_url || ""
-              }
-            }));
-          })
-          .catch(() => {
-            let username = reel.username || "@techmasterhq";
-            let channelName = reel.channelName || "Tech Master";
-            if (lowerUrl.includes("masterwheel")) {
-              username = "@masterwheel1";
-              channelName = "Master Wheels";
-            } else if (lowerUrl.includes("nextuniverz")) {
-              username = "@NextUniverz";
-              channelName = "Next Univerz";
-            } else if (lowerUrl.includes("fullcircle")) {
-              username = "@fullcircle_in";
-              channelName = "Full Circle";
-            } else if (lowerUrl.includes("trendztalk")) {
-              username = "@trendztalk";
-              channelName = "Trendz Talk";
-            }
-            setFetchedMetadata((prev) => ({
-              ...prev,
-              [url]: {
-                username,
-                channelName,
-                title: reel.title || "YouTube Content",
-                thumbnailUrl: reel.thumbnail || ""
-              }
-            }));
-          });
-      } else if (lowerUrl.includes("instagram.com")) {
-        let username = reel.username || "@techmasterco";
-        let channelName = reel.channelName || "Tech Master";
-        
-        const pathMatch = url.match(/instagram\.com\/([^/]+)\/(?:reel|p)/i);
-        if (pathMatch && pathMatch[1] && !["reel", "p", "reels"].includes(pathMatch[1].toLowerCase())) {
-          username = `@${pathMatch[1]}`;
-          channelName = pathMatch[1];
-        } else {
-          if (lowerUrl.includes("trendztalk")) {
-            username = "@trendztalk";
-            channelName = "Trendz Talk";
-          } else if (lowerUrl.includes("fullcircle")) {
-            username = "@fullcircle_in";
-            channelName = "Full Circle";
-          } else if (lowerUrl.includes("masterwheel")) {
-            username = "@masterwheel1";
-            channelName = "Master Wheels";
-          } else if (lowerUrl.includes("nextuniverz")) {
-            username = "@NextUniverz";
-            channelName = "Next Univerz";
-          }
-        }
-        
-        setFetchedMetadata((prev) => ({
-          ...prev,
-          [url]: {
-            username,
-            channelName,
-            title: reel.title || "Instagram Content",
-            thumbnailUrl: reel.thumbnail || "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=800&auto=format&fit=crop"
-          }
-        }));
-      }
-    });
-  }, [activeReelsList]);
+  const activeReels = (reels && Array.isArray(reels) && reels.length > 0) ? reels.filter(Boolean) : DEFAULT_REELS;
 
   const changeActiveIndex = (newIndex: number) => {
     if (newIndex === activeIndex) return;
@@ -476,12 +165,14 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
   };
 
   const handleNext = useCallback(() => {
-    changeActiveIndex((activeIndex + 1) % activeReelsList.length);
-  }, [activeIndex, activeReelsList.length]);
+    if (activeReels.length === 0) return;
+    changeActiveIndex((activeIndex + 1) % activeReels.length);
+  }, [activeIndex, activeReels.length]);
 
   const handlePrev = useCallback(() => {
-    changeActiveIndex((activeIndex - 1 + activeReelsList.length) % activeReelsList.length);
-  }, [activeIndex, activeReelsList.length]);
+    if (activeReels.length === 0) return;
+    changeActiveIndex((activeIndex - 1 + activeReels.length) % activeReels.length);
+  }, [activeIndex, activeReels.length]);
 
   const handleDragEnd = (_e: any, { offset }: PanInfo) => {
     const swipeThreshold = 50;
@@ -492,7 +183,9 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
     }
   };
 
-  const N = activeReelsList.length;
+  if (activeReels.length === 0) return null;
+
+  const N = activeReels.length;
   const maxSide = 2; // Show 2 cards on left, 1 active in middle, 2 cards on right
   const numLeft = N <= 1 ? 0 : Math.min(maxSide, Math.floor((N - 1) / 2));
   const numRight = N <= 1 ? 0 : Math.min(maxSide, Math.ceil((N - 1) / 2));
@@ -514,7 +207,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
 
   return (
     <div className="relative flex flex-col w-full px-4 md:px-8 pt-2 pb-0 md:pt-4 md:pb-0 max-w-[1600px] mx-auto overflow-hidden items-center justify-center select-none">
-      
+
       {/* Chevron Navigation Controls */}
       {N > 1 && (
         <>
@@ -540,7 +233,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
       <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 md:w-28 bg-gradient-to-l from-black via-black/60 to-transparent z-40 pointer-events-none" />
 
       {/* 3D Coverflow Carousel Track */}
-      <motion.div 
+      <motion.div
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.2}
@@ -550,11 +243,14 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
       >
         {offsets.map((offset) => {
           const originalIndex = (activeIndex + offset + N * 1000) % N;
-          const reel = activeReelsList[originalIndex];
+          const reel = activeReels[originalIndex];
+          if (!reel) return null;
+
           const isActive = offset === 0;
           const absOffset = Math.abs(offset);
           const { rotateY, scale, opacity, zIndex } = get3DProps(offset);
 
+          // Calculate x shift to pull side cards tightly inward, closing empty gaps between card 1 and card 2
           const getXShift = (off: number) => {
             if (off === 0) return 0;
             const abs = Math.abs(off);
@@ -564,12 +260,25 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
           };
           const xShift = getXShift(offset);
 
-          // Dynamic handle, platform badge & views resolution directly from normalized object
-          const targetUrl = reel.url;
-          const formattedHandle = reel.username;
-          const isInstagram = reel.platform === "instagram";
-          const platformBadgeText = isInstagram ? "INSTAGRAM REEL" : "YOUTUBE SHORT";
-          const viewText = reel.views;
+          const targetUrl = (reel.url || reel.videoUrl || "").trim();
+          const rawHandle = (reel.username || reel.handle || reel.channelName || reel.author || reel.channel || "").trim();
+          const formattedHandle = rawHandle
+            ? (rawHandle.startsWith("@") ? rawHandle : `@${rawHandle}`)
+            : "";
+          const displayTitle = reel.title || reel.name || "";
+
+          const rawViews = String(reel.views || reel.viewCount || "").trim();
+          const displayViews = rawViews
+            ? rawViews
+                .toLowerCase()
+                .replace("views", "")
+                .replace("likes", "")
+                .replace("view", "")
+                .replace("like", "")
+                .trim()
+                .toUpperCase()
+            : "";
+          const platformLabel = reel.platform === "instagram" ? "Instagram Reel" : "YouTube Short";
 
           // Smooth GPU Overlay level: center = crisp, sides = subtle dark overlay
           const overlayGlassClass = absOffset === 0
@@ -580,7 +289,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
 
           return (
             <motion.div
-              key={reel.url || reel.id || originalIndex}
+              key={reel._id || reel.id || reel.url || originalIndex}
               onClick={() => {
                 if (!isActive) {
                   changeActiveIndex(originalIndex);
@@ -600,87 +309,68 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
               }}
               transition={transitionSettings}
               style={{ transformStyle: "preserve-3d", willChange: "transform" }}
-              className={`relative h-[360px] sm:h-[440px] md:h-[490px] w-[200px] sm:w-[240px] md:w-[265px] overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border transition-all duration-300 ${
-                isHomePage ? "rounded-none" : "rounded-[24px]"
-              } ${
-                isHomePage
-                  ? isActive 
-                    ? "border-2 border-black shadow-[0_25px_60px_rgba(0,0,0,0.9)]" 
+              className={`relative h-[360px] sm:h-[440px] md:h-[490px] w-[200px] sm:w-[240px] md:w-[265px] overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border transition-all duration-300 ${isHomePage ? "rounded-none" : "rounded-[24px]"
+                } ${isHomePage
+                  ? isActive
+                    ? "border-2 border-black shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
                     : "border border-black/80 hover:border-black opacity-80 hover:opacity-100"
-                  : isActive 
-                    ? "border-gold shadow-[0_25px_60px_rgba(255,215,0,0.25)]" 
+                  : isActive
+                    ? "border-gold shadow-[0_25px_60px_rgba(255,215,0,0.25)]"
                     : "border-blue-500/30 hover:border-blue-400/50"
-              }`}
+                }`}
             >
               {/* Pointer events overlay to capture drag/click and block iframe interception */}
               <div className="absolute inset-0 z-35 bg-transparent cursor-pointer" />
 
               {/* Pure Video Element or IFrame - GPU Accelerated for 60fps Smooth Playback */}
-              <div 
-                className="w-full h-full absolute inset-0 z-20 overflow-hidden bg-black flex items-center justify-center"
-                style={{ 
+              <div
+                className="w-full h-full absolute inset-0 z-20 overflow-hidden"
+                style={{
                   filter: absOffset === 0 ? "none" : absOffset === 1 ? "blur(3px)" : "blur(6px)",
                   transform: "translateZ(0)"
                 }}
               >
                 {(() => {
-                  const embedInfo = getEmbedUrl(reel.url, reel.videoUrl);
-                  
+                  const playUrl = (reel.videoUrl || "").trim();
+                  const clickUrl = (reel.url || "").trim();
+
+                  const isPlayableDirectVideo = playUrl && 
+                    !playUrl.includes("instagram.com") && 
+                    !playUrl.includes("youtube.com") && 
+                    !playUrl.includes("youtu.be");
+
+                  if (isPlayableDirectVideo) {
+                    return <CardVideoPlayer src={mediaUrl(playUrl) || playUrl} isActive={isActive} />;
+                  }
+
+                  const embedInfo = getEmbedUrl(clickUrl || playUrl);
+
                   if (embedInfo.type === "youtube") {
                     return (
                       <iframe
                         src={embedInfo.embedUrl}
-                        title={reel.title || "YouTube video player"}
-                        className="w-[170%] h-[170%] absolute -left-[35%] -top-[35%] pointer-events-none object-cover border-none scale-105"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        referrerPolicy="strict-origin-when-cross-origin"
+                        title={displayTitle}
+                        className="w-full h-full object-cover scale-[1.3] pointer-events-none border-none"
+                        allow="autoplay; encrypted-media"
                         loading="lazy"
                       />
                     );
                   } else if (embedInfo.type === "instagram") {
                     return (
-                      <iframe
-                        src={embedInfo.embedUrl}
-                        title={reel.title || "Instagram reel player"}
-                        className="w-[150%] h-[150%] absolute -left-[25%] -top-[25%] pointer-events-none object-cover border-none scale-105 opacity-95"
-                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
-                        loading="lazy"
+                      <InstagramReelPlayer
+                        instId={embedInfo.instId}
+                        embedUrl={embedInfo.embedUrl || ""}
+                        displayTitle={displayTitle}
+                        isActive={isActive}
                       />
                     );
-                  } else {
-                    const videoSrc = reel.videoUrl || embedInfo.fallbackVideo;
-                    if (!videoSrc) {
-                      return (
-                        <div className="w-full h-full bg-zinc-900 flex flex-col items-center justify-center text-center p-4">
-                          <span className="text-gold text-xs font-mono">FEATURED MEDIA</span>
-                        </div>
-                      );
-                    }
-                    return (
-                      <video
-                        ref={(el) => {
-                          if (el) {
-                            el.muted = true;
-                            el.playsInline = true;
-                            const p = el.play();
-                            if (p !== undefined) {
-                              p.catch(() => {});
-                            }
-                          }
-                        }}
-                        src={mediaUrl(videoSrc)}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
-                        className="w-full h-full object-cover scale-105 relative z-20"
-                      />
-                    );
+                  } else if (playUrl) {
+                    return <CardVideoPlayer src={mediaUrl(playUrl) || playUrl} isActive={isActive} />;
                   }
+                  return null;
                 })()}
               </div>
-              
+
               {/* GPU Glass Blur & Blue Effect Overlay for Side Cards */}
               {absOffset > 0 && (
                 <div className={`absolute inset-0 z-30 ${overlayGlassClass}`} />
@@ -695,40 +385,40 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                   <span className="text-white font-bold text-sm sm:text-base tracking-wide font-sans drop-shadow-md">
                     {formattedHandle}
                   </span>
+                  <span className="text-gray-400 text-[10px] sm:text-xs font-light tracking-wide font-sans drop-shadow-sm mt-0.5">
+                    {platformLabel}
+                  </span>
                 </div>
               )}
 
-              {/* Views Counter & Platform Badge */}
+              {/* Views Counter & Top Badge */}
               <AnimatePresence>
                 {isActive && (
                   <>
-                    {/* Top Badge: YOUTUBE SHORT vs INSTAGRAM REEL */}
-                    <motion.div 
+                    {/* Top Badge */}
+                    <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ delay: 0.2 }}
                       className="absolute top-4 left-4 z-40 pointer-events-none"
                     >
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 ${isHomePage ? "rounded-none" : "rounded-full"} bg-black/80 backdrop-blur-md border border-gold/40 text-gold text-[9px] uppercase font-mono tracking-[1.5px] font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)]`}>
-                        {isInstagram ? <InstagramIcon /> : <YoutubeIcon />}
-                        {platformBadgeText || (isInstagram ? "INSTAGRAM REEL" : "YOUTUBE SHORT")}
+                      <span className={`px-3 py-1 ${isHomePage ? "rounded-none border-black" : "rounded-full border-white/20"} bg-black/60 backdrop-blur-md border text-[9px] uppercase font-mono tracking-[2px] text-gold shadow-lg`}>
+                        Reels & Shorts
                       </span>
                     </motion.div>
 
                     {/* Views Counter (Bottom Right of Card) */}
-                    {viewText && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ delay: 0.2 }}
-                        className="absolute bottom-3 right-2 sm:bottom-3.5 sm:right-2.5 z-40 flex items-center gap-1.5 bg-black/90 backdrop-blur-md border border-gold/40 rounded-full pl-2.5 pr-2 py-0.5 sm:pl-3 sm:pr-2.5 sm:py-1 shadow-lg"
-                      >
-                        <span className="text-gray-400 text-[9px] uppercase font-mono tracking-[1.5px] font-semibold">VIEWS</span>
-                        <span className="text-gold text-xs font-semibold font-mono">{viewText.replace(/\s*views\s*/gi, "").trim()}</span>
-                      </motion.div>
-                    )}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ delay: 0.2 }}
+                      className={`absolute bottom-5 right-5 z-40 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-gold/40 rounded-full px-3 py-1 shadow-lg`}
+                    >
+                      <span className="text-gray-400 text-[9px] uppercase font-mono tracking-[1.5px] font-semibold">VIEWS</span>
+                      <span className="text-gold text-xs font-semibold font-mono">{displayViews}</span>
+                    </motion.div>
                   </>
                 )}
               </AnimatePresence>
@@ -739,3 +429,4 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
     </div>
   );
 };
+

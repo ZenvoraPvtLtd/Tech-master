@@ -131,7 +131,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
               const thumbnailUrl = (videoId ? getYouTubeThumbnail(videoId) : "") || video.thumbnail || video.url;
               const meta = videoMetaMap[videoId] || { title: "", authorName: "" };
               const displayTitle = video.title && !video.title.toLowerCase().includes("subscribe") ? video.title : (meta.title || video.fallbackTitle || "Featured Tech Mastery");
-              const channelName = meta.authorName || video.channelName || "TechMaster";
+              const channelName = video.channelName || video.channel || meta.authorName || "TechMaster";
 
               // Width calculation: Center video wider (680px), Side 1 = 1 full card (170px), Side 2 = 0.5 peek card (70px)
               const getWidth = () => {

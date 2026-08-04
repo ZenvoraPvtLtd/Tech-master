@@ -25,7 +25,6 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
 
   const websitePages = [
     { id: 'homepage', label: 'Homepage', icon: Home },
-    { id: 'featured-videos', label: 'Featured Videos', icon: Film },
     { id: 'about', label: 'About', icon: User },
     { id: 'founder-journey', label: 'Founder Journey', icon: History },
     { id: 'mission-vision', label: 'Mission & Vision', icon: Target },

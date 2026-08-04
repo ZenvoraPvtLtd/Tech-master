@@ -189,9 +189,28 @@ export const Homepage = () => {
       heading: 'Craft In Motion',
       visible: true,
       list: [
-        { id: 'sr-1', title: 'Tech Master Short 1', views: '1.2M views', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-circuit-board-background-4318-large.mp4', thumbnailUrl: '', order: 1, visible: true, deleted: false },
-        { id: 'sr-2', title: 'Master Wheels Reel 1', views: '3.4M views', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-circuit-board-background-4318-large.mp4', thumbnailUrl: '', order: 2, visible: true, deleted: false },
-        { id: 'sr-3', title: 'Trendz Talk Viral Reel', views: '4.8M views', videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-circuit-board-background-4318-large.mp4', thumbnailUrl: '', order: 3, visible: true, deleted: false }
+        { id: 'sr-1', title: 'Tech Master Viral Short', url: 'https://youtube.com/shorts/YP4CdON5rrQ?si=DOx4bPZIJPpc2LSa', videoUrl: 'https://youtube.com/shorts/YP4CdON5rrQ?si=DOx4bPZIJPpc2LSa', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '5.4M views', category: 'Short', order: 1, visible: true, deleted: false },
+        { id: 'sr-2', title: 'Tech Master Official Video', url: 'https://www.youtube.com/watch?v=3VuyriEkDwg', videoUrl: 'https://www.youtube.com/watch?v=3VuyriEkDwg', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '3.8M views', category: 'Short', order: 2, visible: true, deleted: false },
+        { id: 'sr-3', title: 'Tech Master Exclusive Showcase', url: 'https://youtu.be/vW2K0L-vUgw?si=4KrnU7BeuuZIlO97', videoUrl: 'https://youtu.be/vW2K0L-vUgw?si=4KrnU7BeuuZIlO97', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '4.2M views', category: 'Short', order: 3, visible: true, deleted: false },
+        { id: 'sr-4', title: 'Tech Master Instagram Reel #1', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@techmasterco', handle: '@techmasterco', channelName: 'Tech Master', views: '1.8M views', category: 'Reel', order: 4, visible: true, deleted: false },
+        { id: 'sr-5', title: 'Trendz Talk Pop Reel', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@trendztalk', handle: '@trendztalk', channelName: 'Trendz Talk', views: '2.4M views', category: 'Reel', order: 5, visible: true, deleted: false },
+        { id: 'sr-6', title: 'Master Wheels High-Speed Breakdown', url: 'https://youtu.be/iVGAICmKlpk?si=cL_9koXbTowODWEx', videoUrl: 'https://youtu.be/iVGAICmKlpk?si=cL_9koXbTowODWEx', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '3.2M views', category: 'Short', order: 6, visible: true, deleted: false },
+        { id: 'sr-7', title: 'Next Univerz Masterclass', url: 'https://www.youtube.com/watch?v=oXr9B3Hg4fo', videoUrl: 'https://www.youtube.com/watch?v=oXr9B3Hg4fo', author: '@NextUniverz', handle: '@NextUniverz', channelName: 'Next Univerz', views: '2.7M views', category: 'Short', order: 7, visible: true, deleted: false },
+        { id: 'sr-8', title: 'Full Circle Creator Story', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@fullcircle_in', handle: '@fullcircle_in', channelName: 'Full Circle', views: '950K views', category: 'Reel', order: 8, visible: true, deleted: false },
+        { id: 'sr-9', title: 'Tech Master Hardware Teardown', url: 'https://www.youtube.com/watch?v=pGdwMZ_O_0A', videoUrl: 'https://www.youtube.com/watch?v=pGdwMZ_O_0A', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '8.4M views', category: 'Short', order: 9, visible: true, deleted: false },
+        { id: 'sr-10', title: 'Pop Tech Short-Form Reel', url: 'https://youtube.com/shorts/gP7t0_5qMa4?si=1A54F_DsBGGlaPPF', videoUrl: 'https://youtube.com/shorts/gP7t0_5qMa4?si=1A54F_DsBGGlaPPF', author: '@trendztalk', handle: '@trendztalk', channelName: 'Trendz Talk', views: '9.1M views', category: 'Short', order: 10, visible: true, deleted: false },
+        { id: 'sr-11', title: 'Automotive Tech Special', url: 'https://youtu.be/Wnid6auAxbE?si=mJKMPlZLMcCTLnuz', videoUrl: 'https://youtu.be/Wnid6auAxbE?si=mJKMPlZLMcCTLnuz', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '4.1M views', category: 'Short', order: 11, visible: true, deleted: false },
+        { id: 'sr-12', title: 'Developer Deep Dive', url: 'https://www.youtube.com/watch?v=uMW9UyONsOk', videoUrl: 'https://www.youtube.com/watch?v=uMW9UyONsOk', author: '@NextUniverz', handle: '@NextUniverz', channelName: 'Next Univerz', views: '2.2M views', category: 'Short', order: 12, visible: true, deleted: false },
+        { id: 'sr-14', title: 'Viral Pop Culture Tech', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@trendztalk', handle: '@trendztalk', channelName: 'Trendz Talk', views: '3.1M views', category: 'Reel', order: 14, visible: true, deleted: false },
+        { id: 'sr-15', title: 'Full Circle Podcast Highlight', url: 'https://youtu.be/iNtv0Yl1DB4?si=TTeocdaRSPQnL8_U', videoUrl: 'https://youtu.be/iNtv0Yl1DB4?si=TTeocdaRSPQnL8_U', author: '@fullcircle_in', handle: '@fullcircle_in', channelName: 'Full Circle', views: '1.9M views', category: 'Short', order: 15, visible: true, deleted: false },
+        { id: 'sr-16', title: 'Tech Master Cinematic Reveal', url: 'https://www.youtube.com/watch?v=CaNEbx-Kwzc', videoUrl: 'https://www.youtube.com/watch?v=CaNEbx-Kwzc', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '4.4M views', category: 'Short', order: 16, visible: true, deleted: false },
+        { id: 'sr-17', title: 'Future Gadget Breakdown', url: 'https://www.youtube.com/watch?v=ClgRNy0QBWk', videoUrl: 'https://www.youtube.com/watch?v=ClgRNy0QBWk', author: '@techmasterhq', handle: '@techmasterhq', channelName: 'Tech Master', views: '3.9M views', category: 'Short', order: 17, visible: true, deleted: false },
+        { id: 'sr-18', title: 'Supercar Track Telemetry Test', url: 'https://www.youtube.com/watch?v=mAXjgBDK3Gs', videoUrl: 'https://www.youtube.com/watch?v=mAXjgBDK3Gs', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '7.2M views', category: 'Short', order: 18, visible: true, deleted: false },
+        { id: 'sr-19', title: 'Tech Master Instagram Special', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@techmasterco', handle: '@techmasterco', channelName: 'Tech Master', views: '2.8M views', category: 'Reel', order: 19, visible: true, deleted: false },
+        { id: 'sr-20', title: 'Trendz Talk Pop Reel #2', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@trendztalk', handle: '@trendztalk', channelName: 'Trendz Talk', views: '1.7M views', category: 'Reel', order: 20, visible: true, deleted: false },
+        { id: 'sr-21', title: 'Full Circle Studio Reel', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@fullcircle_in', handle: '@fullcircle_in', channelName: 'Full Circle', views: '890K views', category: 'Reel', order: 21, visible: true, deleted: false },
+        { id: 'sr-22', title: 'Next Univerz Educational Reel', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@NextUniverz', handle: '@NextUniverz', channelName: 'Next Univerz', views: '1.4M views', category: 'Reel', order: 22, visible: true, deleted: false },
+        { id: 'sr-23', title: 'Master Wheels Track Performance', url: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', videoUrl: 'https://res.cloudinary.com/qm3umdmz/video/upload/v1785840447/techmaster/reels/test_reel_dog.mp4', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '4.5M views', category: 'Reel', order: 23, visible: true, deleted: false }
       ]
     },
 
@@ -201,8 +220,15 @@ export const Homepage = () => {
       heading: 'Long Videos',
       visible: true,
       list: [
-        { id: 'lv-1', title: 'Tech Master Special In-Depth', youtubeUrl: 'https://youtube.com', videoId: 'dQw4w9WgXcQ', views: '2.1M views', channel: 'Tech Master', duration: '14:20', thumbnailUrl: '', order: 1, visible: true, deleted: false },
-        { id: 'lv-2', title: 'Next Univerz Deep Dive', youtubeUrl: 'https://youtube.com', videoId: 'dQw4w9WgXcQ', views: '850K views', channel: 'Next Univerz', duration: '18:45', thumbnailUrl: '', order: 2, visible: true, deleted: false }
+        { id: 'lv-1', title: 'Building Enterprise Infrastructure', youtubeUrl: 'https://www.youtube.com/watch?v=8H272rF60dc&t=86s', videoId: '8H272rF60dc', startTime: '0:20', endTime: '', views: '1.4M views', channelName: 'Tech Master', order: 1, visible: true, deleted: false },
+        { id: 'lv-2', title: 'Advanced Next.js Architecture', youtubeUrl: 'https://www.youtube.com/watch?v=onV7l4H5EyM', videoId: 'onV7l4H5EyM', startTime: '5:41', endTime: '6:33', views: '890K views', channelName: 'Tech Master', order: 2, visible: true, deleted: false },
+        { id: 'lv-3', title: 'Full-Stack System Design', youtubeUrl: 'https://www.youtube.com/watch?v=jbEzCIqhTV8&t=29s', videoId: 'jbEzCIqhTV8', startTime: '0:19', endTime: '0:39', views: '1.1M views', channelName: 'Tech Master', order: 3, visible: true, deleted: false },
+        { id: 'lv-4', title: 'Mastering Cloud Native Systems', youtubeUrl: 'https://www.youtube.com/watch?v=4_n-ZnjIBVc&t=45s', videoId: '4_n-ZnjIBVc', startTime: '0:00', endTime: '', views: '2.3M views', channelName: 'Tech Master', order: 4, visible: true, deleted: false },
+        { id: 'lv-5', title: 'Scalable Microservices Tutorial', youtubeUrl: 'https://www.youtube.com/watch?v=CvqxRkjvsxY&t=130s', videoId: 'CvqxRkjvsxY', startTime: '0:20', endTime: '', views: '950K views', channelName: 'Tech Master', order: 5, visible: true, deleted: false },
+        { id: 'lv-6', title: 'High-Performance Web Applications', youtubeUrl: 'https://www.youtube.com/watch?v=udwDWFERyRw&t=185s', videoId: 'udwDWFERyRw', startTime: '0:20', endTime: '', views: '1.7M views', channelName: 'Tech Master', order: 6, visible: true, deleted: false },
+        { id: 'lv-7', title: 'Master Wheels Technology Showcase', youtubeUrl: 'https://www.youtube.com/watch?v=_Db6aKavN1U&t=107s', videoId: '_Db6aKavN1U', startTime: '0:04', endTime: '', views: '3.1M views', channelName: 'Master Wheels', order: 7, visible: true, deleted: false },
+        { id: 'lv-8', title: 'Automotive Engineering & Tech', youtubeUrl: 'https://www.youtube.com/watch?v=FSzP30YegeM&t=134s', videoId: 'FSzP30YegeM', startTime: '0:00', endTime: '', views: '2.8M views', channelName: 'Master Wheels', order: 8, visible: true, deleted: false },
+        { id: 'lv-9', title: 'EV Hardware & Control Systems', youtubeUrl: 'https://www.youtube.com/watch?v=q-l_F3yQK88&t=69s', videoId: 'q-l_F3yQK88', startTime: '0:10', endTime: '', views: '1.9M views', channelName: 'Master Wheels', order: 9, visible: true, deleted: false }
       ]
     },
 
@@ -1055,7 +1081,7 @@ export const Homepage = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Featured Shorts & Reels List</h3>
               <Button 
-                onClick={() => setModalConfig({ listKey: 'list', parentKey: 'shortsReels', item: { title: '', views: '', videoUrl: '' } })} 
+                onClick={() => setModalConfig({ listKey: 'list', parentKey: 'shortsReels', item: { title: '', url: '', videoUrl: '', platform: 'youtube', username: '', channelName: '', views: '', thumbnail: '' } })} 
                 variant="gold" 
                 size="sm" 
                 className="text-xs uppercase"
@@ -1066,13 +1092,21 @@ export const Homepage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {formData.shortsReels.list.map((sr, idx) => (
-                <div key={sr.id} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2 text-xs">
+                <div key={sr.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 hover:border-luxury-gold/50 rounded-xl space-y-2 text-xs transition-all">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-white truncate">{sr.title}</span>
-                    <button onClick={() => handleItemDelete('list', 'shortsReels', sr.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <span className="font-semibold text-white truncate cursor-pointer hover:text-luxury-gold" onClick={() => setModalConfig({ listKey: 'list', parentKey: 'shortsReels', item: sr })}>
+                      {sr.title || 'Untitled Reel'}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setModalConfig({ listKey: 'list', parentKey: 'shortsReels', item: sr })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleItemDelete('list', 'shortsReels', sr.id)} className="text-rose-400 hover:text-rose-300"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
                   </div>
-                  <span className="text-luxury-gold font-mono text-[10px] block">{sr.views}</span>
-                  {sr.videoUrl && <video src={sr.videoUrl} className="w-full aspect-video bg-black rounded object-cover" muted />}
+                  <div className="flex items-center justify-between font-mono text-[10px]">
+                    <span className="text-zinc-400">{sr.channelName || sr.author || sr.handle || sr.username || ''}</span>
+                    <span className="text-luxury-gold">{sr.views || ''}</span>
+                  </div>
+                  <p className="text-[10px] text-zinc-500 font-mono truncate">{sr.url || sr.videoUrl}</p>
                 </div>
               ))}
             </div>
@@ -1087,7 +1121,7 @@ export const Homepage = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Featured Long Videos List</h3>
               <Button 
-                onClick={() => setModalConfig({ listKey: 'list', parentKey: 'longVideos', item: { title: '', youtubeUrl: '', views: '', channel: 'Tech Master' } })} 
+                onClick={() => setModalConfig({ listKey: 'list', parentKey: 'longVideos', item: { title: '', youtubeUrl: '', startTime: '0:00', endTime: '', views: '1.4M views', channelName: 'Tech Master' } })} 
                 variant="gold" 
                 size="sm" 
                 className="text-xs uppercase"
@@ -1098,14 +1132,23 @@ export const Homepage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {formData.longVideos.list.map((lv, idx) => (
-                <div key={lv.id} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2 text-xs">
+                <div key={lv.id || idx} className="p-4 bg-zinc-900/60 border border-zinc-800 hover:border-luxury-gold/50 rounded-xl space-y-2 text-xs transition-all">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-white">{lv.title}</span>
-                    <button onClick={() => handleItemDelete('list', 'longVideos', lv.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <span className="font-semibold text-white truncate cursor-pointer hover:text-luxury-gold" onClick={() => setModalConfig({ listKey: 'list', parentKey: 'longVideos', item: lv })}>
+                      {lv.title || 'Untitled Video'}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setModalConfig({ listKey: 'list', parentKey: 'longVideos', item: lv })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleItemDelete('list', 'longVideos', lv.id)} className="text-rose-400 hover:text-rose-300"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
                   </div>
                   <div className="flex items-center justify-between font-mono text-[10px] text-zinc-400">
-                    <span>{lv.channel}</span>
-                    <span className="text-luxury-gold">{lv.views}</span>
+                    <span>{lv.channelName || lv.channel || 'Tech Master'}</span>
+                    <span className="text-luxury-gold">{lv.views || '1.4M views'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                    <span className="truncate">{lv.youtubeUrl}</span>
+                    <span className="text-emerald-400 shrink-0 ml-2">Start: {lv.startTime || '0:00'}{lv.endTime ? ` | End: ${lv.endTime}` : ''}</span>
                   </div>
                 </div>
               ))}
@@ -1338,24 +1381,28 @@ export const Homepage = () => {
 
             <div className="space-y-3 text-xs">
               {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => {
-                const isImageKey = ['circleImage', 'image', 'imageUrl', 'logo', 'logoUrl', 'avatar', 'thumbnail', 'bgMediaUrl'].includes(key);
-                const fieldLabel = (key === 'circleImage' || key === 'logoUrl') ? 'Channel Avatar Image URL' : key;
+                const isImageKey = ['circleImage', 'image', 'imageUrl', 'logo', 'logoUrl', 'avatar', 'thumbnail'].includes(key);
+                const isVideoKey = ['url', 'videoUrl', 'video', 'bgMediaUrl'].includes(key);
+                const isMediaKey = isImageKey || isVideoKey;
+                const fieldLabel = (key === 'circleImage' || key === 'logoUrl') ? 'Channel Avatar Image URL' : (key === 'url' || key === 'videoUrl') ? 'Reel Video URL / Cloudinary URL' : key;
                 return (
                   <div key={key}>
                     <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{fieldLabel}</label>
-                    {isImageKey ? (
+                    {isMediaKey ? (
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-luxury-gold bg-black shrink-0 flex items-center justify-center shadow-md">
-                            <img 
-                              src={modalConfig.item[key] || defaultCircleAvatar} 
-                              alt="Preview" 
-                              className="w-full h-full object-cover" 
-                            />
-                          </div>
+                          {isImageKey && (
+                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-luxury-gold bg-black shrink-0 flex items-center justify-center shadow-md">
+                              <img 
+                                src={modalConfig.item[key] || defaultCircleAvatar} 
+                                alt="Preview" 
+                                className="w-full h-full object-cover" 
+                              />
+                            </div>
+                          )}
                           <input
                             type="text"
-                            placeholder="Cloudinary Image URL"
+                            placeholder={isVideoKey ? "Cloudinary Video URL / YouTube / Instagram Link" : "Cloudinary Image URL"}
                             value={modalConfig.item[key] || ''}
                             onChange={(e) => setModalConfig({
                               ...modalConfig,
@@ -1367,17 +1414,17 @@ export const Homepage = () => {
                         <div className="flex items-center gap-2 pt-1">
                           <label className="flex-1 bg-luxury-gold/15 hover:bg-luxury-gold/25 text-luxury-gold border border-luxury-gold/40 rounded-lg px-3 py-2 text-[11px] font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-sm">
                             <UploadCloud className="w-4 h-4 text-luxury-gold" />
-                            {isUploading ? 'Uploading to Cloudinary...' : 'Upload Photo from PC'}
+                            {isUploading ? 'Uploading to Cloudinary...' : isVideoKey ? 'Upload Video to Cloudinary' : 'Upload Photo from PC'}
                             <input 
                               type="file" 
-                              accept="image/*" 
+                              accept={isVideoKey ? "video/*,image/*" : "image/*"}
                               disabled={isUploading}
                               onChange={(e) => {
                                 if (e.target.files && e.target.files[0]) {
-                                  handleDirectFileUpload(e.target.files[0], (url) => {
+                                  handleDirectFileUpload(e.target.files[0], (uploadedUrl) => {
                                     setModalConfig(prev => ({
                                       ...prev,
-                                      item: { ...prev.item, [key]: url }
+                                      item: { ...prev.item, [key]: uploadedUrl, videoUrl: isVideoKey ? uploadedUrl : prev.item.videoUrl }
                                     }));
                                   });
                                 }
@@ -1388,10 +1435,10 @@ export const Homepage = () => {
                           <button
                             type="button"
                             onClick={() => openMediaManager({
-                              onSelect: (url) => {
+                              onSelect: (selectedUrl) => {
                                 setModalConfig(prev => ({
                                   ...prev,
-                                  item: { ...prev.item, [key]: url }
+                                  item: { ...prev.item, [key]: selectedUrl, videoUrl: isVideoKey ? selectedUrl : prev.item.videoUrl }
                                 }));
                               }
                             })}

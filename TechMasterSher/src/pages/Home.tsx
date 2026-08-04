@@ -260,35 +260,33 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     : (Array.isArray(activeHome?.longVideos) ? activeHome.longVideos : (Array.isArray(dbData?.homepage?.longVideos) ? dbData.homepage.longVideos : []));
 
   const dynamicVideos = [
-    ...reelsList.map((v: any, i: number) => ({
+    ...reelsList.map((v: any) => ({
       id: v.id,
-      title: v.title,
+      platform: v.platform || (v.url && v.url.includes("instagram.com") ? "instagram" : "youtube"),
+      title: v.title || "",
+      username: v.username || v.handle || v.author || "",
+      channelName: v.channelName || "",
+      views: v.views || v.viewCount || "",
+      thumbnail: v.thumbnail || v.thumbnailUrl || v.imageUrl || "",
+      url: v.url || "",
+      videoUrl: v.videoUrl || "",
       type: "reel",
-      url: v.url || v.videoUrl,
-      videoUrl: v.videoUrl || v.url,
-      thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
-      aspectRatio: "9/16",
       category: "Reels & Shorts",
-      views: v.viewCount || v.views || dummyViews[i % dummyViews.length],
-      viewCount: v.viewCount || v.views || dummyViews[i % dummyViews.length],
-      channelName: v.channelName || v.author || v.handle,
-      author: v.author || v.channelName,
-      handle: v.handle || v.channelName
+      aspectRatio: "9/16"
     })),
-    ...shortsList.map((v: any, i: number) => ({
+    ...shortsList.map((v: any) => ({
       id: v.id,
-      title: v.title,
+      platform: v.platform || (v.url && v.url.includes("instagram.com") ? "instagram" : "youtube"),
+      title: v.title || "",
+      username: v.username || v.handle || v.author || "",
+      channelName: v.channelName || "",
+      views: v.views || v.viewCount || "",
+      thumbnail: v.thumbnail || v.thumbnailUrl || v.imageUrl || "",
+      url: v.url || "",
+      videoUrl: v.videoUrl || "",
       type: "short",
-      url: v.url || v.videoUrl,
-      videoUrl: v.videoUrl || v.url,
-      thumbnail: v.thumbnailUrl || v.thumbnail || v.imageUrl,
-      aspectRatio: "9/16",
       category: "Reels & Shorts",
-      views: v.viewCount || v.views || dummyViews[(i + 3) % dummyViews.length],
-      viewCount: v.viewCount || v.views || dummyViews[(i + 3) % dummyViews.length],
-      channelName: v.channelName || v.author || v.handle,
-      author: v.author || v.channelName,
-      handle: v.handle || v.channelName
+      aspectRatio: "9/16"
     })),
     ...longList.map((v: any, i: number) => ({
       id: v.id,
@@ -877,20 +875,33 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         {/* Video Cards Grid */}
         <div className="flex flex-col gap-16 md:gap-20 w-full max-w-7xl mx-auto video-showcase-grid-container">
           {(() => {
-            const cmsFeaturedVideos = (homeData?.featuredVideos && homeData.featuredVideos.length > 0)
-              ? homeData.featuredVideos.filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)
-              : null;
-            
-            const cmsReels = (dbData?.featuredVideos && dbData.featuredVideos.length > 0)
-              ? dbData.featuredVideos
+            const rawShortsReels = (
+              (homeData?.shortsReels?.list && homeData.shortsReels.list.length > 0 && homeData.shortsReels.list) ||
+              (homeData?.reelsList && homeData.reelsList.length > 0 && homeData.reelsList) ||
+              (dbData?.homepageCMS?.shortsReels?.list && dbData.homepageCMS.shortsReels.list.length > 0 && dbData.homepageCMS.shortsReels.list) ||
+              (dbData?.homepageCMS?.reelsList && dbData.homepageCMS.reelsList.length > 0 && dbData.homepageCMS.reelsList) ||
+              (dbData?.homepage?.shortsReels?.list && dbData.homepage.shortsReels.list.length > 0 && dbData.homepage.shortsReels.list) ||
+              null
+            );
+
+            const cmsReels = (rawShortsReels && rawShortsReels.length > 0)
+              ? rawShortsReels.filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined || v.visible !== false)
               : (filteredVideos.filter((v: any) => v.type === "reel" || v.type === "short"));
-            
+
+            const cmsLongVideos = (
+              (homeData?.longVideos?.list && homeData.longVideos.list.length > 0 && homeData.longVideos.list) ||
+              (homeData?.featuredVideos && homeData.featuredVideos.length > 0 && homeData.featuredVideos.filter((v: any) => v.status === "Active" || v.status === true || v.status === undefined)) ||
+              (dbData?.homepageCMS?.longVideos?.list && dbData.homepageCMS.longVideos.list.length > 0 && dbData.homepageCMS.longVideos.list) ||
+              (dbData?.featuredVideos && dbData.featuredVideos.length > 0 && dbData.featuredVideos) ||
+              undefined
+            );
+
             return (
               <>
                 <StripeReelsCarousel reels={cmsReels} isHomePage={true} />
                 
                 <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
-                  <LongVideosCarousel videos={cmsFeaturedVideos || []} isHomePage={true} />
+                  <LongVideosCarousel videos={cmsLongVideos} isHomePage={true} />
                 </div>
               </>
             );

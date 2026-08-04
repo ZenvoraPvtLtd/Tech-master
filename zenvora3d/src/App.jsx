@@ -17,7 +17,6 @@ import { Collaborations } from './pages/Modules/Collaborations';
 import { Campaigns } from './pages/Modules/Campaigns';
 import { ProductLaunches } from './pages/Modules/ProductLaunches';
 import { Portfolio } from './pages/Modules/Portfolio';
-import FeaturedVideoManager from './pages/Modules/FeaturedVideoManager';
 import { MediaGallery } from './pages/Modules/MediaGallery';
 import { Testimonials } from './pages/Modules/Testimonials';
 import { Events } from './pages/Modules/Events';
@@ -83,10 +82,6 @@ function AppContent() {
       case 'our-work':
       case 'ourWork':
         return <Portfolio />;
-      case 'featured-videos':
-      case 'featuredVideos':
-      case 'reels':
-        return <FeaturedVideoManager />;
       case 'media-gallery':
         return <MediaGallery />;
       case 'testimonials':
