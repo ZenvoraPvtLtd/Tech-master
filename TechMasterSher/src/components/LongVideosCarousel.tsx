@@ -132,6 +132,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
               const meta = videoMetaMap[videoId] || { title: "", authorName: "" };
               const displayTitle = video.title && !video.title.toLowerCase().includes("subscribe") ? video.title : (meta.title || video.fallbackTitle || "Featured Tech Mastery");
               const channelName = video.channelName || video.channel || meta.authorName || "TechMaster";
+              const displayViews = (video.views || "1.2M").toString().replace(/views/gi, "").trim();
 
               // Width calculation: Center video wider (680px), Side 1 = 1 full card (170px), Side 2 = 0.5 peek card (70px)
               const getWidth = () => {
@@ -149,16 +150,17 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
               // Prominent 3D Book Page Flip Angle Calculation
               const getRotateY = () => {
                 if (diff === 0) return 0;
-                if (diff < 0) return 0; // Left side remains static flat
-                if (diff === 1) return -25; // Right side card
+                if (diff === -1) return 25;
+                if (diff === -2) return 45;
+                if (diff === 1) return -25;
                 if (diff === 2) return -45;
                 return 0;
               };
 
-              // Book page hinge origin: Right side lifts up from bottom-right corner!
+              // Book page hinge origin: Symmetrical bottom hinge lift
               const getTransformOrigin = () => {
-                if (diff < 0) return "left center"; // Left side stays static hinged on left
-                if (diff > 0) return "right bottom"; // Right side lifts up from bottom-right corner
+                if (diff < 0) return "left bottom";
+                if (diff > 0) return "right bottom";
                 return direction > 0 ? "right bottom" : "left bottom";
               };
 
@@ -176,7 +178,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                     }
                   }}
                   initial={{
-                    rotateY: diff > 0 ? -25 : 0,
+                    rotateY: diff < 0 ? 25 : diff > 0 ? -25 : 0,
                     rotateX: 0,
                     y: 0,
                     opacity: 0.9
@@ -234,7 +236,12 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                       src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
                       title={displayTitle}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      className="w-[175%] h-[175%] min-w-[175%] min-h-[175%] object-cover border-0 pointer-events-none origin-center transform scale-105"
+                      style={{
+                        height: "120%",
+                        aspectRatio: "16/9",
+                        minWidth: isActive ? "170%" : "550%"
+                      }}
+                      className="object-cover border-0 pointer-events-none origin-center transform scale-110"
                     />
                   </div>
                 )}
@@ -301,13 +308,13 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
 
                       {/* Bottom Title & Dynamic Views */}
                       <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2 text-white/80 text-xs font-mono tracking-widest uppercase font-semibold">
-                          <Eye className="w-4 h-4 text-white/80" />
-                          <span>{video.views || "1.2M"} views</span>
-                        </div>
                         <h3 className="font-serif text-2xl md:text-4xl font-bold text-white shadow-black drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] leading-tight tracking-tight line-clamp-2">
                           {displayTitle}
                         </h3>
+                        <div className="flex items-center gap-2 text-white/80 text-xs font-mono tracking-widest uppercase font-semibold">
+                          <Eye className="w-4 h-4 text-white/80" />
+                          <span>{displayViews} views</span>
+                        </div>
                       </div>
                     </motion.div>
                   )}
