@@ -79,60 +79,52 @@ const DEFAULT_REELS = [
   { id: 'sr-23', title: 'Master Wheels Track Performance', url: 'https://www.instagram.com/reel/DT7z9b0gTCi/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', videoUrl: 'https://www.instagram.com/reel/DT7z9b0gTCi/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', author: '@masterwheel1', handle: '@masterwheel1', channelName: 'Master Wheels', views: '4.5M views', category: 'Reel' }
 ];
 
-const CardVideoPlayer: React.FC<{ src: string; isActive: boolean }> = ({ src, isActive }) => {
+const CardVideoPlayer: React.FC<{ src: string; isActive: boolean; poster?: string }> = ({ src, poster }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    if (isActive) {
-      video.play().catch((err) => {
-        console.warn("Video play failed:", err);
-      });
-    } else {
-      video.pause();
-    }
-  }, [isActive]);
+    video.play().catch((err) => {
+      console.warn("Video play failed:", err);
+    });
+  }, [src]);
 
   return (
     <video
       ref={videoRef}
       src={src}
-      autoPlay={isActive}
+      autoPlay
       muted
       loop
       playsInline
+      poster={poster}
       preload="auto"
       className="w-full h-full object-cover"
     />
   );
 };
 
-const InstagramReelPlayer: React.FC<{ instId?: string; embedUrl: string; displayTitle: string; isActive: boolean }> = ({ instId, embedUrl, displayTitle, isActive }) => {
+const InstagramReelPlayer: React.FC<{ instId?: string; embedUrl: string; displayTitle: string; isActive: boolean; poster?: string }> = ({ instId, embedUrl, displayTitle, poster }) => {
   const [useFallback, setUseFallback] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    if (isActive) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-    }
-  }, [isActive]);
+    video.play().catch(() => {});
+  }, [instId]);
 
   if (instId && !useFallback) {
     return (
       <video
         ref={videoRef}
         src={`https://ddinstagram.com/reel/${instId}/video.mp4`}
-        autoPlay={isActive}
+        autoPlay
         muted
         loop
         playsInline
+        poster={poster}
         preload="auto"
         onError={() => setUseFallback(true)}
         className="w-full h-full object-cover"
@@ -143,7 +135,7 @@ const InstagramReelPlayer: React.FC<{ instId?: string; embedUrl: string; display
   return (
     <div className="w-full h-full relative overflow-hidden bg-black flex items-center justify-center">
       <iframe
-        src={`${embedUrl}${isActive ? "" : "&muted=1"}`}
+        src={`${embedUrl}&autoplay=1&mute=1&loop=1`}
         title={displayTitle}
         className="w-full h-full scale-[2.2] origin-center pointer-events-none border-none bg-black"
         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
@@ -152,7 +144,6 @@ const InstagramReelPlayer: React.FC<{ instId?: string; embedUrl: string; display
     </div>
   );
 };
-
 
 export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels, isHomePage = false }) => {
   const [activeIndex, setActiveIndex] = useState(0);
