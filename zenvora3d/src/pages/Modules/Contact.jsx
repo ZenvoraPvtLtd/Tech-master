@@ -32,10 +32,11 @@ const defaultContactData = {
 };
 
 export const Contact = () => {
-  const { dbData, localDb, saveToLocalDb, updateSection, apiFetch } = useDatabase();
+  const { db, updateSection, apiFetch } = useDatabase();
   const [isPublishing, setIsPublishing] = useState(false);
 
-  const rawData = dbData?.contactPageData || localDb?.contactPageData || {};
+  const rawData = db?.contactPageData || {};
+  const submissions = db?.enquiries || db?.contactEnquiries || [];
 
   const [heroForm, setHeroForm] = useState(rawData.hero || defaultContactData.hero);
   const [infoForm, setInfoForm] = useState(rawData.info || defaultContactData.info);
@@ -78,7 +79,6 @@ export const Contact = () => {
       updateSection('contactInfo', infoForm);
       updateSection('contactHero', heroForm);
     }
-    saveToLocalDb('contactPageData', payload);
 
     try {
       if (apiFetch) {
@@ -106,7 +106,6 @@ export const Contact = () => {
       [section]: data
     };
     if (updateSection) updateSection('contactPageData', updated);
-    saveToLocalDb('contactPageData', updated);
   };
 
   const [activeTab, setActiveTab] = useState('hero');
@@ -342,7 +341,7 @@ export const Contact = () => {
                       <div>
                         <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">INQUIRY CATEGORY</label>
                         <select disabled className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-gray-400">
-                          {inquiryCategories.map(c => <option key={c.value}>{c.label}</option>)}
+                          {(categoriesForm || []).map(c => <option key={c.value || c.label}>{c.label}</option>)}
                         </select>
                       </div>
                       <div>

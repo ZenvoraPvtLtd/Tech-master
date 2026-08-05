@@ -57,6 +57,8 @@ app.use("/api/v1", cmsRouter);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/media", uploadRoutes);
+app.use("/api/v1/upload", uploadRoutes);
+app.use("/api/v1/media", uploadRoutes);
 
 // 6. Health Check Route
 app.get("/health", (req: Request, res: Response) => {

@@ -56,10 +56,8 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
       hasDropdown: true, 
       subItems: websitePages 
     },
-    { id: 'media-library', label: 'Media Library', icon: Newspaper },
     { id: 'navigation-manager', label: 'Navigation Manager', icon: Navigation },
     { id: 'pages', label: 'Pages', icon: FileText },
-    { id: 'seo-manager', label: 'SEO Manager', icon: Globe },
     { id: 'newsletter', label: 'Newsletter', icon: Mail },
     { id: 'contacts', label: 'Contacts', icon: PhoneCall },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },

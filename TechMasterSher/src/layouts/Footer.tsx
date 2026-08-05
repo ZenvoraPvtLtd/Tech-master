@@ -153,7 +153,7 @@ const ParticleCanvas: React.FC = () => {
 };
 
 export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
-  const { websiteSettings, contactData } = useData();
+  const { websiteSettings, contactData, footerData } = useData();
   const footerRef = useRef<HTMLElement>(null);
   const [mouseGlow, setMouseGlow] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -213,65 +213,77 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
         {/* LEFT COLUMN (lg:col-span-5): Branding & Prominent Heading */}
         <div className="lg:col-span-5 flex flex-col justify-start gap-4">
           <h2 className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-white leading-[1.1] tracking-tight">
-            Let's Build <br />
-            <span className="text-gold font-sans font-extrabold">
-              Something Amazing.
-            </span>
+            {footerData?.brandTitle ? (
+              <span dangerouslySetInnerHTML={{ __html: footerData.brandTitle.replace(/\n/g, "<br />") }} />
+            ) : (
+              <>
+                Let's Build <br />
+                <span className="text-gold font-sans font-extrabold">
+                  Something Amazing.
+                </span>
+              </>
+            )}
           </h2>
           <p className="text-gray-400 text-xs sm:text-sm font-sans font-normal max-w-md leading-relaxed opacity-90 mt-1">
-            We create premium websites, web applications and digital experiences that help brands grow online. We create premium websites, web applications and digital experiences that help brands grow online.
+            {footerData?.brandDescription || "We create premium websites, web applications and digital experiences that help brands grow online. We create premium websites, web applications and digital experiences that help brands grow online."}
           </p>
         </div>
 
         {/* MIDDLE COLUMNS (lg:col-span-4): 3 Sitemap Columns */}
         <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 pt-1 sm:pt-2">
-          {[
-            [
-              { name: "HOME PAGE", id: "home" },
-              { name: "ABOUT FOUNDER", id: "about" },
-              { name: "JOURNEY", id: "journey" },
-              { name: "MISSION & VISION", id: "mission" },
-              { name: "WHAT WE DO", id: "what-we-do" },
-              { name: "LATEST BLOG", id: "blog" },
-            ],
-            [
-              { name: "BRAND COLLABS", id: "collaborations" },
-              { name: "CAMPAIGNS", id: "campaigns" },
-              { name: "LAUNCHES", id: "product-launches" },
-              { name: "EVENTS & TALKS", id: "events" },
-              { name: "OUR WORK", id: "portfolio" },
-              { name: "MEDIA GALLERY", id: "gallery" },
-            ],
-            [
-              { name: "CORE SERVICES", id: "services" },
-              { name: "TESTIMONIALS", id: "testimonials" },
-              { name: "FAQ PORTAL", id: "faq" },
-              { name: "CONTACT PAGE", id: "contact" },
-              { name: "PRIVACY POLICY", id: "privacy" },
-              { name: "TERMS OF SERVICE", id: "terms" },
-            ]
-          ].map((columnLinks, colIdx) => {
-            const columnHeaders = ["IDENTITY", "ENGAGEMENT", "QUICK LINKS"];
-            return (
-              <div key={colIdx}>
-                <p className="text-[11px] font-mono tracking-[2.5px] text-gold uppercase font-bold mb-4 block">
-                  {columnHeaders[colIdx]}
-                </p>
-                <ul className="flex flex-col gap-[18px]">
-                  {columnLinks.map((link: any) => (
-                    <li key={link.id || link.name}>
-                      <button
-                        onClick={() => handleNavClick(link.id)}
-                        className="text-[11px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
-                      >
-                        {link.name}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
+          {(footerData?.columns || [
+            {
+              header: "IDENTITY",
+              links: [
+                { name: "HOME PAGE", id: "home" },
+                { name: "ABOUT FOUNDER", id: "about" },
+                { name: "JOURNEY", id: "journey" },
+                { name: "MISSION & VISION", id: "mission" },
+                { name: "WHAT WE DO", id: "what-we-do" },
+                { name: "LATEST BLOG", id: "blog" },
+              ]
+            },
+            {
+              header: "ENGAGEMENT",
+              links: [
+                { name: "BRAND COLLABS", id: "collaborations" },
+                { name: "CAMPAIGNS", id: "campaigns" },
+                { name: "LAUNCHES", id: "product-launches" },
+                { name: "EVENTS & TALKS", id: "events" },
+                { name: "OUR WORK", id: "portfolio" },
+                { name: "MEDIA GALLERY", id: "gallery" },
+              ]
+            },
+            {
+              header: "QUICK LINKS",
+              links: [
+                { name: "CORE SERVICES", id: "services" },
+                { name: "TESTIMONIALS", id: "testimonials" },
+                { name: "FAQ PORTAL", id: "faq" },
+                { name: "CONTACT PAGE", id: "contact" },
+                { name: "PRIVACY POLICY", id: "privacy" },
+                { name: "TERMS OF SERVICE", id: "terms" },
+              ]
+            }
+          ]).map((column: any, colIdx: number) => (
+            <div key={colIdx}>
+              <p className="text-[11px] font-mono tracking-[2.5px] text-gold uppercase font-bold mb-4 block">
+                {column.header}
+              </p>
+              <ul className="flex flex-col gap-[18px]">
+                {column.links?.map((link: any, linkIdx: number) => (
+                  <li key={linkIdx}>
+                    <button
+                      onClick={() => handleNavClick(link.id)}
+                      className="text-[11px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
+                    >
+                      {link.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* RIGHT COLUMN (lg:col-span-3): Taller & Perfectly Balanced 3D Spatial Node Panel */}
@@ -301,7 +313,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
         
         {/* Card 1: DIRECT MAIL */}
         <motion.a 
-          href={`mailto:${contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}`}
+          href={`mailto:${footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}`}
           whileHover={{ y: -6, scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
           className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-gold/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(212,175,55,0.25)] overflow-hidden cursor-pointer"
@@ -313,14 +325,14 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div className="overflow-hidden relative z-10">
             <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-gold transition-colors">DIRECT MAIL</span>
             <span className="text-sm font-bold text-white group-hover:text-gold transition-colors block truncate">
-              {contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
+              {footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
             </span>
           </div>
         </motion.a>
 
         {/* Card 2: BOOKING OFFICE */}
         <motion.a 
-          href={`tel:${contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}`}
+          href={`tel:${footerData?.cards?.phone || contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}`}
           whileHover={{ y: -6, scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
           className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-cyan-400/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(34,211,238,0.25)] overflow-hidden cursor-pointer"
@@ -332,14 +344,14 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div className="overflow-hidden relative z-10">
             <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-cyan-400 transition-colors">BOOKING OFFICE</span>
             <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors block truncate">
-              {contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
+              {footerData?.cards?.phone || contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
             </span>
           </div>
         </motion.a>
 
         {/* Card 3: YOUTUBE CHANNEL */}
         <motion.a 
-          href="https://youtube.com/c/techmasterf"
+          href={footerData?.cards?.youtubeUrl || "https://youtube.com/c/techmasterf"}
           target="_blank"
           rel="noopener noreferrer"
           whileHover={{ y: -6, scale: 1.02 }}
@@ -355,14 +367,14 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div className="overflow-hidden relative z-10">
             <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-red-400 transition-colors">YOUTUBE CHANNEL</span>
             <span className="text-sm font-bold text-white group-hover:text-red-400 transition-colors block truncate">
-              Tech Master
+              {footerData?.cards?.youtubeTitle || "Tech Master"}
             </span>
           </div>
         </motion.a>
 
         {/* Card 4: CREATOR HQ */}
         <motion.a 
-          href={websiteSettings?.googleMapsUrl || "#"}
+          href={footerData?.cards?.googleMapsUrl || websiteSettings?.googleMapsUrl || "#"}
           target="_blank"
           rel="noopener noreferrer"
           whileHover={{ y: -6, scale: 1.02 }}
@@ -376,7 +388,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div className="overflow-hidden relative z-10">
             <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-purple-400 transition-colors">CREATOR HQ</span>
             <span className="text-sm font-bold text-white group-hover:text-purple-400 transition-colors block truncate">
-              Silicon Valley Creator Lab
+              {footerData?.cards?.creatorHqAddress || "Silicon Valley Creator Lab"}
             </span>
           </div>
         </motion.a>
@@ -387,10 +399,10 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       <div className="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
         <div className="text-left">
           <p className="text-[10px] uppercase tracking-[2px] text-gray-300 font-light">
-            &copy; {new Date().getFullYear()} {websiteSettings?.copyrightText || websiteSettings?.companyName || "TECH MASTER MEDIA & CREATIVE LABS"}. ALL RIGHTS RESERVED.
+            &copy; {new Date().getFullYear()} {footerData?.copyrightText || websiteSettings?.copyrightText || websiteSettings?.companyName || "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED."}
           </p>
           <p className="text-[9px] uppercase tracking-[1px] text-gray-500 mt-1 flex items-center gap-3">
-            <span>Designed and developed by .......</span>
+            <span>{footerData?.developerText || "Designed and developed by ......."}</span>
             <span>•</span>
             <button 
               onClick={() => onChangePage("privacy")}
@@ -418,7 +430,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                   <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                 </svg>
               ), 
-              href: "https://youtube.com/c/techmasterf" 
+              href: footerData?.socials?.youtube || "https://youtube.com/c/techmasterf" 
             },
             { 
               // LinkedIn
@@ -427,7 +439,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                   <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                 </svg>
               ), 
-              href: "https://linkedin.com/in/techmasterf" 
+              href: footerData?.socials?.linkedin || "https://linkedin.com/in/techmasterf" 
             },
             { 
               // Instagram
@@ -438,7 +450,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                 </svg>
               ), 
-              href: "https://instagram.com/techmasterf" 
+              href: footerData?.socials?.instagram || "https://instagram.com/techmasterf" 
             },
             { 
               // Facebook
@@ -447,7 +459,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                   <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                 </svg>
               ), 
-              href: "https://facebook.com/techmasterf" 
+              href: footerData?.socials?.facebook || "https://facebook.com/techmasterf" 
             },
             { 
               // GitHub
@@ -456,7 +468,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                   <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                 </svg>
               ), 
-              href: "https://github.com/techmasterf" 
+              href: footerData?.socials?.github || "https://github.com/techmasterf" 
             },
             { 
               // Twitter/X
@@ -465,7 +477,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               ), 
-              href: "https://twitter.com/techmasterf" 
+              href: footerData?.socials?.twitter || "https://twitter.com/techmasterf" 
             },
           ].map((soc, idx) => (
             <Magnetic key={idx} strength={0.3}>

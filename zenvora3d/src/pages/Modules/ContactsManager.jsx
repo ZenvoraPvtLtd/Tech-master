@@ -16,9 +16,9 @@ export const ContactsManager = () => {
   const list = db?.contactEnquiries || defaultEnquiries;
 
   const filtered = list.filter(e => 
-    e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    e.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    e.company.toLowerCase().includes(searchQuery.toLowerCase())
+    (e.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+    (e.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (e.company || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleToggleStatus = (id) => {

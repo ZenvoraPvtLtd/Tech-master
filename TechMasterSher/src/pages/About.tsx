@@ -80,7 +80,7 @@ export const About: React.FC = () => {
   };
 
   const studioImgUrl = mediaUrl(studioCard.imageUrl || culture.imageUrl || aboutDataAny?.story?.imageUrl) || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80";
-  const founderImgUrl = coverImg;
+  const founderImgUrl = mediaUrl(philosophy.profileImageUrl || aboutDataAny?.introduction?.profileImageUrl) || coverImg;
 
   return (
     <div className="relative text-white min-h-screen pt-28 pb-16 px-6 overflow-hidden bg-black">

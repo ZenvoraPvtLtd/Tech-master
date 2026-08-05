@@ -222,6 +222,16 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+// GET Featured Videos compatibility route for client website
+router.get("/featured-videos", async (req: any, res: any, next: any) => {
+  try {
+    const cmsDoc = await CMSData.findOne({ key: "featuredVideos" });
+    ApiResponse.success(res, "Featured videos retrieved successfully", cmsDoc ? cmsDoc.value : []);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Section state update synchronizer endpoint for Admin Dashboard
 router.post("/update", authenticate as any, async (req: any, res: any, next: any) => {
   try {

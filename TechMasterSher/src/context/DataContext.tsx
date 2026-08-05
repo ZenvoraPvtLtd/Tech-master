@@ -41,6 +41,7 @@ interface DataContextType {
   dbData: any;
   websiteSettings: any;
   coreServicesConfig: any;
+  footerData: any;
   refreshData: () => Promise<void>;
   updateSection?: (key: string, data: any) => void;
 }
@@ -75,6 +76,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [launchesData, setLaunchesData] = useState<any>(null);
   const [websiteSettings, setWebsiteSettings] = useState<any>(null);
   const [coreServicesConfig, setCoreServicesConfig] = useState<any>(null);
+  const [footerData, setFooterData] = useState<any>(null);
 
   // Blog CMS Additional States
   const [blogHeroData, setBlogHeroData] = useState<any>(null);
@@ -177,6 +179,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (db.websiteSettings) setWebsiteSettings(db.websiteSettings);
     if (db.coreServicesConfig) setCoreServicesConfig(db.coreServicesConfig);
     if (db.servicesPage) setServicesPageData(db.servicesPage);
+    if (db.footer) setFooterData(db.footer);
 
     // Blog CMS Hydration
     if (db.blogHero) setBlogHeroData(db.blogHero);
@@ -284,6 +287,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dbData,
         websiteSettings,
         coreServicesConfig,
+        footerData,
         refreshData,
         // Blog CMS Properties
         blogHeroData,
