@@ -52,6 +52,10 @@ Implemented dynamic metadata extraction for both YouTube Shorts and Instagram Re
 ### Blog Hub Latest Insights Header Fix
 - **Dynamic Title & Subtitle**: Linked the Latest Insights header text block in [Blog.tsx](file:///c:/Users/Hp/Tech-master/TechMasterSher/src/pages/Blog.tsx#L286) to the `latestInsightsData` state from context, removing hardcoded fallbacks and enabling real-time edits from the admin dashboard.
 
+### Sticky Navigation Responsiveness & Menu Toggle Fix
+- **Hamburger Button added**: Added a high-end dynamic hamburger toggle button in [Header.tsx](file:///c:/Users/Hp/Tech-master/TechMasterSher/src/layouts/Header.tsx#L210) to toggle the overlay menu on all screen sizes, correcting the issue where mobile/tablet users had no way to navigate because desktop links are hidden.
+- **Pointer-events correction**: Changed parent `<header>` container `pointer-events` to `none` when scrolled, but explicitly forced `pointer-events-auto` on the interactive logo, nav lists, and header actions wrappers. This ensures click-through is preserved while header controls remain fully clickable.
+
 ---
 
 ## 2. Verification Results

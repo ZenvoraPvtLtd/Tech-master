@@ -137,7 +137,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   return (
     <>
       <header
-  className={`fixed top-0 left-0 w-full z-[999] py-1 md:py-2 px-4 md:px-12 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
+  className={`fixed top-0 left-0 w-full z-[999] py-1 md:py-2 pl-4 pr-2.5 md:pl-12 md:pr-5 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
   style={{
     filter: isScrolled ? 'none' : `
       drop-shadow(0 2px 4px rgba(212, 175, 55, 0.7))
@@ -145,7 +145,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
     `,
     background: isScrolled ? 'transparent' : 'black',
     borderBottom: `1px solid ${isScrolled ? 'transparent' : 'rgba(255,255,255,0.1)'}`,
-    pointerEvents: isScrolled ? 'none' : 'auto'
+    pointerEvents: 'none'
   }}
 >
         {/* Brand Logo */}
@@ -170,7 +170,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         </div>
 
         {/* Desktop Navigation Link Cluster */}
-        <nav className={`hidden lg:flex items-center gap-5 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <nav className={`hidden lg:flex items-center gap-5 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
           {(dbData?.navigation?.desktopLinks || [
             { name: "Home", id: "home" },
             { name: "About", id: "about" },
@@ -194,8 +194,8 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         </nav>
 
         {/* Action Button & Hamburger Toggle */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          <div className="flex items-center justify-center pointer-events-auto">
+        <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
+          <div className="flex items-center justify-center">
             <ScrollCounter viewsLabel={viewsLabel} />
           </div>
           <div className={`hidden sm:block transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
@@ -209,6 +209,17 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               </button>
             </Magnetic>
           </div>
+
+          {/* Hamburger Menu Toggle Button (Visible on all viewports, key navigation toggle) */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={`w-7 h-7 flex flex-col justify-center items-center gap-1 rounded-full border border-gold/30 bg-black/60 hover:bg-black/90 hover:border-gold pointer-events-auto cursor-pointer transition-all duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            aria-label="Toggle Menu"
+          >
+            <div className={`w-3.5 h-[1.2px] bg-gold transition-all duration-300 ${isMenuOpen ? "rotate-45 translate-y-[5px]" : ""}`} />
+            <div className={`w-3.5 h-[1.2px] bg-gold transition-all duration-300 ${isMenuOpen ? "opacity-0" : ""}`} />
+            <div className={`w-3.5 h-[1.2px] bg-gold transition-all duration-300 ${isMenuOpen ? "-rotate-45 -translate-y-[5px]" : ""}`} />
+          </button>
 
 
         </div>
