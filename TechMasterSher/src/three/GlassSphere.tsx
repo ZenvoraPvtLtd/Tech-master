@@ -82,17 +82,17 @@ export const GlassSphere: React.FC<GlassSphereProps> = ({ scrollProgress, mouse 
     meshRef.current.rotation.y = Math.sin(time * 0.5) * 0.15;
     meshRef.current.rotation.x = Math.cos(time * 0.3) * 0.1;
 
-    // React to mouse movement (lerped for smoothness)
-    const targetX = mouse.current.x * 0.35;
-    // Position Lion logo so top of logo starts cleanly below the badge
-    const targetY = -0.65 + mouse.current.y * 0.2;
-    meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, targetX, 0.05);
-    meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, targetY, 0.05);
-
     // Scroll-based parallax and scale adjustments
     const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
     const isTablet = typeof window !== "undefined" && window.innerWidth < 1024;
-    const responsiveFactor = isMobile ? 0.6 : (isTablet ? 0.8 : 1.0);
+    const responsiveFactor = isMobile ? 0.42 : (isTablet ? 0.8 : 1.0);
+
+    // React to mouse movement (lerped for smoothness) - centered on mobile
+    const targetX = isMobile ? 0 : (mouse.current.x * 0.35);
+    // Position Lion logo so top of logo starts cleanly below the badge
+    const targetY = isMobile ? -0.75 : (-0.65 + mouse.current.y * 0.2);
+    meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, targetX, 0.05);
+    meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, targetY, 0.05);
 
     // Scale down to 0 at the bottom, scale up to full on scroll up
     const targetScale = Math.max(0, 1.0 - smoothScroll) * responsiveFactor;

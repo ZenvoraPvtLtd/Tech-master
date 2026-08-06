@@ -56,6 +56,10 @@ Implemented dynamic metadata extraction for both YouTube Shorts and Instagram Re
 - **Hamburger Button added**: Added a high-end dynamic hamburger toggle button in [Header.tsx](file:///c:/Users/Hp/Tech-master/TechMasterSher/src/layouts/Header.tsx#L210) to toggle the overlay menu on all screen sizes, correcting the issue where mobile/tablet users had no way to navigate because desktop links are hidden.
 - **Pointer-events correction**: Changed parent `<header>` container `pointer-events` to `none` when scrolled, but explicitly forced `pointer-events-auto` on the interactive logo, nav lists, and header actions wrappers. This ensures click-through is preserved while header controls remain fully clickable.
 
+### 3D Lion Logo Mobile Centering & Scaling Fix
+- **Dynamic Translation & Scale**: Configured position coordinates in [GlassSphere.tsx](file:///c:/Users/Hp/Tech-master/TechMasterSher/src/three/GlassSphere.tsx#L85) to lock the 3D Lion Logo's horizontal alignment (`targetX = 0`) on mobile viewports.
+- **Mobile Scale Adjustments**: Set `responsiveFactor = 0.42` for mobile viewports to ensure the logo fits within narrow screens and does not trigger viewport overflows, while retaining interactive mouse-tracking logic on desktop views.
+
 ---
 
 ## 2. Verification Results
