@@ -195,10 +195,10 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
 
         {/* Action Button & Hamburger Toggle */}
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
-          <div className="flex items-center justify-center">
+          <div className="hidden md:flex items-center justify-center">
             <ScrollCounter viewsLabel={viewsLabel} />
           </div>
-          <div className={`hidden sm:block transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className={`transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <Magnetic strength={0.3}>
               <button
                 onClick={() => handleNavClick((navBtnLink || "contact").replace(/^\//, ""))}
