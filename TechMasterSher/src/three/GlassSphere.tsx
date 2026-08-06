@@ -90,7 +90,7 @@ export const GlassSphere: React.FC<GlassSphereProps> = ({ scrollProgress, mouse 
     // React to mouse movement (lerped for smoothness) - centered on mobile
     const targetX = isMobile ? 0 : (mouse.current.x * 0.35);
     // Position Lion logo so top of logo starts cleanly below the badge
-    const targetY = isMobile ? -0.75 : (-0.65 + mouse.current.y * 0.2);
+    const targetY = isMobile ? 0.0 : (-0.65 + mouse.current.y * 0.2);
     meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, targetX, 0.05);
     meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, targetY, 0.05);
 
