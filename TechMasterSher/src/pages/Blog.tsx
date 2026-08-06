@@ -18,6 +18,7 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
     strategyPillarsData, 
     strategyPresetsData, 
     blogCategoriesData, 
+    latestInsightsData,
   } = useData();
 
   const [liveBlogData, setLiveBlogData] = useState<any>(null);
@@ -283,8 +284,12 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
       <section className="max-w-7xl mx-auto text-left relative z-10 mb-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-6 mb-10 gap-6">
           <div>
-            <h2 className="font-serif text-3xl font-light">Latest Insights</h2>
-            <p className="text-gray-400 text-xs mt-1 font-light">Browse thoughts, guides, and updates from the team</p>
+            <h2 className="font-serif text-3xl font-light">
+              {latestInsightsData?.title || localDb?.latestInsights?.title || "Latest Insights"}
+            </h2>
+            <p className="text-gray-400 text-xs mt-1 font-light">
+              {latestInsightsData?.subtitle || localDb?.latestInsights?.subtitle || "Browse thoughts, guides, and updates from the team"}
+            </p>
           </div>
           
           {/* Category Filter Bar */}

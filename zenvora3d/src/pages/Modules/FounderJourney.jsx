@@ -334,8 +334,7 @@ export const FounderJourney = () => {
   const cmsSectionsList = [
     { id: 'sec-1', label: '1. Journey Hero' },
     { id: 'sec-2', label: '2. Timeline Milestones (2019-2026)' },
-    { id: 'sec-3', label: '3. Journey Statistics' },
-    { id: 'sec-4', label: '4. Growth Roadmap' }
+    { id: 'sec-4', label: '3. Growth Roadmap' }
   ];
 
   return (
@@ -428,26 +427,14 @@ export const FounderJourney = () => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Scroll Indicator Text</label>
-                <input
-                  type="text"
-                  value={formData.hero.scrollText}
-                  onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, scrollText: e.target.value } })}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">View Counter Text</label>
-                <input
-                  type="text"
-                  value={formData.hero.viewCounter}
-                  onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, viewCounter: e.target.value } })}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono"
-                />
-              </div>
+            <div>
+              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Scroll Indicator Text</label>
+              <input
+                type="text"
+                value={formData.hero.scrollText}
+                onChange={(e) => persistChanges({ ...formData, hero: { ...formData.hero, scrollText: e.target.value } })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
+              />
             </div>
           </div>
         </div>
@@ -507,32 +494,6 @@ export const FounderJourney = () => {
         </div>
       )}
 
-      {/* SECTION 3: STATISTICS */}
-      {activeSection === 'sec-3' && (
-        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
-          <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Journey Statistics Settings</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Views Counter</label>
-              <input
-                type="text"
-                value={formData.stats.viewsCounter}
-                onChange={(e) => persistChanges({ ...formData, stats: { ...formData.stats, viewsCounter: e.target.value } })}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono font-bold"
-              />
-            </div>
-            <div>
-              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Suffix</label>
-              <input
-                type="text"
-                value={formData.stats.suffix}
-                onChange={(e) => persistChanges({ ...formData, stats: { ...formData.stats, suffix: e.target.value } })}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* SECTION 4: GROWTH ROADMAP */}
       {activeSection === 'sec-4' && (

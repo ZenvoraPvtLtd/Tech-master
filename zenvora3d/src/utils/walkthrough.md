@@ -36,6 +36,22 @@ Implemented dynamic metadata extraction for both YouTube Shorts and Instagram Re
 ### Featured Videos 404 Resolution
 - **Route Injection**: Added `/api/v1/featured-videos` endpoint to both backend source [src/routes/index.ts](file:///c:/Users/Hp/Tech-master/TechMasterBackend/src/routes/index.ts#L224) and compiled output [dist/routes/index.js](file:///c:/Users/Hp/Tech-master/TechMasterBackend/dist/routes/index.js#L170) to return featured video items correctly, stopping log pollution and console 404s.
 
+### Homepage CMS Editor Section Removal
+- **Badge Tag Input Removed**: Deleted the "Badge Tag" edit field in the Hero Section of [Homepage.jsx](file:///c:/Users/Hp/Tech-master/zenvora3d/src/pages/Modules/Homepage.jsx#L803) as requested by the user.
+
+### About Page Heading Hardcoded Fallback Fix
+- **Dynamic Heading Support**: Fixed fallback rendering logic in [About.tsx](file:///c:/Users/Hp/Tech-master/TechMasterSher/src/pages/About.tsx#L125) to avoid appending a hardcoded highlighted suffix (`Tech Master` or otherwise) when the custom highlight term is not matched. The main heading now displays verbatim as written in the CMS.
+
+### Journey Page Editor Section Removal
+- **View Counter Text Removed**: Deleted the "View Counter Text" edit field from the Hero segment of [FounderJourney.jsx](file:///c:/Users/Hp/Tech-master/zenvora3d/src/pages/Modules/FounderJourney.jsx#L442).
+- **View Statistics Section Removed**: Removed the entire "Journey Statistics" input tab and fields from [FounderJourney.jsx](file:///c:/Users/Hp/Tech-master/zenvora3d/src/pages/Modules/FounderJourney.jsx#L499).
+
+### Mission & Vision Card Edit Fix
+- **Stable ID Mapping**: Implemented an `ensureIds` mapping utility in [MissionVision.jsx](file:///c:/Users/Hp/Tech-master/zenvora3d/src/pages/Modules/MissionVision.jsx#L111) for all CMS sub-lists (`coreValues`, `brandPillars`, `roadmap`). This guarantees every item has a unique ID, fixing the bug where editing existing cards generated new duplicate items because of a missing `id` property.
+
+### Blog Hub Latest Insights Header Fix
+- **Dynamic Title & Subtitle**: Linked the Latest Insights header text block in [Blog.tsx](file:///c:/Users/Hp/Tech-master/TechMasterSher/src/pages/Blog.tsx#L286) to the `latestInsightsData` state from context, removing hardcoded fallbacks and enabling real-time edits from the admin dashboard.
+
 ---
 
 ## 2. Verification Results

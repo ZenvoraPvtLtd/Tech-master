@@ -801,15 +801,6 @@ export const Homepage = () => {
 
           <div className="space-y-4">
             <div>
-              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Badge Tag</label>
-              <input
-                type="text"
-                value={formData?.hero?.badge || ''}
-                onChange={(e) => persistChanges({ ...formData, hero: { ...(formData.hero || {}), badge: e.target.value } })}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200"
-              />
-            </div>
-            <div>
               <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Top Sub-Badge Text</label>
               <input
                 type="text"

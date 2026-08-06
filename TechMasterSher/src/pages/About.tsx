@@ -110,8 +110,8 @@ export const About: React.FC = () => {
             >
               <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-6">
                 {(() => {
-                  const main = aboutTechMaster.mainHeading || "What Tech Master Is";
-                  const highlight = aboutTechMaster.highlightedHeading || "Tech Master";
+                  const main = typeof aboutTechMaster.mainHeading === 'string' ? aboutTechMaster.mainHeading : "What Tech Master Is";
+                  const highlight = typeof aboutTechMaster.highlightedHeading === 'string' ? aboutTechMaster.highlightedHeading.trim() : "Tech Master";
                   if (highlight && main.includes(highlight)) {
                     const parts = main.split(highlight);
                     return (
@@ -124,7 +124,7 @@ export const About: React.FC = () => {
                   }
                   return (
                     <>
-                      {main} {highlight && <span className="text-gold">{highlight}</span>}
+                      {main}
                     </>
                   );
                 })()}

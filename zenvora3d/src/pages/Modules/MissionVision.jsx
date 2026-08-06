@@ -111,6 +111,14 @@ export const MissionVision = () => {
     }
   };
 
+  const ensureIds = (list, prefix) => {
+    if (!Array.isArray(list)) return [];
+    return list.map((item, idx) => ({
+      id: item.id || item._id || `${prefix}-${idx}-${Date.now()}`,
+      ...item
+    }));
+  };
+
   const storedCMS = db?.missionVisionData || db?.missionCMS || db?.mission_vision || defaultMissionVisionCMS;
 
   const [formData, setFormData] = useState({
@@ -120,11 +128,11 @@ export const MissionVision = () => {
     mission: { ...defaultMissionVisionCMS.mission, ...(storedCMS.mission || {}) },
     vision: { ...defaultMissionVisionCMS.vision, ...(storedCMS.vision || {}) },
     coreValuesHeader: { ...defaultMissionVisionCMS.coreValuesHeader, ...(storedCMS.coreValuesHeader || {}) },
-    coreValues: (storedCMS.coreValues && storedCMS.coreValues.length > 0) ? storedCMS.coreValues : defaultMissionVisionCMS.coreValues,
+    coreValues: ensureIds((storedCMS.coreValues && storedCMS.coreValues.length > 0) ? storedCMS.coreValues : defaultMissionVisionCMS.coreValues, 'cor'),
     brandPillarsHeader: { ...defaultMissionVisionCMS.brandPillarsHeader, ...(storedCMS.brandPillarsHeader || {}) },
-    brandPillars: (storedCMS.brandPillars && storedCMS.brandPillars.length > 0) ? storedCMS.brandPillars : defaultMissionVisionCMS.brandPillars,
+    brandPillars: ensureIds((storedCMS.brandPillars && storedCMS.brandPillars.length > 0) ? storedCMS.brandPillars : defaultMissionVisionCMS.brandPillars, 'pil'),
     roadmapHeader: { ...defaultMissionVisionCMS.roadmapHeader, ...(storedCMS.roadmapHeader || {}) },
-    roadmap: (storedCMS.roadmap && storedCMS.roadmap.length > 0) ? storedCMS.roadmap : defaultMissionVisionCMS.roadmap,
+    roadmap: ensureIds((storedCMS.roadmap && storedCMS.roadmap.length > 0) ? storedCMS.roadmap : defaultMissionVisionCMS.roadmap, 'roa'),
     cta: { ...defaultMissionVisionCMS.cta, ...(storedCMS.cta || {}) }
   });
 
@@ -144,11 +152,11 @@ export const MissionVision = () => {
               mission: { ...defaultMissionVisionCMS.mission, ...(data.mission || {}) },
               vision: { ...defaultMissionVisionCMS.vision, ...(data.vision || {}) },
               coreValuesHeader: { ...defaultMissionVisionCMS.coreValuesHeader, ...(data.coreValuesHeader || {}) },
-              coreValues: (data.coreValues && data.coreValues.length > 0) ? data.coreValues : defaultMissionVisionCMS.coreValues,
+              coreValues: ensureIds((data.coreValues && data.coreValues.length > 0) ? data.coreValues : defaultMissionVisionCMS.coreValues, 'cor'),
               brandPillarsHeader: { ...defaultMissionVisionCMS.brandPillarsHeader, ...(data.brandPillarsHeader || {}) },
-              brandPillars: (data.brandPillars && data.brandPillars.length > 0) ? data.brandPillars : defaultMissionVisionCMS.brandPillars,
+              brandPillars: ensureIds((data.brandPillars && data.brandPillars.length > 0) ? data.brandPillars : defaultMissionVisionCMS.brandPillars, 'pil'),
               roadmapHeader: { ...defaultMissionVisionCMS.roadmapHeader, ...(data.roadmapHeader || {}) },
-              roadmap: (data.roadmap && data.roadmap.length > 0) ? data.roadmap : defaultMissionVisionCMS.roadmap,
+              roadmap: ensureIds((data.roadmap && data.roadmap.length > 0) ? data.roadmap : defaultMissionVisionCMS.roadmap, 'roa'),
               cta: { ...defaultMissionVisionCMS.cta, ...(data.cta || {}) }
             }));
           }
