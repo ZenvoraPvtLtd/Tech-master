@@ -33,8 +33,9 @@ const LionShaderMaterial = shaderMaterial(
     float edgeMaskY = smoothstep(0.02, 0.05, vUv.y) * (1.0 - smoothstep(0.95, 0.98, vUv.y));
     float finalMask = mask * edgeMaskX * edgeMaskY;
     
-    // Output color with lowered opacity
-    gl_FragColor = vec4(texColor.rgb, finalMask * uOpacity);
+    // Output color with 1.10x brightness boost while preserving original 3D details
+    vec3 brightColor = clamp(texColor.rgb * 1.10, 0.0, 1.0);
+    gl_FragColor = vec4(brightColor, finalMask * uOpacity);
   }
   `
 );
@@ -100,7 +101,7 @@ export const GlassSphere: React.FC<GlassSphereProps> = ({ scrollProgress, mouse 
     meshRef.current.scale.setScalar(currentScaleRef.current);
 
     // Opacity fades to 0 at the bottom in sync with scale
-    const targetOpacity = Math.max(0, 0.35 * (1.0 - smoothScroll));
+    const targetOpacity = Math.max(0, 0.95 * (1.0 - smoothScroll));
     // @ts-ignore
     if (meshRef.current.material && meshRef.current.material.uniforms) {
       // @ts-ignore
@@ -124,7 +125,7 @@ export const GlassSphere: React.FC<GlassSphereProps> = ({ scrollProgress, mouse 
       {/* @ts-ignore */}
       <lionShaderMaterial 
         uTexture={texture} 
-        uOpacity={0.35} 
+        uOpacity={0.95} 
         transparent={true} 
         side={THREE.DoubleSide} 
         depthWrite={false}

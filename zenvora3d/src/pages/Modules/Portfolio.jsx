@@ -28,7 +28,7 @@ export const Portfolio = () => {
       badge: "CREATIVE ECOSYSTEM",
       title: "The",
       highlightText: "Multiverse",
-      description: "Masterpieces. In Motion — Our portfolio of 5 high-scale content channels spanning technology, automotive, podcasts, and viral entertainment.",
+      description: "Masterpieces In Motion — Our portfolio of 5 high-scale content channels spanning technology, automotive, podcasts, and viral entertainment.",
       visible: true
     },
     channels: [

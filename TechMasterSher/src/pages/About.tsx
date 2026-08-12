@@ -50,7 +50,7 @@ export const About: React.FC = () => {
     smallBadge: "OUR CULTURE",
     mainHeading: "Good People.",
     highlightedText: "Good Work. Good Vibes",
-    description: "Ideas get clashed over here, not because we're trying to prove a point, but because everyone actually cares. We push each other, we push ourselves but nobody's burning out to do it. Somewhere between the deadlines and the chai breaks, this team just falls into a rhythm. Good People. Good Work. Good Vibes",
+    description: "Ideas get clashed over here, not because we're trying to prove a point, but because everyone actually cares. We push each other, we push ourselves but nobody's burning out to do it. Somewhere between the deadlines and the chai breaks, this team just falls into a rhythm.",
     visibility: true,
     order: 2
   };
@@ -108,27 +108,6 @@ export const About: React.FC = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="glass-panel p-8 sm:p-12 rounded-3xl border border-gold/30 bg-black/50 backdrop-blur-xl text-left shadow-[0_0_40px_rgba(212,175,55,0.1)]"
             >
-              <h2 className="font-serif text-2xl sm:text-3xl text-white font-bold mb-6">
-                {(() => {
-                  const main = typeof aboutTechMaster.mainHeading === 'string' ? aboutTechMaster.mainHeading : "What Tech Master Is";
-                  const highlight = typeof aboutTechMaster.highlightedHeading === 'string' ? aboutTechMaster.highlightedHeading.trim() : "Tech Master";
-                  if (highlight && main.includes(highlight)) {
-                    const parts = main.split(highlight);
-                    return (
-                      <>
-                        {parts[0]}
-                        <span className="text-gold">{highlight}</span>
-                        {parts.slice(1).join(highlight)}
-                      </>
-                    );
-                  }
-                  return (
-                    <>
-                      {main}
-                    </>
-                  );
-                })()}
-              </h2>
               <div 
                 className="text-gray-300 font-light text-base sm:text-lg leading-relaxed space-y-4"
                 dangerouslySetInnerHTML={{ __html: aboutTechMaster.description || "" }}
@@ -154,7 +133,7 @@ export const About: React.FC = () => {
                 </h2>
                 <div 
                   className="text-gray-300 font-light text-base leading-relaxed space-y-4"
-                  dangerouslySetInnerHTML={{ __html: culture.description || "" }}
+                  dangerouslySetInnerHTML={{ __html: (culture.description || "").replace(/Good People\.\s*Good Work\.\s*Good Vibes/gi, "").trim() }}
                 />
               </motion.div>
             )}

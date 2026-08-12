@@ -308,8 +308,8 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
       </div>
 
-      {/* BOTTOM HORIZONTAL GRID BAR (4 Cards in 1 Row - Matching Reference Image 1) */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 relative z-10 mb-12">
+      {/* BOTTOM HORIZONTAL GRID BAR (2 Cards in 1 Row) */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 relative z-10 mb-12">
         
         {/* Card 1: DIRECT MAIL */}
         <motion.a 
@@ -326,48 +326,6 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-gold transition-colors">DIRECT MAIL</span>
             <span className="text-sm font-bold text-white group-hover:text-gold transition-colors block truncate">
               {footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
-            </span>
-          </div>
-        </motion.a>
-
-        {/* Card 2: BOOKING OFFICE */}
-        <motion.a 
-          href={`tel:${footerData?.cards?.phone || contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}`}
-          whileHover={{ y: -6, scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-cyan-400/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(34,211,238,0.25)] overflow-hidden cursor-pointer"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          <div className="w-11 h-11 shrink-0 rounded-2xl border border-cyan-400/40 bg-cyan-500/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-cyan-400 group-hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]">
-            <Phone className="w-5 h-5" />
-          </div>
-          <div className="overflow-hidden relative z-10">
-            <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-cyan-400 transition-colors">BOOKING OFFICE</span>
-            <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors block truncate">
-              {footerData?.cards?.phone || contactData?.heroSetup?.phone || websiteSettings?.phone || "+1 (800) 555-CODE"}
-            </span>
-          </div>
-        </motion.a>
-
-        {/* Card 3: YOUTUBE CHANNEL */}
-        <motion.a 
-          href={footerData?.cards?.youtubeUrl || "https://youtube.com/c/techmasterf"}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ y: -6, scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-red-500/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(239,68,68,0.25)] overflow-hidden cursor-pointer"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          <div className="w-11 h-11 shrink-0 rounded-2xl border border-red-500/40 bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-red-500 group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.15)]">
-            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-              <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-            </svg>
-          </div>
-          <div className="overflow-hidden relative z-10">
-            <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-red-400 transition-colors">YOUTUBE CHANNEL</span>
-            <span className="text-sm font-bold text-white group-hover:text-red-400 transition-colors block truncate">
-              {footerData?.cards?.youtubeTitle || "Tech Master"}
             </span>
           </div>
         </motion.a>

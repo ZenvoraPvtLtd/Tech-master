@@ -81,12 +81,12 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
         <div className="h-28 flex items-center justify-between px-5 border-b border-zinc-800/80 flex-shrink-0">
           {!isSidebarCollapsed && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 w-full justify-center">
-              <img src={logoImage} alt="TechMaster Logo" className="h-20 w-auto object-contain drop-shadow-[0_0_24px_rgba(250,204,21,1)]" />
+              <img src={logoImage} alt="TechMaster Logo" className="h-20 w-auto object-contain drop-shadow-[0_0_6px_rgba(250,204,21,0.3)]" />
             </motion.div>
           )}
           {isSidebarCollapsed && (
             <div className="w-12 flex items-center justify-center mx-auto">
-              <img src={logoImage} alt="TechMaster Logo" className="h-12 w-auto object-contain drop-shadow-[0_0_16px_rgba(250,204,21,1)]" />
+              <img src={logoImage} alt="TechMaster Logo" className="h-12 w-auto object-contain drop-shadow-[0_0_4px_rgba(250,204,21,0.3)]" />
             </div>
           )}
           <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="text-zinc-500 hover:text-white transition-colors cursor-pointer">

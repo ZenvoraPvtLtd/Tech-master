@@ -841,15 +841,24 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             {activeHome?.statistics?.heading?.split("&")[0] || "Influence &"} <span className="text-gold italic font-bold">{activeHome?.statistics?.heading?.split("&")[1] || "Impact"}</span>
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {statsList.map((stat: any, idx: number) => (
-              <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
-                <AnimatedCounter 
-                  value={stat.number} 
-                  className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-2" 
-                />
-                <span className="text-gray-400 text-xs font-mono uppercase tracking-wider">{stat.label}</span>
-              </div>
-            ))}
+            {statsList.map((stat: any, idx: number) => {
+              const isMonthlyViews = /monthly views/i.test(stat.label);
+              return (
+                <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
+                  {isMonthlyViews ? (
+                    <span className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-2">
+                      1B+
+                    </span>
+                  ) : (
+                    <AnimatedCounter 
+                      value={stat.number} 
+                      className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-2" 
+                    />
+                  )}
+                  <span className="text-gray-400 text-xs font-mono uppercase tracking-wider">{stat.label}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -934,9 +943,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               </>
             )}
           </h2>
-          <p className="text-gray-400 text-xs sm:text-sm md:text-base font-light leading-relaxed">
-            {activeHome?.brandCollaborations?.subtitle || activeHome?.brandCollaborations?.description || "Proud collaborations and partnerships with globally recognized technology brands that have helped shape our educational ecosystem."}
-          </p>
         </div>
 
         {/* Luxury Brand Wall (16 Exact Image 1 Brands - Transparent Pure White Vector Marks, Zero Background Rectangle) */}
@@ -1135,20 +1141,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           );
         })()}
       </section>
-      {/* Newsletter */}
-      <section className="scroll-section py-12 px-6 max-w-4xl mx-auto relative z-10 text-center">
-        <div className="flex justify-center mb-10 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{newsletterTag}</span>
-        </div>
-        <div className="glass-panel p-6 sm:p-12 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(212,175,55,0.05)] fade-up">
-          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">{newsletterHeading}</h2>
-          <p className="text-gray-400 text-sm mb-8 font-light">{newsletterDesc}</p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="Enter your email" className="flex-1 bg-black/50 border border-white/10 rounded-full px-6 py-3 text-white focus:outline-none focus:border-gold/50 transition-colors" />
-            <button type="submit" className="bg-gold text-black px-8 py-3 rounded-full font-bold uppercase text-xs tracking-[1px] hover:bg-white transition-colors">{newsletterBtnText}</button>
-          </form>
-        </div>
-      </section>
+
 
       {/* Contact Preview */}
       <section className="scroll-section pb-8 px-6 max-w-7xl mx-auto relative z-10 text-center">

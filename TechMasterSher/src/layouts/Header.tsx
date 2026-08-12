@@ -161,10 +161,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             className="h-10 sm:h-14 lg:h-20 w-auto object-contain -my-2 sm:-my-4 lg:-my-5"
             style={{
               imageRendering: "-webkit-optimize-contrast",
-              filter: `
-                drop-shadow(0 0 8px rgba(212, 175, 55, 0.6))
-                drop-shadow(0 0 12px rgba(212, 175, 55, 0.3))
-              `,
+              filter: "none",
             }}
           />
         </div>
