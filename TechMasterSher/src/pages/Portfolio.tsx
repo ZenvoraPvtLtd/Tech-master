@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";

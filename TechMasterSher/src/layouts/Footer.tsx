@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
 import { motion } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";

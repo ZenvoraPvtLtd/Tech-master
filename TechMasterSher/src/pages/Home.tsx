@@ -125,40 +125,6 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       : (activeHome?.channels && activeHome.channels.length > 0 ? activeHome.channels : defaultBrandChannels));
   const tickerChannelsList = rawChannels.filter((c: any) => c.visible !== false && c.deleted !== true);
 
-  const newsletterHeading = liveHomeData?.newsletterContact?.newsletter?.heading
-    || activeHome?.newsletterContact?.newsletter?.heading 
-    || activeHome?.newsletter?.heading 
-    || activeHome?.newsletterContact?.newsletterHeading 
-    || activeHome?.newsletterHeading 
-    || homeData?.newsletter?.heading 
-    || "Stay in the Loop";
-
-  const newsletterTag = liveHomeData?.newsletterContact?.newsletter?.tag
-    || activeHome?.newsletterContact?.newsletter?.tag 
-    || activeHome?.newsletterContact?.newsletter?.badge 
-    || activeHome?.newsletter?.tag 
-    || activeHome?.newsletter?.badge 
-    || activeHome?.newsletterContact?.newsletterBadge 
-    || activeHome?.newsletterBadge 
-    || homeData?.newsletter?.tag 
-    || "NEWSLETTER SUBSCRIPTION";
-
-  const newsletterDesc = liveHomeData?.newsletterContact?.newsletter?.description
-    || activeHome?.newsletterContact?.newsletter?.description 
-    || activeHome?.newsletter?.description 
-    || activeHome?.newsletterContact?.newsletterDescription 
-    || activeHome?.newsletterDescription 
-    || homeData?.newsletter?.description 
-    || "Join my newsletter...";
-
-  const newsletterBtnText = liveHomeData?.newsletterContact?.newsletter?.buttonText
-    || activeHome?.newsletterContact?.newsletter?.buttonText 
-    || activeHome?.newsletter?.buttonText 
-    || activeHome?.newsletterContact?.buttonText 
-    || activeHome?.buttonText 
-    || homeData?.newsletter?.buttonText 
-    || "Subscribe";
-
   const contactTag = liveHomeData?.newsletterContact?.contactPreview?.tag
     || activeHome?.newsletterContact?.contactPreview?.tag 
     || activeHome?.newsletterContact?.contactPreview?.badge 
