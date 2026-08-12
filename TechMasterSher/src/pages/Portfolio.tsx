@@ -43,17 +43,20 @@ const CHANNEL_SOCIAL_LINKS: Record<string, { youtube?: string; instagram?: strin
   },
   "Trendz Talk": {
     youtube: "",
-    instagram: "https://www.instagram.com/techmasterco/"
+    instagram: ""
   }
 };
 
 const getSocialLinks = (ch: any) => {
   const rawName = (ch.keyName || ch.name || "").replace(/^\d+\.\s*/, "").trim();
   const known = CHANNEL_SOCIAL_LINKS[rawName] || CHANNEL_SOCIAL_LINKS[ch.name] || {};
-  return {
-    youtube: ch.youtubeLink || ch.ytLink || known.youtube || (ch.link?.includes("youtube") ? ch.link : ""),
-    instagram: ch.instagramLink || ch.igLink || known.instagram || (ch.link?.includes("instagram") ? ch.link : "")
-  };
+  
+  // Prioritize Admin Dashboard / Database fields first!
+  const youtube = ch.youtubeLink || ch.youtubeUrl || ch.youtube || ch.ytLink || ch.ytUrl || (ch.link?.includes("youtube") || ch.link?.includes("youtu.be") ? ch.link : "") || (ch.url?.includes("youtube") || ch.url?.includes("youtu.be") ? ch.url : "") || known.youtube || "";
+
+  const instagram = ch.instagramLink || ch.instagramUrl || ch.instagram || ch.igLink || ch.igUrl || (ch.link?.includes("instagram") ? ch.link : "") || (ch.url?.includes("instagram") ? ch.url : "") || (ch.link && !ch.link.includes("youtube") ? ch.link : "") || (ch.url && !ch.url.includes("youtube") ? ch.url : "") || known.instagram || "";
+
+  return { youtube, instagram };
 };
 
 const getProjectSocialLinks = (proj: any) => {
