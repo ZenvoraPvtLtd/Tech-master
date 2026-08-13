@@ -86,7 +86,7 @@ const getChannelCircleImage = (clientOrChannelName: string, channelObj?: any, li
   if (name.includes("next univerz") || name.includes("nextuniverz")) return "/NextUniverz.jpeg";
   if (name.includes("master wheels") || name.includes("masterwheels") || name.includes("wheels")) return "/MasterWheels.jpeg";
   if (name.includes("full circle") || name.includes("fullcircle")) return "/First circle.jpg.jpeg";
-  if (name.includes("trendz talk") || name.includes("trendztalk") || name.includes("trendz")) return "/First circle.jpg.jpeg";
+  if (name.includes("trendz talk") || name.includes("trendztalk") || name.includes("trendz")) return "/Trendz talk logo.png";
 
   if (channelObj) {
     const directImg = channelObj.circleImage || channelObj.logoUrl || channelObj.image || channelObj.imageUrl;
@@ -430,15 +430,14 @@ export const Portfolio: React.FC = () => {
                     <div className="flex items-center justify-between mb-5">
                       <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">{ch.name}</h3>
                       
-                      {/* Right Side Circular Channel Image Badge with Sleek Faded Overlay */}
-                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-gold/40 shadow-[0_0_20px_rgba(212,175,55,0.25)] bg-black/90 shrink-0 group/circle flex items-center justify-center">
+                      {/* Right Side Circular Channel Image Badge with Enhanced Brightness */}
+                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-gold/60 shadow-[0_0_20px_rgba(212,175,55,0.4)] bg-black shrink-0 group/circle flex items-center justify-center">
                         <img
                           src={getChannelCircleImage(ch.name || ch.keyName, ch, livePortfolioData, activeDb)}
                           alt={`${ch.name} Circle`}
-                          className="w-full h-full object-cover rounded-full opacity-60 brightness-90 contrast-95 group-hover/circle:opacity-100 group-hover/circle:brightness-100 group-hover/circle:scale-110 transition-all duration-500"
+                          className="w-full h-full object-cover rounded-full opacity-95 brightness-110 contrast-105 group-hover/circle:opacity-100 group-hover/circle:scale-110 transition-all duration-500"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/50 pointer-events-none" />
-                        <div className="absolute inset-0 bg-black/20 pointer-events-none group-hover/circle:bg-transparent transition-colors duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2.5 mb-5">
@@ -570,15 +569,14 @@ export const Portfolio: React.FC = () => {
                                 {project.category}
                               </div>
 
-                              {/* Professional Circular Channel Image Badge Top-Right with Faded Overlay */}
+                              {/* Professional Circular Channel Image Badge Top-Right with Enhanced Brightness */}
                               <div className="absolute top-3.5 right-3.5 flex items-center gap-2 bg-black/85 backdrop-blur-md p-1 pr-3 rounded-full border border-white/15 shadow-[0_4px_20px_rgba(0,0,0,0.6)] group/avatar z-10">
-                                <div className="relative w-7 h-7 rounded-full overflow-hidden border border-gold/50 bg-black/90 shrink-0 flex items-center justify-center">
+                                <div className="relative w-7 h-7 rounded-full overflow-hidden border border-gold/60 bg-black shrink-0 flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.3)]">
                                   <img
                                     src={projCircleImg}
                                     alt={`${project.client} Avatar`}
-                                    className="w-full h-full object-cover rounded-full opacity-60 brightness-90 group-hover/avatar:opacity-100 group-hover/avatar:brightness-100 group-hover/avatar:scale-110 transition-all duration-500"
+                                    className="w-full h-full object-cover rounded-full opacity-95 brightness-110 group-hover/avatar:opacity-100 group-hover/avatar:scale-110 transition-all duration-500"
                                   />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/40 pointer-events-none" />
                                 </div>
                                 <span className="text-[10px] font-mono font-bold text-gray-200 uppercase tracking-wider">
                                   {project.client || "Tech Master"}
@@ -590,14 +588,13 @@ export const Portfolio: React.FC = () => {
                               <span className="text-[10px] uppercase tracking-[2px] opacity-60 font-bold text-gray-300 font-mono">
                                 {project.client} • {project.year}
                               </span>
-                              {/* Right Side Circular Channel Avatar Badge (Faded Style) */}
-                              <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gold/40 bg-black/90 shrink-0 flex items-center justify-center shadow-[0_0_12px_rgba(212,175,55,0.2)] group/subAvatar">
+                              {/* Right Side Circular Channel Avatar Badge (Enhanced Brightness) */}
+                              <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gold/60 bg-black shrink-0 flex items-center justify-center shadow-[0_0_12px_rgba(212,175,55,0.3)] group/subAvatar">
                                 <img
                                   src={projCircleImg}
                                   alt={project.client}
-                                  className="w-full h-full object-cover rounded-full opacity-60 brightness-90 group-hover/subAvatar:opacity-100 group-hover/subAvatar:brightness-100 transition-all duration-300"
+                                  className="w-full h-full object-cover rounded-full opacity-95 brightness-110 group-hover/subAvatar:opacity-100 transition-all duration-300"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/40 pointer-events-none" />
                               </div>
                             </div>
                           </>

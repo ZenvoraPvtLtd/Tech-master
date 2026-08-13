@@ -33,8 +33,8 @@ const LionShaderMaterial = shaderMaterial(
     float edgeMaskY = smoothstep(0.02, 0.05, vUv.y) * (1.0 - smoothstep(0.95, 0.98, vUv.y));
     float finalMask = mask * edgeMaskX * edgeMaskY;
     
-    // Output color with 1.10x brightness boost while preserving original 3D details
-    vec3 brightColor = clamp(texColor.rgb * 1.10, 0.0, 1.0);
+    // Output color with 0.45x soft subtle brightness while preserving 3D details
+    vec3 brightColor = clamp(texColor.rgb * 0.45, 0.0, 1.0);
     gl_FragColor = vec4(brightColor, finalMask * uOpacity);
   }
   `

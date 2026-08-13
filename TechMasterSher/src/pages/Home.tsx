@@ -896,18 +896,25 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         {/* Main Heading & Subtitle */}
         <div className="max-w-3xl mx-auto mb-12 relative z-20">
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-white mb-4 tracking-tight">
-            {activeHome?.brandCollaborations?.heading ? (
-              <>
-                {activeHome.brandCollaborations.heading.split(" ")[0]}{" "}
-                <span className="text-gold italic font-bold">
-                  {activeHome.brandCollaborations.heading.split(" ").slice(1).join(" ")}
-                </span>
-              </>
-            ) : (
-              <>
-                Trusted By <span className="text-gold italic font-bold">Leading Technology Brands</span>
-              </>
-            )}
+            {(() => {
+              const rawHeading = activeHome?.brandCollaborations?.heading;
+              if (rawHeading && !rawHeading.includes("Trusted By") && !rawHeading.includes("Leading Technology Brands")) {
+                const words = rawHeading.split(" ");
+                return (
+                  <>
+                    {words[0]}{" "}
+                    <span className="text-gold italic font-bold">
+                      {words.slice(1).join(" ")}
+                    </span>
+                  </>
+                );
+              }
+              return (
+                <>
+                  Creative <span className="text-gold italic font-bold">Collabs</span>
+                </>
+              );
+            })()}
           </h2>
         </div>
 
