@@ -29,7 +29,7 @@ const defaultHomepageData = {
     visionDescription: 'Tech Master exists to make complexity feel simple, and simplicity feel unforgettable. We tell stories that inform without lecturing, entertain without diluting, and connect without pretending. The result: content built to travel across platforms, across formats, across the world.'
   },
   founder: {
-    badge: 'ABOUT THE CEO / FOUNDER',
+    badge: 'ABOUT THE CEO',
     name: 'Arvind Kharra',
     highlightedName: 'aka Tech Master',
     description: "An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions."
@@ -37,7 +37,7 @@ const defaultHomepageData = {
   channelsTicker: {
     heading: 'Different audiences.',
     highlightedHeading: 'Same Obsession.',
-    subHeading: "We're just getting started / Five channels today. A Media Empire in Motion.",
+    subHeading: "Four channels today. A Media Empire in Motion.",
     channels: [
       { id: 'ch-1', name: 'Tech Master', circleImage: '', logoUrl: '', ytSubs: '33M Subs on YT', igFollowers: '5.8M Followers on IG' },
       { id: 'ch-2', name: 'Next Univerz', circleImage: '', logoUrl: '', ytSubs: '5.5M Subs on YT', igFollowers: '' },

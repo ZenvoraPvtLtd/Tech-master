@@ -132,7 +132,7 @@ export const Homepage = () => {
 
     // SECTION 4: Founder Spotlight
     founder: {
-      badge: 'ABOUT THE CEO / FOUNDER',
+      badge: 'ABOUT THE CEO',
       name: 'Arvind Kharra',
       highlightedName: 'aka Tech Master',
       description: "An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions.",
@@ -145,7 +145,7 @@ export const Homepage = () => {
     channelsTicker: {
       heading: 'Different audiences.',
       highlightedHeading: 'Same Obsession.',
-      subHeading: "We're just getting started / Five channels today. A Media Empire in Motion.",
+      subHeading: "Four channels today. A Media Empire in Motion.",
       visible: true,
       channels: [
         { id: 'ch-1', name: 'Tech Master', circleImage: '', ytSubs: '33M Subs on YT', igFollowers: '5.8M Followers on IG', popular: '195M (Short)', logoUrl: '', order: 1, visible: true, deleted: false },

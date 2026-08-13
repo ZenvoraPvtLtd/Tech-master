@@ -103,14 +103,19 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   const visionHeading = liveHomeData?.introVision?.visionHeading || activeHome?.introVision?.visionHeading || activeHome?.visionHeading || "Complexity Made Simple & Unforgettable";
   const visionDescription = liveHomeData?.introVision?.visionDescription || activeHome?.introVision?.visionDescription || activeHome?.visionDescription || "Tech Master exists to make complexity feel simple, and simplicity feel unforgettable. We tell stories that inform without lecturing, entertain without diluting, and connect without pretending. The result: content built to travel across platforms, across formats, across the world.";
 
-  const founderBadge = liveHomeData?.founder?.badge || activeHome?.founder?.badge || activeHome?.founderBadge || "ABOUT THE CEO / FOUNDER";
+  const founderBadge = (liveHomeData?.founder?.badge || activeHome?.founder?.badge || activeHome?.founderBadge || "ABOUT THE CEO")
+    .replace(/\/\s*founder/gi, "")
+    .trim();
   const founderName = liveHomeData?.founder?.name || activeHome?.founder?.name || activeHome?.founderName || "Arvind Kharra";
   const founderHighlighted = liveHomeData?.founder?.highlightedName || activeHome?.founder?.highlightedName || activeHome?.founderHighlighted || "aka Tech Master";
   const founderBio = liveHomeData?.founder?.description || activeHome?.founder?.description || activeHome?.founderBio || "An engineering graduate from Rajasthan who turned his passion for technology into world's #1 tech YouTube channel. No corporate job, no conventional path. Just a small-town outsider who made technology feel human, fun, and relatable to millions.";
 
   const tickerHeading = liveHomeData?.channelsTicker?.heading || activeHome?.channelsTicker?.heading || activeHome?.tickerHeading || "Different audiences.";
   const tickerHighlight = liveHomeData?.channelsTicker?.highlightedHeading || activeHome?.channelsTicker?.highlightedHeading || activeHome?.tickerHighlight || "Same Obsession.";
-  const tickerSubHeading = liveHomeData?.channelsTicker?.subHeading || activeHome?.channelsTicker?.subHeading || activeHome?.tickerSubHeading || "We're just getting started / Five channels today. A Media Empire in Motion.";
+  const tickerSubHeading = (liveHomeData?.channelsTicker?.subHeading || activeHome?.channelsTicker?.subHeading || activeHome?.tickerSubHeading || "Four channels today. A Media Empire in Motion.")
+    .replace(/we're just getting started\s*[\/\-]?\s*/gi, "")
+    .replace(/five channels/gi, "Four channels")
+    .trim();
   const defaultBrandChannels = [
     { brandName: "Tech Master" },
     { brandName: "Next Univerz" },
@@ -738,13 +743,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
         <motion.div 
           animate={{ x: ["0%", "-50%"] }} 
-          transition={{ ease: "linear", duration: 85, repeat: Infinity }}
-          style={{ willChange: "transform" }}
-          className="flex w-max items-center justify-center mt-4"
+          transition={{ ease: "linear", duration: 110, repeat: Infinity }}
+          style={{ willChange: "transform", display: "flex", flexDirection: "row", width: "max-content" }}
+          className="flex flex-row flex-nowrap items-center mt-4"
         >
-          {[1, 2, 3, 4].map((groupIndex) => {
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((groupIndex) => {
             return (
-              <div key={groupIndex} className="flex items-center">
+              <div key={groupIndex} className="flex flex-row flex-nowrap items-center shrink-0">
                 {tickerChannelsList.map((brand: any, idx: number) => {
                   const bName = brand.brandName || brand.name || brand.title || "";
                   const bImg = brand.circleImage || brand.logoUrl || brand.image || brand.imageUrl || circleImg;
@@ -753,7 +758,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                       key={`${bName}-${idx}-${groupIndex}`}
                       onClick={() => handleNavClick("portfolio")}
                       data-cursor="CLICK"
-                      className="group/brand relative inline-flex items-center justify-center px-10 sm:px-16 py-2 transition-all duration-300 cursor-pointer select-none"
+                      className="group/brand relative inline-flex items-center justify-center px-10 sm:px-16 py-2 transition-all duration-300 cursor-pointer select-none shrink-0"
                     >
                       <div className="flex flex-col items-center">
                         {/* Professional Channel Circle Image above the name */}
