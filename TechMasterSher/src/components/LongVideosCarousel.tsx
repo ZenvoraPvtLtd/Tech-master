@@ -128,6 +128,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
               const videoId = video.videoId || extractYouTubeId(video.youtubeUrl || video.url || video.videoUrl || "");
               const startSec = parseTimeToSeconds(video.startTime || 0);
               const endSec = parseTimeToSeconds(video.endTime);
+              const ytDirectUrl = video.youtubeUrl || (videoId ? `https://www.youtube.com/watch?v=${videoId}&t=${startSec}s` : (video.url || video.videoUrl || "https://www.youtube.com"));
               const thumbnailUrl = (videoId ? getYouTubeThumbnail(videoId) : "") || video.thumbnail || video.url;
               const meta = videoMetaMap[videoId] || { title: "", authorName: "" };
               const displayTitle = video.title && !video.title.toLowerCase().includes("subscribe") ? video.title : (meta.title || video.fallbackTitle || "Featured Tech Mastery");
@@ -167,13 +168,10 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
               return (
                 <motion.div
                   key={video.id || videoId || originalIndex}
-                  onClick={() => {
-                    if (!isActive) {
-                      if (originalIndex > activeIndex) setDirection(1);
-                      else setDirection(-1);
-                      setActiveIndex(originalIndex);
-                    } else if (videoId) {
-                      const ytDirectUrl = video.youtubeUrl || `https://www.youtube.com/watch?v=${videoId}&t=${startSec}s`;
+                  data-cursor="VIEW"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (ytDirectUrl && ytDirectUrl !== "#") {
                       window.open(ytDirectUrl, "_blank", "noopener,noreferrer");
                     }
                   }}
@@ -210,9 +208,21 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                         : "border-black/50 hover:border-black opacity-50 hover:opacity-100"
                     }`}
                 >
-                {/* 3D Book Page Fold Crease & Spine Shadow */}
-                <div 
-                  className={`absolute inset-0 pointer-events-none z-37 transition-opacity duration-300 ${
+                  {/* Transparent Click-Capturing Overlay (z-[60] captures cursor & blocks iframe pointer interference) */}
+                  <div 
+                    className="absolute inset-0 z-[60] cursor-pointer" 
+                    data-cursor="VIEW" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (ytDirectUrl && ytDirectUrl !== "#") {
+                        window.open(ytDirectUrl, "_blank", "noopener,noreferrer");
+                      }
+                    }}
+                  />
+
+                  {/* 3D Book Page Fold Crease & Spine Shadow */}
+                  <div 
+                    className={`absolute inset-0 pointer-events-none z-37 transition-opacity duration-300 ${
                     diff < 0 
                       ? "bg-gradient-to-r from-transparent via-black/20 to-black/75 border-r border-white/10" 
                       : diff > 0 
