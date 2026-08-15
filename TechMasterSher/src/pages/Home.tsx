@@ -811,19 +811,19 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           <h2 className="typo-h2 mb-8 sm:mb-12">
             {activeHome?.statistics?.heading?.split("&")[0] || "Influence &"} <span className="text-gold italic font-bold">{activeHome?.statistics?.heading?.split("&")[1] || "Impact"}</span>
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
             {statsList.map((stat: any, idx: number) => {
               const isMonthlyViews = /monthly views/i.test(stat.label);
               return (
-                <div key={idx} className="glass-panel p-5 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
+                <div key={idx} className="glass-panel p-4 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
                   {isMonthlyViews ? (
-                    <span className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-1 sm:mb-2">
+                    <span className="font-serif text-2xl sm:text-4xl font-black text-gold block mb-1 sm:mb-2">
                       1B+
                     </span>
                   ) : (
                     <AnimatedCounter 
                       value={stat.number} 
-                      className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-1 sm:mb-2" 
+                      className="font-serif text-2xl sm:text-4xl font-black text-gold block mb-1 sm:mb-2" 
                     />
                   )}
                   <span className="text-gray-400 text-[10px] sm:text-xs font-mono uppercase tracking-wider">{stat.label}</span>
