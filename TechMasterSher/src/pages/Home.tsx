@@ -551,14 +551,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="flex flex-col justify-center items-center px-6 relative overflow-hidden pt-20 md:pt-24 pb-0 text-center">
+      <section className="flex flex-col justify-center items-center px-4 sm:px-6 relative overflow-hidden pt-16 sm:pt-20 md:pt-24 pb-0 text-center">
         {/* Main Title: TECH MASTER - Positioned just below navbar */}
         <div className="max-w-5xl mx-auto flex flex-col items-center relative z-20 mb-3">
           <motion.h1
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-none text-center uppercase whitespace-nowrap select-none inline-block relative z-10 mb-4"
+            className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-none text-center uppercase whitespace-normal sm:whitespace-nowrap select-none inline-block relative z-10 mb-3 sm:mb-4"
             style={{
               fontFamily: "'Montserrat', 'League Spartan', 'Outfit', sans-serif",
               fontWeight: 900,
@@ -598,9 +598,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="typo-badge border border-gold/25 px-5 py-2 rounded-full bg-gold/5 backdrop-blur-md flex items-center gap-2 text-gold text-xs sm:text-sm shadow-md"
+            className="typo-badge border border-gold/25 px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full bg-gold/5 backdrop-blur-md flex items-center justify-center gap-2 text-gold text-[10px] sm:text-xs shadow-md text-center max-w-full leading-tight"
           >
-            <svg className="w-3.5 h-3.5 fill-current text-gold" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 fill-current text-gold shrink-0" viewBox="0 0 24 24">
               <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
             {heroTopBadge}
@@ -608,19 +608,19 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
 
         {/* Vertical Gap for 3D Lion / Sher Logo */}
-        <div className="h-80 sm:h-[380px] md:h-[440px] w-full pointer-events-none" />
+        <div className="h-60 sm:h-80 md:h-[440px] w-full pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-4 sm:mt-8">
+        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-3 sm:mt-8">
 
           {/* Tagline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.6 }}
-            className="text-gray-300 text-base sm:text-xl md:text-2xl font-serif italic max-w-3xl leading-relaxed mb-6 md:mb-10 p-6 md:p-8 rounded-2xl border border-gold/30 bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
+            className="text-gray-300 text-sm sm:text-lg md:text-2xl font-serif italic max-w-3xl leading-relaxed mb-4 md:mb-10 p-4 sm:p-6 md:p-8 rounded-2xl border border-gold/30 bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
           >
             {heroTagline}
-            <span className="block text-xs font-mono font-normal text-gold/80 not-italic uppercase tracking-[2px] mt-3">
+            <span className="block text-[10px] sm:text-xs font-mono font-normal text-gold/80 not-italic uppercase tracking-[2px] mt-2 sm:mt-3">
               {heroSubTagline}
             </span>
           </motion.div>
@@ -631,7 +631,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             transition={{ duration: 1.0, delay: 0.8 }}
             className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center relative z-20 mb-0"
           >
-            <div className="flex flex-col items-center gap-1 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300 mt-2 sm:mt-0">
+            <div className="flex flex-col items-center gap-1 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300 mt-1 sm:mt-0">
               <span className="text-[9px] uppercase tracking-[3px] text-gold font-bold">Scroll down</span>
               <motion.div
                 animate={{ y: [0, 8, 0] }}
@@ -645,8 +645,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* Intro & The Vision Animated Vertical Timeline Section */}
-      <section className="scroll-section py-20 px-6 max-w-4xl mx-auto relative z-10">
-        <div ref={timelineRef} className="intro-vision-timeline relative flex flex-col items-center gap-14 sm:gap-20">
+      <section className="scroll-section py-12 sm:py-20 px-4 sm:px-6 max-w-4xl mx-auto relative z-10">
+        <div ref={timelineRef} className="intro-vision-timeline relative flex flex-col items-center gap-10 sm:gap-20">
           
           {/* Central Vertical Connecting Timeline Line (Journey Style) */}
           <div className="absolute left-1/2 -translate-x-1/2 top-10 bottom-10 w-[3px] bg-white/10 z-0 overflow-hidden rounded-full">
@@ -665,16 +665,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 boxShadow: introShadow,
                 scale: introScale
               }}
-              className="glass-panel p-8 sm:p-10 md:p-12 rounded-3xl border backdrop-blur-xl transition-all duration-300 relative overflow-hidden"
+              className="glass-panel p-5 sm:p-10 md:p-12 rounded-2xl sm:rounded-3xl border backdrop-blur-xl transition-all duration-300 relative overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-3.5 h-3.5 rounded-full bg-gold animate-pulse shadow-[0_0_12px_rgba(212,175,55,0.9)]" />
-                <span className="typo-badge text-gold tracking-[2px] uppercase font-mono font-bold text-xs">{introBadge}</span>
+              <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
+                <span className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-gold animate-pulse shadow-[0_0_12px_rgba(212,175,55,0.9)]" />
+                <span className="typo-badge text-gold tracking-[2px] uppercase font-mono font-bold text-[10px] sm:text-xs">{introBadge}</span>
               </div>
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-5 leading-tight">
+              <h2 className="font-serif text-xl sm:text-3xl md:text-4xl text-white font-bold mb-3 sm:mb-5 leading-tight">
                 {introHeading}
               </h2>
-              <p className="text-gray-300 text-sm sm:text-base md:text-lg font-light leading-relaxed">
+              <p className="text-gray-300 text-xs sm:text-base md:text-lg font-light leading-relaxed">
                 {introDescription}
               </p>
             </motion.div>
@@ -689,24 +689,24 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 boxShadow: visionShadow,
                 scale: visionScale
               }}
-              className="vision-card-inner glass-panel p-8 sm:p-10 md:p-12 rounded-3xl border backdrop-blur-xl transition-all duration-300 relative overflow-hidden"
+              className="vision-card-inner glass-panel p-5 sm:p-10 md:p-12 rounded-2xl sm:rounded-3xl border backdrop-blur-xl transition-all duration-300 relative overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
                 <motion.span
                   style={{ backgroundColor: visionOrbColor, boxShadow: visionOrbGlow }}
-                  className="vision-orb w-3.5 h-3.5 rounded-full transition-all duration-300"
+                  className="vision-orb w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full transition-all duration-300"
                 />
                 <motion.span
                   style={{ color: visionBadgeColor }}
-                  className="vision-badge typo-badge tracking-[2px] uppercase font-mono font-bold text-xs transition-colors duration-300"
+                  className="vision-badge typo-badge tracking-[2px] uppercase font-mono font-bold text-[10px] sm:text-xs transition-colors duration-300"
                 >
                   {visionBadge}
                 </motion.span>
               </div>
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-5 leading-tight">
+              <h2 className="font-serif text-xl sm:text-3xl md:text-4xl text-white font-bold mb-3 sm:mb-5 leading-tight">
                 {visionHeading}
               </h2>
-              <p className="text-gray-300 text-sm sm:text-base md:text-lg font-light leading-relaxed">
+              <p className="text-gray-300 text-xs sm:text-base md:text-lg font-light leading-relaxed">
                 {visionDescription}
               </p>
             </motion.div>
@@ -716,27 +716,27 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* About the CEO / Founder */}
-      <section className="scroll-section py-12 px-6 max-w-7xl mx-auto relative z-10">
-        <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-gold/30 bg-black/60 backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.08)]">
-          <span className="typo-badge text-gold/80 border border-gold/30 px-4 py-1.5 rounded-full bg-black/40 font-mono font-semibold text-xs inline-block mb-6">
+      <section className="scroll-section py-8 sm:py-12 px-4 sm:px-6 max-w-7xl mx-auto relative z-10">
+        <div className="glass-panel p-5 sm:p-12 rounded-2xl sm:rounded-3xl border border-gold/30 bg-black/60 backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.08)]">
+          <span className="typo-badge text-gold/80 border border-gold/30 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-black/40 font-mono font-semibold text-[10px] sm:text-xs inline-block mb-4 sm:mb-6">
             {founderBadge}
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-bold mb-6">
+          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-bold mb-4 sm:mb-6">
             {founderName} <span className="text-gold italic">{founderHighlighted}</span>
           </h2>
-          <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed max-w-4xl">
+          <p className="text-gray-300 text-sm sm:text-lg font-light leading-relaxed max-w-4xl">
             {founderBio}
           </p>
         </div>
       </section>
 
       {/* 2. Channels Ticker Section */}
-      <section className="py-8 bg-black/60 border-y border-white/10 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-3">
-        <div className="flex flex-col items-center gap-1 relative z-20 max-w-3xl px-6">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-tight">
+      <section className="py-6 sm:py-8 bg-black/60 border-y border-white/10 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-2 sm:gap-3">
+        <div className="flex flex-col items-center gap-1 relative z-20 max-w-3xl px-4 sm:px-6">
+          <h2 className="font-serif text-xl sm:text-3xl font-bold text-white tracking-tight">
             {tickerHeading} <span className="text-gold italic font-bold">{tickerHighlight}</span>
           </h2>
-          <p className="text-gray-400 text-xs sm:text-sm font-mono tracking-wider uppercase mt-1">
+          <p className="text-gray-400 text-[11px] sm:text-sm font-mono tracking-wider uppercase mt-0.5 sm:mt-1">
             {tickerSubHeading}
           </p>
         </div>
@@ -745,7 +745,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           animate={{ x: ["0%", "-50%"] }} 
           transition={{ ease: "linear", duration: 110, repeat: Infinity }}
           style={{ willChange: "transform", display: "flex", flexDirection: "row", width: "max-content" }}
-          className="flex flex-row flex-nowrap items-center mt-4"
+          className="flex flex-row flex-nowrap items-center mt-3 sm:mt-4"
         >
           {[1, 2, 3, 4, 5, 6, 7, 8].map((groupIndex) => {
             return (
@@ -758,22 +758,22 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                       key={`${bName}-${idx}-${groupIndex}`}
                       onClick={() => handleNavClick("portfolio")}
                       data-cursor="CLICK"
-                      className="group/brand relative inline-flex items-center justify-center px-10 sm:px-16 py-2 transition-all duration-300 cursor-pointer select-none shrink-0"
+                      className="group/brand relative inline-flex items-center justify-center px-6 sm:px-16 py-1.5 sm:py-2 transition-all duration-300 cursor-pointer select-none shrink-0"
                     >
                       <div className="flex flex-col items-center">
                         {/* Professional Channel Circle Image above the name */}
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border border-gold/40 group-hover/brand:border-gold transition-all duration-300 mb-3 shadow-[0_0_12px_rgba(212,175,55,0.15)] group-hover/brand:shadow-[0_0_20px_rgba(212,175,55,0.35)] relative bg-black/60 flex items-center justify-center">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden border border-gold/40 group-hover/brand:border-gold transition-all duration-300 mb-2 sm:mb-3 shadow-[0_0_12px_rgba(212,175,55,0.15)] group-hover/brand:shadow-[0_0_20px_rgba(212,175,55,0.35)] relative bg-black/60 flex items-center justify-center">
                           <img
                             src={bImg}
                             alt={`${bName} Circle Icon`}
                             className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover/brand:scale-110"
                           />
                         </div>
-                        <span className="font-serif text-xl sm:text-2xl font-bold text-gold tracking-[3px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300">
+                        <span className="font-serif text-lg sm:text-2xl font-bold text-gold tracking-[2px] sm:tracking-[3px] whitespace-nowrap group-hover/brand:text-white transition-colors duration-300">
                           {bName}
                         </span>
                       </div>
-                      <span className="text-white/20 mx-8 self-center select-none">•</span>
+                      <span className="text-white/20 mx-4 sm:mx-8 self-center select-none">•</span>
                     </div>
                   );
                 })}
@@ -785,48 +785,48 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* 3. Core Values Section */}
       <section className="scroll-section section-padding relative z-10 text-left">
-        <div className="flex justify-center mb-12 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+        <div className="flex justify-center mb-8 sm:mb-12 relative z-20">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold">
             {activeHome?.coreValues?.badge || "HOW WE MOVE"}
           </span>
         </div>
-        <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8 max-w-7xl mx-auto">
           {coreValuesList.map((val: any, idx: number) => (
-            <div key={idx} className="glass-panel p-8 rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300">
-              <h3 className="typo-h4 mb-3 text-white font-serif">{val.title}</h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">{val.desc}</p>
+            <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl sm:rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300">
+              <h3 className="typo-h4 mb-2 sm:mb-3 text-white font-serif">{val.title}</h3>
+              <p className="text-gray-400 text-xs sm:text-sm font-light leading-relaxed">{val.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* 5. Global Reach & Statistics */}
-      <section className="scroll-section py-16 bg-[#050505] border-y border-white/5 px-6 relative z-10 text-center">
+      <section className="scroll-section py-12 sm:py-16 bg-[#050505] border-y border-white/5 px-4 sm:px-6 relative z-10 text-center">
         <div className="flex justify-center mb-6 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold">
             {activeHome?.statistics?.badge || "GLOBAL REACH & STATISTICS"}
           </span>
         </div>
         <div className="max-w-7xl mx-auto">
-          <h2 className="typo-h2 mb-12">
+          <h2 className="typo-h2 mb-8 sm:mb-12">
             {activeHome?.statistics?.heading?.split("&")[0] || "Influence &"} <span className="text-gold italic font-bold">{activeHome?.statistics?.heading?.split("&")[1] || "Impact"}</span>
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {statsList.map((stat: any, idx: number) => {
               const isMonthlyViews = /monthly views/i.test(stat.label);
               return (
-                <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
+                <div key={idx} className="glass-panel p-5 sm:p-8 rounded-2xl border border-white/5 hover:border-gold/30 transition-colors">
                   {isMonthlyViews ? (
-                    <span className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-2">
+                    <span className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-1 sm:mb-2">
                       1B+
                     </span>
                   ) : (
                     <AnimatedCounter 
                       value={stat.number} 
-                      className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-2" 
+                      className="font-serif text-3xl sm:text-4xl font-black text-gold block mb-1 sm:mb-2" 
                     />
                   )}
-                  <span className="text-gray-400 text-xs font-mono uppercase tracking-wider">{stat.label}</span>
+                  <span className="text-gray-400 text-[10px] sm:text-xs font-mono uppercase tracking-wider">{stat.label}</span>
                 </div>
               );
             })}
@@ -835,25 +835,24 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 6. Video Showcase Section */}
-      <section className="scroll-section py-16 px-6 max-w-7xl mx-auto relative z-10 text-left">
-        <div className="flex justify-center mb-12 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">
+      <section className="scroll-section py-12 sm:py-16 px-2 sm:px-6 max-w-7xl mx-auto relative z-10 text-left">
+        <div className="flex justify-center mb-8 sm:mb-12 relative z-20">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold">
             FEATURED VIDEO SHOWCASE
           </span>
         </div>
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 sm:mb-10 gap-4 sm:gap-8 px-2 sm:px-0">
           <div>
-            <p className="typo-badge mb-4">OUR WORK</p>
+            <p className="typo-badge mb-2 sm:mb-4">OUR WORK</p>
             <h2 className="typo-h2">
               Craft <span className="text-gold italic font-bold">In Motion</span>
             </h2>
           </div>
-
         </div>
 
         {/* Video Cards Grid */}
-        <div className="flex flex-col gap-16 md:gap-20 w-full max-w-7xl mx-auto video-showcase-grid-container">
+        <div className="flex flex-col gap-10 sm:gap-16 md:gap-20 w-full max-w-7xl mx-auto video-showcase-grid-container">
           {(() => {
             const rawShortsReels = (
               (homeData?.shortsReels?.list && homeData.shortsReels.list.length > 0 && homeData.shortsReels.list) ||
@@ -880,7 +879,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               <>
                 <StripeReelsCarousel reels={cmsReels} isHomePage={true} />
                 
-                <div className="mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
+                <div className="mt-4 sm:mt-6 md:mt-10 w-full max-w-[100vw] overflow-hidden">
                   <LongVideosCarousel videos={cmsLongVideos} isHomePage={true} />
                 </div>
               </>
@@ -890,17 +889,17 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 7. Brand Collaborations Grid (Original Logo Size, Reduced Inner Gap, Centered) */}
-      <section className="scroll-section py-20 px-6 max-w-6xl mx-auto relative z-10 text-center flex flex-col items-center justify-center">
+      <section className="scroll-section py-12 sm:py-20 px-3 sm:px-6 max-w-6xl mx-auto relative z-10 text-center flex flex-col items-center justify-center">
         {/* Small Badge */}
-        <div className="flex justify-center mb-6 relative z-20">
-          <span className="typo-badge text-gold/80 border border-gold/30 px-5 py-2 rounded-full bg-black/50 font-mono font-semibold tracking-[3px] uppercase">
+        <div className="flex justify-center mb-4 sm:mb-6 relative z-20">
+          <span className="typo-badge text-gold/80 border border-gold/30 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/50 font-mono font-semibold tracking-[2px] sm:tracking-[3px] uppercase text-[10px] sm:text-xs">
             {activeHome?.brandCollaborations?.badge || "BRAND COLLABORATIONS"}
           </span>
         </div>
 
         {/* Main Heading & Subtitle */}
-        <div className="max-w-3xl mx-auto mb-12 relative z-20">
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-white mb-4 tracking-tight">
+        <div className="max-w-3xl mx-auto mb-8 sm:mb-12 relative z-20">
+          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-normal text-white mb-3 sm:mb-4 tracking-tight">
             {(() => {
               const rawHeading = activeHome?.brandCollaborations?.heading;
               if (rawHeading && !rawHeading.includes("Trusted By") && !rawHeading.includes("Leading Technology Brands")) {
@@ -1040,7 +1039,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold/5 via-purple-900/10 to-transparent blur-3xl pointer-events-none" />
 
               {/* Luxury Apple + Linear Grid Wall Container */}
-              <div className="border border-white/5 rounded-3xl overflow-hidden bg-black/30 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative z-10 p-3 sm:p-5 w-full">
+              <div className="border border-white/5 rounded-2xl sm:rounded-3xl overflow-hidden bg-black/30 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative z-10 p-2 sm:p-5 w-full">
                 <motion.div 
                   initial="hidden"
                   whileInView="show"
@@ -1081,7 +1080,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                         }}
                         whileHover={{ y: -3, scale: 1.04 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className="group relative flex items-center justify-center p-1.5 sm:p-4 h-20 sm:h-28 md:h-32 w-full rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
+                        className="group relative flex items-center justify-center p-1 sm:p-4 h-18 sm:h-28 md:h-32 w-full rounded-xl sm:rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
                       >
                         {/* Subtle Cell Hover Ambient Light Sweep */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -1122,16 +1121,16 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
 
       {/* Contact Preview */}
-      <section className="scroll-section pb-8 px-6 max-w-7xl mx-auto relative z-10 text-center">
-        <div className="flex justify-center mb-10 relative z-20">
-          <span className="typo-badge text-gold/70 border border-gold/25 px-5 py-2 rounded-full bg-black/40 font-mono font-semibold">{contactTag}</span>
+      <section className="scroll-section pb-8 px-4 sm:px-6 max-w-7xl mx-auto relative z-10 text-center">
+        <div className="flex justify-center mb-6 sm:mb-10 relative z-20">
+          <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold text-[10px] sm:text-xs">{contactTag}</span>
         </div>
-        <h2 className="typo-h2 mb-8 fade-up">
+        <h2 className="typo-h2 mb-6 sm:mb-8 fade-up">
           {contactHeading}
         </h2>
         <button
           onClick={() => handleNavClick("contact")}
-          className="light-sweep px-8 py-4 bg-white text-black font-bold uppercase text-xs tracking-[2px] rounded-full hover:bg-gold hover:text-black transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)] fade-up"
+          className="light-sweep px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-black font-bold uppercase text-[11px] sm:text-xs tracking-[2px] rounded-full hover:bg-gold hover:text-black transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)] fade-up cursor-pointer"
         >{contactCtaText}</button>
       </section>
 

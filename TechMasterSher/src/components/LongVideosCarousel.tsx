@@ -80,31 +80,31 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
     .sort((a, b) => a.diff - b.diff);
 
   return (
-    <div className="relative flex flex-col w-full px-4 md:px-8 pt-0 pb-1 md:pt-0 md:pb-2 max-w-[1600px] mx-auto overflow-hidden items-center justify-center">
+    <div className="relative flex flex-col w-full px-2 sm:px-4 md:px-8 pt-0 pb-1 md:pt-0 md:pb-2 max-w-[1600px] mx-auto overflow-hidden items-center justify-center">
 
       {/* Chevron Navigation Controls */}
       {listToRender.length > 1 && (
         <>
           <button
             onClick={handlePrev}
-            className={`absolute left-2 md:left-6 z-50 p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-white border backdrop-blur-md transition-all shadow-lg cursor-pointer`}
+            className={`absolute left-1 sm:left-2 md:left-6 z-50 p-2 sm:p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-white border backdrop-blur-md transition-all shadow-lg cursor-pointer`}
             aria-label="Previous video"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
             onClick={handleNext}
-            className={`absolute right-2 md:right-6 z-50 p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-white border backdrop-blur-md transition-all shadow-lg cursor-pointer`}
+            className={`absolute right-1 sm:right-2 md:right-6 z-50 p-2 sm:p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-white border backdrop-blur-md transition-all shadow-lg cursor-pointer`}
             aria-label="Next video"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </>
       )}
 
       {/* Edge Fade Gradients for smooth blending of outermost peeking cards */}
-      <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-20 md:w-28 bg-gradient-to-r from-black via-black/60 to-transparent z-40 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 md:w-28 bg-gradient-to-l from-black via-black/60 to-transparent z-40 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-20 md:w-28 bg-gradient-to-r from-black via-black/60 to-transparent z-40 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-20 md:w-28 bg-gradient-to-l from-black via-black/60 to-transparent z-40 pointer-events-none" />
 
       {/* Symmetrical Carousel Track with True 3D Book Perspective */}
       <div 
@@ -117,7 +117,7 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
           dragElastic={0.2}
           onDragEnd={handleDragEnd}
           style={{ transformStyle: "preserve-3d" }}
-          className="flex flex-row justify-center items-center gap-[12px] md:gap-[16px] h-[360px] md:h-[500px] w-full py-2 cursor-grab active:cursor-grabbing relative [transform-style:preserve-3d]"
+          className="flex flex-row justify-center items-center gap-[8px] sm:gap-[12px] md:gap-[16px] h-[270px] sm:h-[350px] md:h-[500px] w-full py-2 cursor-grab active:cursor-grabbing relative [transform-style:preserve-3d]"
         >
           <AnimatePresence initial={false} custom={direction}>
             {displayVideos.map(({ video, originalIndex, diff }) => {
@@ -137,11 +137,12 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
 
               // Width calculation: Center video wider (680px), Side 1 = 1 full card (170px), Side 2 = 0.5 peek card (70px)
               const getWidth = () => {
-                const isMobile = window.innerWidth < 768;
-                if (isActive) return isMobile ? "310px" : "680px";
+                const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+                const isSmallMobile = typeof window !== "undefined" && window.innerWidth < 390;
+                if (isActive) return isSmallMobile ? "270px" : (isMobile ? "300px" : "680px");
 
                 const desktopWidths = [170, 70];
-                const mobileWidths = [100, 45];
+                const mobileWidths = [55, 20];
                 const arr = isMobile ? mobileWidths : desktopWidths;
                 const idx = absDiff - 1;
                 const w = idx < arr.length ? arr[idx] : arr[arr.length - 1];

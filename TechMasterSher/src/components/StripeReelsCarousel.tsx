@@ -197,31 +197,31 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
   };
 
   return (
-    <div className="relative flex flex-col w-full px-4 md:px-8 pt-2 pb-0 md:pt-4 md:pb-0 max-w-[1600px] mx-auto overflow-hidden items-center justify-center select-none">
+    <div className="relative flex flex-col w-full px-2 sm:px-4 md:px-8 pt-2 pb-0 md:pt-4 md:pb-0 max-w-[1600px] mx-auto overflow-hidden items-center justify-center select-none">
 
       {/* Chevron Navigation Controls */}
       {N > 1 && (
         <>
           <button
             onClick={handlePrev}
-            className={`absolute left-2 md:left-6 z-50 p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-gold border backdrop-blur-md transition-all shadow-lg text-white cursor-pointer`}
+            className={`absolute left-1 sm:left-2 md:left-6 z-50 p-2 sm:p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-gold border backdrop-blur-md transition-all shadow-lg text-white cursor-pointer`}
             aria-label="Previous reel"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
             onClick={handleNext}
-            className={`absolute right-2 md:right-6 z-50 p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-gold border backdrop-blur-md transition-all shadow-lg text-white cursor-pointer`}
+            className={`absolute right-1 sm:right-2 md:right-6 z-50 p-2 sm:p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-gold border backdrop-blur-md transition-all shadow-lg text-white cursor-pointer`}
             aria-label="Next reel"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </>
       )}
 
       {/* Edge Fade Gradients for ultra-smooth blending of outermost cards */}
-      <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-20 md:w-28 bg-gradient-to-r from-black via-black/60 to-transparent z-40 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 md:w-28 bg-gradient-to-l from-black via-black/60 to-transparent z-40 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-20 md:w-28 bg-gradient-to-r from-black via-black/60 to-transparent z-40 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-20 md:w-28 bg-gradient-to-l from-black via-black/60 to-transparent z-40 pointer-events-none" />
 
       {/* 3D Coverflow Carousel Track */}
       <motion.div
@@ -230,7 +230,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
         style={{ perspective: "1200px" }}
-        className="flex flex-row items-center justify-center gap-2 sm:gap-2.5 md:gap-3 h-[360px] sm:h-[440px] md:h-[500px] w-full py-2 cursor-grab active:cursor-grabbing relative overflow-hidden"
+        className="flex flex-row items-center justify-center gap-1.5 sm:gap-2.5 md:gap-3 h-[330px] sm:h-[440px] md:h-[500px] w-full py-2 cursor-grab active:cursor-grabbing relative overflow-hidden"
       >
         {offsets.map((offset) => {
           const originalIndex = (activeIndex + offset + N * 1000) % N;
@@ -300,7 +300,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
               }}
               transition={transitionSettings}
               style={{ transformStyle: "preserve-3d", willChange: "transform" }}
-              className={`relative h-[360px] sm:h-[440px] md:h-[490px] w-[200px] sm:w-[240px] md:w-[265px] overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border transition-all duration-300 ${isHomePage ? "rounded-none" : "rounded-[24px]"
+              className={`relative h-[320px] sm:h-[440px] md:h-[490px] w-[185px] sm:w-[240px] md:w-[265px] overflow-hidden cursor-pointer shrink-0 bg-zinc-950 group border transition-all duration-300 ${isHomePage ? "rounded-none" : "rounded-[24px]"
                 } ${isHomePage
                   ? isActive
                     ? "border-2 border-black shadow-[0_25px_60px_rgba(0,0,0,0.9)]"

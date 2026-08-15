@@ -150,17 +150,17 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   return (
     <>
       <header
-  className={`fixed top-0 left-0 w-full z-[999] py-1 md:py-2 pl-4 pr-2.5 md:pl-12 md:pr-5 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
-  style={{
-    filter: isScrolled ? 'none' : `
-      drop-shadow(0 2px 4px rgba(212, 175, 55, 0.7))
-      drop-shadow(0 4px 10px rgba(212, 175, 55, 0.3))
-    `,
-    background: isScrolled ? 'transparent' : 'black',
-    borderBottom: `1px solid ${isScrolled ? 'transparent' : 'rgba(255,255,255,0.1)'}`,
-    pointerEvents: 'none'
-  }}
->
+        className={`fixed top-0 left-0 w-full z-[999] py-1 md:py-2 pl-3.5 pr-2.5 sm:pl-6 md:pl-12 md:pr-5 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
+        style={{
+          filter: isScrolled ? 'none' : `
+            drop-shadow(0 2px 4px rgba(212, 175, 55, 0.7))
+            drop-shadow(0 4px 10px rgba(212, 175, 55, 0.3))
+          `,
+          background: isScrolled ? 'transparent' : 'black',
+          borderBottom: `1px solid ${isScrolled ? 'transparent' : 'rgba(255,255,255,0.1)'}`,
+          pointerEvents: 'none'
+        }}
+      >
         {/* Brand Logo */}
         <div 
           onClick={() => handleNavClick("home")} 
@@ -236,14 +236,14 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
       </header>
       {/* Fullscreen Overlay Menu */}
       <div 
-        className="menu-overlay fixed inset-0 bg-[#060606]/98 backdrop-blur-2xl z-[998] overflow-y-auto flex flex-col justify-start py-20 px-6 md:px-16"
+        className="menu-overlay fixed inset-0 bg-[#060606]/98 backdrop-blur-2xl z-[998] overflow-y-auto flex flex-col justify-start py-16 px-4 md:px-16"
         style={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
       >
         {/* Background glow effects */}
         <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] aurora-glow-purple -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-blue translate-x-1/2 translate-y-1/2 opacity-10 pointer-events-none" />
 
-        <div className="w-full max-w-5xl mx-auto my-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 z-10 py-8 md:py-16">
+        <div className="w-full max-w-5xl mx-auto my-auto grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-6 z-10 py-4 md:py-16">
           
           {/* Column 1: Identity */}
           <div className="flex flex-col gap-2 text-center items-center">

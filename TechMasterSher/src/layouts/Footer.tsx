@@ -208,7 +208,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       </div>
 
       {/* Main Top Section Grid Layout (Let's Build & Quick Links headers start on the exact same horizontal top line) */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 relative z-10 mb-14 items-start">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative z-10 mb-10 sm:mb-14 items-start">
         
         {/* LEFT COLUMN (lg:col-span-5): Branding & Prominent Heading */}
         <div className="lg:col-span-5 flex flex-col justify-start gap-4">
@@ -230,7 +230,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
         </div>
 
         {/* MIDDLE COLUMNS (lg:col-span-4): 3 Sitemap Columns */}
-        <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 pt-1 sm:pt-2">
+        <div className="lg:col-span-4 grid grid-cols-3 gap-2 sm:gap-6 pt-1 sm:pt-2">
           {(() => {
             const removedFooterIds = new Set([
               "mission",
@@ -278,15 +278,15 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             }));
           })().map((column: any, colIdx: number) => (
             <div key={colIdx}>
-              <p className="text-[11px] font-mono tracking-[2.5px] text-gold uppercase font-bold mb-4 block">
+              <p className="text-[9px] sm:text-[11px] font-mono tracking-[1.5px] sm:tracking-[2.5px] text-gold uppercase font-bold mb-3 sm:mb-4 block">
                 {column.header}
               </p>
-              <ul className="flex flex-col gap-[18px]">
+              <ul className="flex flex-col gap-[12px] sm:gap-[18px]">
                 {column.links?.map((link: any, linkIdx: number) => (
                   <li key={linkIdx}>
                     <button
                       onClick={() => handleNavClick(link.id)}
-                      className="text-[11px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block"
+                      className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block leading-tight"
                     >
                       {link.name}
                     </button>
@@ -299,7 +299,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
         {/* RIGHT COLUMN (lg:col-span-3): Taller & Perfectly Balanced 3D Spatial Node Panel */}
         <div className="lg:col-span-3 flex flex-col justify-stretch h-full items-center lg:items-end">
-          <div className="glass-panel p-4 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center relative overflow-hidden h-full min-h-[360px] sm:min-h-[380px] w-full max-w-[260px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+          <div className="glass-panel p-4 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center relative overflow-hidden h-full min-h-[260px] sm:min-h-[380px] w-full max-w-[260px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
             <div className="absolute inset-0 z-0">
               <Canvas camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: true, alpha: true }}>
                 <ambientLight intensity={0.6} />
@@ -320,22 +320,22 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       </div>
 
       {/* BOTTOM HORIZONTAL GRID BAR (2 Cards in 1 Row) */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 relative z-10 mb-12">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-5 relative z-10 mb-8 sm:mb-12">
         
         {/* Card 1: DIRECT MAIL */}
         <motion.a 
           href={`mailto:${footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}`}
           whileHover={{ y: -6, scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-gold/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(212,175,55,0.25)] overflow-hidden cursor-pointer"
+          className="group relative glass-panel p-3.5 sm:p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-gold/60 transition-all duration-300 flex items-center gap-3 sm:gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(212,175,55,0.25)] overflow-hidden cursor-pointer"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          <div className="w-11 h-11 shrink-0 rounded-2xl border border-gold/40 bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 group-hover:rotate-6 group-hover:bg-gold group-hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
-            <Mail className="w-5 h-5" />
+          <div className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-2xl border border-gold/40 bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 group-hover:rotate-6 group-hover:bg-gold group-hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+            <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="overflow-hidden relative z-10">
-            <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-gold transition-colors">DIRECT MAIL</span>
-            <span className="text-sm font-bold text-white group-hover:text-gold transition-colors block truncate">
+            <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-gold transition-colors">DIRECT MAIL</span>
+            <span className="text-xs sm:text-sm font-bold text-white group-hover:text-gold transition-colors block truncate">
               {footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
             </span>
           </div>
@@ -348,15 +348,15 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           rel="noopener noreferrer"
           whileHover={{ y: -6, scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          className="group relative glass-panel p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-purple-400/60 transition-all duration-300 flex items-center gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(192,132,252,0.25)] overflow-hidden cursor-pointer"
+          className="group relative glass-panel p-3.5 sm:p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-purple-400/60 transition-all duration-300 flex items-center gap-3 sm:gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(192,132,252,0.25)] overflow-hidden cursor-pointer"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          <div className="w-11 h-11 shrink-0 rounded-2xl border border-purple-400/40 bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(192,132,252,0.15)]">
-            <MapPin className="w-5 h-5" />
+          <div className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-2xl border border-purple-400/40 bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(192,132,252,0.15)]">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="overflow-hidden relative z-10">
-            <span className="text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-purple-400 transition-colors">CREATOR HQ</span>
-            <span className="text-sm font-bold text-white group-hover:text-purple-400 transition-colors block truncate">
+            <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-purple-400 transition-colors">CREATOR HQ</span>
+            <span className="text-xs sm:text-sm font-bold text-white group-hover:text-purple-400 transition-colors block truncate">
               {footerData?.cards?.creatorHqAddress || "Silicon Valley Creator Lab"}
             </span>
           </div>
@@ -365,7 +365,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       </div>
 
       {/* Footer Bottom copyright and social handles */}
-      <div className="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+      <div className="max-w-7xl mx-auto pt-6 sm:pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 relative z-10 text-center md:text-left">
         <div className="text-left">
           <p className="text-[10px] uppercase tracking-[2px] text-gray-300 font-light">
             &copy; {new Date().getFullYear()} {footerData?.copyrightText || websiteSettings?.copyrightText || websiteSettings?.companyName || "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED."}
