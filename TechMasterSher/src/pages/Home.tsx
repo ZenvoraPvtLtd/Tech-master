@@ -608,9 +608,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
 
         {/* Vertical Gap for 3D Lion / Sher Logo */}
-        <div className="h-60 sm:h-80 md:h-[440px] w-full pointer-events-none" />
+        <div className="h-44 sm:h-72 md:h-[440px] w-full pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-3 sm:mt-8">
+        <div className="max-w-5xl mx-auto flex flex-col items-center relative z-10 mt-1 sm:mt-8">
 
           {/* Tagline */}
           <motion.div
