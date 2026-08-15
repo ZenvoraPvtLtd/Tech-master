@@ -75,31 +75,44 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
     };
   }, []);
 
-  const identityItems = dbData?.navigation?.identityItems || [
+  const removedNavIds = new Set([
+    "mission",
+    "what-we-do",
+    "collaborations",
+    "campaigns",
+    "product-launches",
+    "events",
+    "services",
+    "testimonials",
+    "faq"
+  ]);
+
+  const defaultIdentityItems = [
     { name: "Home", id: "home" },
     { name: "About Founder", id: "about" },
     { name: "Journey", id: "journey" },
-    { name: "Mission & Vision", id: "mission" },
-    { name: "What We Do", id: "what-we-do" },
   ];
 
-  const engagementItems = dbData?.navigation?.engagementItems || [
-    { name: "Brand Collabs", id: "collaborations" },
-    { name: "Campaigns", id: "campaigns" },
-    { name: "Launches", id: "product-launches" },
-    { name: "Events & Talks", id: "events" },
+  const defaultEngagementItems = [
     { name: "Our Work", id: "portfolio" },
+    { name: "Blog", id: "blog" },
     { name: "Careers", id: "career" },
   ];
 
-  const quickLinksItems = dbData?.navigation?.quickLinksItems || [
-    { name: "Core Services", id: "services" },
-    { name: "Testimonials", id: "testimonials" },
-    { name: "FAQ Portal", id: "faq" },
+  const defaultQuickLinksItems = [
     { name: "Contact Page", id: "contact" },
     { name: "Privacy Policy", id: "privacy" },
     { name: "Terms of Service", id: "terms" },
   ];
+
+  const rawIdentity = dbData?.navigation?.identityItems || defaultIdentityItems;
+  const identityItems = rawIdentity.filter((item: any) => !removedNavIds.has(item.id));
+
+  const rawEngagement = dbData?.navigation?.engagementItems || defaultEngagementItems;
+  const engagementItems = rawEngagement.filter((item: any) => !removedNavIds.has(item.id));
+
+  const rawQuickLinks = dbData?.navigation?.quickLinksItems || defaultQuickLinksItems;
+  const quickLinksItems = rawQuickLinks.filter((item: any) => !removedNavIds.has(item.id));
 
   const handleNavClick = (pageId: string) => {
     if (pageId === "privacy") {

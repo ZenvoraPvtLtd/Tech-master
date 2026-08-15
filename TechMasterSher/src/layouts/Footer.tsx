@@ -231,41 +231,52 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
 
         {/* MIDDLE COLUMNS (lg:col-span-4): 3 Sitemap Columns */}
         <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6 pt-1 sm:pt-2">
-          {(footerData?.columns || [
-            {
-              header: "IDENTITY",
-              links: [
-                { name: "HOME PAGE", id: "home" },
-                { name: "ABOUT FOUNDER", id: "about" },
-                { name: "JOURNEY", id: "journey" },
-                { name: "MISSION & VISION", id: "mission" },
-                { name: "WHAT WE DO", id: "what-we-do" },
-                { name: "LATEST BLOG", id: "blog" },
-              ]
-            },
-            {
-              header: "ENGAGEMENT",
-              links: [
-                { name: "BRAND COLLABS", id: "collaborations" },
-                { name: "CAMPAIGNS", id: "campaigns" },
-                { name: "LAUNCHES", id: "product-launches" },
-                { name: "EVENTS & TALKS", id: "events" },
-                { name: "OUR WORK", id: "portfolio" },
-                { name: "MEDIA GALLERY", id: "gallery" },
-              ]
-            },
-            {
-              header: "QUICK LINKS",
-              links: [
-                { name: "CORE SERVICES", id: "services" },
-                { name: "TESTIMONIALS", id: "testimonials" },
-                { name: "FAQ PORTAL", id: "faq" },
-                { name: "CONTACT PAGE", id: "contact" },
-                { name: "PRIVACY POLICY", id: "privacy" },
-                { name: "TERMS OF SERVICE", id: "terms" },
-              ]
-            }
-          ]).map((column: any, colIdx: number) => (
+          {(() => {
+            const removedFooterIds = new Set([
+              "mission",
+              "what-we-do",
+              "collaborations",
+              "campaigns",
+              "product-launches",
+              "events",
+              "services",
+              "testimonials",
+              "faq"
+            ]);
+
+            const defaultCols = [
+              {
+                header: "IDENTITY",
+                links: [
+                  { name: "HOME PAGE", id: "home" },
+                  { name: "ABOUT FOUNDER", id: "about" },
+                  { name: "JOURNEY", id: "journey" },
+                ]
+              },
+              {
+                header: "ENGAGEMENT",
+                links: [
+                  { name: "OUR WORK", id: "portfolio" },
+                  { name: "BLOG", id: "blog" },
+                  { name: "CAREERS", id: "career" },
+                ]
+              },
+              {
+                header: "QUICK LINKS",
+                links: [
+                  { name: "CONTACT PAGE", id: "contact" },
+                  { name: "PRIVACY POLICY", id: "privacy" },
+                  { name: "TERMS OF SERVICE", id: "terms" },
+                ]
+              }
+            ];
+
+            const rawCols = footerData?.columns || defaultCols;
+            return rawCols.map((column: any) => ({
+              ...column,
+              links: (column.links || []).filter((link: any) => !removedFooterIds.has(link.id))
+            }));
+          })().map((column: any, colIdx: number) => (
             <div key={colIdx}>
               <p className="text-[11px] font-mono tracking-[2.5px] text-gold uppercase font-bold mb-4 block">
                 {column.header}

@@ -649,7 +649,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         <div ref={timelineRef} className="intro-vision-timeline relative flex flex-col items-center gap-14 sm:gap-20">
           
           {/* Central Vertical Connecting Timeline Line (Journey Style) */}
-          <div className="absolute left-6 sm:left-10 md:left-1/2 -translate-x-1/2 top-10 bottom-10 w-[3px] bg-white/10 z-0 overflow-hidden rounded-full">
+          <div className="absolute left-1/2 -translate-x-1/2 top-10 bottom-10 w-[3px] bg-white/10 z-0 overflow-hidden rounded-full">
             <motion.div
               style={{ scaleY: timelineScaleY, transformOrigin: "top center" }}
               className="intro-vision-line-active w-full h-full bg-gradient-to-b from-gold via-[#F3E5AB] to-gold shadow-[0_0_20px_rgba(212,175,55,0.9)]"
@@ -1052,7 +1052,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                       transition: { staggerChildren: 0.04 }
                     }
                   }}
-                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 sm:gap-2.5 w-full items-center justify-items-center"
+                  className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-1.5 sm:gap-2.5 w-full items-center justify-items-center"
                 >
                   {displayCollabs.map((brand: any, idx: number) => {
                     const bName = brand.brandName;
@@ -1061,12 +1061,12 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                     const isLenskart = bName.toLowerCase() === "lenskart";
 
                     const imgClasses = isUltra
-                      ? "h-5 sm:h-6 md:h-7 w-auto max-w-[100px] sm:max-w-[130px] md:max-w-[150px]"
+                      ? "h-4 sm:h-6 md:h-7 w-auto max-w-[80px] sm:max-w-[130px] md:max-w-[150px]"
                       : (isCashify
-                        ? "h-4 sm:h-5 md:h-6 w-auto max-w-[85px] sm:max-w-[105px] md:max-w-[125px]"
+                        ? "h-3.5 sm:h-5 md:h-6 w-auto max-w-[70px] sm:max-w-[105px] md:max-w-[125px]"
                         : (isLenskart
-                          ? "h-7 sm:h-9 md:h-11 w-auto max-w-[120px] sm:max-w-[160px] md:max-w-[200px]"
-                          : "h-12 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[240px] md:max-w-[280px]"));
+                          ? "h-6 sm:h-9 md:h-11 w-auto max-w-[90px] sm:max-w-[160px] md:max-w-[200px]"
+                          : "h-9 sm:h-14 md:h-18 w-auto max-w-[110px] sm:max-w-[220px] md:max-w-[280px]"));
 
                     const logoFilter = isCashify
                       ? "brightness(2.8) contrast(150%) grayscale(1)"
@@ -1081,7 +1081,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                         }}
                         whileHover={{ y: -3, scale: 1.04 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className="group relative flex items-center justify-center p-2.5 sm:p-4 h-24 sm:h-32 w-full rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
+                        className="group relative flex items-center justify-center p-1.5 sm:p-4 h-20 sm:h-28 md:h-32 w-full rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
                       >
                         {/* Subtle Cell Hover Ambient Light Sweep */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

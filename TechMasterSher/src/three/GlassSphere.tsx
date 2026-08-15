@@ -22,20 +22,21 @@ const LionShaderMaterial = shaderMaterial(
   void main() {
     vec4 texColor = texture2D(uTexture, vUv);
     
-    // Distance to pure white
-    float distToWhite = distance(texColor.rgb, vec3(1.0, 1.0, 1.0));
-    
-    // Stronger filter to remove off-white compression artifacts
-    float mask = smoothstep(0.25, 0.6, distToWhite);
-    
-    // Fade out the extreme edges to completely remove the square boundary line
-    float edgeMaskX = smoothstep(0.02, 0.05, vUv.x) * (1.0 - smoothstep(0.95, 0.98, vUv.x));
-    float edgeMaskY = smoothstep(0.02, 0.05, vUv.y) * (1.0 - smoothstep(0.95, 0.98, vUv.y));
-    float finalMask = mask * edgeMaskX * edgeMaskY;
-    
-    // Output color with 0.60x brightness while preserving original 3D details
-    vec3 brightColor = clamp(texColor.rgb * 0.60, 0.0, 1.0);
-    gl_FragColor = vec4(brightColor, finalMask * uOpacity);
+    // Discard transparent background pixels so no black bounding box is drawn
+    if (texColor.a < 0.08) {
+      discard;
+    }
+
+    // Discard faint semi-transparent dark compression boundary noise
+    float brightness = max(texColor.r, max(texColor.g, texColor.b));
+    if (texColor.a < 0.6 && brightness < 0.15) {
+      discard;
+    }
+
+    // Preserve the exact golden 3D tone from reference image
+    vec3 lionColor = clamp(texColor.rgb * 0.60, 0.0, 1.0);
+
+    gl_FragColor = vec4(lionColor, texColor.a * uOpacity);
   }
   `
 );

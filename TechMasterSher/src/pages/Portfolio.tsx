@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
-import { LuxuryCard } from "../components/LuxuryCard";
 
 const YoutubeIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -18,11 +17,7 @@ const InstagramIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5"
   </svg>
 );
 
-const LinkedinIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-  </svg>
-);
+
 
 const CHANNEL_SOCIAL_LINKS: Record<string, { youtube?: string; instagram?: string }> = {
   "Tech Master": {
@@ -59,25 +54,7 @@ const getSocialLinks = (ch: any) => {
   return { youtube, instagram };
 };
 
-const getProjectSocialLinks = (proj: any) => {
-  const url = proj.buttonUrl || proj.link || "";
-  const clientName = (proj.client || proj.title || "").trim();
 
-  let matchedChannelKey = "";
-  for (const k of Object.keys(CHANNEL_SOCIAL_LINKS)) {
-    if (clientName.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(clientName.toLowerCase())) {
-      matchedChannelKey = k;
-      break;
-    }
-  }
-  const known = matchedChannelKey ? CHANNEL_SOCIAL_LINKS[matchedChannelKey] : {};
-
-  const youtube = proj.youtubeUrl || (url.includes("youtube") || url.includes("youtu.be") ? url : known.youtube || "https://youtube.com");
-  const instagram = proj.instagramUrl || (url.includes("instagram") ? url : known.instagram || "https://instagram.com");
-  const linkedin = proj.linkedinUrl || (url.includes("linkedin") ? url : "");
-
-  return { youtube, instagram, linkedin, directUrl: url };
-};
 
 const getChannelCircleImage = (clientOrChannelName: string, channelObj?: any, liveData?: any, activeDb?: any) => {
   const name = (clientOrChannelName || "").trim().toLowerCase();
@@ -117,7 +94,6 @@ const getChannelCircleImage = (clientOrChannelName: string, channelObj?: any, li
 export const Portfolio: React.FC = () => {
   const { dbData } = useData();
   const [selectedChannel, setSelectedChannel] = useState("Tech Master");
-  const [activeFilter, setActiveFilter] = useState("All");
   const [livePortfolioData, setLivePortfolioData] = useState<any>(null);
 
   useEffect(() => {
@@ -220,138 +196,8 @@ export const Portfolio: React.FC = () => {
     }
   ];
 
-  const defaultProjects = [
-    {
-      id: "proj-1",
-      title: "Asus ROG Phone 8 Global Reveal",
-      category: "Videos",
-      client: "Tech Master",
-      year: "2026",
-      description: "Complete commercial production, 3D gaming render animations, and multi-channel launch across Tech Master ecosystem.",
-      imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800",
-      accentColor: "#D4AF37",
-      tags: ["3D Animation", "Commercial Shoot", "Hardware Review"],
-      buttonText: "Review Case",
-      buttonUrl: "https://youtube.com",
-      featured: true,
-      visible: true
-    },
-    {
-      id: "proj-2",
-      title: "Tesla Cyberbeast Track Performance Test",
-      category: "Commercial Shoots",
-      client: "Master Wheels",
-      year: "2026",
-      description: "High-speed 4K tracking camera production at Buddh International Circuit testing top-speed telemetry.",
-      imageUrl: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=800",
-      accentColor: "#FF3366",
-      tags: ["Automotive", "High-Speed Cinema", "Telemetry"],
-      buttonText: "Review Case",
-      buttonUrl: "https://youtube.com",
-      featured: true,
-      visible: true
-    },
-    {
-      id: "proj-3",
-      title: "Next Univerz Full-Stack Masterclass",
-      category: "Projects",
-      client: "Next Univerz",
-      year: "2025",
-      description: "Curriculum design, interactive coding sandbox development, and 50+ video production modules.",
-      imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800",
-      accentColor: "#00E5FF",
-      tags: ["Education", "Full-Stack", "Masterclass"],
-      buttonText: "Review Case",
-      buttonUrl: "https://youtube.com",
-      featured: true,
-      visible: true
-    },
-    {
-      id: "proj-4",
-      title: "Full Circle Studio Podcast with CEO Guests",
-      category: "Reels",
-      client: "Full Circle",
-      year: "2025",
-      description: "Multi-cam 4K podcast recording suite, spatial audio mix, and viral short clips editing.",
-      imageUrl: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800",
-      accentColor: "#AA3BFF",
-      tags: ["Podcast", "Multi-Cam", "Viral Clips"],
-      buttonText: "Review Case",
-      buttonUrl: "https://youtube.com",
-      featured: true,
-      visible: true
-    },
-    {
-      id: "proj-5",
-      title: "Trendz Talk Pop Tech Short-Form Series",
-      category: "Reels",
-      client: "Trendz Talk",
-      year: "2026",
-      description: "Fast-paced vertical tech news series reaching 4.8M+ views per reel on Instagram.",
-      imageUrl: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=800",
-      accentColor: "#00FF66",
-      tags: ["Short-Form", "Pop Tech", "Viral Reels"],
-      buttonText: "Review Case",
-      buttonUrl: "https://instagram.com",
-      featured: true,
-      visible: true
-    },
-    {
-      id: "proj-6",
-      title: "Apple Vision Pro Spatial Computing Showcase",
-      category: "Videos",
-      client: "Tech Master",
-      year: "2025",
-      description: "In-depth spatial audio and optical tracking teardown reaching 15M+ tech enthusiasts.",
-      imageUrl: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&q=80&w=800",
-      accentColor: "#D4AF37",
-      tags: ["Spatial Computing", "Teardown", "Apple"],
-      buttonText: "Review Case",
-      buttonUrl: "https://youtube.com",
-      featured: true,
-      visible: true
-    }
-  ];
-
   const rawChannels = livePortfolioData?.channels || activeDb?.multiverseChannels || activeDb?.portfolioCMS?.channels || defaultChannels;
   const channels = (Array.isArray(rawChannels) && rawChannels.length > 0 ? rawChannels : defaultChannels).filter((c: any) => c.visible !== false && !c.deleted);
-
-  const rawProjects = (livePortfolioData?.projects && livePortfolioData.projects.length > 0)
-    ? livePortfolioData.projects
-    : (activeDb?.portfolio && activeDb.portfolio.length > 0) 
-      ? activeDb.portfolio 
-      : (activeDb?.portfolioCMS?.projects && activeDb.portfolioCMS.projects.length > 0) 
-        ? activeDb.portfolioCMS.projects 
-        : defaultProjects;
-
-  const portfolioList = (Array.isArray(rawProjects) && rawProjects.length > 0 ? rawProjects : defaultProjects).filter((p: any) => p.visible !== false && !p.deleted);
-
-  const defaultFilters = ["Videos", "Photos", "Projects", "Campaigns", "Reels", "Commercial Shoots", "Client Work"];
-  const rawFilters = livePortfolioData?.categories || activeDb?.portfolioFilters || activeDb?.portfolioCMS?.categories || defaultFilters;
-  
-  const filters = [
-    "All Work",
-    ...rawFilters.map((f: any) => typeof f === 'string' ? f : (f.name || f)).filter(Boolean)
-  ];
-
-  // Combined Dual Filtering by Channel & Category
-  const filteredProjects = portfolioList.filter((proj: any) => {
-    // 1. Channel Filter
-    const matchesChannel = selectedChannel === "All" || (
-      (proj.client && proj.client.toLowerCase().includes(selectedChannel.toLowerCase())) ||
-      (proj.title && proj.title.toLowerCase().includes(selectedChannel.toLowerCase())) ||
-      (proj.description && proj.description.toLowerCase().includes(selectedChannel.toLowerCase()))
-    );
-
-    // 2. Category Filter
-    const isAllCategory = activeFilter === "All" || activeFilter === "All Work";
-    const matchesCategory = isAllCategory || (
-      proj.category === activeFilter ||
-      (proj.categories && proj.categories.includes(activeFilter))
-    );
-
-    return matchesChannel && matchesCategory;
-  });
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-16 px-6 overflow-hidden bg-black">
@@ -514,162 +360,6 @@ export const Portfolio: React.FC = () => {
             })()}
           </motion.div>
         </AnimatePresence>
-      </section>
-
-      {/* 3. CATEGORY FILTERS TABS */}
-      <section className="max-w-7xl mx-auto mb-10 flex flex-wrap gap-3 text-left relative z-10">
-        {filters.map((filter: string) => (
-          <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-[1.5px] border transition-all duration-300 cursor-pointer ${
-              activeFilter === filter
-                ? "bg-gold border-gold text-black shadow-[0_0_20px_rgba(212,175,55,0.2)] font-bold"
-                : "bg-[#0d0d0d] border-white/10 text-gray-400 hover:border-white/40 hover:text-white"
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
-      </section>
-
-      {/* 4. WORK ITEMS GRID LIST */}
-      <section className="max-w-7xl mx-auto text-left relative z-10">
-        <motion.div 
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 gap-12"
-        >
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project: any, idx: number) => (
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.5 }}
-                key={project.id || idx}
-                className="h-full"
-              >
-                <LuxuryCard accentColor={project.accentColor || '#D4AF37'} index={idx}>
-                  <div className="flex flex-col h-full justify-between">
-                    <div>
-                      {(() => {
-                        const projCircleImg = getChannelCircleImage(project.client || project.title, null, livePortfolioData, activeDb);
-                        return (
-                          <>
-                            <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/5 mb-6 relative group/cardImg">
-                              <img
-                                src={mediaUrl(project.coverImage) || mediaUrl(project.image) || mediaUrl(project.imageUrl)}
-                                alt={project.title}
-                                loading="lazy"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                data-cursor="view"
-                              />
-                              <div className="absolute top-4 left-4 bg-black/85 border border-white/10 px-3 py-1 rounded-full text-[9px] uppercase tracking-[1px] font-mono text-gold/90">
-                                {project.category}
-                              </div>
-
-                              {/* Professional Circular Channel Image Badge Top-Right with Enhanced Brightness */}
-                              <div className="absolute top-3.5 right-3.5 flex items-center gap-2 bg-black/85 backdrop-blur-md p-1 pr-3 rounded-full border border-white/15 shadow-[0_4px_20px_rgba(0,0,0,0.6)] group/avatar z-10">
-                                <div className="relative w-7 h-7 rounded-full overflow-hidden border border-gold/60 bg-black shrink-0 flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.3)]">
-                                  <img
-                                    src={projCircleImg}
-                                    alt={`${project.client} Avatar`}
-                                    className="w-full h-full object-cover rounded-full opacity-95 brightness-110 group-hover/avatar:opacity-100 group-hover/avatar:scale-110 transition-all duration-500"
-                                  />
-                                </div>
-                                <span className="text-[10px] font-mono font-bold text-gray-200 uppercase tracking-wider">
-                                  {project.client || "Tech Master"}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex justify-between items-center mb-3">
-                              <span className="text-[10px] uppercase tracking-[2px] opacity-60 font-bold text-gray-300 font-mono">
-                                {project.client} • {project.year}
-                              </span>
-                              {/* Right Side Circular Channel Avatar Badge (Enhanced Brightness) */}
-                              <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gold/60 bg-black shrink-0 flex items-center justify-center shadow-[0_0_12px_rgba(212,175,55,0.3)] group/subAvatar">
-                                <img
-                                  src={projCircleImg}
-                                  alt={project.client}
-                                  className="w-full h-full object-cover rounded-full opacity-95 brightness-110 group-hover/subAvatar:opacity-100 transition-all duration-300"
-                                />
-                              </div>
-                            </div>
-                          </>
-                        );
-                      })()}
-
-                      <h3 className="typo-card-title mb-3 group-hover:text-gold transition-colors duration-300">
-                        {project.title}
-                      </h3>
-                      
-                      <p className="text-gray-400 text-xs md:text-sm font-light leading-relaxed mb-6">
-                        {project.description}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-6 border-t border-white/5 items-center justify-between mt-auto">
-                      <div className="flex flex-wrap gap-1.5">
-                        {Array.isArray(project.tags) && project.tags.map((tag: any) => (
-                          <span key={tag} className="px-2.5 py-0.5 rounded-md bg-white/5 text-[9px] font-mono text-gray-400">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Circular Social Icon Buttons (Grey Theme) */}
-                      {(() => {
-                        const projSocial = getProjectSocialLinks(project);
-                        return (
-                          <div className="flex items-center gap-2.5">
-                            {projSocial.youtube && (
-                              <a
-                                href={projSocial.youtube}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Watch on YouTube"
-                                onClick={(e) => e.stopPropagation()}
-                                className="w-10 h-10 rounded-full border border-white/15 bg-white/5 text-gray-300 hover:bg-white/20 hover:text-white hover:border-white/40 transition-all duration-300 flex items-center justify-center shadow-md group/btn cursor-pointer"
-                              >
-                                <YoutubeIcon className="w-4 h-4 transition-transform duration-300 group-hover/btn:scale-110" />
-                              </a>
-                            )}
-                            {projSocial.instagram && (
-                              <a
-                                href={projSocial.instagram}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="View on Instagram"
-                                onClick={(e) => e.stopPropagation()}
-                                className="w-10 h-10 rounded-full border border-white/15 bg-white/5 text-gray-300 hover:bg-white/20 hover:text-white hover:border-white/40 transition-all duration-300 flex items-center justify-center shadow-md group/btn cursor-pointer"
-                              >
-                                <InstagramIcon className="w-4 h-4 transition-transform duration-300 group-hover/btn:scale-110" />
-                              </a>
-                            )}
-                            {projSocial.linkedin && (
-                              <a
-                                href={projSocial.linkedin}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="View on LinkedIn"
-                                onClick={(e) => e.stopPropagation()}
-                                className="w-10 h-10 rounded-full border border-white/15 bg-white/5 text-gray-300 hover:bg-white/20 hover:text-white hover:border-white/40 transition-all duration-300 flex items-center justify-center shadow-md group/btn cursor-pointer"
-                              >
-                                <LinkedinIcon className="w-4 h-4 transition-transform duration-300 group-hover/btn:scale-110" />
-                              </a>
-                            )}
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                </LuxuryCard>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
       </section>
     </div>
   );

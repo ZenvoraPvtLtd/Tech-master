@@ -18,28 +18,19 @@ const defaultFooterData = {
         { name: "HOME PAGE", id: "home" },
         { name: "ABOUT FOUNDER", id: "about" },
         { name: "JOURNEY", id: "journey" },
-        { name: "MISSION & VISION", id: "mission" },
-        { name: "WHAT WE DO", id: "what-we-do" },
-        { name: "LATEST BLOG", id: "blog" },
       ]
     },
     {
       header: "ENGAGEMENT",
       links: [
-        { name: "BRAND COLLABS", id: "collaborations" },
-        { name: "CAMPAIGNS", id: "campaigns" },
-        { name: "LAUNCHES", id: "product-launches" },
-        { name: "EVENTS & TALKS", id: "events" },
         { name: "OUR WORK", id: "portfolio" },
-        { name: "MEDIA GALLERY", id: "gallery" },
+        { name: "BLOG", id: "blog" },
+        { name: "CAREERS", id: "career" },
       ]
     },
     {
       header: "QUICK LINKS",
       links: [
-        { name: "CORE SERVICES", id: "services" },
-        { name: "TESTIMONIALS", id: "testimonials" },
-        { name: "FAQ PORTAL", id: "faq" },
         { name: "CONTACT PAGE", id: "contact" },
         { name: "PRIVACY POLICY", id: "privacy" },
         { name: "TERMS OF SERVICE", id: "terms" },
