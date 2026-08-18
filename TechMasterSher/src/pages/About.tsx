@@ -93,14 +93,14 @@ export const About: React.FC = () => {
         {/* 1. Header & Company Story */}
         {aboutTechMaster.visibility !== false && aboutTechMaster.status !== "Draft" && (
           <section className="text-center max-w-4xl mx-auto">
-            <motion.div
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="typo-badge mb-4 uppercase"
+              className="typo-badge mb-4 uppercase inline-block"
             >
               {aboutTechMaster.smallBadge || "ABOUT TECH MASTER"}
-            </motion.div>
+            </motion.h1>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
