@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { CustomCursor } from "./components/CustomCursor";
-import { SmoothScroll } from "./components/SmoothScroll";
+// import { SmoothScroll } from "./components/SmoothScroll";
 import { IntroLoader } from "./components/IntroLoader";
 import { SceneContainer } from "./three/SceneContainer";
-import { Header } from "./layouts/Header";
-import { Footer } from "./layouts/Footer";
+// import { Header } from "./layouts/Header";
+// import { Footer } from "./layouts/Footer";
 import { useData } from "./context/DataContext";
 import { BackgroundVideo } from "./components/BackgroundVideo";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -35,6 +35,7 @@ import { Contact } from "./pages/Contact";
 import { Privacy } from "./pages/Privacy";
 import { Terms } from "./pages/Terms";
 import { NotFound } from "./pages/NotFound";
+import { ComingSoon } from "./pages/ComingSoon";
 
 // Slug Mapping Helpers
 const getPageIdFromPath = (path: string): string => {
@@ -141,6 +142,7 @@ function App() {
     });
   }, [activePage]);
 
+  // @ts-ignore - renderActivePage is currently unused due to ComingSoon override
   const renderActivePage = () => {
     switch (activePage) {
       case "home":
@@ -235,23 +237,7 @@ function App() {
 
       {/* 9. Smooth Scroll Chassis & Content Layout */}
       {!isLoading && (
-        <SmoothScroll>
-          <div 
-            className="relative min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-gold selection:text-black"
-            style={{ zIndex: 10 }}
-          >
-            {/* Header Sticky Navigation */}
-            <Header activePage={activePage} onChangePage={navigatePage} />
-
-            {/* Dynamic Page Views */}
-            <main className="flex-grow z-10" id="main-content">
-              {renderActivePage()}
-            </main>
-
-            {/* Premium Multi-column Footer */}
-            <Footer onChangePage={navigatePage} />
-          </div>
-        </SmoothScroll>
+        <ComingSoon />
       )}
     </>
   );
